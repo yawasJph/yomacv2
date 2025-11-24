@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import LeftSidebar from "./LeftSidebar";
 import RigthSidebar from "./RigthSidebar";
-import { Home, Search, UserPen, Users, Bookmark } from "lucide-react";
+import { Home, Search, UserPen, Bookmark, Plus } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const HomeLayout = () => {
@@ -13,6 +13,7 @@ const HomeLayout = () => {
     { to: "users", icon: <Search size={24} />, text: "Buscar" },
     { to: "profile", icon: <UserPen size={24} />, text: "Perfil" },
     { to: "save-posts", icon: <Bookmark size={24} />, text: "Guardados" },
+    { to: "create-post", icon: <Plus size={24} />, text: "Crear Post" },
   ];
 
   return (
