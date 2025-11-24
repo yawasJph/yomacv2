@@ -1,12 +1,16 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import Header from "./Header";
 import LeftSidebar from "./LeftSidebar";
 import RigthSidebar from "./RigthSidebar";
 import { Home, Search, UserPen, Bookmark, Plus } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { toast } from "sonner";
 
 const HomeLayout = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   // Navegación móvil inferior
   const mobileNavLinks = [
     { to: ".", icon: <Home size={24} />, text: "Inicio", end: true },
@@ -16,6 +20,14 @@ const HomeLayout = () => {
     { to: "create-post", icon: <Plus size={24} />, text: "Crear Post" },
   ];
 
+  const handleCreatePost = () => {
+    if (user) {
+      navigate("create-post");
+    } else {
+      navigate("login");
+      toast.error("Debes iniciar sesión para crear una publicación");
+    }
+  };
   return (
     <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300">
       {/* Header fijo */}
@@ -57,6 +69,13 @@ const HomeLayout = () => {
               <span className="text-xs font-medium">{link.text}</span>
             </NavLink>
           ))}
+          <button
+            className="flex items-center gap-4 px-4 py-3 rounded-xl bg-linear-to-r from-emerald-500 to-teal-400 text-white font-semibold mt-4 hover:shadow-lg transition-all hover:scale-105 cursor-pointer"
+            onClick={handleCreatePost}
+          >
+            <Plus size={25} />
+           
+          </button>
         </div>
       </nav>
 
