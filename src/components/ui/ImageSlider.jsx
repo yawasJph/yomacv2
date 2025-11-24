@@ -10,7 +10,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import FullscreenModal from "../utils/FullscreenModal";
-import { timeAgoTiny } from "../utils/timeAgoTiny";
+import {timeAgoTiny} from "../utils/timeagoTiny"
 import { timeAgoLong } from "../utils/timeAgoLong";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import UserHoverCard from "../utils/UserHoverCard";
