@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Image, X, Globe, ImagePlay } from "lucide-react";
+import { Image, X, Globe, ImagePlay, Eye, EyeClosed } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import { toast } from "sonner";
@@ -327,7 +327,8 @@ const CreatePost = () => {
                   onClick={() => setShowPreview(!showPreview)}
                   className="text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer p-2 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950/20 text-sm font-medium"
                 >
-                  {showPreview ? "Ocultar" : "Vista previa"}
+                  
+                  {showPreview ? <Eye size={20}/> : <EyeClosed size={20}/>}
                 </button>
               )}
             </div>
@@ -347,7 +348,7 @@ const CreatePost = () => {
 
       {/* Preview del Post */}
       {showPreview && (content || previews.length > 0) && (
-            <div className="mt-6 border-2 border-emerald-500/20 dark:border-emerald-500/30 rounded-2xl p-4 bg-gray-50 dark:bg-gray-900/50 max-w-50">
+            <div className="mt-6 border-2 border-emerald-500/20 dark:border-emerald-500/30 rounded-2xl p-4 bg-gray-50 dark:bg-gray-900/50 max-w-100">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 pb-2 border-b border-emerald-500/10">
                 Vista previa del post
               </h3>
