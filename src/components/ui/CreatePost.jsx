@@ -220,7 +220,7 @@ const CreatePost = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-black border-b border-emerald-500/10 dark:border-emerald-500/20 px-4 py-4 sm:px-6 max-w-full">
+    <div className="bg-white dark:bg-black border-b border-emerald-500/10 dark:border-emerald-500/20 px-4 py-4 sm:px-6">
       <div className="flex gap-3">
         {/* Avatar */}
         <img
@@ -347,7 +347,7 @@ const CreatePost = () => {
 
       {/* Preview del Post */}
       {showPreview && (content || previews.length > 0) && (
-            <div className="mt-6 border-2 border-emerald-500/20 dark:border-emerald-500/30 rounded-2xl p-4 bg-gray-50 dark:bg-gray-900/50 max-w-full">
+            <div className="mt-6 border-2 border-emerald-500/20 dark:border-emerald-500/30 rounded-2xl p-4 bg-gray-50 dark:bg-gray-900/50 max-w-50">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 pb-2 border-b border-emerald-500/10">
                 Vista previa del post
               </h3>
