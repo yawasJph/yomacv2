@@ -1,9 +1,16 @@
-import React from 'react'
+import ImageSlider from "./ImageSlider.JSX";
 
-const PostCard = () => {
+const PostCard = ({ posts }) => {
   return (
-    <div>PostCard</div>
-  )
-}
+    <div className="divide-y divide-emerald-500/10 dark:divide-emerald-500/20">
+      {posts?.map((post) => {
+        const images = post.post_images ?? [];
+        return <ImageSlider key={post.id} post={post} images={images} />;
+      })}
+    </div>
+  );
+};
 
-export default PostCard
+
+
+export default PostCard;

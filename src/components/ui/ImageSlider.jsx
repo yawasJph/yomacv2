@@ -1,0 +1,264 @@
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Bookmark,
+  Heart,
+  MessageCircle,
+  MoreHorizontal,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import FullscreenModal from "../utils/FullscreenModal";
+
+const ImageSlider = ({ post, images }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const scrollContainerRef = useRef(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Mínima distancia para considerar un swipe
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && currentIndex < images.length - 1) {
+      goToNext();
+    }
+    if (isRightSwipe && currentIndex > 0) {
+      goToPrevious();
+    }
+  };
+
+  const goToNext = () => {
+    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
+
+  const goToPrevious = () => {
+    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const goToSlide = (index) => {
+    setCurrentIndex(index);
+  };
+
+  const openModal = (index) => {
+    setCurrentIndex(index);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => setIsModalOpen(false);
+
+  // Resetear índice cuando cambian las imágenes
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [images.length]);
+
+  return (
+    <article className="px-4 py-4 sm:px-6 hover:bg-gray-50/50 dark:hover:bg-gray-900/20 transition-colors">
+      <div className="flex gap-3 items-start">
+        {/* Avatar */}
+        <img
+          src={post.profiles.avatar || "/default-avatar.jpg"}
+          alt="avatar"
+          className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
+        />
+
+        {/* Contenido */}
+        <div className="flex-1 min-w-0">
+          {/* Header */}
+          <div className="flex justify-between items-start mb-2">
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base">
+                {post.profiles.full_name}
+              </h3>
+              <span className="text-gray-500 dark:text-gray-400 text-sm">
+                ·
+              </span>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {new Date(post.created_at).toLocaleDateString()}
+              </p>
+            </div>
+
+            <button className="p-1 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
+              <MoreHorizontal size={18} />
+            </button>
+          </div>
+
+          {/* Texto */}
+          <p className="text-base text-gray-900 dark:text-gray-100 mb-3 whitespace-pre-wrap wrap-break-word">
+            {post.content}
+          </p>
+
+          {/* SLIDER DE IMÁGENES */}
+          {images.length > 0 && (
+            <div className="mb-3 relative group">
+              <div
+                ref={scrollContainerRef}
+                className="relative w-full overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-900"
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
+                style={{
+                  height: "400px", // ALTURA FIJA PARA EVITAR SALTOS
+                }}
+              >
+                {/* Contenedor interno */}
+                <div
+                  className="flex transition-transform duration-300 ease-in-out"
+                  style={{
+                    transform: `translateX(-${currentIndex * 100}%)`,
+                    height: "100%",
+                  }}
+                >
+                  {images.map((img, index) => (
+                    <div
+                      key={img.id}
+                      className="min-w-full h-full flex justify-center items-center bg-black/5 dark:bg-white/5"
+                    >
+                      <img
+                        src={img.image_url}
+                        alt={`post ${index + 1}`}
+                        className="max-h-full max-w-full object-contain cursor-pointer"
+                        draggable="false"
+                        onClick={() => openModal(index)}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* BOTÓN ANTERIOR */}
+                {images.length > 1 && currentIndex > 0 && (
+                  <button
+                    onClick={goToPrevious}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 dark:bg-white/50 hover:bg-black/70 dark:hover:bg-white/70 text-white dark:text-black rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                  >
+                    <ChevronLeft size={22} />
+                  </button>
+                )}
+
+                {/* BOTÓN SIGUIENTE */}
+                {images.length > 1 && currentIndex < images.length - 1 && (
+                  <button
+                    onClick={goToNext}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 dark:bg-white/50 hover:bg-black/70 dark:hover:bg-white/70 text-white dark:text-black rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                  >
+                    <ChevronRight size={22} />
+                  </button>
+                )}
+              </div>
+
+              {/* INDICADORES */}
+              {images.length > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-3">
+                  {images.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => goToSlide(index)}
+                      className={`transition-all rounded-full ${
+                        index === currentIndex
+                          ? "w-3 h-3 bg-emerald-600 dark:bg-emerald-400"
+                          : "w-2 h-2 bg-gray-400 dark:bg-gray-600"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 🚀 MODAL FULLSCREEN */}
+          <FullscreenModal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            images={images}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
+          >
+            {isModalOpen && (
+              <div
+                className="fixed inset-0 bg-black/80 backdrop-blur-md flex justify-center items-center z-[9999]"
+                onClick={closeModal}
+              >
+                {/* Contenedor */}
+                <div
+                  className="relative w-full h-full flex items-center justify-center"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Imagen fullscreen */}
+                  <img
+                    src={images[currentIndex].image_url}
+                    className="max-w-full max-h-full object-contain"
+                  />
+
+                  {/* Botón cerrar */}
+                  <button
+                    onClick={closeModal}
+                    className="absolute top-5 right-5 text-white bg-black/50 hover:bg-black/70 p-2 rounded-full"
+                  >
+                    ✕
+                  </button>
+
+                  {/* Flecha izquierda */}
+                  {images.length > 1 && (
+                    <button
+                      onClick={goToPrevious}
+                      className="absolute left-5 top-1/2 -translate-y-1/2 text-white bg-black/40 hover:bg-black/70 p-3 rounded-full"
+                    >
+                      <ChevronLeft size={28} />
+                    </button>
+                  )}
+
+                  {/* Flecha derecha */}
+                  {images.length > 1 && (
+                    <button
+                      onClick={goToNext}
+                      className="absolute right-5 top-1/2 -translate-y-1/2 text-white bg-black/40 hover:bg-black/70 p-3 rounded-full"
+                    >
+                      <ChevronRight size={28} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </FullscreenModal>
+
+          {/* Acciones */}
+          <div className="flex items-center gap-6 text-gray-500 dark:text-gray-400">
+            <button className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors group">
+              <Heart
+                size={20}
+                className="group-hover:fill-emerald-600 dark:group-hover:fill-emerald-400"
+              />
+              <span className="text-sm">{post.like_count || 0}</span>
+            </button>
+
+            <button className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+              <MessageCircle size={20} />
+              <span className="text-sm">{post.comment_count || 0}</span>
+            </button>
+
+            <button className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+              <Bookmark size={20} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+};
+
+export default ImageSlider;

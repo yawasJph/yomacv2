@@ -2,7 +2,8 @@ import { LogOut, UserPen } from "lucide-react";
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 
-const UserAvatar = () => {
+const UserAvatar = ({ user, signout }) => {
+  console.log(user);
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -13,8 +14,8 @@ const UserAvatar = () => {
       >
         <div className="relative">
           <img
-            src={"/default-avatar.jpg"}
-            alt="perfil"
+            src={user.user_metadata.avatar_url || "/default-avatar.jpg"}
+            alt={user.user_metadata.full_name}
             className="w-9 h-9 rounded-xl border-2 border-emerald-400/50 shadow-sm"
           />
           
@@ -28,7 +29,7 @@ const UserAvatar = () => {
             <p className="font-semibold text-gray-900 dark:text-white"></p>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {/* @{user.user_metadata.full_name?.toLowerCase().replace(/\s+/g, "")} */}
-              Joseph LLacuash Avila
+              {user.user_metadata.full_name}
             </p>
           </div>
 
@@ -39,7 +40,7 @@ const UserAvatar = () => {
             >
               <UserPen size={18} /> Perfil
             </NavLink>
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors mt-2 cursor-pointer">
+            <button onClick={signout} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors mt-2 cursor-pointer">
               <LogOut size={18} /> Cerrar Sesión
             </button>
           </div>

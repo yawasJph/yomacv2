@@ -1,45 +1,21 @@
-import { Bookmark, Home, UserPen, Users } from "lucide-react";
-import React from "react";
-import { NavLink } from "react-router-dom";
-
-const sidebarLinks = [
-  { to: ".", icon: <Home size={22} />, text: "Inicio", end: true },
-  { to: "profile", icon: <UserPen size={22} />, text: "Perfil" },
-  { to: "users", icon: <Users size={22} />, text: "Descubrir" },
-  { to: "save-posts", icon: <Bookmark size={22} />, text: "Guardados" },
-];
+import NavigationD from "../ui/NavigationD";
 
 const LeftSidebar = () => {
   return (
-    <div>
-      <nav className="flex flex-col gap-2">
-        {sidebarLinks.map((l) => (
-          <NavLink
-            key={l.text}
-            to={l.to}
-            end={l.end}
-            className={({ isActive }) =>
-              `flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 font-medium ${
-                isActive
-                  ? "bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-600 text-emerald-600 dark:text-emerald-400"
-                  : "text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"
-              }`
-            }
-          >
-            {l.icon} {l.text}
-          </NavLink>
-        ))}
-
-        {/* Donation Page*/}
-        {/* <button
-        className="flex items-center gap-4 px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-white font-semibold mt-4 hover:shadow-lg transition-all hover:scale-105 cursor-pointer"
-        onClick={() => navigate("donation")}
-      >
-        <PiggyBank size={25} />
-        Donacion
-      </button> */}
-      </nav>
-    </div>
+    <aside className="hidden lg:flex lg:w-64 xl:w-80 flex-col h-[calc(100vh-64px)] sticky top-16 px-6 py-4">
+      {/* Navegación */}
+      <NavigationD />
+      
+      {/* Botón para descargar APK */}
+      <div className="mt-6 bg-white dark:bg-black border border-emerald-500/20 dark:border-emerald-500/30 rounded-xl p-4 text-center hover:border-emerald-500/40 dark:hover:border-emerald-500/50 transition-all duration-300">
+        <h3 className="text-base font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
+          Descarga la app móvil 📱
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Disponible para usuarios Android
+        </p>
+      </div>
+    </aside>
   );
 };
 

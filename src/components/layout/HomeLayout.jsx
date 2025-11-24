@@ -2,67 +2,65 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import LeftSidebar from "./LeftSidebar";
+import RigthSidebar from "./RigthSidebar";
+import { Home, Search, UserPen, Users, Bookmark } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 const HomeLayout = () => {
+  // Navegación móvil inferior
+  const mobileNavLinks = [
+    { to: ".", icon: <Home size={24} />, text: "Inicio", end: true },
+    { to: "users", icon: <Search size={24} />, text: "Buscar" },
+    { to: "profile", icon: <UserPen size={24} />, text: "Perfil" },
+    { to: "save-posts", icon: <Bookmark size={24} />, text: "Guardados" },
+  ];
+
   return (
-    <div className="min-h-screen bg-white dark:bg-black transition duration-300">
+    <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300">
+      {/* Header fijo */}
       <Header />
 
-      {/* 🔹 Layout Principal */}
-      <div className="pt-16 flex max-w-7xl mx-auto">
-        {/* Sidebar Izquierda */}
+      {/* Layout Principal */}
+      <div className="pt-16 flex max-w-7xl mx-auto min-h-[calc(100vh-64px)]">
+        {/* Sidebar Izquierdo - Desktop */}
+        <LeftSidebar />
 
-        <aside className="hidden lg:flex lg:w-80 flex-col h-[calc(100vh-64px)] sticky top-16 p-6">
-          {/* Botón para descargar APK */}
-          <LeftSidebar/>
-          <div className="mt-6 bg-white dark:bg-black border-2 border-emerald-500/20 dark:border-emerald-500/30 rounded-2xl p-5 shadow-sm shadow-emerald-500/10 dark:shadow-emerald-500/20 text-center hover:border-emerald-500/40 dark:hover:border-emerald-500/50 transition-all duration-300">
-            <h3 className="text-lg font-semibold text-emerald-600 dark:text-emerald-400 mb-3">
-              Descarga la app móvil 📱
-            </h3>
-            <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
-              Disponible para usuarios Android
-            </p>
+        {/* Contenido Principal - Feed */}
+        <main className="flex-1 min-h-screen border-x border-emerald-500/10 dark:border-emerald-500/20 max-w-2xl mx-auto lg:mx-0">
+          <div className="px-4 sm:px-6 py-4 sm:py-6">
+            <Outlet />
           </div>
-        </aside>
-
-        {/* Contenido Principal */}
-        <main className="flex-1 min-h-screen px-4 py-6 lg:px-6 max-w-2xl mx-auto bg-white dark:bg-black">
-          <Outlet />
         </main>
 
-        {/* Sidebar Derecha */}
-        <aside className="hidden xl:flex xl:w-80 flex-col h-[calc(100vh-64px)] sticky top-16 p-6 space-y-6">
-          {/* Personas sugeridas */}
-          
-          {/* Tendencias  */}
-          <div className="bg-white dark:bg-black rounded-2xl shadow-sm shadow-emerald-500/10 dark:shadow-emerald-500/20 border-2 border-emerald-500/20 dark:border-emerald-500/30 p-5 hover:border-emerald-500/40 dark:hover:border-emerald-500/50 transition-all duration-300">
-            <h3 className="font-semibold text-emerald-600 dark:text-emerald-400 mb-4 text-lg">
-              Tendencias
-            </h3>
-            <div className="space-y-3">
-              {["#Tecnología", "#Diseño", "#Programación", "#Innovación"].map(
-                (topic, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between items-center group cursor-pointer p-2 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors duration-200"
-                  >
-                    <span className="text-sm text-gray-800 dark:text-gray-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 font-medium transition-colors">
-                      {topic}
-                    </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                      {Math.floor(Math.random() * 1000)} posts
-                    </span>
-                  </div>
-                )
-              )}
-            </div>
-          </div>
-        </aside>
+        {/* Sidebar Derecho - Desktop */}
+        <RigthSidebar />
       </div>
 
-      {/* 🔹 Barra inferior móvil mejorada */}
+      {/* Navegación Móvil Inferior - Estilo Threads */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-black/95 backdrop-blur-lg border-t-2 border-emerald-500/20 dark:border-emerald-500/30 z-50 lg:hidden">
+        <div className="flex items-center justify-around h-16 px-2">
+          {mobileNavLinks.map((link) => (
+            <NavLink
+              key={link.text}
+              to={link.to}
+              end={link.end}
+              className={({ isActive }) =>
+                `flex flex-col items-center justify-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 min-w-[60px] ${
+                  isActive
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : "text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400"
+                }`
+              }
+            >
+              {link.icon}
+              <span className="text-xs font-medium">{link.text}</span>
+            </NavLink>
+          ))}
+        </div>
+      </nav>
 
-      {/* 🔹 Botón de descarga visible solo en móvil */}
+      {/* Espaciado inferior para móvil (evitar que el contenido quede oculto detrás de la navegación) */}
+      <div className="h-16 lg:hidden" />
     </div>
   );
 };
