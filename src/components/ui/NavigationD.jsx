@@ -1,4 +1,4 @@
-import { Bookmark, Home, PiggyBank, Plus, UserPen, Users } from "lucide-react";
+import { Bookmark, Home, Plus, UserPen, Users } from "lucide-react";
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";

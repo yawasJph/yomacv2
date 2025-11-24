@@ -1,4 +1,5 @@
-import ImageSlider from "./ImageSlider.JSX";
+import ImageSlider from "./ImageSlider.jsx";
+
 
 const PostCard = ({ posts }) => {
   return (
