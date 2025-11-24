@@ -1,44 +1,66 @@
-import React, { useEffect, useState } from "react";
-import { supabaseClient } from "../../supabase/supabaseClient";
+import React, { useRef, useEffect } from "react";
 import PostCard from "../ui/PostCard";
+import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery ";
+import SkeletonPost from "../skeletons/SkeletonPost";
+
 
 const Feed = () => {
-  const [posts, setPosts] = useState([]);
+  const {
+    data,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = usePostsInfiniteQuery();
+
+  const loaderRef = useRef();
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      const { data: posts, error } = await supabaseClient
-        .from("posts")
-        .select(
-             `
-          id,
-           content,
-            created_at,
-             profiles(full_name, avatar),
-             post_images(id, post_id, image_url)
-          `
-        )
-        .order("created_at", { ascending: false });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 1 }
+    );
 
-      if (posts) setPosts(posts);
-      if (error) console.error(error);
+    if (loaderRef.current) observer.observe(loaderRef.current);
+
+    return () => {
+      if (loaderRef.current) observer.unobserve(loaderRef.current);
     };
-    fetchPosts();
-  }, []);
+  }, [hasNextPage, isFetchingNextPage]);
 
-  console.log(posts)
+  const allPosts = data?.pages.flat() || [];
+
   return (
     <>
-      {posts && posts.length > 0 ? (
-        <>
-          <PostCard posts={posts} />
-        </>
-      ) : (
-        <div className="flex items-center justify-center min-h-[calc(100vh-100px)]">
-          <h1 className="text-2xl font-bold text-gray-500 dark:text-white">
-            No hay publicaciones
-          </h1>
+      {isLoading ? (
+        <div >
+            {[1, 2, 3, 4].map((i) => (
+          <SkeletonPost key={i} />
+        ))}
         </div>
+      ) : (
+        <>
+          <PostCard posts={allPosts} />
+
+          {/* Loader para infinite scroll */}
+          <div ref={loaderRef} className="py-4 flex justify-center">
+            {isFetchingNextPage && (
+              <p className="text-gray-500 dark:text-gray-300">
+                Cargando más publicaciones...
+              </p>
+            )}
+          </div>
+
+          {!hasNextPage && (
+            <div className="text-center py-6 text-gray-400 text-sm pb-20">
+              No hay más publicaciones
+            </div>
+          )}
+        </>
       )}
     </>
   );

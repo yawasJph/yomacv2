@@ -6,8 +6,14 @@ import {
   MoreHorizontal,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import FullscreenModal from "../utils/FullscreenModal";
+import { timeAgoTiny } from "../utils/timeAgoTiny";
+import { timeAgoLong } from "../utils/timeAgoLong";
+import { useIsMobile } from "../../hooks/useIsMobile";
+import UserHoverCard from "../utils/UserHoverCard";
 
 const ImageSlider = ({ post, images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -15,7 +21,22 @@ const ImageSlider = ({ post, images }) => {
   const [touchEnd, setTouchEnd] = useState(null);
   const scrollContainerRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const textRef = useRef(null);
+  const [expanded, setExpanded] = useState(false);
+  const [isTruncated, setIsTruncated] = useState(false);
 
+  const isMobile = useIsMobile();
+
+  // Detecta automáticamente si el texto está siendo truncado
+  useEffect(() => {
+    const el = textRef.current;
+    if (!el) return;
+
+    // Si el texto real es mayor al área visible => truncado
+    setIsTruncated(el.scrollHeight > el.clientHeight);
+  }, [post.content]);
+
+  console.log(post);
   // Mínima distancia para considerar un swipe
   const minSwipeDistance = 50;
 
@@ -81,15 +102,33 @@ const ImageSlider = ({ post, images }) => {
         <div className="flex-1 min-w-0">
           {/* Header */}
           <div className="flex justify-between items-start mb-2">
-            <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base">
-                {post.profiles.full_name}
+            <div className="flex items-center gap-2 justify-center">
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base wrap-break-word">
+                {isMobile ? (
+                  <span className="">
+                    {post.profiles.full_name}
+                  </span>
+                ) : (
+                  <UserHoverCard user={post.profiles}>
+                    <span className="hover:underline cursor-pointer">
+                      {post.profiles.full_name}
+                    </span>
+                  </UserHoverCard>
+                )}
               </h3>
-              <span className="text-gray-500 dark:text-gray-400 text-sm">
-                ·
-              </span>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {new Date(post.created_at).toLocaleDateString()}
+
+              <p
+                className="text-sm text-gray-500 dark:text-gray-400"
+                title={new Date(post.created_at).toLocaleString("es-PE", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  day: "2-digit",
+                  month: "short",
+                })}
+              >
+                {isMobile
+                  ? timeAgoTiny(post.created_at)
+                  : timeAgoLong(post.created_at)}
               </p>
             </div>
 
@@ -99,9 +138,33 @@ const ImageSlider = ({ post, images }) => {
           </div>
 
           {/* Texto */}
-          <p className="text-base text-gray-900 dark:text-gray-100 mb-3 whitespace-pre-wrap wrap-break-word">
+          {/* Texto */}
+          <p
+            ref={textRef}
+            className={`text-base text-gray-900 dark:text-gray-100 mb-3 whitespace-pre-wrap wrap-break-word transition-all duration-200 ${
+              expanded ? "line-clamp-none" : "line-clamp-3"
+            }`}
+          >
             {post.content}
           </p>
+
+          {/* Botón solo si realmente se truncó */}
+          {isTruncated && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="flex items-center gap-1 text-blue-500 dark:text-blue-400 hover:underline font-medium pb-3"
+            >
+              {expanded ? (
+                <>
+                  Ver menos <ChevronUp size={18} />
+                </>
+              ) : (
+                <>
+                  Ver más <ChevronDown size={18} />
+                </>
+              )}
+            </button>
+          )}
 
           {/* SLIDER DE IMÁGENES */}
           {images.length > 0 && (
@@ -190,7 +253,7 @@ const ImageSlider = ({ post, images }) => {
           >
             {isModalOpen && (
               <div
-                className="fixed inset-0 bg-black/80 backdrop-blur-md flex justify-center items-center z-[9999]"
+                className="fixed inset-0 bg-black/80 backdrop-blur-md flex justify-center items-center z-9999"
                 onClick={closeModal}
               >
                 {/* Contenedor */}

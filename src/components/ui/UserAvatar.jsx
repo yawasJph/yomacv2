@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 
 const UserAvatar = ({ user, signout }) => {
-  console.log(user);
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (

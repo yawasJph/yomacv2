@@ -27,7 +27,7 @@ export default function GifPicker({ onSelect, onClose }) {
         <input
           type="text"
           placeholder="Buscar GIF…"
-          className="w-full mb-3 px-3 py-2 rounded-lg border dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800"
+          className="w-full mb-3 px-3 py-2 rounded-lg border dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 dark:text-white text-gray-700"
           onKeyDown={(e) => {
             if (e.key === "Enter") searchGifs(e.target.value);
           }}
@@ -50,7 +50,7 @@ export default function GifPicker({ onSelect, onClose }) {
 
         <button
           onClick={onClose}
-          className="mt-4 w-full py-2 rounded-lg bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600"
+          className="mt-4 w-full py-2 rounded-lg bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600  dark:text-white text-gray-700"
         >
           Cerrar
         </button>
