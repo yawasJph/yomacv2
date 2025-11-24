@@ -73,7 +73,6 @@ const CreatePost = () => {
     setGifUrls([]);
   };
 
-
   const handleSubmit = async () => {
     if (!content.trim() && previews.length === 0) {
       toast.error("Escribe algo o sube una imagen");
@@ -101,7 +100,6 @@ const CreatePost = () => {
       const imageUrls = [];
 
       for (const file of files) {
-       
         const fileExt = file.name.split(".").pop();
         const fileName = `${crypto.randomUUID()}.${fileExt}`;
         const filePath = `post-${postId}/${fileName}`;
@@ -142,7 +140,7 @@ const CreatePost = () => {
 
       // 4️⃣ Limpiar formulario
       setContent("");
-       previews.forEach((p) => {
+      previews.forEach((p) => {
         if (!gifUrls.includes(p)) URL.revokeObjectURL(p);
       });
       setFiles([]);
@@ -159,7 +157,7 @@ const CreatePost = () => {
     setLoading(false);
   };
 
- // Guardar GIF seleccionado
+  // Guardar GIF seleccionado
   const handleGifSelect = (gifUrl) => {
     if (previews.length >= 6) {
       toast.error("Máximo 6 archivos por post");
@@ -287,7 +285,6 @@ const CreatePost = () => {
                 title="Agregar GIF"
                 disabled={previews.length >= 6}
               >
-               
                 <ImagePlay size={20} />
               </button>
 
@@ -309,7 +306,9 @@ const CreatePost = () => {
                 </button>
 
                 {showEmojiPicker && (
-                  <div className="absolute z-50 mt-2">
+                  <div className="absolute z-50 mt-2 -left-35">
+                    {" "}
+                    {/**-right-45 */}
                     <EmojiPicker
                       onEmojiClick={addEmoji}
                       theme={
@@ -342,9 +341,13 @@ const CreatePost = () => {
             </button>
           </div>
 
-          {/* Preview del Post */}
-          {showPreview && (content || previews.length > 0) && (
-            <div className="mt-6 border-2 border-emerald-500/20 dark:border-emerald-500/30 rounded-2xl p-4 bg-gray-50 dark:bg-gray-900/50">
+          
+        </div>
+      </div>
+
+      {/* Preview del Post */}
+      {showPreview && (content || previews.length > 0) && (
+            <div className="mt-6 border-2 border-emerald-500/20 dark:border-emerald-500/30 rounded-2xl p-4 bg-gray-50 dark:bg-gray-900/50 max-w-full">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 pb-2 border-b border-emerald-500/10">
                 Vista previa del post
               </h3>
@@ -408,8 +411,6 @@ const CreatePost = () => {
               </p>
             </div>
           )}
-        </div>
-      </div>
     </div>
   );
 };
