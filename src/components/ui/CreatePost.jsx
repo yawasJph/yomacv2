@@ -220,7 +220,7 @@ const CreatePost = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-black border-b border-emerald-500/10 dark:border-emerald-500/20 px-4 py-4 sm:px-6">
+    <div className="bg-white dark:bg-black border-b border-emerald-500/10 dark:border-emerald-500/20 px-4 py-4 sm:px-6 max-w-full">
       <div className="flex gap-3">
         {/* Avatar */}
         <img
