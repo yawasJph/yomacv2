@@ -17,6 +17,7 @@ import { useIsMobile } from "../../hooks/useIsMobile";
 import UserHoverCard from "../utils/UserHoverCard";
 
 import { supabaseClient } from "../../supabase/supabaseClient";
+import LinkPreview from "../../og/LinkPreview ";
 
 const ImageSlider = ({ post, images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -141,6 +142,9 @@ const ImageSlider = ({ post, images }) => {
     setCurrentIndex(0);
   }, [images.length]);
 
+  console.log(urlMeta)
+  console.log(linkUrl)
+
   return (
     <article className="px-4 py-4 sm:px-6 hover:bg-gray-50/50 dark:hover:bg-gray-900/20 transition-colors">
       <div className="flex gap-3 items-start">
@@ -218,41 +222,43 @@ const ImageSlider = ({ post, images }) => {
           )}
 
           {/* LINK PREVIEW CARD */}
+          
           {urlMeta && linkUrl && (
-            <a
-              href={urlMeta?.url || linkUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block border rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-900 
-               hover:bg-gray-200 dark:hover:bg-gray-800 transition mb-4"
-            >
-              {/* Imagen OG */}
-              {urlMeta.image && (
-                <img
-                  src={urlMeta.image}
-                  className="w-full h-52 object-cover border-b dark:border-gray-800"
-                />
-              )}
+            <LinkPreview url={linkUrl}/>
+            // <a
+            //   href={urlMeta?.url || linkUrl}
+            //   target="_blank"
+            //   rel="noopener noreferrer"
+            //   className="block border rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-900 
+            //    hover:bg-gray-200 dark:hover:bg-gray-800 transition mb-4"
+            // >
+            //   {/* Imagen OG */}
+            //   {urlMeta.image && (
+            //     <img
+            //       src={urlMeta.image}
+            //       className="w-full h-52 object-cover border-b dark:border-gray-800"
+            //     />
+            //   )}
 
-              {/* Texto */}
-              <div className="p-3">
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-1 line-clamp-2">
-                  {urlMeta.title || "Ver enlace"}
-                </h3>
+            //   {/* Texto */}
+            //   <div className="p-3">
+            //     <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-1 line-clamp-2">
+            //       {urlMeta.title || "Ver enlace"}
+            //     </h3>
 
-                {urlMeta.description && (
-                  <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2">
-                    {urlMeta.description}
-                  </p>
-                )}
+            //     {urlMeta.description && (
+            //       <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2">
+            //         {urlMeta.description}
+            //       </p>
+            //     )}
 
-                {urlMeta.site && (
-                  <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">
-                    {urlMeta.site}
-                  </p>
-                )}
-              </div>
-            </a>
+            //     {urlMeta.site && (
+            //       <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">
+            //         {urlMeta.site}
+            //       </p>
+            //     )}
+            //   </div>
+            // </a>
           )}
 
           {/* SLIDER DE IMÁGENES */}
