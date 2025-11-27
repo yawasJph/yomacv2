@@ -18,6 +18,40 @@ const CreatePost = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showGifPicker, setShowGifPicker] = useState(false);
+  const [linkPreview, setLinkPreview] = useState(null);
+
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+  const handleContentChange = async (e) => {
+    const text = e.target.value;
+    setContent(text);
+
+    const urls = text.match(urlRegex);
+
+    if (!urls) {
+      setLinkPreview(null);
+      return;
+    }
+
+    const url = urls[0];
+
+    try {
+      const res = await fetch(`https://api.microlink.io/?url=${url}`);
+      const data = await res.json();
+
+      if (data?.data) {
+        setLinkPreview({
+          url,
+          title: data.data.title,
+          description: data.data.description,
+          image: data.data.image?.url,
+          logo: data.data.logo?.url,
+        });
+      }
+    } catch (error) {
+      console.error("Error cargando link preview:", error);
+    }
+  };
 
   // Agregar emoji al texto
   const addEmoji = (emojiData) => {
@@ -233,11 +267,50 @@ const CreatePost = () => {
         <div className="flex-1 min-w-0">
           <textarea
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            //onChange={(e) => setContent(e.target.value)}
+            onChange={handleContentChange}
             placeholder="Iniciar un hilo..."
             rows={3}
             className="w-full resize-none bg-transparent border-none outline-none text-base text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 "
           />
+
+          {/* LINK PREVIEW */}
+          {linkPreview && (
+            <a
+              href={linkPreview.url}
+              target="_blank"
+              className="mt-3 block border rounded-xl overflow-hidden bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            >
+              {linkPreview.image && (
+                <img
+                  src={linkPreview.image}
+                  className="w-full max-h-60 object-cover"
+                  alt="preview"
+                />
+              )}
+
+              <div className="p-3">
+                <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm line-clamp-2">
+                  {linkPreview.title}
+                </h4>
+                <p className="text-gray-600 dark:text-gray-300 text-xs line-clamp-2 mt-1">
+                  {linkPreview.description}
+                </p>
+
+                <div className="flex items-center gap-2 mt-2">
+                  {linkPreview.logo && (
+                    <img
+                      src={linkPreview.logo}
+                      className="w-4 h-4 rounded-sm"
+                    />
+                  )}
+                  <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                    {new URL(linkPreview.url).hostname}
+                  </span>
+                </div>
+              </div>
+            </a>
+          )}
 
           {/* Imágenes seleccionadas */}
           {previews.length > 0 && (
@@ -383,11 +456,17 @@ const CreatePost = () => {
 
             {/* Estadísticas del preview */}
             <div className="flex justify-around items-center gap-4 mt-3 pt-3 border-t border-gray-100 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400">
-              <span className="grid text-center">0  <span>me gusta</span></span>
+              <span className="grid text-center">
+                0 <span>me gusta</span>
+              </span>
               <span>•</span>
-              <span className="grid text-center">0  <span>comentarios</span></span>
+              <span className="grid text-center">
+                0 <span>comentarios</span>
+              </span>
               <span>•</span>
-              <span className="grid text-center">0  <span>compartidos</span></span>
+              <span className="grid text-center">
+                0 <span>compartidos</span>
+              </span>
             </div>
 
             {/* Acciones del preview */}

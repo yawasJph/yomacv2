@@ -8,12 +8,15 @@ import {
   ChevronRight,
   ChevronDown,
   ChevronUp,
+  X,
 } from "lucide-react";
 import FullscreenModal from "../utils/FullscreenModal";
-import {timeAgoTiny} from "../utils/timeagoTiny"
+import { timeAgoTiny } from "../utils/timeagoTiny";
 import { timeAgoLong } from "../utils/timeAgoLong";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import UserHoverCard from "../utils/UserHoverCard";
+
+import { supabaseClient } from "../../supabase/supabaseClient";
 
 const ImageSlider = ({ post, images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -24,8 +27,58 @@ const ImageSlider = ({ post, images }) => {
   const textRef = useRef(null);
   const [expanded, setExpanded] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
+  const [urlMeta, setUrlMeta] = useState(null);
+  const [linkUrl, setLinkUrl] = useState(null);
 
   const isMobile = useIsMobile();
+
+  // Detectar primer URL
+  const extractFirstUrl = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const match = text.match(urlRegex);
+    return match ? match[0] : null;
+  };
+
+  // Renderizar texto con los links transformados en <a>
+  const renderTextWithLinks = (text) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.split(urlRegex).map((part, i) =>
+      urlRegex.test(part) ? (
+        <a
+          key={i}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 dark:text-blue-400 underline break-all"
+        >
+          {part}
+        </a>
+      ) : (
+        part
+      )
+    );
+  };
+
+  useEffect(() => {
+    const url = extractFirstUrl(post.content);
+    if (!url) return;
+
+    setLinkUrl(url);
+    const fetchMetadata = async () => {
+      try {
+        const { data, error } = await supabaseClient.functions.invoke(
+          "hyper-task",
+          { body: { url } }
+        );
+        if (!error) setUrlMeta(data);
+        console.log(data)
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    fetchMetadata();
+  }, [post.content]);
 
   // Detecta automáticamente si el texto está siendo truncado
   useEffect(() => {
@@ -105,9 +158,7 @@ const ImageSlider = ({ post, images }) => {
             <div className="flex items-center gap-2 justify-center">
               <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base wrap-break-word">
                 {isMobile ? (
-                  <span className="">
-                    {post.profiles.full_name}
-                  </span>
+                  <span className="">{post.profiles.full_name}</span>
                 ) : (
                   <UserHoverCard user={post.profiles}>
                     <span className="hover:underline cursor-pointer">
@@ -141,11 +192,11 @@ const ImageSlider = ({ post, images }) => {
           {/* Texto */}
           <p
             ref={textRef}
-            className={`text-base text-gray-900 dark:text-gray-100 mb-3 whitespace-pre-wrap wrap-break-word transition-all duration-200 ${
-              expanded ? "line-clamp-none" : "line-clamp-3"
+            className={`text-base text-gray-900 dark:text-gray-100 mb-3 whitespace-pre-wrap break-all transition-all duration-200 ${
+              expanded ? "line-clamp-none" : "line-clamp-6"
             }`}
           >
-            {post.content}
+            {renderTextWithLinks(post.content)}
           </p>
 
           {/* Botón solo si realmente se truncó */}
@@ -164,6 +215,44 @@ const ImageSlider = ({ post, images }) => {
                 </>
               )}
             </button>
+          )}
+
+          {/* LINK PREVIEW CARD */}
+          {urlMeta && linkUrl && (
+            <a
+              href={urlMeta?.url || linkUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block border rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-900 
+               hover:bg-gray-200 dark:hover:bg-gray-800 transition mb-4"
+            >
+              {/* Imagen OG */}
+              {urlMeta.image && (
+                <img
+                  src={urlMeta.image}
+                  className="w-full h-52 object-cover border-b dark:border-gray-800"
+                />
+              )}
+
+              {/* Texto */}
+              <div className="p-3">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-1 line-clamp-2">
+                  {urlMeta.title || "Ver enlace"}
+                </h3>
+
+                {urlMeta.description && (
+                  <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2">
+                    {urlMeta.description}
+                  </p>
+                )}
+
+                {urlMeta.site && (
+                  <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">
+                    {urlMeta.site}
+                  </p>
+                )}
+              </div>
+            </a>
           )}
 
           {/* SLIDER DE IMÁGENES */}
@@ -270,9 +359,9 @@ const ImageSlider = ({ post, images }) => {
                   {/* Botón cerrar */}
                   <button
                     onClick={closeModal}
-                    className="absolute top-5 right-5 text-white bg-black/50 hover:bg-black/70 p-2 rounded-full"
+                    className="absolute top-5 right-5 text-white bg-black/30 hover:bg-black/70 p-2 rounded-full dark:bg-gray-600 dark:hover:bg-gray-800"
                   >
-                    ✕
+                    <X />
                   </button>
 
                   {/* Flecha izquierda */}
