@@ -39,7 +39,7 @@ const HomeLayout = () => {
         <LeftSidebar />
 
         {/* Contenido Principal - Feed */}
-        <main className="flex-1 min-h-screen border-x border-emerald-500/10 dark:border-emerald-500/20 max-w-2xl mx-auto lg:mx-0">
+        <main className="flex-1 min-h-[1050px] border-x border-emerald-500/10 dark:border-emerald-500/20 max-w-2xl mx-auto lg:mx-0">
           <div className=" sm:px-6 py-4 sm:py-6"> {/**px-4 */}
             <Outlet />
           </div>

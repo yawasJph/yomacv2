@@ -5,9 +5,7 @@ import { supabaseClient } from "../../supabase/supabaseClient";
 import { toast } from "sonner";
 import EmojiPicker from "emoji-picker-react";
 import { Smile } from "lucide-react";
-
 import GifPicker from "../utils/GifPicker";
-import LinkPreview from "../../og/LinkPreview ";
 
 const CreatePost = () => {
   const { user } = useAuth();
@@ -21,6 +19,7 @@ const CreatePost = () => {
   const [showGifPicker, setShowGifPicker] = useState(false);
   const [linkPreview, setLinkPreview] = useState(null);
   const [linkPreviewClosed, setLinkPreviewClosed] = useState(false);
+
 
   const handleCloseLinkPreview = () => {
     setLinkPreview(null);
@@ -81,8 +80,8 @@ const CreatePost = () => {
     const selectedFiles = Array.from(e.target.files || []);
 
     // Validar cantidad máxima (6 imágenes)
-    if (files.length + selectedFiles.length > 6) {
-      toast.error("Máximo 6 imágenes permitidas");
+    if (files.length + selectedFiles.length > 4) {
+      toast.error("Máximo 4 imágenes permitidas");
       return;
     }
 
@@ -198,6 +197,8 @@ const CreatePost = () => {
       setPreviews([]);
       setShowPreview(false);
       setGifUrls([]);
+      setLinkPreviewClosed(false)
+      setLinkPreview(null)
 
       toast.success("¡Publicado!");
     } catch (error) {
@@ -210,8 +211,8 @@ const CreatePost = () => {
 
   // Guardar GIF seleccionado
   const handleGifSelect = (gifUrl) => {
-    if (previews.length >= 6) {
-      toast.error("Máximo 6 archivos por post");
+    if (previews.length >= 4) {
+      toast.error("Máximo 4 archivos por post");
       return;
     }
 
@@ -231,7 +232,7 @@ const CreatePost = () => {
         4: "grid-cols-2 gap-2",
         5: "grid-cols-3 gap-2",
         6: "grid-cols-3 gap-2",
-      }[images.length] || "grid-cols-2 gap-2";
+      }[images.length] || "grid-cols-2 gap-1";
 
     return (
       <div className={`grid ${gridClass} mt-3`}>
@@ -240,7 +241,7 @@ const CreatePost = () => {
             key={index}
             className={`relative ${
               images.length === 3 && index === 0 ? "col-span-2 row-span-2" : ""
-            } ${images.length === 6 && index >= 2 ? "col-span-1" : ""}`}
+            } ${images.length === 4 && index >= 2 ? "col-span-1" : ""}`}
           >
             <img
               src={preview}
@@ -291,9 +292,11 @@ const CreatePost = () => {
             className="w-full resize-none bg-transparent border-none outline-none text-base text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 "
           />
 
+          
           {/* LINK PREVIEW */}
           {linkPreview && (
             <div className="relative mt-3">
+
               {/* Botón cerrar */}
               <button
                 onClick={handleCloseLinkPreview}
@@ -336,6 +339,7 @@ const CreatePost = () => {
                   </div>
                 </div>
               </a>
+          
             </div>
           )}
 
@@ -347,7 +351,7 @@ const CreatePost = () => {
               {/* Contador y botón para eliminar todas */}
               <div className="flex justify-between items-center mt-2">
                 <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {previews.length}/6 imágenes
+                  {previews.length}/4 imágenes
                 </span>
                 <button
                   onClick={removeAllImages}
@@ -364,11 +368,11 @@ const CreatePost = () => {
             <div className="flex items-center gap-2">
               <label
                 className={`text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer p-2 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950/20 ${
-                  files.length >= 6 || linkPreview
+                  previews.length >= 4 || linkPreview
                     ? "opacity-50 cursor-not-allowed"
                     : ""
                 }`}
-                title={files.length >= 6 ? "Máximo 6 imágenes" : "subir imagen"}
+                title={previews.length >= 4 ? "Máximo 4 imágenes" : "subir imagen"}
               >
                 <Image size={20} />
                 <input
@@ -377,18 +381,22 @@ const CreatePost = () => {
                   className="hidden"
                   onChange={handleFileChange}
                   multiple
-                  disabled={previews.length >= 6 || linkPreview}
+                  disabled={previews.length >= 4 || linkPreview}
                 />
               </label>
 
               <button
                 className={`text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer p-2 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950/20 ${
-                  files.length >= 6 || linkPreview
+                  previews.length >= 4 || linkPreview
                     ? "opacity-50 cursor-not-allowed"
                     : ""
                 }`}
                 title="Agregar GIF"
-                disabled={previews.length >= 6 || linkPreview}
+                disabled={previews.length >= 4 || linkPreview}
+                onClick={() => {
+                  if (previews.length >= 4 || linkPreview) return;
+                  setShowGifPicker(true);
+                }}
               >
                 <ImagePlay size={20} />
               </button>
