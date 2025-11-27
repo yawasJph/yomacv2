@@ -7,6 +7,7 @@ import EmojiPicker from "emoji-picker-react";
 import { Smile } from "lucide-react";
 
 import GifPicker from "../utils/GifPicker";
+import LinkPreview from "../../og/LinkPreview ";
 
 const CreatePost = () => {
   const { user } = useAuth();
@@ -19,6 +20,12 @@ const CreatePost = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showGifPicker, setShowGifPicker] = useState(false);
   const [linkPreview, setLinkPreview] = useState(null);
+  const [linkPreviewClosed, setLinkPreviewClosed] = useState(false);
+
+  const handleCloseLinkPreview = () => {
+    setLinkPreview(null);
+    setLinkPreviewClosed(true); // marca que el usuario lo cerró manualmente
+  };
 
   const urlRegex = /(https?:\/\/[^\s]+)/g;
 
@@ -27,6 +34,16 @@ const CreatePost = () => {
     setContent(text);
 
     const urls = text.match(urlRegex);
+
+    // Si no hay URL → borrar preview y permitir mostrarlo otra vez
+    if (!urls) {
+      setLinkPreview(null);
+      setLinkPreviewClosed(false);
+      return;
+    }
+
+    // Si el usuario cerró manualmente el preview, no volver a mostrarlo
+    if (linkPreviewClosed) return;
 
     if (!urls) {
       setLinkPreview(null);
@@ -276,40 +293,50 @@ const CreatePost = () => {
 
           {/* LINK PREVIEW */}
           {linkPreview && (
-            <a
-              href={linkPreview.url}
-              target="_blank"
-              className="mt-3 block border rounded-xl overflow-hidden bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-            >
-              {linkPreview.image && (
-                <img
-                  src={linkPreview.image}
-                  className="w-full max-h-60 object-cover"
-                  alt="preview"
-                />
-              )}
+            <div className="relative mt-3">
+              {/* Botón cerrar */}
+              <button
+                onClick={handleCloseLinkPreview}
+                className="absolute top-2 right-2 bg-black/60 text-white p-1.5 rounded-full z-20"
+              >
+                <X size={14} />
+              </button>
 
-              <div className="p-3">
-                <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm line-clamp-2">
-                  {linkPreview.title}
-                </h4>
-                <p className="text-gray-600 dark:text-gray-300 text-xs line-clamp-2 mt-1">
-                  {linkPreview.description}
-                </p>
+              <a
+                href={linkPreview.url}
+                target="_blank"
+                className="block border rounded-xl overflow-hidden bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+              >
+                {linkPreview.image && (
+                  <img
+                    src={linkPreview.image}
+                    className="w-full max-h-60 object-cover"
+                    alt="preview"
+                  />
+                )}
 
-                <div className="flex items-center gap-2 mt-2">
-                  {linkPreview.logo && (
-                    <img
-                      src={linkPreview.logo}
-                      className="w-4 h-4 rounded-sm"
-                    />
-                  )}
-                  <span className="text-[11px] text-gray-500 dark:text-gray-400">
-                    {new URL(linkPreview.url).hostname}
-                  </span>
+                <div className="p-3">
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm line-clamp-2">
+                    {linkPreview.title}
+                  </h4>
+                  <p className="text-gray-600 dark:text-gray-300 text-xs line-clamp-2 mt-1">
+                    {linkPreview.description}
+                  </p>
+
+                  <div className="flex items-center gap-2 mt-2">
+                    {linkPreview.logo && (
+                      <img
+                        src={linkPreview.logo}
+                        className="w-4 h-4 rounded-sm"
+                      />
+                    )}
+                    <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                      {new URL(linkPreview.url).hostname}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </a>
+              </a>
+            </div>
           )}
 
           {/* Imágenes seleccionadas */}
@@ -337,7 +364,9 @@ const CreatePost = () => {
             <div className="flex items-center gap-2">
               <label
                 className={`text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer p-2 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950/20 ${
-                  files.length >= 6 ? "opacity-50 cursor-not-allowed" : ""
+                  files.length >= 6 || linkPreview
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
                 }`}
                 title={files.length >= 6 ? "Máximo 6 imágenes" : "subir imagen"}
               >
@@ -348,15 +377,18 @@ const CreatePost = () => {
                   className="hidden"
                   onChange={handleFileChange}
                   multiple
-                  disabled={previews.length >= 6}
+                  disabled={previews.length >= 6 || linkPreview}
                 />
               </label>
 
               <button
-                onClick={() => setShowGifPicker(true)}
-                className="text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer p-2 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
+                className={`text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer p-2 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950/20 ${
+                  files.length >= 6 || linkPreview
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
                 title="Agregar GIF"
-                disabled={previews.length >= 6}
+                disabled={previews.length >= 6 || linkPreview}
               >
                 <ImagePlay size={20} />
               </button>
