@@ -161,7 +161,7 @@ const ImageSlider = ({ post, images }) => {
           <div
             key={index}
             className={`relative ${
-              images.length === 3 && index === 0 ? "col-span-2 row-span-2" : ""
+              images.length === 3 && index === 0 ? "col-span-2 row-span-1" : ""
             } ${images.length === 4 && index >= 2 ? "col-span-1" : ""}`}
           >
             <img
@@ -177,15 +177,7 @@ const ImageSlider = ({ post, images }) => {
                   : "h-32"
               } ${isPreview ? "cursor-default" : "cursor-pointer"}`}
             />
-            {!isPreview && (
-              <button
-                onClick={() => removeImage(index)}
-                className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white p-1.5 rounded-full cursor-pointer transition-all"
-                title="quitar imagen"
-              >
-                <X size={14} />
-              </button>
-            )}
+            
           </div>
         ))}
       </div>
@@ -308,6 +300,7 @@ const ImageSlider = ({ post, images }) => {
             // </a>
           )}
 
+          {renderImageGrid(images)}
           {/* IMAGENES EN GRID  */}
           {images.length > 0 && (
             <div className="mb-3">
