@@ -21,8 +21,6 @@ const CreatePost = () => {
   const [linkPreview, setLinkPreview] = useState(null);
   const [linkPreviewClosed, setLinkPreviewClosed] = useState(false);
 
-  const isMobile = useIsMobile();
-
   const handleCloseLinkPreview = () => {
     setLinkPreview(null);
     setLinkPreviewClosed(true); // marca que el usuario lo cerró manualmente
@@ -294,91 +292,6 @@ const CreatePost = () => {
             className="w-full resize-none bg-transparent border-none outline-none text-base text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 "
           />
 
-          {/* LINK PREVIEW */}
-          {linkPreview && (
-            <div className="relative mt-3">
-              {/* Botón cerrar */}
-              <button
-                onClick={handleCloseLinkPreview}
-                className="absolute top-2 right-2 bg-black/30 p-1 text-white rounded-full z-20"
-              >
-                <X size={14} />
-              </button>
-            <a
-              href={linkPreview.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 mb-4"
-            >
-              {/* Izquierda: Texto */}
-              <div className="flex-1 p-3 flex flex-col justify-center">
-                {linkPreview.site && (
-                  <p className="text-[10px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1 line-clamp-1">
-                    {linkPreview.site}
-                  </p>
-                )}
-
-                {linkPreview.title && (
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight line-clamp-1">
-                    {linkPreview.title}
-                  </h3>
-                )}
-
-                {linkPreview.description && (
-                  <p className="text-gray-600 dark:text-gray-300 text-xs line-clamp-2 mt-1">
-                    {linkPreview.description}
-                  </p>
-                )}
-
-                {linkPreview.url && (
-                   <div className="flex items-center gap-2 mt-2">
-                   {linkPreview.logo && (
-                     <img
-                       src={linkPreview.logo}
-                       className="w-4 h-4 rounded-sm"
-                     />
-                   )}
-                   <span className="text-[11px] text-gray-500 dark:text-gray-400">
-                     {new URL(linkPreview.url).hostname}
-                   </span>
-                 </div>
-                )}
-              </div>
-
-              {/* Derecha: Imagen */}
-              {linkPreview.image && (
-                <div className="w-30 md:w-44 h-25  shrink-0 bg-gray-200 dark:bg-neutral-800 overflow-hidden">{/**md:h-24 */}
-                  <img
-                    src={linkPreview.image}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
-            </a>
-            </div>
-          )}
-
-          {/* Imágenes seleccionadas */}
-          {previews.length > 0 && (
-            <div className="mt-3">
-              {renderImageGrid(previews)}
-
-              {/* Contador y botón para eliminar todas */}
-              <div className="flex justify-between items-center mt-2">
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {previews.length}/4 imágenes
-                </span>
-                <button
-                  onClick={removeAllImages}
-                  className="text-xs text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
-                >
-                  Eliminar todas
-                </button>
-              </div>
-            </div>
-          )}
-
           {/* Acciones */}
           <div className="flex justify-between items-center mt-4 pt-4 border-t border-emerald-500/10 dark:border-emerald-500/20">
             <div className="flex items-center gap-2">
@@ -437,7 +350,7 @@ const CreatePost = () => {
                 </button>
 
                 {showEmojiPicker && (
-                  <div className="absolute z-50 mt-5 -left-35 md:left-0 mb-30">
+                  <div className="absolute z-50 mt-3 -left-32 md:left-0">
                     {" "}
                     {/**-right-45 */}
                     <EmojiPicker
@@ -451,16 +364,6 @@ const CreatePost = () => {
                   </div>
                 )}
               </div>
-
-              {/* Botón para mostrar/ocultar preview */}
-              {(content || previews.length > 0) && (
-                <button
-                  onClick={() => setShowPreview(!showPreview)}
-                  className="text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer p-2 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950/20 text-sm font-medium"
-                >
-                  {showPreview ? <Eye size={20} /> : <EyeClosed size={20} />}
-                </button>
-              )}
             </div>
 
             <button
@@ -474,76 +377,89 @@ const CreatePost = () => {
         </div>
       </div>
 
-      {/* Preview del Post */}
-      {showPreview && (content || previews.length > 0) && (
-        <div className="mt-6 border-2 border-emerald-500/20 dark:border-emerald-500/30 rounded-2xl p-4 bg-gray-50 dark:bg-gray-900/50 ">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 pb-2 border-b border-emerald-500/10">
-            Vista previa del post
-          </h3>
-
-          <div className="bg-white dark:bg-black rounded-xl p-4 border border-gray-200 dark:border-gray-800">
-            {/* Header del preview */}
-            <div className="flex items-center gap-3 mb-3">
-              <img
-                src={user.user_metadata.avatar_url || "/default-avatar.jpg"}
-                alt={user.user_metadata.full_name}
-                className="w-10 h-10 rounded-full object-cover"
-              />
-              <div className="flex-1 min-w-0">
-                <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
-                  {user.user_metadata.full_name || "Usuario"}
-                </h4>
-                <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                  <span>Ahora mismo</span>
-                  <span>•</span>
-                  <Globe size={12} />
-                </div>
-              </div>
-            </div>
-
-            {/* Contenido del preview */}
-            <div className="space-y-3">
-              {content && (
-                <p className="text-gray-900 dark:text-gray-100 text-sm whitespace-pre-wrap">
-                  {content}
+      {/* LINK PREVIEW */}
+      {linkPreview && (
+        <div className="relative mt-8">
+          {/* Botón cerrar */}
+          <button
+            onClick={handleCloseLinkPreview}
+            className="absolute top-2 right-2 bg-black/30 p-1 text-white rounded-full z-20"
+          >
+            <X size={14} />
+          </button>
+          <a
+            href={linkPreview.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 mb-4"
+          >
+            {/* Izquierda: Texto */}
+            <div className="flex-1 p-3 flex flex-col justify-center">
+              {linkPreview.site && (
+                <p className="text-[10px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1 line-clamp-1">
+                  {linkPreview.site}
                 </p>
               )}
 
-              {previews.length > 0 && renderImageGrid(previews, true)}
+              {linkPreview.title && (
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight line-clamp-1">
+                  {linkPreview.title}
+                </h3>
+              )}
+
+              {linkPreview.description && (
+                <p className="text-gray-600 dark:text-gray-300 text-xs line-clamp-2 mt-1">
+                  {linkPreview.description}
+                </p>
+              )}
+
+              {linkPreview.url && (
+                <div className="flex items-center gap-2 mt-2">
+                  {linkPreview.logo && (
+                    <img
+                      src={linkPreview.logo}
+                      className="w-4 h-4 rounded-sm"
+                    />
+                  )}
+                  <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                    {new URL(linkPreview.url).hostname}
+                  </span>
+                </div>
+              )}
             </div>
 
-            {/* Estadísticas del preview */}
-            <div className="flex justify-around items-center gap-4 mt-3 pt-3 border-t border-gray-100 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400">
-              <span className="grid text-center">
-                0 <span>me gusta</span>
-              </span>
-              <span>•</span>
-              <span className="grid text-center">
-                0 <span>comentarios</span>
-              </span>
-              <span>•</span>
-              <span className="grid text-center">
-                0 <span>compartidos</span>
-              </span>
-            </div>
+            {/* Derecha: Imagen */}
+            {linkPreview.image && (
+              <div className="w-30 md:w-44 h-25  shrink-0 bg-gray-200 dark:bg-neutral-800 overflow-hidden">
+                {/**md:h-24 */}
+                <img
+                  src={linkPreview.image}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+          </a>
+        </div>
+      )}
 
-            {/* Acciones del preview */}
-            <div className="flex items-center justify-around mt-2 pt-2 border-t border-gray-100 dark:border-gray-800 text-xs">
-              <button className="flex items-center gap-1 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400">
-                👍 Me gusta
-              </button>
-              <button className="flex items-center gap-1 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400">
-                💬 Comentar
-              </button>
-              <button className="flex items-center gap-1 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400">
-                🔄 Compartir
-              </button>
-            </div>
+      {/* Imágenes seleccionadas */}
+      {previews.length > 0 && (
+        <div className="mt-3">
+          {renderImageGrid(previews)}
+
+          {/* Contador y botón para eliminar todas */}
+          <div className="flex justify-between items-center mt-2">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {previews.length}/4 imágenes
+            </span>
+            <button
+              onClick={removeAllImages}
+              className="text-xs text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
+            >
+              Eliminar todas
+            </button>
           </div>
-
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 text-center">
-            Así se verá tu publicación cuando sea compartida
-          </p>
         </div>
       )}
     </div>
