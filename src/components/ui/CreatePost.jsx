@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import EmojiPicker from "emoji-picker-react";
 import { Smile } from "lucide-react";
 import GifPicker from "../utils/GifPicker";
+import { useIsMobile } from "../../hooks/useIsMobile";
 
 const CreatePost = () => {
   const { user } = useAuth();
@@ -20,6 +21,7 @@ const CreatePost = () => {
   const [linkPreview, setLinkPreview] = useState(null);
   const [linkPreviewClosed, setLinkPreviewClosed] = useState(false);
 
+  const isMobile = useIsMobile();
 
   const handleCloseLinkPreview = () => {
     setLinkPreview(null);
@@ -54,7 +56,7 @@ const CreatePost = () => {
     try {
       const res = await fetch(`https://api.microlink.io/?url=${url}`);
       const data = await res.json();
-
+      console.log(data);
       if (data?.data) {
         setLinkPreview({
           url,
@@ -197,8 +199,8 @@ const CreatePost = () => {
       setPreviews([]);
       setShowPreview(false);
       setGifUrls([]);
-      setLinkPreviewClosed(false)
-      setLinkPreview(null)
+      setLinkPreviewClosed(false);
+      setLinkPreview(null);
 
       toast.success("¡Publicado!");
     } catch (error) {
@@ -288,58 +290,72 @@ const CreatePost = () => {
             //onChange={(e) => setContent(e.target.value)}
             onChange={handleContentChange}
             placeholder="Iniciar un hilo..."
-            rows={3}
+            rows={4}
             className="w-full resize-none bg-transparent border-none outline-none text-base text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 "
           />
 
-          
           {/* LINK PREVIEW */}
           {linkPreview && (
             <div className="relative mt-3">
-
               {/* Botón cerrar */}
               <button
                 onClick={handleCloseLinkPreview}
-                className="absolute top-2 right-2 bg-black/60 text-white p-1.5 rounded-full z-20"
+                className="absolute top-2 right-2 bg-black/30 p-1 text-white rounded-full z-20"
               >
                 <X size={14} />
               </button>
-
-              <a
-                href={linkPreview.url}
-                target="_blank"
-                className="block border rounded-xl overflow-hidden bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-              >
-                {linkPreview.image && (
-                  <img
-                    src={linkPreview.image}
-                    className="w-full max-h-60 object-cover"
-                    alt="preview"
-                  />
+            <a
+              href={linkPreview.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 mb-4"
+            >
+              {/* Izquierda: Texto */}
+              <div className="flex-1 p-3 flex flex-col justify-center">
+                {linkPreview.site && (
+                  <p className="text-[10px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1 line-clamp-1">
+                    {linkPreview.site}
+                  </p>
                 )}
 
-                <div className="p-3">
-                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm line-clamp-2">
+                {linkPreview.title && (
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight line-clamp-1">
                     {linkPreview.title}
-                  </h4>
+                  </h3>
+                )}
+
+                {linkPreview.description && (
                   <p className="text-gray-600 dark:text-gray-300 text-xs line-clamp-2 mt-1">
                     {linkPreview.description}
                   </p>
+                )}
 
-                  <div className="flex items-center gap-2 mt-2">
-                    {linkPreview.logo && (
-                      <img
-                        src={linkPreview.logo}
-                        className="w-4 h-4 rounded-sm"
-                      />
-                    )}
-                    <span className="text-[11px] text-gray-500 dark:text-gray-400">
-                      {new URL(linkPreview.url).hostname}
-                    </span>
-                  </div>
+                {linkPreview.url && (
+                   <div className="flex items-center gap-2 mt-2">
+                   {linkPreview.logo && (
+                     <img
+                       src={linkPreview.logo}
+                       className="w-4 h-4 rounded-sm"
+                     />
+                   )}
+                   <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                     {new URL(linkPreview.url).hostname}
+                   </span>
+                 </div>
+                )}
+              </div>
+
+              {/* Derecha: Imagen */}
+              {linkPreview.image && (
+                <div className="w-30 md:w-44 h-25  shrink-0 bg-gray-200 dark:bg-neutral-800 overflow-hidden">{/**md:h-24 */}
+                  <img
+                    src={linkPreview.image}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-              </a>
-          
+              )}
+            </a>
             </div>
           )}
 
@@ -372,7 +388,9 @@ const CreatePost = () => {
                     ? "opacity-50 cursor-not-allowed"
                     : ""
                 }`}
-                title={previews.length >= 4 ? "Máximo 4 imágenes" : "subir imagen"}
+                title={
+                  previews.length >= 4 ? "Máximo 4 imágenes" : "subir imagen"
+                }
               >
                 <Image size={20} />
                 <input
@@ -419,7 +437,7 @@ const CreatePost = () => {
                 </button>
 
                 {showEmojiPicker && (
-                  <div className="absolute z-50 mt-5 -left-35 md:left-0">
+                  <div className="absolute z-50 mt-5 -left-35 md:left-0 mb-30">
                     {" "}
                     {/**-right-45 */}
                     <EmojiPicker
