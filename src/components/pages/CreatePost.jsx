@@ -8,7 +8,7 @@ import { usePostState } from "../../hooks/usePostState"; // 👈 Nuevo Hook de E
 import { useLinkPreview } from "../../hooks/useLinkPreview2"; // 👈 Nuevo Hook de Preview
 import { usePostCreation } from "../../hooks/usePostCreation"; // 👈 Nuevo Hook de Creación
 import LinkPreviewCard from "../ui/createPost/LinkPreviewCard"; // 👈 Nuevo Componente
-import PostMediaGrid from "../ui/CreatePost/PostMediaGrid"; // 👈 Nuevo Componente
+import PostMediaGrid from "../ui/createPost/PostMediaGrid"; // 👈 Nuevo Componente
 
 const CreatePost = () => {
   const { user } = useAuth();
