@@ -1,6 +1,60 @@
 import React from "react";
 
 const HomeLayout = () => {
+  const [urlMeta, setUrlMeta] = useState(null);
+  const [linkUrl, setLinkUrl] = useState(null);
+  const scrollContainerRef = useRef(null);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+    // Mínima distancia para considerar un swipe
+    const minSwipeDistance = 50;
+
+    const onTouchStart = (e) => {
+      setTouchEnd(null);
+      setTouchStart(e.targetTouches[0].clientX);
+    };
+  
+    const onTouchMove = (e) => {
+      setTouchEnd(e.targetTouches[0].clientX);
+    };
+  
+    const onTouchEnd = () => {
+      if (!touchStart || !touchEnd) return;
+  
+      const distance = touchStart - touchEnd;
+      const isLeftSwipe = distance > minSwipeDistance;
+      const isRightSwipe = distance < -minSwipeDistance;
+  
+      if (isLeftSwipe && currentIndex < images.length - 1) {
+        goToNext();
+      }
+      if (isRightSwipe && currentIndex > 0) {
+        goToPrevious();
+      }
+    };
+    const goToSlide = (index) => {
+      setCurrentIndex(index);
+    };
+
+    useEffect(() => {
+      const url = extractFirstUrl(post.content);
+      if (!url) return;
+  
+      setLinkUrl(url);
+      const fetchMetadata = async () => {
+        try {
+          const { data, error } = await supabaseClient.functions.invoke(
+            "hyper-task",
+            { body: { url } }
+          );
+          if (!error) setUrlMeta(data);
+        } catch (e) {
+          console.error(e);
+        }
+      };
+  
+      fetchMetadata();
+    }, [post.content]);
   return (
     <div className="min-h-screen bg-white dark:bg-black transition duration-300">
       <Header />

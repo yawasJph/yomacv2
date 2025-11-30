@@ -10,6 +10,7 @@ export const usePostsInfiniteQuery = () => {
         `
         id,
         content,
+        og_data,
         created_at,
         profiles(full_name, avatar),
         post_images(id, post_id, image_url)

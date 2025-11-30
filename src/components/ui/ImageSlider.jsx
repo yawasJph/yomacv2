@@ -16,29 +16,14 @@ import { timeAgoLong } from "../utils/timeAgoLong";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import UserHoverCard from "../utils/UserHoverCard";
 
-import { supabaseClient } from "../../supabase/supabaseClient";
-import LinkPreview from "../../og/LinkPreview ";
-
 const ImageSlider = ({ post, images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-  const scrollContainerRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const textRef = useRef(null);
   const [expanded, setExpanded] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
-  const [urlMeta, setUrlMeta] = useState(null);
-  const [linkUrl, setLinkUrl] = useState(null);
-
+ 
   const isMobile = useIsMobile();
-
-  // Detectar primer URL
-  const extractFirstUrl = (text) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const match = text.match(urlRegex);
-    return match ? match[0] : null;
-  };
 
   // Renderizar texto con los links transformados en <a>
   const renderTextWithLinks = (text) => {
@@ -60,27 +45,6 @@ const ImageSlider = ({ post, images }) => {
     );
   };
 
-  useEffect(() => {
-    const url = extractFirstUrl(post.content);
-    if (!url) return;
-
-    setLinkUrl(url);
-    const fetchMetadata = async () => {
-      try {
-        const { data, error } = await supabaseClient.functions.invoke(
-          "hyper-task",
-          { body: { url } }
-        );
-        if (!error) setUrlMeta(data);
-        console.log(data);
-      } catch (e) {
-        console.error(e);
-      }
-    };
-
-    fetchMetadata();
-  }, [post.content]);
-
   // Detecta automáticamente si el texto está siendo truncado
   useEffect(() => {
     const el = textRef.current;
@@ -90,32 +54,6 @@ const ImageSlider = ({ post, images }) => {
     setIsTruncated(el.scrollHeight > el.clientHeight);
   }, [post.content]);
 
-  // Mínima distancia para considerar un swipe
-  const minSwipeDistance = 50;
-
-  const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe && currentIndex < images.length - 1) {
-      goToNext();
-    }
-    if (isRightSwipe && currentIndex > 0) {
-      goToPrevious();
-    }
-  };
 
   const goToNext = () => {
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
@@ -123,10 +61,6 @@ const ImageSlider = ({ post, images }) => {
 
   const goToPrevious = () => {
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  };
-
-  const goToSlide = (index) => {
-    setCurrentIndex(index);
   };
 
   const openModal = (index) => {
@@ -262,43 +196,65 @@ const ImageSlider = ({ post, images }) => {
 
           {/* LINK PREVIEW CARD */}
 
-          {urlMeta && linkUrl && (
-            <LinkPreview url={linkUrl} />
-            // <a
-            //   href={urlMeta?.url || linkUrl}
-            //   target="_blank"
-            //   rel="noopener noreferrer"
-            //   className="block border rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-900
-            //    hover:bg-gray-200 dark:hover:bg-gray-800 transition mb-4"
-            // >
-            //   {/* Imagen OG */}
-            //   {urlMeta.image && (
-            //     <img
-            //       src={urlMeta.image}
-            //       className="w-full h-52 object-cover border-b dark:border-gray-800"
-            //     />
-            //   )}
-
-            //   {/* Texto */}
-            //   <div className="p-3">
-            //     <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-1 line-clamp-2">
-            //       {urlMeta.title || "Ver enlace"}
-            //     </h3>
-
-            //     {urlMeta.description && (
-            //       <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2">
-            //         {urlMeta.description}
-            //       </p>
-            //     )}
-
-            //     {urlMeta.site && (
-            //       <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">
-            //         {urlMeta.site}
-            //       </p>
-            //     )}
-            //   </div>
-            // </a>
+          {post.og_data && (
+             
+             <a
+               href={post.og_data.url}
+               target="_blank"
+               rel="noopener noreferrer"
+               className="flex w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 mb-4"
+             >
+               {/* Izquierda: Texto */}
+               <div className="flex-1 p-3 flex flex-col justify-center">
+                 {post.og_data.publisher && (
+                   <p className="text-[10px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1 line-clamp-1">
+                     {post.og_data.publisher}
+                   </p>
+                 )}
+   
+                 {post.og_data.title && (
+                   <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight line-clamp-1">
+                     {post.og_data.title}
+                   </h3>
+                 )}
+   
+                 {post.og_data.description && (
+                   <p className="text-gray-600 dark:text-gray-300 text-xs line-clamp-2 mt-1">
+                     {post.og_data.description}
+                   </p>
+                 )}
+   
+                 {post.og_data.url && (
+                   <div className="flex items-center gap-2 mt-2">
+                     {post.og_data.logo && (
+                       <img
+                         src={post.og_data.logo}
+                         className="w-4 h-4 rounded-sm"
+                       />
+                     )}
+                     <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                       {new URL(post.og_data.url).hostname}
+                     </span>
+                   </div>
+                 )}
+               </div>
+   
+               {/* Derecha: Imagen */}
+               {post.og_data.image && (
+                 <div className="w-30 md:w-44 min-h-24 shrink-0 bg-gray-200 dark:bg-neutral-800 overflow-hidden">
+                   {/**md:h-24 */}
+                   <img
+                     src={post.og_data.image}
+                     alt="Preview"
+                     className="w-full h-full object-cover"
+                   />
+                 </div>
+               )}
+             </a>
+           
           )}
+
+         
 
           {renderImageGrid(images)}
           {/* IMAGENES EN GRID  */}

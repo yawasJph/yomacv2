@@ -74,3 +74,10 @@
       )}
     </div>
   )}
+
+    // Detectar primer URL
+    const extractFirstUrl = (text) => {
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      const match = text.match(urlRegex);
+      return match ? match[0] : null;
+    };

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Image, X, Globe, ImagePlay, Eye, EyeClosed } from "lucide-react";
+import { Image, X, ImagePlay} from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import { toast } from "sonner";
 import EmojiPicker from "emoji-picker-react";
 import { Smile } from "lucide-react";
 import GifPicker from "../utils/GifPicker";
-import { useIsMobile } from "../../hooks/useIsMobile";
+
 
 const CreatePost = () => {
   const { user } = useAuth();
@@ -15,11 +15,11 @@ const CreatePost = () => {
   const [gifUrls, setGifUrls] = useState([]); // GIFs de Tenor
   const [previews, setPreviews] = useState([]); // preview mixto
   const [loading, setLoading] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showGifPicker, setShowGifPicker] = useState(false);
   const [linkPreview, setLinkPreview] = useState(null);
   const [linkPreviewClosed, setLinkPreviewClosed] = useState(false);
+
 
   const handleCloseLinkPreview = () => {
     setLinkPreview(null);
@@ -54,7 +54,10 @@ const CreatePost = () => {
     try {
       const res = await fetch(`https://api.microlink.io/?url=${url}`);
       const data = await res.json();
-      console.log(data);
+      // const { data, error } = await supabaseClient.functions.invoke(
+      //   "og",
+      //   { body: { url } }
+      // );
       if (data?.data) {
         setLinkPreview({
           url,
@@ -62,13 +65,15 @@ const CreatePost = () => {
           description: data.data.description,
           image: data.data.image?.url,
           logo: data.data.logo?.url,
+          publisher: data.data?.publisher
         });
+        
       }
     } catch (error) {
       console.error("Error cargando link preview:", error);
     }
   };
-
+  console.log(linkPreview)
   // Agregar emoji al texto
   const addEmoji = (emojiData) => {
     const emoji = emojiData.emoji;
@@ -138,6 +143,7 @@ const CreatePost = () => {
         .insert({
           user_id: user.id,
           content: content,
+          og_data: linkPreview 
         })
         .select("id")
         .single();
@@ -195,7 +201,6 @@ const CreatePost = () => {
       });
       setFiles([]);
       setPreviews([]);
-      setShowPreview(false);
       setGifUrls([]);
       setLinkPreviewClosed(false);
       setLinkPreview(null);
@@ -270,6 +275,7 @@ const CreatePost = () => {
       </div>
     );
   };
+
 
   return (
     <div className="bg-white dark:bg-black border-b border-emerald-500/10 dark:border-emerald-500/20 px-4 py-4 sm:px-6">
@@ -395,9 +401,9 @@ const CreatePost = () => {
           >
             {/* Izquierda: Texto */}
             <div className="flex-1 p-3 flex flex-col justify-center">
-              {linkPreview.site && (
+              {linkPreview.publisher && (
                 <p className="text-[10px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1 line-clamp-1">
-                  {linkPreview.site}
+                  {linkPreview.publisher}
                 </p>
               )}
 
@@ -430,7 +436,7 @@ const CreatePost = () => {
 
             {/* Derecha: Imagen */}
             {linkPreview.image && (
-              <div className="w-30 md:w-44 h-25  shrink-0 bg-gray-200 dark:bg-neutral-800 overflow-hidden">
+              <div className="w-30 md:w-44 min-h-24  shrink-0 bg-gray-200 dark:bg-neutral-800 overflow-hidden">
                 {/**md:h-24 */}
                 <img
                   src={linkPreview.image}
@@ -445,7 +451,7 @@ const CreatePost = () => {
 
       {/* Imágenes seleccionadas */}
       {previews.length > 0 && (
-        <div className="mt-3">
+        <div className="mt-8">
           {renderImageGrid(previews)}
 
           {/* Contador y botón para eliminar todas */}

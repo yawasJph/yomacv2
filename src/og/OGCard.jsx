@@ -1,10 +1,7 @@
 import React from "react";
-import { useIsMobile } from "../hooks/useIsMobile";
 
 const OGCard = ({ meta, url }) => {
-
-    const {isMobile} = useIsMobile();
-    
+ 
   return (
     <a
       href={url}
