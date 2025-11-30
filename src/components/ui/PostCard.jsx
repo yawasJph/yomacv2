@@ -2,7 +2,6 @@ import ImageSlider from "./ImageSlider.jsx";
 
 
 const PostCard = ({ posts }) => {
-  console.log(posts)
   return (
     <div className="divide-y divide-emerald-500/10 dark:divide-emerald-500/20">
       {posts?.map((post) => {

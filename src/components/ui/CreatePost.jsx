@@ -1,79 +1,97 @@
-import React, { useState } from "react";
-import { Image, X, ImagePlay} from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Image, X, ImagePlay } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import { toast } from "sonner";
 import EmojiPicker from "emoji-picker-react";
 import { Smile } from "lucide-react";
 import GifPicker from "../utils/GifPicker";
-
+import { useDebounce } from "../../hooks/useDebounce";
+import ImageGrid from "./ImageGrid";
+import PostImages from "./PostImages";
 
 const CreatePost = () => {
   const { user } = useAuth();
   const [content, setContent] = useState("");
+
   const [files, setFiles] = useState([]); // imágenes reales
   const [gifUrls, setGifUrls] = useState([]); // GIFs de Tenor
   const [previews, setPreviews] = useState([]); // preview mixto
   const [loading, setLoading] = useState(false);
+
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showGifPicker, setShowGifPicker] = useState(false);
   const [linkPreview, setLinkPreview] = useState(null);
   const [linkPreviewClosed, setLinkPreviewClosed] = useState(false);
 
+  // Debounce del contenido para detectar URLs solo cuando el usuario pausa
+  const debouncedContent = useDebounce(content, 800);
+
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+  useEffect(() => {
+    // 1. Extraer URL del contenido debounced (con retraso)
+    const urls = debouncedContent.match(urlRegex);
+    const foundUrl = urls ? urls[0] : null;
+
+    // Si no hay URL, o el usuario cerró el preview manualmente, no hacer nada
+    if (!foundUrl || linkPreviewClosed) {
+      if (!foundUrl) setLinkPreview(null); // Limpiar si borró el link
+      return;
+    }
+
+    // Si la URL es la misma que ya estamos mostrando, no recargar
+    if (linkPreview?.url === foundUrl) return;
+
+    // Función de fetch
+    const fetchPreview = async () => {
+      setIsPreviewLoading(true);
+      try {
+        const res = await fetch(
+          `https://api.microlink.io/?url=${encodeURIComponent(foundUrl)}`
+        );
+
+        if (!res.ok) throw new Error("Error en request");
+
+        const data = await res.json();
+
+        if (data.status === "success" && data.data) {
+          setLinkPreview({
+            url: foundUrl, // Guardamos la URL original detectada
+            title: data.data.title,
+            description: data.data.description,
+            image: data.data.image?.url,
+            logo: data.data.logo?.url,
+            publisher: data.data.publisher,
+          });
+        }
+      } catch (error) {
+        console.error("Microlink error:", error);
+        // Opcional: setLinkPreview(null) si quieres ocultarlo al fallar
+      } finally {
+        setIsPreviewLoading(false);
+      }
+    };
+
+    fetchPreview();
+  }, [debouncedContent, linkPreviewClosed]);
 
   const handleCloseLinkPreview = () => {
     setLinkPreview(null);
     setLinkPreviewClosed(true); // marca que el usuario lo cerró manualmente
   };
 
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-
-  const handleContentChange = async (e) => {
+  const handleContentChange = (e) => {
     const text = e.target.value;
     setContent(text);
 
-    const urls = text.match(urlRegex);
-
-    // Si no hay URL → borrar preview y permitir mostrarlo otra vez
-    if (!urls) {
-      setLinkPreview(null);
+    // Si el usuario borra todo el texto, reseteamos el bloqueo manual
+    if (!text.trim()) {
       setLinkPreviewClosed(false);
-      return;
-    }
-
-    // Si el usuario cerró manualmente el preview, no volver a mostrarlo
-    if (linkPreviewClosed) return;
-
-    if (!urls) {
-      setLinkPreview(null);
-      return;
-    }
-
-    const url = urls[0];
-
-    try {
-      const res = await fetch(`https://api.microlink.io/?url=${url}`);
-      const data = await res.json();
-      // const { data, error } = await supabaseClient.functions.invoke(
-      //   "og",
-      //   { body: { url } }
-      // );
-      if (data?.data) {
-        setLinkPreview({
-          url,
-          title: data.data.title,
-          description: data.data.description,
-          image: data.data.image?.url,
-          logo: data.data.logo?.url,
-          publisher: data.data?.publisher
-        });
-        
-      }
-    } catch (error) {
-      console.error("Error cargando link preview:", error);
     }
   };
-  console.log(linkPreview)
+
   // Agregar emoji al texto
   const addEmoji = (emojiData) => {
     const emoji = emojiData.emoji;
@@ -143,7 +161,7 @@ const CreatePost = () => {
         .insert({
           user_id: user.id,
           content: content,
-          og_data: linkPreview 
+          og_data: linkPreview,
         })
         .select("id")
         .single();
@@ -276,7 +294,6 @@ const CreatePost = () => {
     );
   };
 
-
   return (
     <div className="bg-white dark:bg-black border-b border-emerald-500/10 dark:border-emerald-500/20 px-4 py-4 sm:px-6">
       <div className="flex gap-3">
@@ -374,7 +391,11 @@ const CreatePost = () => {
 
             <button
               onClick={handleSubmit}
-              disabled={loading || (!content.trim() && previews.length === 0)}
+              disabled={
+                loading ||
+                (!content.trim() && previews.length === 0) ||
+                isPreviewLoading
+              }
               className="px-5 py-2 bg-emerald-600 dark:bg-emerald-500 text-white rounded-full hover:bg-emerald-700 dark:hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium text-sm"
             >
               {loading ? "Publicando..." : "Publicar"}
@@ -383,16 +404,29 @@ const CreatePost = () => {
         </div>
       </div>
 
-      {/* LINK PREVIEW */}
-      {linkPreview && (
-        <div className="relative mt-8">
-          {/* Botón cerrar */}
+      {/* --- SECCIÓN LINK PREVIEW MEJORADA --- */}
+
+      {/* Loader de Preview */}
+      {isPreviewLoading && (
+        <div className="mt-4 p-3 border border-gray-100 dark:border-neutral-800 rounded-xl flex items-center gap-3 animate-pulse">
+          <div className="h-16 w-16 bg-gray-200 dark:bg-neutral-800 rounded-md"></div>
+          <div className="flex-1 space-y-2">
+            <div className="h-3 bg-gray-200 dark:bg-neutral-800 rounded w-3/4"></div>
+            <div className="h-3 bg-gray-200 dark:bg-neutral-800 rounded w-1/2"></div>
+          </div>
+        </div>
+      )}
+
+      {/* Tarjeta de Preview (Solo si no está cargando y hay datos) */}
+      {!isPreviewLoading && linkPreview && (
+        <div className="relative mt-8 group">
           <button
             onClick={handleCloseLinkPreview}
-            className="absolute top-2 right-2 bg-black/30 p-1 text-white rounded-full z-20"
+            className="absolute -top-2 -right-2 bg-gray-900 text-white p-1 rounded-full z-20 shadow-md lg:opacity-0 group-hover:opacity-100 transition-opacity"
           >
-            <X size={14} />
+            <X size={12} />
           </button>
+
           <a
             href={linkPreview.url}
             target="_blank"
@@ -436,7 +470,7 @@ const CreatePost = () => {
 
             {/* Derecha: Imagen */}
             {linkPreview.image && (
-              <div className="w-30 md:w-44 min-h-24  shrink-0 bg-gray-200 dark:bg-neutral-800 overflow-hidden">
+              <div className="w-30 md:w-44 min-h-24 shrink-0 bg-gray-200 dark:bg-neutral-800 overflow-hidden">
                 {/**md:h-24 */}
                 <img
                   src={linkPreview.image}
@@ -446,12 +480,15 @@ const CreatePost = () => {
               </div>
             )}
           </a>
+          
         </div>
       )}
 
       {/* Imágenes seleccionadas */}
       {previews.length > 0 && (
         <div className="mt-8">
+
+          <ImageGrid images={previews} />
           {renderImageGrid(previews)}
 
           {/* Contador y botón para eliminar todas */}

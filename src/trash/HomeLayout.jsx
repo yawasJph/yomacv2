@@ -55,6 +55,43 @@ const HomeLayout = () => {
   
       fetchMetadata();
     }, [post.content]);
+
+    const fetchPreview = async () => {
+      setIsPreviewLoading(true);
+      try {
+        // CAMBIO AQUI: Usamos supabaseClient en vez de fetch directo a Microlink
+        const { data, error } = await supabaseClient.functions.invoke(
+          "og",
+          {
+            body: { url: foundUrl },
+          }
+        );
+
+        if (error) throw error;
+
+        // Verificamos si data existe (la estructura que devuelve nuestra Edge Function)
+        if (data && data.status === "success") {
+          setLinkPreview({
+            url: foundUrl,
+            title: data.data.title,
+            description: data.data.description,
+
+            // Nota: En la Edge Function devolví objetos { url: "..." } para image y logo
+            // para imitar la estructura anidada de Microlink si así lo prefieres,
+            // o puedes simplificarlo arriba. Aquí asumo la estructura del código anterior:
+            image: data.data.image?.url,
+            logo: data.data.logo?.url,
+            publisher: data.data.publisher,
+          });
+        }
+      } catch (error) {
+        console.error("Preview error:", error);
+      } finally {
+        setIsPreviewLoading(false);
+      }
+    };
+
+    
   return (
     <div className="min-h-screen bg-white dark:bg-black transition duration-300">
       <Header />
@@ -161,6 +198,7 @@ const HomeLayout = () => {
         </div>
       )}
     </div>
+    
   );
 };
 

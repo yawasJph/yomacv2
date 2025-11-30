@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Header from "./Header";
 import LeftSidebar from "./LeftSidebar";
 import RigthSidebar from "./RigthSidebar";

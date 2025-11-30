@@ -15,6 +15,7 @@ import { timeAgoTiny } from "../utils/timeagoTiny";
 import { timeAgoLong } from "../utils/timeAgoLong";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import UserHoverCard from "../utils/UserHoverCard";
+import PostImages from "./PostImages";
 
 const ImageSlider = ({ post, images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -22,11 +23,12 @@ const ImageSlider = ({ post, images }) => {
   const textRef = useRef(null);
   const [expanded, setExpanded] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
- 
+
   const isMobile = useIsMobile();
 
   // Renderizar texto con los links transformados en <a>
   const renderTextWithLinks = (text) => {
+    if (!text) return null;
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     return text.split(urlRegex).map((part, i) =>
       urlRegex.test(part) ? (
@@ -45,15 +47,11 @@ const ImageSlider = ({ post, images }) => {
     );
   };
 
-  // Detecta automáticamente si el texto está siendo truncado
   useEffect(() => {
     const el = textRef.current;
     if (!el) return;
-
-    // Si el texto real es mayor al área visible => truncado
     setIsTruncated(el.scrollHeight > el.clientHeight);
   }, [post.content]);
-
 
   const goToNext = () => {
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
@@ -70,56 +68,13 @@ const ImageSlider = ({ post, images }) => {
 
   const closeModal = () => setIsModalOpen(false);
 
-  // Resetear índice cuando cambian las imágenes
   useEffect(() => {
     setCurrentIndex(0);
   }, [images.length]);
 
-  // Función para renderizar grid de imágenes basado en la cantidad
-  const renderImageGrid = (images, isPreview = false) => {
-    if (images.length === 0) return null;
-
-    const gridClass =
-      {
-        1: "grid-cols-1",
-        2: "grid-cols-2 gap-2",
-        3: "grid-cols-2 gap-2",
-        4: "grid-cols-2 gap-2",
-        5: "grid-cols-3 gap-2",
-        6: "grid-cols-3 gap-2",
-      }[images.length] || "grid-cols-2 gap-2";
-
-    return (
-      <div className={`grid ${gridClass} mt-3`}>
-        {images.map((preview, index) => (
-          <div
-            key={index}
-            className={`relative ${
-              images.length === 3 && index === 0 ? "col-span-2 row-span-1" : ""
-            } ${images.length === 4 && index >= 2 ? "col-span-1" : ""}`}
-          >
-            <img
-              src={preview}
-              alt={`Preview ${index + 1}`}
-              className={`w-full rounded-lg object-cover ${
-                images.length === 1
-                  ? "max-h-96"
-                  : images.length === 2
-                  ? "h-48"
-                  : images.length === 3 && index === 0
-                  ? "h-64"
-                  : "h-32"
-              } ${isPreview ? "cursor-default" : "cursor-pointer"}`}
-            />
-            
-          </div>
-        ))}
-      </div>
-    );
-  };
 
   return (
-    <article className="px-4 py-4 sm:px-6 hover:bg-gray-50/50 dark:hover:bg-gray-900/20 transition-colors">
+    <article className="px-4 py-4 sm:px-6 hover:bg-gray-50/50 dark:hover:bg-gray-900/20 transition-colors border-b border-gray-100 dark:border-gray-800">
       <div className="flex gap-3 items-start">
         {/* Avatar */}
         <img
@@ -132,10 +87,10 @@ const ImageSlider = ({ post, images }) => {
         <div className="flex-1 min-w-0">
           {/* Header */}
           <div className="flex justify-between items-start mb-2">
-            <div className="flex items-center gap-2 justify-center">
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base wrap-break-word">
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base">
                 {isMobile ? (
-                  <span className="">{post.profiles.full_name}</span>
+                  <span>{post.profiles.full_name}</span>
                 ) : (
                   <UserHoverCard user={post.profiles}>
                     <span className="hover:underline cursor-pointer">
@@ -147,12 +102,7 @@ const ImageSlider = ({ post, images }) => {
 
               <p
                 className="text-sm text-gray-500 dark:text-gray-400"
-                title={new Date(post.created_at).toLocaleString("es-PE", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  day: "2-digit",
-                  month: "short",
-                })}
+                title={new Date(post.created_at).toLocaleString("es-PE")}
               >
                 {isMobile
                   ? timeAgoTiny(post.created_at)
@@ -160,215 +110,91 @@ const ImageSlider = ({ post, images }) => {
               </p>
             </div>
 
-            <button className="p-1 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition cursor-pointer">
+            <button className="p-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition">
               <MoreHorizontal size={18} />
             </button>
           </div>
 
           {/* Texto */}
-          {/* Texto */}
           <p
             ref={textRef}
-            className={`text-base text-gray-900 dark:text-gray-100 mb-3 whitespace-pre-wrap break-all transition-all duration-200 ${
+            className={`text-base text-gray-900 dark:text-gray-100 mb-2 whitespace-pre-wrap break-words ${
               expanded ? "line-clamp-none" : "line-clamp-6"
             }`}
           >
             {renderTextWithLinks(post.content)}
           </p>
 
-          {/* Botón solo si realmente se truncó */}
           {isTruncated && (
             <button
               onClick={() => setExpanded(!expanded)}
-              className="flex items-center gap-1 text-blue-500 dark:text-blue-400 hover:underline font-medium pb-3"
+              className="flex items-center gap-1 text-blue-500 dark:text-blue-400 hover:underline font-medium pb-2 text-sm"
             >
               {expanded ? (
-                <>
-                  Ver menos <ChevronUp size={18} />
-                </>
+                <>Ver menos <ChevronUp size={16} /></>
               ) : (
-                <>
-                  Ver más <ChevronDown size={18} />
-                </>
+                <>Ver más <ChevronDown size={16} /></>
               )}
             </button>
           )}
 
           {/* LINK PREVIEW CARD */}
-
           {post.og_data && (
-             
-             <a
-               href={post.og_data.url}
-               target="_blank"
-               rel="noopener noreferrer"
-               className="flex w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 mb-4"
-             >
-               {/* Izquierda: Texto */}
-               <div className="flex-1 p-3 flex flex-col justify-center">
-                 {post.og_data.publisher && (
-                   <p className="text-[10px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1 line-clamp-1">
-                     {post.og_data.publisher}
-                   </p>
-                 )}
-   
-                 {post.og_data.title && (
-                   <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight line-clamp-1">
-                     {post.og_data.title}
-                   </h3>
-                 )}
-   
-                 {post.og_data.description && (
-                   <p className="text-gray-600 dark:text-gray-300 text-xs line-clamp-2 mt-1">
-                     {post.og_data.description}
-                   </p>
-                 )}
-   
-                 {post.og_data.url && (
-                   <div className="flex items-center gap-2 mt-2">
-                     {post.og_data.logo && (
-                       <img
-                         src={post.og_data.logo}
-                         className="w-4 h-4 rounded-sm"
-                       />
-                     )}
-                     <span className="text-[11px] text-gray-500 dark:text-gray-400">
-                       {new URL(post.og_data.url).hostname}
-                     </span>
-                   </div>
-                 )}
-               </div>
-   
-               {/* Derecha: Imagen */}
-               {post.og_data.image && (
-                 <div className="w-30 md:w-44 min-h-24 shrink-0 bg-gray-200 dark:bg-neutral-800 overflow-hidden">
-                   {/**md:h-24 */}
-                   <img
-                     src={post.og_data.image}
-                     alt="Preview"
-                     className="w-full h-full object-cover"
-                   />
-                 </div>
-               )}
-             </a>
-           
-          )}
-
-         
-
-          {renderImageGrid(images)}
-          {/* IMAGENES EN GRID  */}
-          {images.length > 0 && (
-            <div className="mb-3">
-              {/* 1 IMAGEN – Se muestra grande como ahora */}
-              {images.length === 1 && (
-                <img
-                  src={images[0].image_url}
-                  className="w-full max-h-[400px] object-cover rounded-xl cursor-pointer"
-                  onClick={() => openModal(0)}
-                />
-              )}
-
-              {/* 2 A 4 IMÁGENES – GRID AL ESTILO CREATEPOST */}
-              {images.length > 1 && images.length <= 4 && (
-                <div className="grid grid-cols-2 gap-1">
-                  {images.map((img, index) => (
-                    <div key={index} className="relative">
+            <a
+              href={post.og_data.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 mb-4"
+            >
+              <div className="flex-1 p-3 flex flex-col justify-center">
+                {post.og_data.publisher && (
+                  <p className="text-[10px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1 line-clamp-1">
+                    {post.og_data.publisher}
+                  </p>
+                )}
+                {post.og_data.title && (
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight line-clamp-1">
+                    {post.og_data.title}
+                  </h3>
+                )}
+                {post.og_data.description && (
+                  <p className="text-gray-600 dark:text-gray-300 text-xs line-clamp-2 mt-1">
+                    {post.og_data.description}
+                  </p>
+                )}
+                {post.og_data.url && (
+                  <div className="flex items-center gap-2 mt-2">
+                    {post.og_data.logo && (
                       <img
-                        src={img.image_url}
-                        className="w-full h-40 object-cover rounded-xl cursor-pointer"
-                        onClick={() => openModal(index)}
+                        src={post.og_data.logo}
+                        className="w-4 h-4 rounded-sm"
+                        alt="logo"
                       />
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* MÁS DE 4 IMÁGENES – GRID LIMITADO + OVERLAY */}
-              {images.length > 4 && (
-                <div className="grid grid-cols-2 gap-2 relative">
-                  {images.slice(0, 4).map((img, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={img.image_url}
-                        className="w-full h-40 object-cover rounded-xl cursor-pointer"
-                        onClick={() => openModal(index)}
-                      />
-
-                      {/* Overlay en la última imagen */}
-                      {index === 3 && (
-                        <div
-                          className="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center text-white text-2xl font-bold"
-                          onClick={() => openModal(3)}
-                        >
-                          +{images.length - 4}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* 🚀 MODAL FULLSCREEN */}
-          <FullscreenModal
-            isOpen={isModalOpen}
-            onClose={closeModal}
-            images={images}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-          >
-            {isModalOpen && (
-              <div
-                className="fixed inset-0 bg-black/80 backdrop-blur-md flex justify-center items-center z-9999"
-                onClick={closeModal}
-              >
-                {/* Contenedor */}
-                <div
-                  className="relative w-full h-full flex items-center justify-center"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {/* Imagen fullscreen */}
-                  <img
-                    src={images[currentIndex].image_url}
-                    className="max-w-full max-h-full object-contain"
-                  />
-
-                  {/* Botón cerrar */}
-                  <button
-                    onClick={closeModal}
-                    className="absolute top-5 right-5 text-white bg-black/30 hover:bg-black/70 p-2 rounded-full dark:bg-gray-600 dark:hover:bg-gray-800"
-                  >
-                    <X />
-                  </button>
-
-                  {/* Flecha izquierda */}
-                  {images.length > 1 && (
-                    <button
-                      onClick={goToPrevious}
-                      className="absolute left-5 top-1/2 -translate-y-1/2 text-white bg-black/40 hover:bg-black/70 p-3 rounded-full"
-                    >
-                      <ChevronLeft size={28} />
-                    </button>
-                  )}
-
-                  {/* Flecha derecha */}
-                  {images.length > 1 && (
-                    <button
-                      onClick={goToNext}
-                      className="absolute right-5 top-1/2 -translate-y-1/2 text-white bg-black/40 hover:bg-black/70 p-3 rounded-full"
-                    >
-                      <ChevronRight size={28} />
-                    </button>
-                  )}
-                </div>
+                    )}
+                    <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                      {new URL(post.og_data.url).hostname}
+                    </span>
+                  </div>
+                )}
               </div>
-            )}
-          </FullscreenModal>
+              {post.og_data.image && (
+                <div className="w-32 md:w-44 min-h-[96px] bg-gray-200 dark:bg-neutral-800">
+                  <img
+                    src={post.og_data.image}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+            </a>
+          )}
+
+          <PostImages images={images} onOpen={openModal}/>
+          {/* Renderizado de Imágenes UNIFICADO */}
+          
 
           {/* Acciones */}
-          <div className="flex items-center gap-6 text-gray-500 dark:text-gray-400">
+          <div className="flex items-center gap-6 text-gray-500 dark:text-gray-400 mt-3">
             <button className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors group">
               <Heart
                 size={20}
@@ -388,6 +214,57 @@ const ImageSlider = ({ post, images }) => {
           </div>
         </div>
       </div>
+
+      {/* MODAL FULLSCREEN (Fuera del flujo visual del post, pero dentro del componente) */}
+      <FullscreenModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        images={images}
+        currentIndex={currentIndex}
+        setCurrentIndex={setCurrentIndex}
+      >
+        {isModalOpen && (
+          <div
+            className="fixed inset-0 bg-black/95 backdrop-blur-sm flex justify-center items-center z-50"
+            onClick={closeModal}
+          >
+            <div
+              className="relative w-full h-full flex items-center justify-center p-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={images[currentIndex].image_url}
+                className="max-w-full max-h-[90vh] object-contain rounded-md shadow-2xl"
+                alt="Fullscreen"
+              />
+
+              <button
+                onClick={closeModal}
+                className="absolute top-4 right-4 text-white/70 hover:text-white bg-black/50 hover:bg-black/80 p-2 rounded-full transition"
+              >
+                <X size={24} />
+              </button>
+
+              {images.length > 1 && (
+                <>
+                  <button
+                    onClick={goToPrevious}
+                    className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 text-white/80 hover:text-white bg-black/40 hover:bg-black/70 p-3 rounded-full transition"
+                  >
+                    <ChevronLeft size={32} />
+                  </button>
+                  <button
+                    onClick={goToNext}
+                    className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 text-white/80 hover:text-white bg-black/40 hover:bg-black/70 p-3 rounded-full transition"
+                  >
+                    <ChevronRight size={32} />
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+      </FullscreenModal>
     </article>
   );
 };
