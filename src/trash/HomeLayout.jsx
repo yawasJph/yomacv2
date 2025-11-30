@@ -56,36 +56,32 @@ const HomeLayout = () => {
       fetchMetadata();
     }, [post.content]);
 
+    
+
     const fetchPreview = async () => {
       setIsPreviewLoading(true);
       try {
-        // CAMBIO AQUI: Usamos supabaseClient en vez de fetch directo a Microlink
-        const { data, error } = await supabaseClient.functions.invoke(
-          "og",
-          {
-            body: { url: foundUrl },
-          }
+        const res = await fetch(
+          `https://api.microlink.io/?url=${encodeURIComponent(foundUrl)}`
         );
 
-        if (error) throw error;
+        if (!res.ok) throw new Error("Error en request");
 
-        // Verificamos si data existe (la estructura que devuelve nuestra Edge Function)
-        if (data && data.status === "success") {
+        const data = await res.json();
+
+        if (data.status === "success" && data.data) {
           setLinkPreview({
-            url: foundUrl,
+            url: foundUrl, // Guardamos la URL original detectada
             title: data.data.title,
             description: data.data.description,
-
-            // Nota: En la Edge Function devolví objetos { url: "..." } para image y logo
-            // para imitar la estructura anidada de Microlink si así lo prefieres,
-            // o puedes simplificarlo arriba. Aquí asumo la estructura del código anterior:
             image: data.data.image?.url,
             logo: data.data.logo?.url,
             publisher: data.data.publisher,
           });
         }
       } catch (error) {
-        console.error("Preview error:", error);
+        console.error("Microlink error:", error);
+        // Opcional: setLinkPreview(null) si quieres ocultarlo al fallar
       } finally {
         setIsPreviewLoading(false);
       }

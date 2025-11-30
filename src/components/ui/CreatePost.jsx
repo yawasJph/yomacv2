@@ -7,8 +7,6 @@ import EmojiPicker from "emoji-picker-react";
 import { Smile } from "lucide-react";
 import GifPicker from "../utils/GifPicker";
 import { useDebounce } from "../../hooks/useDebounce";
-import ImageGrid from "./ImageGrid";
-import PostImages from "./PostImages";
 
 const CreatePost = () => {
   const { user } = useAuth();
@@ -24,7 +22,7 @@ const CreatePost = () => {
   const [showGifPicker, setShowGifPicker] = useState(false);
   const [linkPreview, setLinkPreview] = useState(null);
   const [linkPreviewClosed, setLinkPreviewClosed] = useState(false);
-
+  
   // Debounce del contenido para detectar URLs solo cuando el usuario pausa
   const debouncedContent = useDebounce(content, 800);
 
@@ -48,27 +46,30 @@ const CreatePost = () => {
     const fetchPreview = async () => {
       setIsPreviewLoading(true);
       try {
-        const res = await fetch(
-          `https://api.microlink.io/?url=${encodeURIComponent(foundUrl)}`
-        );
+        // CAMBIO AQUI: Usamos supabaseClient en vez de fetch directo a Microlink
+        const { data, error } = await supabaseClient.functions.invoke("og", {
+          body: { url: foundUrl },
+        });
 
-        if (!res.ok) throw new Error("Error en request");
+        if (error) throw error;
 
-        const data = await res.json();
-
-        if (data.status === "success" && data.data) {
+        // Verificamos si data existe (la estructura que devuelve nuestra Edge Function)
+        if (data && data.status === "success") {
           setLinkPreview({
-            url: foundUrl, // Guardamos la URL original detectada
+            url: foundUrl,
             title: data.data.title,
             description: data.data.description,
+
+            // Nota: En la Edge Function devolví objetos { url: "..." } para image y logo
+            // para imitar la estructura anidada de Microlink si así lo prefieres,
+            // o puedes simplificarlo arriba. Aquí asumo la estructura del código anterior:
             image: data.data.image?.url,
             logo: data.data.logo?.url,
             publisher: data.data.publisher,
           });
         }
       } catch (error) {
-        console.error("Microlink error:", error);
-        // Opcional: setLinkPreview(null) si quieres ocultarlo al fallar
+        console.error("Preview error:", error);
       } finally {
         setIsPreviewLoading(false);
       }
@@ -86,41 +87,41 @@ const CreatePost = () => {
     const text = e.target.value;
     setContent(text);
 
-    // Si el usuario borra todo el texto, reseteamos el bloqueo manual
+   // Si el usuario borra todo el texto, reseteamos el bloqueo manual
     if (!text.trim()) {
       setLinkPreviewClosed(false);
     }
   };
 
-  // Agregar emoji al texto
+  //Agregar emoji al texto
   const addEmoji = (emojiData) => {
     const emoji = emojiData.emoji;
     setContent((prev) => prev + emoji);
   };
 
-  // Maneja selección de múltiples imágenes
+ // Maneja selección de múltiples imágenes
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files || []);
 
-    // Validar cantidad máxima (6 imágenes)
+  //   Validar cantidad máxima (6 imágenes)
     if (files.length + selectedFiles.length > 4) {
       toast.error("Máximo 4 imágenes permitidas");
       return;
     }
 
-    // Filtrar solo imágenes
+   // Filtrar solo imágenes
     const imageFiles = selectedFiles.filter((file) =>
       file.type.startsWith("image/")
     );
 
-    // Crear previews para las nuevas imágenes
+   //  Crear previews para las nuevas imágenes
     const newPreviews = imageFiles.map((file) => URL.createObjectURL(file));
 
     setFiles((prev) => [...prev, ...imageFiles]);
     setPreviews((prev) => [...prev, ...newPreviews]);
   };
 
-  // Remover imagen específica
+ //Remover imagen específica
   const removeImage = (index) => {
     const isGif = gifUrls.includes(previews[index]);
 
@@ -250,11 +251,11 @@ const CreatePost = () => {
     const gridClass =
       {
         1: "grid-cols-1",
-        2: "grid-cols-2 gap-2",
-        3: "grid-cols-2 gap-2",
-        4: "grid-cols-2 gap-2",
-        5: "grid-cols-3 gap-2",
-        6: "grid-cols-3 gap-2",
+        2: "grid-cols-2 gap-1",
+        3: "grid-cols-2 gap-1",
+        4: "grid-cols-2 gap-1",
+        5: "grid-cols-3 gap-1",
+        6: "grid-cols-3 gap-1",
       }[images.length] || "grid-cols-2 gap-1";
 
     return (
@@ -263,7 +264,7 @@ const CreatePost = () => {
           <div
             key={index}
             className={`relative ${
-              images.length === 3 && index === 0 ? "col-span-2 row-span-2" : ""
+              images.length === 3 && index === 0 ? "col-span-1 row-span-2" : ""
             } ${images.length === 4 && index >= 2 ? "col-span-1" : ""}`}
           >
             <img
@@ -271,12 +272,12 @@ const CreatePost = () => {
               alt={`Preview ${index + 1}`}
               className={`w-full rounded-lg object-cover ${
                 images.length === 1
-                  ? "max-h-96"
+                  ? "max-h-90"
                   : images.length === 2
-                  ? "h-48"
+                  ? "h-58"
                   : images.length === 3 && index === 0
-                  ? "h-64"
-                  : "h-32"
+                  ? "h-90"
+                  : "h-45"
               } ${isPreview ? "cursor-default" : "cursor-pointer"}`}
             />
             {!isPreview && (
@@ -363,30 +364,7 @@ const CreatePost = () => {
               )}
 
               {/* Botón Emoji */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                  className="text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer p-2 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
-                  title="Agregar emoji"
-                >
-                  <Smile size={20} />
-                </button>
-
-                {showEmojiPicker && (
-                  <div className="absolute z-50 mt-3 -left-32 md:left-0">
-                    {" "}
-                    {/**-right-45 */}
-                    <EmojiPicker
-                      onEmojiClick={addEmoji}
-                      theme={
-                        document.documentElement.classList.contains("dark")
-                          ? "dark"
-                          : "light"
-                      }
-                    />
-                  </div>
-                )}
-              </div>
+             
             </div>
 
             <button
@@ -480,15 +458,13 @@ const CreatePost = () => {
               </div>
             )}
           </a>
-          
         </div>
       )}
 
       {/* Imágenes seleccionadas */}
       {previews.length > 0 && (
         <div className="mt-8">
-
-          <ImageGrid images={previews} />
+          
           {renderImageGrid(previews)}
 
           {/* Contador y botón para eliminar todas */}

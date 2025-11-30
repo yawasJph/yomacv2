@@ -3,7 +3,7 @@ import "./App.css";
 import HomeLayout from "./components/layout/HomeLayout";
 import Feed from "./components/pages/Feed";
 import Login from "./components/pages/Login";
-import CreatePost from "./components/ui/CreatePost";
+import CreatePost from "./components/pages/CreatePost";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
 import { Toaster } from "sonner";
 

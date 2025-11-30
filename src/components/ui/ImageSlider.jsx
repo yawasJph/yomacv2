@@ -118,7 +118,7 @@ const ImageSlider = ({ post, images }) => {
           {/* Texto */}
           <p
             ref={textRef}
-            className={`text-base text-gray-900 dark:text-gray-100 mb-2 whitespace-pre-wrap break-words ${
+            className={`text-base text-gray-900 dark:text-gray-100 mb-2 whitespace-pre-wrap break-all ${
               expanded ? "line-clamp-none" : "line-clamp-6"
             }`}
           >
@@ -144,7 +144,7 @@ const ImageSlider = ({ post, images }) => {
               href={post.og_data.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 mb-4"
+              className="flex w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 mb-4 mt-4"
             >
               <div className="flex-1 p-3 flex flex-col justify-center">
                 {post.og_data.publisher && (
@@ -178,7 +178,7 @@ const ImageSlider = ({ post, images }) => {
                 )}
               </div>
               {post.og_data.image && (
-                <div className="w-32 md:w-44 min-h-[96px] bg-gray-200 dark:bg-neutral-800">
+                <div className="w-auto sm:w-40 min-h-[96px] bg-gray-200 dark:bg-neutral-800">
                   <img
                     src={post.og_data.image}
                     alt="Preview"
