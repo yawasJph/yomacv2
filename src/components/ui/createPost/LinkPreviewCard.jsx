@@ -6,10 +6,10 @@ const LinkPreviewCard = ({ preview, isLoading, onClose }) => {
   if (isLoading) {
     return (
       <div className="mt-4 p-3 border border-gray-100 dark:border-neutral-800 rounded-xl flex items-center gap-3 animate-pulse">
-        <div className="h-16 w-16 bg-gray-200 dark:bg-neutral-800 rounded-md"></div>
+        <div className="skeleton h-16 w-16 bg-gray-200 dark:bg-neutral-800 rounded-md"></div>
         <div className="flex-1 space-y-2">
-          <div className="h-3 bg-gray-200 dark:bg-neutral-800 rounded w-3/4"></div>
-          <div className="h-3 bg-gray-200 dark:bg-neutral-800 rounded w-1/2"></div>
+          <div className="skeleton h-3 bg-gray-200 dark:bg-neutral-800 rounded w-3/4"></div>
+          <div className="skeleton h-3 bg-gray-200 dark:bg-neutral-800 rounded w-1/2"></div>
         </div>
       </div>
     );

@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Header from "./Header";
 import LeftSidebar from "./LeftSidebar";
 import RigthSidebar from "./RigthSidebar";
-import { Home, Search, UserPen, Bookmark, Plus } from "lucide-react";
+import { Home, Search, UserPen, Bookmark, Plus, TriangleAlertIcon, Info } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "sonner";
@@ -25,7 +25,35 @@ const HomeLayout = () => {
       navigate("create-post");
     } else {
       navigate("login");
-      toast.error("Debes iniciar sesión para crear una publicación");
+      toast.error("Debes iniciar sesión para crear una publicación", {
+       
+        
+        // ⏳ Duración del toast (por ejemplo, 6 segundos)
+        duration: 6000, 
+      
+        // 🎨 Clases CSS personalizadas para el contenedor del toast
+        // - Añadimos una sombra y un borde más sutil
+        className: "shadow-lg border-l-4 border-red-600", 
+        
+        // 🔑 Botón de Acción: "Ayuda"
+        action: {
+          label: "Ayuda",
+          onClick: () => {
+            // 💡 Lógica que se ejecuta al hacer clic en el botón
+            // Por ejemplo, puedes abrir un modal de soporte o una nueva pestaña
+            console.log("Abriendo página de soporte...");
+            toast.info("Ingresa con tu correo institucional del MAC",{
+              icon: <Info className="w-5 h-5 text-indigo-300"/>
+            });
+            // window.open('https://tudominio.com/ayuda', '_blank');
+          },
+          // Opcional: Clases CSS para el botón de acción
+          className: "bg-white text-gray-800 hover:bg-gray-100 font-semibold",
+        },
+        
+        // 🖼️ Opcional: Icono personalizado (si no te gusta el predeterminado)
+         icon: <TriangleAlertIcon className="w-5 h-5 text-red-500" /> // Asegúrate de importar el icono
+      });
     }
   };
   return (

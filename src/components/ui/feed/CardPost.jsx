@@ -7,17 +7,17 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import FullscreenModal from "./feed/FullscreenModal";
-import { timeAgoTiny } from "../utils/timeagoTiny";
-import { timeAgoLong } from "../utils/timeAgoLong";
-import { useIsMobile } from "../../hooks/useIsMobile";
-import UserHoverCard from "./feed/UserHoverCard";
-import PostImages from "./feed/PostImages";
-import OpenGraphCard from "./openGraph/OpenGraphCard";
-import ImageModal from "./feed/ImageModal";
+import FullscreenModal from "./FullscreenModal";
+import { timeAgoTiny } from "../../utils/timeagoTiny";
+import { timeAgoLong } from "../../utils/timeAgoLong";
+import { useIsMobile } from "../../../hooks/useIsMobile";
+import UserHoverCard from "./UserHoverCard";
+import PostImages from "./PostImages";
+import OpenGraphCard from "../openGraph/OpenGraphCard";
+import ImageModal from "./ImageModal";
 
-const ImageSlider = ({ post, images }) => {
- // const [currentIndex, setCurrentIndex] = useState(0);
+const CardPost = ({ post, images }) => {
+     // const [currentIndex, setCurrentIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const textRef = useRef(null);
   const [expanded, setExpanded] = useState(false);
@@ -54,12 +54,10 @@ const ImageSlider = ({ post, images }) => {
 
 
   const openModal = () => {
-   // setCurrentIndex(index);
     setIsModalOpen(true);
   };
 
   const closeModal = () => setIsModalOpen(false);
-
   return (
     <article className="px-4 py-4 sm:px-6 hover:bg-gray-50/50 dark:hover:bg-gray-900/20 transition-colors border-b border-gray-100 dark:border-gray-800">
       <div className="flex gap-3 items-start">
@@ -169,6 +167,6 @@ const ImageSlider = ({ post, images }) => {
       </FullscreenModal>
     </article>
   );
-};
+}
 
-export default ImageSlider;
+export default CardPost

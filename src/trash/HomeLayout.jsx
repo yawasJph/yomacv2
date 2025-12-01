@@ -107,6 +107,8 @@ const HomeLayout = () => {
         <RigthSidebar />
       </div>
 
+      
+
       {/* 🔹 Barra inferior móvil mejorada */}
 
       {/* 🔹 Botón de descarga visible solo en móvil */}

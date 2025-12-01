@@ -6,6 +6,7 @@ import Login from "./components/pages/Login";
 import CreatePost from "./components/pages/CreatePost";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
 import { Toaster } from "sonner";
+import { CheckIcon, ShieldAlert } from "lucide-react";
 
 function App() {
   return (
@@ -19,7 +20,11 @@ function App() {
         <Route path="login" element={<Login/>} />
         
       </Routes>
-      <Toaster/>
+      <Toaster 
+      // 🔄 Opción para que los colores de error y éxito sean más vivos
+      richColors 
+        
+   />
    </BrowserRouter>
    
   );
