@@ -84,7 +84,7 @@ const ImageSlider = ({ post, images }) => {
         />
 
         {/* Contenido */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 w-0">
           {/* Header */}
           <div className="flex justify-between items-start mb-2">
             <div className="flex items-center gap-2">
@@ -141,52 +141,52 @@ const ImageSlider = ({ post, images }) => {
           {/* LINK PREVIEW CARD */}
           {post.og_data && (
             <a
-              href={post.og_data.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 mb-4 mt-4"
-            >
-              <div className="flex-1 p-3 flex flex-col justify-center">
-                {post.og_data.publisher && (
-                  <p className="text-[10px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1 line-clamp-1">
-                    {post.og_data.publisher}
-                  </p>
-                )}
-                {post.og_data.title && (
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight line-clamp-1">
-                    {post.og_data.title}
-                  </h3>
-                )}
-                {post.og_data.description && (
-                  <p className="text-gray-600 dark:text-gray-300 text-xs line-clamp-2 mt-1">
-                    {post.og_data.description}
-                  </p>
-                )}
-                {post.og_data.url && (
-                  <div className="flex items-center gap-2 mt-2">
-                    {post.og_data.logo && (
-                      <img
-                        src={post.og_data.logo}
-                        className="w-4 h-4 rounded-sm"
-                        alt="logo"
-                      />
-                    )}
-                    <span className="text-[11px] text-gray-500 dark:text-gray-400">
-                      {new URL(post.og_data.url).hostname}
-                    </span>
-                  </div>
-                )}
-              </div>
-              {post.og_data.image && (
-                <div className="w-auto sm:w-40 min-h-[96px] bg-gray-200 dark:bg-neutral-800">
-                  <img
-                    src={post.og_data.image}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                  />
+            href={post.og_data.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 mb-4"
+          >
+            <div className="flex-1 p-3 flex flex-col justify-center">
+              {post.og_data.publisher && (
+                <p className="text-[10px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1 line-clamp-1">
+                  {post.og_data.publisher}
+                </p>
+              )}
+    
+              {post.og_data.title && (
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight line-clamp-1">
+                  {post.og_data.title}
+                </h3>
+              )}
+    
+              {post.og_data.description && (
+                <p className="text-gray-600 dark:text-gray-300 text-xs line-clamp-2 mt-1">
+                  {post.og_data.description}
+                </p>
+              )}
+    
+              {post.og_data.url && (
+                <div className="flex items-center gap-2 mt-2">
+                  {post.og_data.logo && (
+                    <img src={post.og_data.logo} className="w-4 h-4 rounded-sm" />
+                  )}
+                  <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                    {new URL(post.og_data.url).hostname}
+                  </span>
                 </div>
               )}
-            </a>
+            </div>
+    
+            {post.og_data.image && (
+              <div className="w-35 md:w-44 min-h-24 shrink-0 bg-gray-200 dark:bg-neutral-800 overflow-hidden">
+                <img
+                  src={post.og_data.image}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+          </a>
           )}
 
           <PostImages images={images} onOpen={openModal}/>
