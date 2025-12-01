@@ -18,6 +18,7 @@ import ImageModal from "./ImageModal";
 
 const CardPost = ({ post, images }) => {
      // const [currentIndex, setCurrentIndex] = useState(0);
+     const [selectedIndex, setSelectedIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const textRef = useRef(null);
   const [expanded, setExpanded] = useState(false);
@@ -53,7 +54,8 @@ const CardPost = ({ post, images }) => {
   }, [post.content]);
 
 
-  const openModal = () => {
+  const openModal = (index) => {
+    setSelectedIndex(index);
     setIsModalOpen(true);
   };
 
@@ -129,7 +131,7 @@ const CardPost = ({ post, images }) => {
           )}
           
 
-          <PostImages images={images} onOpen={openModal}/>
+          <PostImages images={images} onOpen={openModal} />
           {/* Renderizado de Imágenes UNIFICADO */}
           
 
@@ -163,7 +165,7 @@ const CardPost = ({ post, images }) => {
        // currentIndex={currentIndex}
         //setCurrentIndex={setCurrentIndex}
       >
-        {isModalOpen && (<ImageModal closeModal={closeModal} images={images}/>)}
+        {isModalOpen && (<ImageModal closeModal={closeModal} images={images} initialIndex={selectedIndex}/>)}
       </FullscreenModal>
     </article>
   );

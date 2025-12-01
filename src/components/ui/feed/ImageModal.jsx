@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
-const ImageModal = ({ images, closeModal }) => {
+const ImageModal = ({ images, closeModal, initialIndex }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const goToNext = () => {
@@ -13,7 +13,7 @@ const ImageModal = ({ images, closeModal }) => {
   };
 
   useEffect(() => {
-    setCurrentIndex(0);
+    setCurrentIndex(initialIndex);
   }, [images.length]);
 
   return (

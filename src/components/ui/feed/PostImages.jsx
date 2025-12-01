@@ -11,7 +11,7 @@ const PostImages = ({images, onOpen}) => {
           src={images[0].image_url}
           alt="Post"
           className="w-full max-h-[500px] object-cover rounded-xl cursor-pointer hover:opacity-95 transition-opacity"
-          onClick={() => onOpen()}//onOpen(0)
+          onClick={() => onOpen(0)}//onOpen(0)
         />
       </div>
     );
@@ -44,7 +44,7 @@ const PostImages = ({images, onOpen}) => {
               src={img.image_url}
               alt={`Preview ${index + 1}`}
               className={`w-full ${spanClass} object-cover rounded-xl cursor-pointer hover:opacity-95 transition-opacity`}
-              onClick={() => onOpen()}//onOpen(index)
+              onClick={() => onOpen(index)}//onOpen(index)
             />
 
             {/* Overlay para "+X imágenes" en la última foto visible (la 4ta) */}
