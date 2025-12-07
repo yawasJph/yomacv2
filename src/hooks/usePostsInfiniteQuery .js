@@ -13,7 +13,8 @@ export const usePostsInfiniteQuery = () => {
         og_data,
         created_at,
         profiles(full_name, avatar),
-        post_images(id, post_id, image_url)
+        post_images(id, post_id, image_url),
+        video
       `
       )
       .order("created_at", { ascending: false })

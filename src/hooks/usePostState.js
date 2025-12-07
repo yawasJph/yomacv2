@@ -8,16 +8,16 @@ export const usePostState = () => {
   const debouncedContent = useDebounce(content, 800);
   
   // Lógica de archivos
-  const [files, setFiles] = useState([]); // archivos File reales
-  const [gifUrls, setGifUrls] = useState([]); // URLs de GIF
-  const [previews, setPreviews] = useState([]); // Previews: URLs de File (blob) o URLs de GIF
+  const [files, setFiles] = useState([]); // Array<File>
+  const [gifUrls, setGifUrls] = useState([]); // Array<String>
   
-  // Lógica de UI/Acciones
-  const [loading, setLoading] = useState(false); // Estado de publicación
+  // ⚠️ CAMBIO PRINCIPAL: Previews ahora guarda objetos { url, type, fileRef? }
+  const [previews, setPreviews] = useState([]); 
+  
+  // Lógica de UI
+  const [loading, setLoading] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showGifPicker, setShowGifPicker] = useState(false);
-
-  // Lógica de Link Preview
   const [linkPreview, setLinkPreview] = useState(null);
   const [linkPreviewClosed, setLinkPreviewClosed] = useState(false);
 
@@ -26,11 +26,7 @@ export const usePostState = () => {
   const handleContentChange = (e) => {
     const text = e.target.value;
     setContent(text);
-
-    // Si el usuario borra todo el texto, reseteamos el bloqueo manual del link
-    if (!text.trim()) {
-      setLinkPreviewClosed(false);
-    }
+    if (!text.trim()) setLinkPreviewClosed(false);
   };
 
   const addEmoji = (emojiData) => {
@@ -44,50 +40,58 @@ export const usePostState = () => {
     }
 
     setGifUrls((prev) => [...prev, gifUrl]);
-    setPreviews((prev) => [...prev, gifUrl]);
-    setShowGifPicker(false); // Cerrar después de seleccionar
+    // Guardamos como objeto con tipo 'gif'
+    setPreviews((prev) => [...prev, { url: gifUrl, type: 'gif' }]); 
+    setShowGifPicker(false);
   };
 
   const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files || []).filter(file => file.type.startsWith("image/"));
+    // 1. Permitimos Video: Ya no filtramos solo "image/"
+    // Filtramos para asegurarnos que sean imágenes o videos válidos
+    const selectedFiles = Array.from(e.target.files || []).filter(file => 
+        file.type.startsWith("image/") || file.type.startsWith("video/")
+    );
     
     if (files.length + selectedFiles.length + gifUrls.length > 4) {
-      toast.error("Máximo 4 imágenes/GIFs permitidos");
+      toast.error("Máximo 4 archivos permitidos");
       return;
     }
     
-    const newPreviews = selectedFiles.map((file) => URL.createObjectURL(file));
+    // 2. Creamos objetos de preview inteligentes
+    const newPreviewsObjects = selectedFiles.map((file) => ({
+        url: URL.createObjectURL(file),
+        type: file.type.startsWith("video/") ? 'video' : 'image',
+        fileRef: file // Guardamos referencia al archivo original para borrar fácil después
+    }));
 
     setFiles((prev) => [...prev, ...selectedFiles]);
-    setPreviews((prev) => [...prev, ...newPreviews]);
+    setPreviews((prev) => [...prev, ...newPreviewsObjects]);
   };
 
   const removeFileOrGif = (indexToRemove) => {
-    const previewUrl = previews[indexToRemove];
-    const isGif = gifUrls.includes(previewUrl);
+    const itemToRemove = previews[indexToRemove];
 
+    // 1. Actualizar Previews
     setPreviews((prev) => prev.filter((_, i) => i !== indexToRemove));
     
-    if (isGif) {
-      // Remover de gifUrls
-      setGifUrls((prev) => prev.filter((gif) => gif !== previewUrl));
+    // 2. Limpieza profunda según el tipo
+    if (itemToRemove.type === 'gif') {
+      // Borrar de lista de GIFs
+      setGifUrls((prev) => prev.filter((url) => url !== itemToRemove.url));
     } else {
-      // Remover de files y revocar URL
-      URL.revokeObjectURL(previewUrl);
-      // Hay que encontrar el File correspondiente. Esto requiere que el orden de `files` y `previews` para archivos sea el mismo.
+      // Es File (Imagen o Video)
+      URL.revokeObjectURL(itemToRemove.url); // Liberar memoria
       
-      // Una forma más segura es usar un solo array de objetos { type: 'file'/'gif', src: '...', file: File | null }
-      // Pero manteniendo la estructura actual, asumimos que los 'files' son los primeros en 'previews' que no son GIFs.
-      const fileIndex = previews.slice(0, indexToRemove).filter(p => !gifUrls.includes(p)).length;
-
-      setFiles((prev) => prev.filter((_, i) => i !== fileIndex));
+      // Borrar del array de Files usando la referencia directa (mucho más seguro que índices)
+      if (itemToRemove.fileRef) {
+          setFiles((prev) => prev.filter((f) => f !== itemToRemove.fileRef));
+      }
     }
   };
 
   const resetForm = () => {
-    // Revocar todas las URLs de blob de archivos antes de limpiar
     previews.forEach((p) => {
-      if (!gifUrls.includes(p)) URL.revokeObjectURL(p);
+      if (p.type !== 'gif') URL.revokeObjectURL(p.url);
     });
     
     setContent("");
@@ -100,15 +104,10 @@ export const usePostState = () => {
   };
 
   return {
-    // Valores
     content, files, gifUrls, previews, loading, 
     showEmojiPicker, showGifPicker, linkPreview, linkPreviewClosed, debouncedContent,
-    
-    // Setters
     setContent, setLoading, setShowEmojiPicker, setShowGifPicker,
     setLinkPreview, setLinkPreviewClosed,
-    
-    // Handlers
     handleContentChange, addEmoji, handleFileChange, 
     handleGifSelect, removeFileOrGif, resetForm
   };

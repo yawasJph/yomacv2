@@ -1,6 +1,6 @@
 // 📄 components/CreatePost.jsx (Refactorizado)
-import React, { useEffect } from "react";
-import { Image, ImagePlay, Smile } from "lucide-react";
+import React, { useEffect, useRef } from "react";
+import { Gift, Image, ImagePlay, Smile, Video } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import EmojiPicker from "emoji-picker-react";
 import GifPicker from "../utils/GifPicker";
@@ -9,6 +9,7 @@ import { useLinkPreview } from "../../hooks/useLinkPreview2"; // 👈 Nuevo Hook
 import { usePostCreation } from "../../hooks/usePostCreation"; // 👈 Nuevo Hook de Creación
 import LinkPreviewCard from "../ui/createPost/LinkPreviewCard"; // 👈 Nuevo Componente
 import PostMediaGrid from "../ui/createPost/PostMediaGrid"; // 👈 Nuevo Componente
+import { toast } from "sonner";
 
 const CreatePost = () => {
   const { user } = useAuth();
@@ -85,9 +86,48 @@ const CreatePost = () => {
       setLoading,
     });
   };
-
+  
   const isSubmitDisabled =
     loading || isPreviewLoading || (!content.trim() && previews.length === 0);
+
+    const videoInputRef = useRef(null); // 👈 Ref para el input oculto
+
+    // 4. ✨ NUEVA LÓGICA: Validación de Video antes de pasar al Hook
+  const onVideoSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validación rápida de tamaño (ej. 50MB)
+    if (file.size > 50 * 1024 * 1024) {
+      toast.error("El video es muy pesado (Max 50MB)");
+      e.target.value = "";
+      return;
+    }
+
+    const video = document.createElement("video");
+    video.preload = "metadata";
+
+    video.onloadedmetadata = function () {
+      window.URL.revokeObjectURL(video.src);
+      const duration = video.duration;
+
+      if (duration > 15.5) { // Margen de 0.5s
+        toast.error(`Máximo 15 segundos. Tu video dura ${duration.toFixed(0)}s.`);
+        e.target.value = ""; // Limpiar input
+      } else {
+        // ✅ Si pasa la validación, se lo pasamos al hook de estado
+        handleFileChange(e); 
+      }
+    };
+
+    video.onerror = () => {
+        toast.error("Formato de video no válido");
+        e.target.value = "";
+    };
+
+    video.src = URL.createObjectURL(file);
+  };
+
 
   return (
     <div className="bg-white dark:bg-black border-b border-emerald-500/10 dark:border-emerald-500/20 px-4 py-4 sm:px-6">
@@ -131,6 +171,24 @@ const CreatePost = () => {
                   onChange={handleFileChange}
                   multiple
                   disabled={previews.length >= 4 || linkPreview}
+                />
+              </label>
+
+              {/* 2. ✨ Botón VIDEO (Nuevo) */}
+              <label
+                className={`text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition cursor-pointer p-2 rounded-full hover:bg-blue-50 dark:hover:bg-blue-950/20 ${
+                  previews.length > 0 || linkPreview ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                title="Subir video (Max 15s)"
+              >
+                <Video size={20} />
+                <input
+                  ref={videoInputRef}
+                  type="file"
+                  accept="video/mp4,video/webm,video/ogg"
+                  className="hidden"
+                  onChange={onVideoSelect} 
+                  disabled={previews.length > 0 || linkPreview} // Generalmente 1 video excluye fotos
                 />
               </label>
 

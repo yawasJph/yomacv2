@@ -17,8 +17,8 @@ import OpenGraphCard from "../openGraph/OpenGraphCard";
 import ImageModal from "./ImageModal";
 
 const CardPost = ({ post, images }) => {
-     // const [currentIndex, setCurrentIndex] = useState(0);
-     const [selectedIndex, setSelectedIndex] = useState(0);
+  // const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const textRef = useRef(null);
   const [expanded, setExpanded] = useState(false);
@@ -52,7 +52,6 @@ const CardPost = ({ post, images }) => {
     if (!el) return;
     setIsTruncated(el.scrollHeight > el.clientHeight);
   }, [post.content]);
-
 
   const openModal = (index) => {
     setSelectedIndex(index);
@@ -118,22 +117,35 @@ const CardPost = ({ post, images }) => {
               className="flex items-center gap-1 text-blue-500 dark:text-blue-400 hover:underline font-medium pb-2 text-sm"
             >
               {expanded ? (
-                <>Ver menos <ChevronUp size={16} /></>
+                <>
+                  Ver menos <ChevronUp size={16} />
+                </>
               ) : (
-                <>Ver más <ChevronDown size={16} /></>
+                <>
+                  Ver más <ChevronDown size={16} />
+                </>
               )}
             </button>
           )}
 
           {/* LINK PREVIEW CARD */}
-          {post.og_data && (
-            <OpenGraphCard og_data={post.og_data}/>
+          {post.og_data && <OpenGraphCard og_data={post.og_data} />}
+
+          {/* 2. VIDEO (Nuevo ✨) */}
+          {post.video && (
+            <div className="mt-2 rounded-xl overflow-hidden bg-black aspect-video sm:aspect-auto sm:max-h-[500px] flex justify-center items-center shadow-sm border border-gray-100 dark:border-gray-800">
+              <video
+                src={post.video}
+                controls
+                preload="metadata"
+                className="w-full h-full max-h-[500px] object-contain"
+                // poster={post.video + '#t=0.1'} // Truco opcional para generar thumbnail
+              />
+            </div>
           )}
-          
 
           <PostImages images={images} onOpen={openModal} />
           {/* Renderizado de Imágenes UNIFICADO */}
-          
 
           {/* Acciones */}
           <div className="flex items-center gap-6 text-gray-500 dark:text-gray-400 mt-3">
@@ -161,14 +173,20 @@ const CardPost = ({ post, images }) => {
       <FullscreenModal
         isOpen={isModalOpen}
         onClose={closeModal}
-       // images={images}
-       // currentIndex={currentIndex}
+        // images={images}
+        // currentIndex={currentIndex}
         //setCurrentIndex={setCurrentIndex}
       >
-        {isModalOpen && (<ImageModal closeModal={closeModal} images={images} initialIndex={selectedIndex}/>)}
+        {isModalOpen && (
+          <ImageModal
+            closeModal={closeModal}
+            images={images}
+            initialIndex={selectedIndex}
+          />
+        )}
       </FullscreenModal>
     </article>
   );
-}
+};
 
-export default CardPost
+export default CardPost;

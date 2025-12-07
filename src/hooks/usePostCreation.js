@@ -2,9 +2,6 @@
 import { toast } from "sonner";
 import { supabaseClient } from "../supabase/supabaseClient";
 
-/**
- * Hook para manejar la creación de un post, incluyendo subida de archivos.
- */
 export const usePostCreation = () => {
   
   const createPost = async ({ user, content, files, gifUrls, linkPreview, resetForm, setLoading }) => {
@@ -17,13 +14,21 @@ export const usePostCreation = () => {
     setLoading(true);
 
     try {
-      // 1️⃣ Crear el post base
+      // 1️⃣ Separar Video de Imágenes
+      // Buscamos si hay algún archivo que sea video
+      const videoFile = files.find(f => f.type.startsWith('video/'));
+      const imageFiles = files.filter(f => f.type.startsWith('image/'));
+
+      // 2️⃣ Crear el post base (INSERT inicial)
       const { data: post, error: postError } = await supabaseClient
         .from("posts")
         .insert({
           user_id: user.id,
           content: content,
           og_data: linkPreview,
+          // Nota: Aún no tenemos la URL del video, actualizaremos después de subirlo
+          // Si quisieras optimizar, podrías subir primero y luego insertar todo junto,
+          // pero necesitamos el ID del post para crear la carpeta en storage.
         })
         .select("id")
         .single();
@@ -33,38 +38,71 @@ export const usePostCreation = () => {
       const postId = post.id;
       const imageUrls = [];
 
-      // 2️⃣ Subir archivos reales
-      for (const file of files) {
-        const fileExt = file.name.split(".").pop();
-        const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      // 3️⃣ Lógica de VIDEO
+      if (videoFile) {
+        const fileExt = videoFile.name.split(".").pop() || 'mp4';
+        const fileName = `video_${crypto.randomUUID()}.${fileExt}`;
         const filePath = `post-${postId}/${fileName}`;
 
+        // Subir Video
         const { error: uploadError } = await supabaseClient.storage
-          .from("posts")
-          .upload(filePath, file, { contentType: file.type });
+          .from("posts") // Asegúrate que este bucket acepte videos
+          .upload(filePath, videoFile, { 
+            contentType: videoFile.type,
+            upsert: false
+          });
 
         if (uploadError) throw uploadError;
 
+        // Obtener URL
         const { data: urlData } = supabaseClient.storage
           .from("posts")
           .getPublicUrl(filePath);
 
-        imageUrls.push(urlData.publicUrl);
+        // ACTUALIZAR la tabla posts con la URL del video
+        const { error: updateError } = await supabaseClient
+            .from("posts")
+            .update({ video: urlData.publicUrl }) // Columna creada en el paso 1
+            .eq("id", postId);
+
+        if (updateError) throw updateError;
       }
 
-      // 3️⃣ Agregar URLs de GIFs
+      // 4️⃣ Lógica de IMÁGENES (Upload en paralelo para velocidad)
+      if (imageFiles.length > 0) {
+        const uploadPromises = imageFiles.map(async (file) => {
+            const fileExt = file.name.split(".").pop();
+            const fileName = `img_${crypto.randomUUID()}.${fileExt}`;
+            const filePath = `post-${postId}/${fileName}`;
+
+            const { error } = await supabaseClient.storage
+                .from("posts")
+                .upload(filePath, file, { contentType: file.type });
+            
+            if (error) throw error;
+
+            const { data } = supabaseClient.storage
+                .from("posts")
+                .getPublicUrl(filePath);
+            
+            return data.publicUrl;
+        });
+
+        const uploadedUrls = await Promise.all(uploadPromises);
+        imageUrls.push(...uploadedUrls);
+      }
+
+      // 5️⃣ Agregar URLs de GIFs
       imageUrls.push(...gifUrls);
 
-      // 4️⃣ Insertar URLs en la tabla post_images
+      // 6️⃣ Insertar imágenes/GIFs en la tabla post_images
       if (imageUrls.length > 0) {
         const { error: imagesError } = await supabaseClient
           .from("post_images")
           .insert(
-            imageUrls.map((url, index) => ({
+            imageUrls.map((url) => ({
               post_id: postId,
               image_url: url,
-              // Opcional: index para mantener el orden
-              //order: index, 
             }))
           );
 
@@ -72,13 +110,12 @@ export const usePostCreation = () => {
       }
 
       resetForm();
-      toast.success("¡Publicado!");
+      toast.success("¡Publicado! 🚀");
       
-      // Retornar el ID del post o los datos si es necesario actualizar la UI
       return post; 
 
     } catch (error) {
-      console.error(error);
+      console.error("Error creating post:", error);
       toast.error("Ocurrió un error al publicar");
     } finally {
       setLoading(false);

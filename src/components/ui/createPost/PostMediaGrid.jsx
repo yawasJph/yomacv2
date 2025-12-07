@@ -1,17 +1,14 @@
 // 📦 components/PostMediaGrid.jsx
 import React from "react";
-import { X } from "lucide-react";
+import { X, Play } from "lucide-react"; // Agregamos ícono Play por si quieres decorar
 
 const PostMediaGrid = ({ previews, removeFileOrGif, removeAllImages }) => {
-  if (previews.length === 0) return null;
+  if (!previews || previews.length === 0) return null;
 
-  // --- Lógica de Diseño de Grid Dinámico ---
-
+  // --- Lógica de Diseño de Grid Dinámico (Intacta) ---
   const count = previews.length;
-  let gridClass = "grid-cols-2 gap-1"; // Por defecto para 2, 3, 4
-  
-  // Altura total del contenedor, ajustada para que las columnas coincidan
-  const containerHeightClass = count > 1 ? "h-96" : "h-96"; 
+  let gridClass = "grid-cols-2 gap-1"; 
+  const containerHeightClass = count > 1 ? "h-96" : "h-auto"; // Cambio ligero: h-auto para 1 solo elemento
 
   if (count === 1) {
     gridClass = "grid-cols-1";
@@ -19,32 +16,30 @@ const PostMediaGrid = ({ previews, removeFileOrGif, removeAllImages }) => {
     gridClass = "grid-cols-2 gap-1"; 
   }
 
-  // --- JSX del Componente ---
   return (
     <div className="mt-8">
       <div className={`grid ${gridClass} ${containerHeightClass} mt-3`}>
-        {previews.map((preview, index) => {
-          
-          let itemClass = "relative w-full overflow-hidden rounded-lg";
-          let imageClass = "w-full h-full object-cover";
+        {previews.map((mediaItem, index) => {
+          // 1. Extraemos URL y Tipo de forma segura
+          // Si es un objeto (lo nuevo), usa .url y .type. Si es string (legacy), úsalo directo.
+          const src = mediaItem.url || mediaItem;
+          const type = mediaItem.type || 'image'; 
+          const isVideo = type === 'video';
+
+          let itemClass = "relative w-full overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800";
+          let contentClass = "w-full h-full object-cover"; // 'object-cover' funciona en videos también
           
           if (count === 1) {
-             // 1 imagen: ocupa todo el ancho y alto automático
-             itemClass += " h-auto";
+             itemClass += " h-auto max-h-96"; // Limite de altura para video único
           } else if (count === 2) {
-             // 2 imágenes: se dividen 50/50, altura fija
              itemClass += " h-full";
           } else if (count === 3) {
-            // 3 imágenes: 
             if (index === 0) {
-              // IMAGEN 1 (Izquierda): Ocupa toda la altura (span 2 filas en un grid de 2x2)
               itemClass += " col-span-1 row-span-2 h-full";
             } else {
-              // IMAGEN 2 y 3 (Derecha): Se apilan 50/50 de la altura
-              itemClass += " h-48"; // h-1/2 con h-96 en el padre = h-48
+              itemClass += " h-48"; 
             }
           } else if (count === 4) {
-             // 4 imágenes: 2x2, altura fija
              itemClass += " h-48";
           }
 
@@ -53,14 +48,27 @@ const PostMediaGrid = ({ previews, removeFileOrGif, removeAllImages }) => {
               key={index} 
               className={itemClass}
             >
-              <img
-                src={preview}
-                alt={`Preview ${index + 1}`}
-                className={imageClass} 
-              />
+              {/* 2. Renderizado Condicional */}
+              {isVideo ? (
+                <video
+                  src={src}
+                  className={contentClass}
+                  controls
+                  playsInline
+                  preload="metadata"
+                />
+              ) : (
+                <img
+                  src={src}
+                  alt={`Preview ${index + 1}`}
+                  className={contentClass} 
+                />
+              )}
+
+              {/* Botón de eliminar */}
               <button
                 onClick={() => removeFileOrGif(index)}
-                className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white p-1.5 rounded-full cursor-pointer transition-all z-10"
+                className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white p-1.5 rounded-full cursor-pointer transition-all z-20"
                 title="quitar archivo"
               >
                 <X size={14} />
