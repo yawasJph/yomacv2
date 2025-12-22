@@ -1,9 +1,27 @@
+import { useState } from "react";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 import FeedVideo from "./FeedVideo";
 
 const PostMedia = ({ media, onOpen }) => {
+  // Estado para saber qué video del post se está reproduciendo
+  const [activeVideoIndex, setActiveVideoIndex] = useState(media.findIndex(m => m.media_type === 'video'));
   const isMobile = useIsMobile();
   if (!media || media.length === 0) return null;
+
+  const handleVideoEnd = () => {
+    // Cuando un video termina, buscamos si hay otro video más adelante
+    const nextVideoIndex = media.findIndex(
+      (item, idx) => idx > activeVideoIndex && item.media_type === "video"
+    );
+
+    if (nextVideoIndex !== -1) {
+      setActiveVideoIndex(nextVideoIndex);
+    } else {
+      // Si era el último, podemos reiniciar al primero o dejarlo ahí
+      const firstVideo = media.findIndex(item => item.media_type === "video");
+      setActiveVideoIndex(firstVideo);
+    }
+  };
 
   // Función auxiliar para renderizar el contenido (Imagen o Video)
   const renderItem = (item, index, customClass = "") => {
@@ -17,6 +35,8 @@ const PostMedia = ({ media, onOpen }) => {
               src={item.media_url}
               customClass={customClass}
               onClick={() => onOpen(index)} // Ahora el click abre el modal
+              shouldPlay={activeVideoIndex === index}
+              onEnded={handleVideoEnd}
             />
           ) : (
             <video
