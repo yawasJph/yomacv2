@@ -83,10 +83,11 @@ export const usePostForm = (user) => {
       gifUrls.forEach((gif) => urls.push(gif));
 
       if (urls.length > 0) {
-        await supabaseClient.from("post_images").insert(
+        await supabaseClient.from("post_media").insert(
           urls.map((url) => ({
             post_id: postId,
-            image_url: url,
+            media_url: url,
+            media_type: url.includes('.gif') ? 'gif' : 'image',
           }))
         );
       }

@@ -13,10 +13,10 @@ export const usePostsInfiniteQuery = () => {
         og_data,
         created_at,
         profiles(full_name, avatar),
-        post_images(id, post_id, image_url),
-        video
-      `
+        post_media(id, media_url, media_type)
+        ` // <-- He quitado la coma que estaba aquí
       )
+      .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .limit(10);
 
@@ -25,19 +25,17 @@ export const usePostsInfiniteQuery = () => {
     }
 
     const { data, error } = await query;
-
     if (error) throw error;
-
     return data;
   };
 
   return useInfiniteQuery({
-    queryKey: ["posts"],
+    queryKey: ["posts-v3"], // Cambiamos la key para limpiar la caché vieja
     queryFn: fetchPosts,
     getNextPageParam: (lastPage) => {
       if (!lastPage || lastPage.length === 0) return undefined;
-      return lastPage[lastPage.length - 1].created_at; // cursor
+      return lastPage[lastPage.length - 1].created_at;
     },
-    staleTime: 1000 * 30, // 30s evita refetch excesivo
+    staleTime: 1000 * 30,
   });
 };

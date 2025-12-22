@@ -15,6 +15,8 @@ import UserHoverCard from "./UserHoverCard";
 import PostImages from "./PostImages";
 import OpenGraphCard from "../openGraph/OpenGraphCard";
 import ImageModal from "./ImageModal";
+import PostMedia from "./PostMedia";
+import MediaModal from "./MediaModal";
 
 const CardPost = ({ post, images }) => {
   // const [currentIndex, setCurrentIndex] = useState(0);
@@ -144,7 +146,8 @@ const CardPost = ({ post, images }) => {
             </div>
           )}
 
-          <PostImages images={images} onOpen={openModal} />
+          {/* <PostImages images={images} onOpen={openModal} /> */}
+          <PostMedia media={images} onOpen={openModal}/>
           {/* Renderizado de Imágenes UNIFICADO */}
 
           {/* Acciones */}
@@ -177,12 +180,8 @@ const CardPost = ({ post, images }) => {
         // currentIndex={currentIndex}
         //setCurrentIndex={setCurrentIndex}
       >
-        {isModalOpen && (
-          <ImageModal
-            closeModal={closeModal}
-            images={images}
-            initialIndex={selectedIndex}
-          />
+        {isModalOpen && (  
+          <MediaModal media={images} closeModal={closeModal} initialIndex={selectedIndex} />
         )}
       </FullscreenModal>
     </article>

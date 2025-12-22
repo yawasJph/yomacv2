@@ -1,122 +1,75 @@
 // 📦 hooks/usePostCreation.js
 import { toast } from "sonner";
 import { supabaseClient } from "../supabase/supabaseClient";
+import { uploadToCloudinary } from "../cloudinary/upToCloudinary";
 
 export const usePostCreation = () => {
   
   const createPost = async ({ user, content, files, gifUrls, linkPreview, resetForm, setLoading }) => {
-    
+
+    console.log(files)
     if (!content.trim() && files.length === 0 && gifUrls.length === 0) {
       toast.error("Escribe algo o sube un archivo");
       return;
     }
-
     setLoading(true);
 
     try {
-      // 1️⃣ Separar Video de Imágenes
-      // Buscamos si hay algún archivo que sea video
-      const videoFile = files.find(f => f.type.startsWith('video/'));
-      const imageFiles = files.filter(f => f.type.startsWith('image/'));
-
-      // 2️⃣ Crear el post base (INSERT inicial)
+      // 1️⃣ Crear el post base en Supabase primero
       const { data: post, error: postError } = await supabaseClient
         .from("posts")
         .insert({
           user_id: user.id,
           content: content,
           og_data: linkPreview,
-          // Nota: Aún no tenemos la URL del video, actualizaremos después de subirlo
-          // Si quisieras optimizar, podrías subir primero y luego insertar todo junto,
-          // pero necesitamos el ID del post para crear la carpeta en storage.
         })
         .select("id")
         .single();
 
       if (postError) throw postError;
-
       const postId = post.id;
-      const imageUrls = [];
 
-      // 3️⃣ Lógica de VIDEO
-      if (videoFile) {
-        const fileExt = videoFile.name.split(".").pop() || 'mp4';
-        const fileName = `video_${crypto.randomUUID()}.${fileExt}`;
-        const filePath = `post-${postId}/${fileName}`;
+      // 2️⃣ Preparar las promesas de subida a Cloudinary
+      // Combinamos imágenes y videos del array 'files'
+      const uploadPromises = files.map(async (file) => {
+        const isVideo = file.type.startsWith('video/');
+        const result = await uploadToCloudinary(file);
+        
+        return {
+          post_id: postId,
+          media_url: result.secure_url,
+          media_type: isVideo ? 'video' : 'image'
+        };
+      });
 
-        // Subir Video
-        const { error: uploadError } = await supabaseClient.storage
-          .from("posts") // Asegúrate que este bucket acepte videos
-          .upload(filePath, videoFile, { 
-            contentType: videoFile.type,
-            upsert: false
-          });
+      // 3️⃣ Ejecutar todas las subidas en paralelo
+      const uploadedMedia = await Promise.all(uploadPromises);
 
-        if (uploadError) throw uploadError;
+      // 4️⃣ Preparar los GIFs (que ya son URLs)
+      const gifMedia = gifUrls.map(url => ({
+        post_id: postId,
+        media_url: url,
+        media_type: 'image'
+      }));
 
-        // Obtener URL
-        const { data: urlData } = supabaseClient.storage
-          .from("posts")
-          .getPublicUrl(filePath);
+      // 5️⃣ Combinar todo e insertar en post_media
+      const allMedia = [...uploadedMedia, ...gifMedia];
 
-        // ACTUALIZAR la tabla posts con la URL del video
-        const { error: updateError } = await supabaseClient
-            .from("posts")
-            .update({ video: urlData.publicUrl }) // Columna creada en el paso 1
-            .eq("id", postId);
+      if (allMedia.length > 0) {
+        const { error: mediaError } = await supabaseClient
+          .from("post_media")
+          .insert(allMedia);
 
-        if (updateError) throw updateError;
-      }
-
-      // 4️⃣ Lógica de IMÁGENES (Upload en paralelo para velocidad)
-      if (imageFiles.length > 0) {
-        const uploadPromises = imageFiles.map(async (file) => {
-            const fileExt = file.name.split(".").pop();
-            const fileName = `img_${crypto.randomUUID()}.${fileExt}`;
-            const filePath = `post-${postId}/${fileName}`;
-
-            const { error } = await supabaseClient.storage
-                .from("posts")
-                .upload(filePath, file, { contentType: file.type });
-            
-            if (error) throw error;
-
-            const { data } = supabaseClient.storage
-                .from("posts")
-                .getPublicUrl(filePath);
-            
-            return data.publicUrl;
-        });
-
-        const uploadedUrls = await Promise.all(uploadPromises);
-        imageUrls.push(...uploadedUrls);
-      }
-
-      // 5️⃣ Agregar URLs de GIFs
-      imageUrls.push(...gifUrls);
-
-      // 6️⃣ Insertar imágenes/GIFs en la tabla post_images
-      if (imageUrls.length > 0) {
-        const { error: imagesError } = await supabaseClient
-          .from("post_images")
-          .insert(
-            imageUrls.map((url) => ({
-              post_id: postId,
-              image_url: url,
-            }))
-          );
-
-        if (imagesError) throw imagesError;
+        if (mediaError) throw mediaError;
       }
 
       resetForm();
-      toast.success("¡Publicado! 🚀");
-      
-      return post; 
+      toast.success("¡Publicado con éxito! 🚀");
+      return post;
 
     } catch (error) {
       console.error("Error creating post:", error);
-      toast.error("Ocurrió un error al publicar");
+      toast.error(error.message || "Ocurrió un error al publicar");
     } finally {
       setLoading(false);
     }

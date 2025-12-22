@@ -26,7 +26,7 @@ const ImageModal = ({ images, closeModal, initialIndex }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <img
-          src={images[currentIndex].image_url}
+          src={images[currentIndex].media_url}
           className="max-w-full max-h-[90vh] object-contain rounded-md shadow-2xl"
           alt="Fullscreen"
         />

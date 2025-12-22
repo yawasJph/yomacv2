@@ -3,7 +3,6 @@ import PostCard from "../ui/PostCard";
 import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery ";
 import SkeletonPost from "../skeletons/SkeletonPost";
 
-
 const Feed = () => {
   const {
     data,

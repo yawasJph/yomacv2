@@ -4,7 +4,7 @@ import { supabaseClient } from "../supabase/supabaseClient";
 
 export const usePosts = () => {
   return useQuery({
-    queryKey: ["feed-posts"],
+    queryKey: ["feed-posts-v2"],
     queryFn: async () => {
       const { data, error } = await supabaseClient
         .from("posts")
@@ -14,7 +14,7 @@ export const usePosts = () => {
           content,
           created_at,
           profiles(full_name, avatar),
-          post_images(id, post_id, image_url)
+          post_media(id, post_id, media_url, media_type)
         `
         )
         .order("created_at", { ascending: false });

@@ -1,6 +1,7 @@
-import React from "react";
+
 
 const PostImages = ({images, onOpen}) => {
+  console.log(images)
   if (!images || images.length === 0) return null;
 
   // Caso 1: Una sola imagen (formato grande)
@@ -8,7 +9,7 @@ const PostImages = ({images, onOpen}) => {
     return (
       <div className="mb-3 mt-3">
         <img
-          src={images[0].image_url}
+          src={images[0].media_url}
           alt="Post"
           className="w-full max-h-[500px] object-cover rounded-xl cursor-pointer hover:opacity-95 transition-opacity"
           onClick={() => onOpen(0)}//onOpen(0)
@@ -41,7 +42,7 @@ const PostImages = ({images, onOpen}) => {
             }`}
           >
             <img
-              src={img.image_url}
+              src={img.media_url}
               alt={`Preview ${index + 1}`}
               className={`w-full ${spanClass} object-cover rounded-xl cursor-pointer hover:opacity-95 transition-opacity`}
               onClick={() => onOpen(index)}//onOpen(index)

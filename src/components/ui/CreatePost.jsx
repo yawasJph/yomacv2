@@ -199,14 +199,15 @@ const CreatePost = () => {
       // Agregar GIFs (no requieren subida)
       gifUrls.forEach((gif) => imageUrls.push(gif));
 
-      // 3️⃣ Insertar URLs en la tabla post_images
+      // 3️⃣ Insertar URLs en la tabla post_media
       if (imageUrls.length > 0) {
         const { error: imagesError } = await supabaseClient
-          .from("post_images")
+          .from("post_media")
           .insert(
             imageUrls.map((url) => ({
               post_id: postId,
-              image_url: url,
+              media_url: url,
+              media_type: url.includes('.gif') ? 'gif' : 'image',
             }))
           );
 

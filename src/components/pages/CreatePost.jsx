@@ -98,8 +98,8 @@ const CreatePost = () => {
     if (!file) return;
 
     // Validación rápida de tamaño (ej. 50MB)
-    if (file.size > 50 * 1024 * 1024) {
-      toast.error("El video es muy pesado (Max 50MB)");
+    if (file.size > 100 * 1024 * 1024) {
+      toast.error("El video es muy pesado (Max 100MB)");
       e.target.value = "";
       return;
     }
@@ -111,8 +111,8 @@ const CreatePost = () => {
       window.URL.revokeObjectURL(video.src);
       const duration = video.duration;
 
-      if (duration > 15.5) { // Margen de 0.5s
-        toast.error(`Máximo 15 segundos. Tu video dura ${duration.toFixed(0)}s.`);
+      if (duration > 180.5) { // Margen de 0.5s
+        toast.error(`Máximo 3 minutos. Tu video dura ${duration.toFixed(0)}s.`);
         e.target.value = ""; // Limpiar input
       } else {
         // ✅ Si pasa la validación, se lo pasamos al hook de estado
@@ -177,9 +177,9 @@ const CreatePost = () => {
               {/* 2. ✨ Botón VIDEO (Nuevo) */}
               <label
                 className={`text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition cursor-pointer p-2 rounded-full hover:bg-blue-50 dark:hover:bg-blue-950/20 ${
-                  previews.length > 0 || linkPreview ? "opacity-50 cursor-not-allowed" : ""
+                  previews.length >= 4 || linkPreview ? "opacity-50 cursor-not-allowed" : ""
                 }`}
-                title="Subir video (Max 15s)"
+                title="Subir video (Max 3 min)"
               >
                 <Video size={20} />
                 <input
@@ -188,7 +188,7 @@ const CreatePost = () => {
                   accept="video/mp4,video/webm,video/ogg"
                   className="hidden"
                   onChange={onVideoSelect} 
-                  disabled={previews.length > 0 || linkPreview} // Generalmente 1 video excluye fotos
+                  disabled={previews.length >= 4 || linkPreview} // Generalmente 1 video excluye fotos
                 />
               </label>
 
@@ -227,7 +227,7 @@ const CreatePost = () => {
                 </button>
 
                 {showEmojiPicker && (
-                  <div className="absolute z-50 mt-3 -left-32 md:left-0">
+                  <div className="absolute z-50 mt-3 -left-40 sm:left-0">
                     {" "}
                     {/**-right-45 */}
                     <EmojiPicker
