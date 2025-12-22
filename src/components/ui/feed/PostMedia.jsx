@@ -1,6 +1,8 @@
-import React from "react";
+import { useIsMobile } from "../../../hooks/useIsMobile";
+import FeedVideo from "./FeedVideo";
 
 const PostMedia = ({ media, onOpen }) => {
+  const isMobile = useIsMobile();
   if (!media || media.length === 0) return null;
 
   // Función auxiliar para renderizar el contenido (Imagen o Video)
@@ -9,15 +11,24 @@ const PostMedia = ({ media, onOpen }) => {
 
     if (isVideo) {
       return (
-        <video
-          src={item.media_url}
-          className={`${customClass} w-full object-cover rounded-xl`}
-          controls
-          muted
-          playsInline
-          // Evitamos que el clic en los controles abra el modal
-          onClick={(e) => e.stopPropagation()} 
-        />
+        <>
+          {isMobile ? (
+            <FeedVideo
+              src={item.media_url}
+              customClass={customClass}
+              onClick={() => onOpen(index)} // Ahora el click abre el modal
+            />
+          ) : (
+            <video
+              src={item.media_url}
+              className={`${customClass} w-full object-cover rounded-xl`}
+              controls
+              muted
+              playsInline
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
+        </>
       );
     }
 
@@ -49,8 +60,10 @@ const PostMedia = ({ media, onOpen }) => {
     <div className="grid grid-cols-2 gap-1 mt-3 mb-3">
       {displayMedia.map((item, index) => {
         // Ajuste de altura para el grid estilo "Twitter"
-        const spanClass = isThreeLayout && index === 0 ? "h-full min-h-[320px]" : "h-40";
-        const containerClass = isThreeLayout && index === 0 ? "row-span-2" : "relative";
+        const spanClass =
+          isThreeLayout && index === 0 ? "h-full max-h-[320px]" : "h-40";
+        const containerClass =
+          isThreeLayout && index === 0 ? "row-span-2" : "relative";
 
         return (
           <div key={item.id || index} className={containerClass}>

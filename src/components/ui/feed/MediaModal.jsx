@@ -35,7 +35,7 @@ const MediaModal = ({ media, closeModal, initialIndex }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black/95 backdrop-blur-sm flex justify-center items-center z-[100]"
+      className="fixed inset-0 bg-black/95 backdrop-blur-sm flex justify-center items-center z-100"
       onClick={closeModal}
     >
       <div
