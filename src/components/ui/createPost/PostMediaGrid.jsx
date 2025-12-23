@@ -1,6 +1,6 @@
 // 📦 components/PostMediaGrid.jsx
 import React from "react";
-import { X, Play } from "lucide-react"; // Agregamos ícono Play por si quieres decorar
+import { X} from "lucide-react"; // Agregamos ícono Play por si quieres decorar
 
 const PostMediaGrid = ({ previews, removeFileOrGif, removeAllImages }) => {
   if (!previews || previews.length === 0) return null;
@@ -56,6 +56,8 @@ const PostMediaGrid = ({ previews, removeFileOrGif, removeAllImages }) => {
                   controls
                   playsInline
                   preload="metadata"
+                  muted
+
                 />
               ) : (
                 <img
@@ -78,15 +80,18 @@ const PostMediaGrid = ({ previews, removeFileOrGif, removeAllImages }) => {
         })}
       </div>
 
-      <div className="flex justify-between items-center mt-2">
-        <span className="text-xs text-gray-500 dark:text-gray-400">
-          {count}/4 archivos
-        </span>
+     {/* Footer de la grilla */}
+      <div className="flex justify-between items-center mt-3 px-1">
+        <div className="flex gap-2 items-center">
+             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${count >= 4 ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'}`}>
+               {count}/4 Archivos
+             </span>
+        </div>
         <button
           onClick={removeAllImages}
-          className="text-xs text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
+          className="text-xs font-medium text-gray-400 hover:text-red-500 transition-colors"
         >
-          Eliminar todos
+          Limpiar todo
         </button>
       </div>
     </div>

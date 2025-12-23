@@ -1,6 +1,6 @@
 // 📄 components/CreatePost.jsx (Refactorizado)
 import React, { useEffect, useRef } from "react";
-import { Gift, Image, ImagePlay, Smile, Video } from "lucide-react";
+import { ArrowLeft, Gift, Image, ImagePlay, Smile, Video } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import EmojiPicker from "emoji-picker-react";
 import GifPicker from "../utils/GifPicker";
@@ -86,18 +86,18 @@ const CreatePost = () => {
       setLoading,
     });
   };
-  
+
   const isSubmitDisabled =
     loading || isPreviewLoading || (!content.trim() && previews.length === 0);
 
-    const videoInputRef = useRef(null); // 👈 Ref para el input oculto
+  const videoInputRef = useRef(null); // 👈 Ref para el input oculto
 
-    // 4. ✨ NUEVA LÓGICA: Validación de Video antes de pasar al Hook
+  // 4. ✨ NUEVA LÓGICA: Validación de Video antes de pasar al Hook
   const onVideoSelect = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validación rápida de tamaño (ej. 50MB)
+    // Validación rápida de tamaño (ej. 100MB)
     if (file.size > 100 * 1024 * 1024) {
       toast.error("El video es muy pesado (Max 100MB)");
       e.target.value = "";
@@ -111,26 +111,37 @@ const CreatePost = () => {
       window.URL.revokeObjectURL(video.src);
       const duration = video.duration;
 
-      if (duration > 180.5) { // Margen de 0.5s
+      if (duration > 180.5) {
+        // Margen de 0.5s
         toast.error(`Máximo 3 minutos. Tu video dura ${duration.toFixed(0)}s.`);
         e.target.value = ""; // Limpiar input
       } else {
         // ✅ Si pasa la validación, se lo pasamos al hook de estado
-        handleFileChange(e); 
+        handleFileChange(e);
       }
     };
 
     video.onerror = () => {
-        toast.error("Formato de video no válido");
-        e.target.value = "";
+      window.URL.revokeObjectURL(video.src);
+      toast.error("Formato de video no válido");
+      e.target.value = "";
     };
 
     video.src = URL.createObjectURL(file);
   };
 
-
   return (
     <div className="bg-white dark:bg-black border-b border-emerald-500/10 dark:border-emerald-500/20 px-4 py-4 sm:px-6">
+      {/* Encabezado con flecha de retroceder */}
+      <div className="flex items-center gap-4 mb-4">
+        <button
+          onClick={() => window.history.back()} // O usa un navigate de react-router
+          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition"
+        >
+          <ArrowLeft size={20} className="text-gray-600 dark:text-gray-300" />
+        </button>
+        <h2 className="font-bold text-lg dark:text-white">Crear publicación</h2>
+      </div>
       <div className="flex gap-3">
         {/* Avatar */}
         {/* ... (Tu JSX de avatar) ... */}
@@ -147,6 +158,7 @@ const CreatePost = () => {
             onChange={handleContentChange}
             placeholder="Iniciar un hilo..."
             rows={4}
+            autoFocus
             className="w-full resize-none bg-transparent border-none outline-none text-base text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 "
           />
 
@@ -177,7 +189,9 @@ const CreatePost = () => {
               {/* 2. ✨ Botón VIDEO (Nuevo) */}
               <label
                 className={`text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition cursor-pointer p-2 rounded-full hover:bg-blue-50 dark:hover:bg-blue-950/20 ${
-                  previews.length >= 4 || linkPreview ? "opacity-50 cursor-not-allowed" : ""
+                  previews.length >= 4 || linkPreview
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
                 }`}
                 title="Subir video (Max 3 min)"
               >
@@ -187,7 +201,7 @@ const CreatePost = () => {
                   type="file"
                   accept="video/mp4,video/webm,video/ogg"
                   className="hidden"
-                  onChange={onVideoSelect} 
+                  onChange={onVideoSelect}
                   disabled={previews.length >= 4 || linkPreview} // Generalmente 1 video excluye fotos
                 />
               </label>
@@ -227,7 +241,7 @@ const CreatePost = () => {
                 </button>
 
                 {showEmojiPicker && (
-                  <div className="absolute z-50 mt-3 -left-40 sm:left-0">
+                  <div className="absolute z-50 mt-3 -left-43 sm:left-0">
                     {" "}
                     {/**-right-45 */}
                     <EmojiPicker
