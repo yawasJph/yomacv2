@@ -12,13 +12,11 @@ import { timeAgoTiny } from "../../utils/timeagoTiny";
 import { timeAgoLong } from "../../utils/timeAgoLong";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 import UserHoverCard from "./UserHoverCard";
-import PostImages from "./PostImages";
 import OpenGraphCard from "../openGraph/OpenGraphCard";
-import ImageModal from "./ImageModal";
 import PostMedia from "./PostMedia";
 import MediaModal from "./MediaModal";
 
-const CardPost = ({ post, images }) => {
+const CardPost = ({ post, media }) => {
   // const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,12 +37,13 @@ const CardPost = ({ post, images }) => {
           href={part}
           target="_blank"
           rel="noopener noreferrer"
+          // Mantenemos break-all solo para links para proteger el layout
           className="text-blue-600 dark:text-blue-400 underline break-all"
         >
           {part}
         </a>
       ) : (
-        part
+        part // El texto normal no lleva clases de ruptura, hereda break-words del padre
       )
     );
   };
@@ -102,17 +101,15 @@ const CardPost = ({ post, images }) => {
               <MoreHorizontal size={18} />
             </button>
           </div>
-
-          {/* Texto */}
+          {/* Texto del Post */}
           <p
             ref={textRef}
-            className={`text-base text-gray-900 dark:text-gray-100 mb-2 whitespace-pre-wrap break-all ${
+            className={`text-base text-gray-900 dark:text-gray-100 mb-2 whitespace-pre-wrap wrap-break-word ${
               expanded ? "line-clamp-none" : "line-clamp-6"
             }`}
           >
             {renderTextWithLinks(post.content)}
           </p>
-
           {isTruncated && (
             <button
               onClick={() => setExpanded(!expanded)}
@@ -129,27 +126,11 @@ const CardPost = ({ post, images }) => {
               )}
             </button>
           )}
-
           {/* LINK PREVIEW CARD */}
           {post.og_data && <OpenGraphCard og_data={post.og_data} />}
-
-          {/* 2. VIDEO (Nuevo ✨) */}
-          {post.video && (
-            <div className="mt-2 rounded-xl overflow-hidden bg-black aspect-video sm:aspect-auto sm:max-h-[500px] flex justify-center items-center shadow-sm border border-gray-100 dark:border-gray-800">
-              <video
-                src={post.video}
-                controls
-                preload="metadata"
-                className="w-full h-full max-h-[500px] object-contain"
-                // poster={post.video + '#t=0.1'} // Truco opcional para generar thumbnail
-              />
-            </div>
-          )}
-
           {/* <PostImages images={images} onOpen={openModal} /> */}
-          <PostMedia media={images} onOpen={openModal}/>
+          <PostMedia media={media} onOpen={openModal} /> {/*media* */}
           {/* Renderizado de Imágenes UNIFICADO */}
-
           {/* Acciones */}
           <div className="flex items-center gap-6 text-gray-500 dark:text-gray-400 mt-3">
             <button className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors group">
@@ -180,8 +161,12 @@ const CardPost = ({ post, images }) => {
         // currentIndex={currentIndex}
         //setCurrentIndex={setCurrentIndex}
       >
-        {isModalOpen && (  
-          <MediaModal media={images} closeModal={closeModal} initialIndex={selectedIndex} />
+        {isModalOpen && (
+          <MediaModal
+            media={media}
+            closeModal={closeModal}
+            initialIndex={selectedIndex}
+          /> //media
         )}
       </FullscreenModal>
     </article>
