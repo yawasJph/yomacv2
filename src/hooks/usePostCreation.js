@@ -2,32 +2,32 @@
 import { toast } from "sonner";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { uploadToCloudinary } from "../cloudinary/upToCloudinary";
+import { extractHashtags } from "../components/utils/extractHashtags";
 
 export const usePostCreation = () => {
   
   const createPost = async ({ user, content, files, gifUrls, linkPreview, resetForm, setLoading }) => {
-
-    console.log(files)
     if (!content.trim() && files.length === 0 && gifUrls.length === 0) {
       toast.error("Escribe algo o sube un archivo");
       return;
     }
     setLoading(true);
-
+    console.log(content)
     try {
-      // 1️⃣ Crear el post base en Supabase primero
-      const { data: post, error: postError } = await supabaseClient
-        .from("posts")
-        .insert({
-          user_id: user.id,
-          content: content,
-          og_data: linkPreview,
-        })
-        .select("id")
-        .single();
+
+      const hashtags = extractHashtags(content)
+      ///comiezo ha deletear
+      // 1️⃣ Llamar a la función RPC en lugar de un insert simple
+      const { data: postId, error: postError } = await supabaseClient
+        .rpc('create_post_with_hashtags', {
+          p_user_id: user.id,
+          p_content: content,
+          p_og_data: linkPreview,
+          p_hashtags: hashtags
+        });
 
       if (postError) throw postError;
-      const postId = post.id;
+      //const postId = post.id;
 
       // 2️⃣ Preparar las promesas de subida a Cloudinary
       // Combinamos imágenes y videos del array 'files'
@@ -65,7 +65,7 @@ export const usePostCreation = () => {
 
       resetForm();
       toast.success("¡Publicado con éxito! 🚀");
-      return post;
+      return postId;
 
     } catch (error) {
       console.error("Error creating post:", error);

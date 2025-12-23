@@ -1,6 +1,6 @@
 // 📄 components/CreatePost.jsx (Refactorizado)
-import React, { useEffect, useRef } from "react";
-import { ArrowLeft, Gift, Image, ImagePlay, Smile, Video } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { ArrowLeft, Image, ImagePlay, Smile, Video } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import EmojiPicker from "emoji-picker-react";
 import GifPicker from "../utils/GifPicker";

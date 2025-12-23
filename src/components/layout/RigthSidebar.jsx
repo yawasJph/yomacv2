@@ -1,10 +1,10 @@
-import React from "react";
+import TrendingTopics from "../ui/rigthSidebar/TrendingTopics";
 
 const RigthSidebar = () => {
   return (
     <aside className="hidden xl:flex xl:w-80 flex-col h-[calc(100vh-64px)] sticky top-16 px-6 py-4 space-y-6">
-      {/* Tendencias */}
-      <div className="bg-white dark:bg-black rounded-xl border border-emerald-500/20 dark:border-emerald-500/30 p-4 hover:border-emerald-500/40 dark:hover:border-emerald-500/50 transition-all duration-300">
+      
+      {/* <div className="bg-white dark:bg-black rounded-xl border border-emerald-500/20 dark:border-emerald-500/30 p-4 hover:border-emerald-500/40 dark:hover:border-emerald-500/50 transition-all duration-300">
         <h3 className="font-semibold text-emerald-600 dark:text-emerald-400 mb-4 text-base">
           Tendencias
         </h3>
@@ -25,7 +25,8 @@ const RigthSidebar = () => {
             )
           )}
         </div>
-      </div>
+      </div> */}
+      <TrendingTopics/>
     </aside>
   );
 };

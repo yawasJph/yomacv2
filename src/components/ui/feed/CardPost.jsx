@@ -26,26 +26,47 @@ const CardPost = ({ post, media }) => {
 
   const isMobile = useIsMobile();
 
-  // Renderizar texto con los links transformados en <a>
   const renderTextWithLinks = (text) => {
     if (!text) return null;
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return text.split(urlRegex).map((part, i) =>
-      urlRegex.test(part) ? (
-        <a
-          key={i}
-          href={part}
-          target="_blank"
-          rel="noopener noreferrer"
-          // Mantenemos break-all solo para links para proteger el layout
-          className="text-blue-600 dark:text-blue-400 underline break-all"
-        >
-          {part}
-        </a>
-      ) : (
-        part // El texto normal no lleva clases de ruptura, hereda break-words del padre
-      )
-    );
+
+    // Regex combinada para URLs y Hashtags
+    // Grupo 1: URLs | Grupo 2: Hashtags
+    const combinedRegex = /(https?:\/\/[^\s]+)|(#\w+)/g;
+
+    return text.split(combinedRegex).map((part, i) => {
+      if (!part) return null;
+
+      // ¿Es una URL?
+      if (/(https?:\/\/[^\s]+)/.test(part)) {
+        return (
+          <a
+            key={i}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 dark:text-blue-400 underline break-all"
+          >
+            {part}
+          </a>
+        );
+      }
+
+      // ¿Es un Hashtag?
+      if (/#\w+/.test(part)) {
+        return (
+          <span
+            key={i}
+            className="text-emerald-600 dark:text-emerald-400 font-semibold cursor-pointer hover:underline"
+            onClick={() => console.log("Filtrar por hashtag:", part)}
+          >
+            {part}
+          </span>
+        );
+      }
+
+      // Texto normal
+      return part;
+    });
   };
 
   useEffect(() => {
