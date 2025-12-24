@@ -47,7 +47,7 @@ const SearchPage = () => {
   return (
     <div className="min-h-screen">
       {/* HEADER DINÁMICO */}
-      <div className="p-4 border-b border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-black/80 backdrop-blur-md sticky top-0 z-10">
+      <div className="p-4 border-b border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-black/80 backdrop-blur-md sticky top-15 z-10">
         <div className="flex items-center gap-3">
           {/* Botón Volver solo en móvil */}
           {isMobile && (

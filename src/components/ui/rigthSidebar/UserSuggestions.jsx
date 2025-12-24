@@ -98,7 +98,7 @@ const UserSuggestions = () => {
                 />
                 <div className="min-w-0">
                   <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate line-clamp-1">
-                    {profile.full_name}
+                    HOLA QUE HACE
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                     {profile.carrera || "Usuario"}
