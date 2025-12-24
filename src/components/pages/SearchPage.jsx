@@ -78,7 +78,7 @@ const SearchPage = () => {
       </div>
 
       {/* CONTENIDO PRINCIPAL */}
-      <div className="max-w-2xl mx-auto">
+      <div className="mx-auto">
         {!query ? (
           /* ESTADO INICIAL: MOSTRAR TENDENCIAS Y SUGERENCIAS (Ideal para Móvil) */
           <div className="p-4 space-y-8 animate-in fade-in duration-500">
