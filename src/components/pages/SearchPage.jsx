@@ -86,16 +86,13 @@ const SearchPage = () => {
               <h3 className="text-lg font-bold dark:text-white mb-4 px-2">
                 Descubrir Tendencias
               </h3>
-              <TrendingTopics />
-              <TrendingTopics />
-              <TrendingTopics />
-              <TrendingTopics />
+              
             </div>
             <div>
               <h3 className="text-lg font-bold dark:text-white mb-4 px-2">
                 Personas recomendadas
               </h3>
-              <UserSuggestions />
+              
             </div>
           </div>
         ) : loading ? (
