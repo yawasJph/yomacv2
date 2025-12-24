@@ -62,7 +62,7 @@ const SearchPage = () => {
           {/* Si es móvil, mostramos el SearchBar aquí arriba directamente */}
           {isMobile ? (
             <div className="flex-1">
-              <SearchBar />
+              {/* <SearchBar /> */}
             </div>
           ) : (
             <h2 className="text-xl font-bold flex items-center gap-2 dark:text-white">
