@@ -92,7 +92,6 @@ const SearchPage = () => {
               <h3 className="text-lg font-bold dark:text-white mb-4 px-2">
                 Personas recomendadas
               </h3>
-              <TrendingTopics/>
               <UserSuggestions/>
             </div>
           </div>
