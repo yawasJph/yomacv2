@@ -47,7 +47,7 @@ const SearchPage = () => {
   return (
     <div className="min-h-screen">
       {/* HEADER DINÁMICO */}
-      <div className="p-4 border-b border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-black/80 backdrop-blur-md sticky top-0 z-10">
+      <div className="">
         <div className="flex items-center gap-3">
           {/* Botón Volver solo en móvil */}
           {/* {isMobile && (
@@ -86,6 +86,9 @@ const SearchPage = () => {
               <h3 className="text-lg font-bold dark:text-white mb-4 px-2">
                 Descubrir Tendencias
               </h3>
+              <TrendingTopics />
+              <TrendingTopics />
+              <TrendingTopics />
               <TrendingTopics />
             </div>
             <div>
