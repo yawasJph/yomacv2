@@ -90,7 +90,7 @@ const UserSuggestions = () => {
                   </div>
                 </div>
               </UserHoverCard> */}
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="flex items-center gap-2 min-w-1">
                 <img
                   src={profile.avatar || "/default-avatar.jpg"}
                   alt={profile.full_name}
