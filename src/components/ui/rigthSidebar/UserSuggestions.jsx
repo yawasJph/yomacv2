@@ -69,36 +69,32 @@ const UserSuggestions = () => {
           </>
         ) : (
           suggestions.map((profile) => (
-            <div className="flex items-center justify-between w-full group overflow-hidden">
-  <div className="flex items-center gap-3 flex-1 min-w-0">
-    <img
-      src={profile.avatar || "/default-avatar.jpg"}
-      alt={profile.full_name}
-      className="w-10 h-10 rounded-full object-cover flex-shrink-0 border border-emerald-500/10 group-hover:border-emerald-500/30 transition-colors"
-    />
-    <div className="min-w-0 flex-1 overflow-hidden">
-      <p 
-        className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate leading-tight"
-        title={profile.full_name}
-      >
-        {profile.full_name}
-      </p>
-      <p 
-        className="text-xs text-gray-500 dark:text-gray-400 truncate leading-tight mt-0.5"
-        title={profile.carrera || "Usuario"}
-      >
-        {profile.carrera || "Usuario"}
-      </p>
-    </div>
-  </div>
-  <button
-    onClick={() => handleFollow(profile.id)}
-    className="flex-shrink-0 ml-2 p-2 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-full hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-500 transition-all duration-200"
-    title="Seguir"
-  >
-    <UserPlus size={16} />
-  </button>
-</div>
+            <div className="flex items-center justify-between gap-3 group">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <img
+                  src={profile.avatar || "/default-avatar.jpg"}
+                  alt={profile.full_name}
+                  className="w-10 h-10 rounded-full object-cover shrink-0 border border-emerald-500/10 group-hover:border-emerald-500/30 transition-colors"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">
+                    {profile.full_name.length > 20
+                      ? profile.full_name.substring(0, 20) + "..."
+                      : profile.full_name}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                    {profile.carrera || "Usuario"}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => handleFollow(profile.id)}
+                className="shrink-0 p-2 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-full hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-500 transition-all duration-200"
+                title={`Seguir a ${profile.full_name}`}
+              >
+                <UserPlus size={16} />
+              </button>
+            </div>
           ))
         )}
       </div>
