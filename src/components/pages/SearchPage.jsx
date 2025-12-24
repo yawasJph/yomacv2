@@ -50,14 +50,14 @@ const SearchPage = () => {
       <div className="p-4 border-b border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-black/80 backdrop-blur-md sticky top-0 z-10">
         <div className="flex items-center gap-3">
           {/* Botón Volver solo en móvil */}
-          {isMobile && (
+          {/* {isMobile && (
             <button
               onClick={() => navigate(-1)}
               className="p-1 dark:text-white"
             >
               <ArrowLeft size={24} />
             </button>
-          )}
+          )} */}
 
           {/* Si es móvil, mostramos el SearchBar aquí arriba directamente */}
           {isMobile ? (
