@@ -48,7 +48,7 @@ const SearchPage = () => {
     <div className="min-h-screen">
       {/* HEADER DINÁMICO */}
       <div className="">
-        <div className="flex items-center gap-3">
+        <div className="">
           {/* Botón Volver solo en móvil */}
           {/* {isMobile && (
             <button
@@ -61,7 +61,7 @@ const SearchPage = () => {
 
           {/* Si es móvil, mostramos el SearchBar aquí arriba directamente */}
           {isMobile ? (
-            <div className="flex-1">
+            <div className="">
               {/* <SearchBar /> */}
             </div>
           ) : (
