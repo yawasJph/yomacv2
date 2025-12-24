@@ -6,14 +6,19 @@ import Login from "./components/pages/Login";
 import CreatePost from "./components/pages/CreatePost";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
 import { Toaster } from "sonner";
+import SearchPage from "./components/pages/SearchPage";
+import { useIsMobile } from "./hooks/useIsMobile";
 
 function App() {
+
+  const isMobile = useIsMobile()
   return (
    <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomeLayout/>}>
           <Route index element={<Feed/>} />
           <Route path="create-post" element={<ProtectedRoute><CreatePost/></ProtectedRoute>} />
+          <Route path="search" element={<ProtectedRoute><SearchPage/></ProtectedRoute> } />
         </Route>
         <Route path="login" element={<Login/>} />
         

@@ -14,7 +14,7 @@ const HomeLayout = () => {
   // Navegación móvil inferior
   const mobileNavLinks = [
     { to: ".", icon: <Home size={24} />, text: "Inicio", end: true },
-    { to: "users", icon: <Search size={24} />, text: "Buscar" },
+    { to: "search", icon: <Search size={24} />, text: "Buscar" },
     { to: "profile", icon: <UserPen size={24} />, text: "Perfil" },
     { to: "save-posts", icon: <Bookmark size={24} />, text: "Guardados" },
     { to: "create-post", icon: <Plus size={24} />, text: "Crear Post" },
@@ -68,7 +68,7 @@ const HomeLayout = () => {
 
         {/* Contenido Principal - Feed */}
         <main className="flex-1 min-h-[1050px] border-x border-emerald-500/10 dark:border-emerald-500/20 max-w-2xl mx-auto lg:mx-0">
-          <div className=" sm:px-6 py-4 sm:py-6"> {/**px-4 */}
+          <div className=" sm:px-0 py-4 sm:py-6"> {/**px-4 */}
             <Outlet />
           </div>
         </main>

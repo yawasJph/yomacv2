@@ -15,6 +15,7 @@ import UserHoverCard from "./UserHoverCard";
 import OpenGraphCard from "../openGraph/OpenGraphCard";
 import PostMedia from "./PostMedia";
 import MediaModal from "./MediaModal";
+import { shortenUrl } from "../../utils/shortenUrl";
 
 const CardPost = ({ post, media }) => {
   // const [currentIndex, setCurrentIndex] = useState(0);
@@ -38,6 +39,12 @@ const CardPost = ({ post, media }) => {
 
       // ¿Es una URL?
       if (/(https?:\/\/[^\s]+)/.test(part)) {
+        
+        let displayText = part.replace(/(^\w+:|^)\/\/(www\.)?/, "");
+        
+        if (displayText.length > 30) {
+          displayText = displayText.substring(0, 30) + "...";
+        }
         return (
           <a
             key={i}
@@ -46,7 +53,7 @@ const CardPost = ({ post, media }) => {
             rel="noopener noreferrer"
             className="text-blue-600 dark:text-blue-400 underline break-all"
           >
-            {part}
+            {displayText}
           </a>
         );
       }

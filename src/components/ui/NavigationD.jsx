@@ -1,5 +1,4 @@
-import { Bookmark, Home, Plus, TriangleAlertIcon, UserPen, Users } from "lucide-react";
-import React from "react";
+import { Bookmark, Home, Plus, TriangleAlertIcon, UserPen, Users, Search } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "sonner";
