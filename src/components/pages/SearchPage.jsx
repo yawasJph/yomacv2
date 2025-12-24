@@ -93,6 +93,7 @@ const SearchPage = () => {
                 Personas recomendadas
               </h3>
               <TrendingTopics/>
+              <UserSuggestions/>
             </div>
           </div>
         ) : loading ? (
