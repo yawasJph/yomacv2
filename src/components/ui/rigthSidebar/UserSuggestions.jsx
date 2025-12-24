@@ -69,36 +69,16 @@ const UserSuggestions = () => {
           </>
         ) : (
           suggestions.map((profile) => (
-            <div
-              key={profile.id}
-              className="flex items-center justify-between gap-3 group"
-            >
-              {/* <UserHoverCard user={profile}>
-                <div className="flex items-center gap-2 min-w-0 cursor-pointer">
-                  <img
-                    src={profile.avatar || "/default-avatar.jpg"}
-                    alt={profile.full_name}
-                    className="w-10 h-10 rounded-full object-cover shrink-0 border border-emerald-500/10 group-hover:border-emerald-500/40 transition-all"
-                  />
-                  <div className="min-w-0">
-                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                      {profile.full_name}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                      {profile.carrera || "Usuario"}
-                    </p>
-                  </div>
-                </div>
-              </UserHoverCard> */}
-              <div className="flex items-center gap-2 min-w-1">
+            <div className="flex items-center justify-between w-full gap-3 group">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
                 <img
                   src={profile.avatar || "/default-avatar.jpg"}
                   alt={profile.full_name}
                   className="w-10 h-10 rounded-full object-cover shrink-0 border border-emerald-500/10 group-hover:border-emerald-500/30 transition-colors"
                 />
-                <div className="min-w-0">
-                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate line-clamp-1">
-                    HOLA QUE HACE
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">
+                    {profile.full_name}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                     {profile.carrera || "Usuario"}
@@ -107,7 +87,7 @@ const UserSuggestions = () => {
               </div>
               <button
                 onClick={() => handleFollow(profile.id)}
-                className="p-2 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-full hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-500 transition-all duration-200"
+                className="shrink-0 p-2 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-full hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-500 transition-all duration-200"
                 title="Seguir"
               >
                 <UserPlus size={16} />
