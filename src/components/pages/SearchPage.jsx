@@ -88,7 +88,7 @@ const SearchPage = () => {
               </h3>
               <TrendingTopics />
             </div>
-            <div className="min-w-full">
+            <div className="max-w-[400px] sm:max-w-full">
               <h3 className="text-lg font-bold dark:text-white mb-4 px-2">
                 Personas recomendadas
               </h3>
