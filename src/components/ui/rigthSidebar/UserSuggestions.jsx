@@ -97,7 +97,7 @@ const UserSuggestions = () => {
                   className="w-10 h-10 rounded-full object-cover shrink-0 border border-emerald-500/10 group-hover:border-emerald-500/30 transition-colors"
                 />
                 <div className="min-w-0">
-                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">
+                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate line-clamp-1">
                     {profile.full_name}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
