@@ -54,7 +54,7 @@ const UserSuggestions = () => {
   if (!loading && suggestions.length === 0) return null;
 
   return (
-    <div className="bg-white dark:bg-black rounded-xl border border-emerald-500/20 dark:border-emerald-500/30 p-4 transition-all duration-300">
+    <div className="bg-white dark:bg-black rounded-xl border border-emerald-500/20 dark:border-emerald-500/30 p-4 hover:border-emerald-500/40 dark:hover:border-emerald-500/50 transition-all duration-300">
       <h3 className="font-semibold text-emerald-600 dark:text-emerald-400 mb-4 text-base">
         A quién seguir
       </h3>
