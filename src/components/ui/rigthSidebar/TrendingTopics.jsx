@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { supabaseClient } from "../../../supabase/supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 const TrendingTopics = () => {
   const [trends, setTrends] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate()
   useEffect(() => {
     const fetchTrends = async () => {
       try {
@@ -23,6 +24,13 @@ const TrendingTopics = () => {
 
     fetchTrends();
   }, []);
+
+  const handleSearchTrend = (trendName)=>{
+    if(!trendName) return
+    navigate(`/search?q=${encodeURIComponent(trendName.trim())}`);
+  }
+
+  console.log(trends)
 
   if (loading) return (
     <div className="animate-pulse space-y-4 p-4">
@@ -44,7 +52,7 @@ const TrendingTopics = () => {
             <div
               key={topic.id}
               className="flex justify-between items-center group cursor-pointer p-2 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors duration-200"
-              onClick={() => console.log("Filtrar por:", topic.name)}
+              onClick={()=> handleSearchTrend(topic.name)}
             >
               <span className="text-sm text-gray-800 dark:text-gray-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 font-medium transition-colors">
                 #{topic.name}
