@@ -3,6 +3,7 @@ import { UserPlus, UserCheck, UserMinus } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import UserHoverCard from "./feed/UserHoverCard";
 import { useFollow } from "../../context/FollowContext";
+import { useIsMobile } from "../../hooks/useIsMobile";
 
 const UserSearchCard = ({ profile }) => {
   const { user: currentUser } = useAuth();
@@ -10,6 +11,7 @@ const UserSearchCard = ({ profile }) => {
   const { isFollowing, followUser, unfollowUser } = useFollow();
   const [isHovered, setIsHovered] = useState(false);
 
+  const isMobile = useIsMobile();
   const following = isFollowing(profile.id);
 
   const handleAction = async (e) => {
@@ -64,7 +66,7 @@ const UserSearchCard = ({ profile }) => {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           disabled={actionLoading}
-          className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-200 min-w-[120px] flex items-center justify-center gap-2 ${
+          className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-200 min-w-20 sm:min-w-[120px] flex items-center justify-center gap-2 ${
             following
               ? isHovered
                 ? "bg-red-100 text-red-600 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/30" // Estado Dejar de seguir
@@ -73,23 +75,43 @@ const UserSearchCard = ({ profile }) => {
           }`}
         >
           {actionLoading ? (
-            <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
           ) : following ? (
             isHovered ? (
               <>
                 {" "}
-                <UserMinus size={16} /> Dejar de seguir{" "}
+                 {isMobile ? (
+                  <UserMinus size={16} />
+                ) : (
+                  <>
+                    <UserMinus size={16} /> Dejar de seguir{" "}
+                  </>
+                )}
+                
               </>
             ) : (
               <>
                 {" "}
-                <UserCheck size={16} /> Siguiendo{" "}
+                {isMobile ? (
+                  <UserMinus size={16} />
+                ) : (
+                  <>
+                    <UserCheck size={16} /> Siguiendo{" "}
+                  </>
+                )}
               </>
             )
           ) : (
             <>
               {" "}
-              <UserPlus size={16} /> Seguir{" "}
+                {isMobile ? (
+                  <UserPlus size={16} />
+                ) : (
+                  <>
+                    <UserPlus size={16} /> Seguir{" "}
+                  </>
+                )}
+              
             </>
           )}
         </button>
