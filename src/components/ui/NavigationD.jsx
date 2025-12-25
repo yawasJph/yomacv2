@@ -3,20 +3,16 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "sonner";
 
-
-
 const NavigationD = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
   const sidebarLinks = [
   { to: ".", icon: <Home size={22} />, text: "Inicio", end: true },
-  { to: `profile`, icon: <UserPen size={22} />, text: "Perfil" },
+  { to: `profile/${user?.id}`, icon: <UserPen size={22} />, text: "Perfil" },
   { to: "users", icon: <Users size={22} />, text: "Descubrir" },
   { to: "save-posts", icon: <Bookmark size={22} />, text: "Guardados" },
 ];
-
-console.log(user)
 
   const handleCreatePost = () => {
     if (user) {

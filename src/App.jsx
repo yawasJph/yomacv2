@@ -10,6 +10,7 @@ import SearchPage from "./components/pages/SearchPage";
 import { useIsMobile } from "./hooks/useIsMobile";
 import UserConnections from "./components/pages/UserConnections";
 import UserProfile from "./components/pages/UserProfile";
+import EditProfile from "./components/pages/EditProfile";
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="search" element={<ProtectedRoute><SearchPage/></ProtectedRoute> } />
           <Route path="user/:userId/connections" element={<UserConnections/>}/>
           <Route path="profile/:userId" element={<UserProfile/>}/>
+          <Route path="/editProfile" element={<EditProfile/>}/>
         </Route>
         <Route path="login" element={<Login/>} />
         

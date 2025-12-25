@@ -18,10 +18,11 @@ export default function UserHoverCard({ user, children }) {
 
   const following = isFollowing(user.id);
   const isMe = currentUser?.id === user.id;
+  console.log(isMobile,isMe)
 
   // Solo habilitamos el hover en Desktop
-  if (isMobile) return <>{children}</>;
-
+  if (isMobile && isMe) return <>{children}</>;
+  
   const handleAction = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -98,7 +99,7 @@ export default function UserHoverCard({ user, children }) {
                 onMouseEnter={() => setIsHoveredBtn(true)}
                 onMouseLeave={() => setIsHoveredBtn(false)}
                 disabled={isLoading}
-                className={`relative px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-200 flex items-center justify-center min-h-[36px] min-w-[85px] ${
+                className={`relative px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-200 flex items-center justify-center min-h-9 min-w-[85px] ${
                   following
                     ? isHoveredBtn
                       ? "bg-red-50 text-red-600 border border-red-100 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"

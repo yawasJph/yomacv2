@@ -17,6 +17,7 @@ import PostMedia from "./PostMedia";
 import MediaModal from "./MediaModal";
 import UserHoverCard from "./UserHoverCardv2";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
 
 const CardPost = ({ post, media }) => {
   // const [currentIndex, setCurrentIndex] = useState(0);
@@ -27,6 +28,8 @@ const CardPost = ({ post, media }) => {
   const [isTruncated, setIsTruncated] = useState(false);
 
   const isMobile = useIsMobile();
+  const { user: currentUser } = useAuth();
+  const isMe = currentUser?.id === post.profiles.id;
 
   const renderTextWithLinks = (text) => {
     if (!text) return null;
@@ -40,9 +43,8 @@ const CardPost = ({ post, media }) => {
 
       // ¿Es una URL?
       if (/(https?:\/\/[^\s]+)/.test(part)) {
-        
         let displayText = part.replace(/(^\w+:|^)\/\/(www\.)?/, "");
-        
+
         if (displayText.length > 30) {
           displayText = displayText.substring(0, 30) + "...";
         }
@@ -90,19 +92,25 @@ const CardPost = ({ post, media }) => {
 
   const closeModal = () => setIsModalOpen(false);
 
-
   return (
     <article className="px-4 py-4 sm:px-6 hover:bg-gray-50/50 dark:hover:bg-gray-900/20 transition-colors border-b border-gray-100 dark:border-gray-800">
       <div className="flex gap-3 items-start">
         {/* Avatar */}
-        
-        <Link to={`profile/${post.profiles.id}`}>
+        {isMe ? (
           <img
-          src={post.profiles.avatar || "/default-avatar.jpg"}
-          alt="avatar"
-          className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
-        />
-        </Link>
+            src={post.profiles.avatar || "/default-avatar.jpg"}
+            alt="avatar"
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
+          />
+        ) : (
+          <Link to={`profile/${post.profiles.id}`}>
+            <img
+              src={post.profiles.avatar || "/default-avatar.jpg"}
+              alt="avatar"
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
+            />
+          </Link>
+        )}
 
         {/* Contenido */}
         <div className="flex-1 min-w-0 w-0">
@@ -112,12 +120,14 @@ const CardPost = ({ post, media }) => {
               <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base">
                 {isMobile ? (
                   <span>{post.profiles.full_name}</span>
-                ) : (
+                ) : !isMe ? (
                   <UserHoverCard user={post.profiles}>
                     <span className="hover:underline cursor-pointer">
                       {post.profiles.full_name}
                     </span>
                   </UserHoverCard>
+                ) : (
+                  <span>{post.profiles.full_name}</span>
                 )}
               </h3>
 
