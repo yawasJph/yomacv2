@@ -15,7 +15,7 @@ const HomeLayout = () => {
   const mobileNavLinks = [
     { to: ".", icon: <Home size={24} />, text: "Inicio", end: true },
     { to: "search", icon: <Search size={24} />, text: "Buscar" },
-    { to: "profile", icon: <UserPen size={24} />, text: "Perfil" },
+    { to: `profile/${user?.id}`, icon: <UserPen size={24} />, text: "Perfil" },
     { to: "save-posts", icon: <Bookmark size={24} />, text: "Guardados" },
     { to: "create-post", icon: <Plus size={24} />, text: "Crear Post" },
   ];
