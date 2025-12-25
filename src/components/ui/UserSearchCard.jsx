@@ -34,19 +34,19 @@ const UserSearchCard = ({ profile }) => {
           <img
             src={profile.avatar || "/default-avatar.jpg"}
             alt={profile.full_name}
-            className="w-12 h-12 rounded-full object-cover shrink-0 border border-emerald-500/10 cursor-pointer"
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 border border-emerald-500/10 cursor-pointer"
           />
         </UserHoverCard>
 
         <div className="min-w-0 flex-1">
           <UserHoverCard user={profile}>
-            <h4 className="font-bold text-gray-900 dark:text-white truncate hover:underline cursor-pointer decoration-emerald-500">
+            <h4 className="font-bold text-gray-900 dark:text-white truncate hover:underline cursor-pointer decoration-emerald-500 text-sm">
               {profile.full_name.length > 20
                 ? profile.full_name.substring(0, 20) + "..."
                 : profile.full_name}
             </h4>
           </UserHoverCard>
-          <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium truncate">
+          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium truncate">
             {profile.carrera || "Estudiante / Profesional"}
           </p>
           {profile.bio && (
