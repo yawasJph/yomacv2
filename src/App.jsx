@@ -8,6 +8,8 @@ import ProtectedRoute from "./components/utils/ProtectedRoute";
 import { Toaster } from "sonner";
 import SearchPage from "./components/pages/SearchPage";
 import { useIsMobile } from "./hooks/useIsMobile";
+import UserConnections from "./components/pages/UserConnections";
+import UserProfile from "./components/pages/UserProfile";
 
 function App() {
 
@@ -19,6 +21,8 @@ function App() {
           <Route index element={<Feed/>} />
           <Route path="create-post" element={<ProtectedRoute><CreatePost/></ProtectedRoute>} />
           <Route path="search" element={<ProtectedRoute><SearchPage/></ProtectedRoute> } />
+          <Route path="user/:userId/connections" element={<UserConnections/>}/>
+          <Route path="profile/:userId" element={<UserProfile/>}/>
         </Route>
         <Route path="login" element={<Login/>} />
         

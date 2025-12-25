@@ -10,6 +10,7 @@ const UserSearchCard = ({ profile }) => {
   const [actionLoading, setActionLoading] = useState(false);
   const { isFollowing, followUser, unfollowUser } = useFollow();
   const [isHovered, setIsHovered] = useState(false);
+  
 
   const isMobile = useIsMobile();
   const following = isFollowing(profile.id);
@@ -32,13 +33,11 @@ const UserSearchCard = ({ profile }) => {
   return (
     <div className="p-4 hover:bg-gray-50/50 dark:hover:bg-gray-900/20 transition-colors border-b border-gray-100 dark:border-gray-800 flex items-center justify-between gap-4">
       <div className="flex items-center gap-3 min-w-0 flex-1">
-        <UserHoverCard user={profile}>
-          <img
-            src={profile.avatar || "/default-avatar.jpg"}
-            alt={profile.full_name}
-            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 border border-emerald-500/10 cursor-pointer"
-          />
-        </UserHoverCard>
+        <img
+          src={profile.avatar || "/default-avatar.jpg"}
+          alt={profile.full_name}
+          className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 border border-emerald-500/10 cursor-pointer"
+        />
 
         <div className="min-w-0 flex-1">
           <UserHoverCard user={profile}>
@@ -80,14 +79,13 @@ const UserSearchCard = ({ profile }) => {
             isHovered ? (
               <>
                 {" "}
-                 {isMobile ? (
+                {isMobile ? (
                   <UserMinus size={16} />
                 ) : (
                   <>
                     <UserMinus size={16} /> Dejar de seguir{" "}
                   </>
                 )}
-                
               </>
             ) : (
               <>
@@ -104,14 +102,13 @@ const UserSearchCard = ({ profile }) => {
           ) : (
             <>
               {" "}
-                {isMobile ? (
-                  <UserPlus size={16} />
-                ) : (
-                  <>
-                    <UserPlus size={16} /> Seguir{" "}
-                  </>
-                )}
-              
+              {isMobile ? (
+                <UserPlus size={16} />
+              ) : (
+                <>
+                  <UserPlus size={16} /> Seguir{" "}
+                </>
+              )}
             </>
           )}
         </button>

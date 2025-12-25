@@ -46,7 +46,7 @@ export default function UserHoverCard({ user, children }) {
               <h2 className="text-xl font-bold leading-tight hover:underline cursor-pointer">
                 {user.full_name}
               </h2>
-              <span className="text-[#71767b] text-sm">@{user.username || "joseph"}</span>
+              <span className="text-[#71767b] text-sm">{user.carrera || "Estudiante"}</span>
             </div>
 
             {/* Avatar */}
@@ -59,7 +59,7 @@ export default function UserHoverCard({ user, children }) {
 
               {/* Verified check (si quieres activarlo si user.verified === true) */}
               {user.verified && (
-                <div className="absolute -bottom-1 -left-1 bg-black rounded-full p-[2px]">
+                <div className="absolute -bottom-1 -left-1 bg-black rounded-full p-0.5">
                   <svg
                     viewBox="0 0 24 24"
                     className="w-5 h-5 text-[#1d9bf0] fill-current"
@@ -83,7 +83,7 @@ export default function UserHoverCard({ user, children }) {
          
           {/* Followers */}
           <div className="mt-3 text-[#71767b] text-sm">
-            <span className="text-white font-bold">{user.followers_count}</span>{"300 "}
+            <span className="text-white font-bold">{user.followers_count}</span>
             seguidores
           </div>
 

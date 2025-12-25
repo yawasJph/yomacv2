@@ -11,11 +11,12 @@ import FullscreenModal from "./FullscreenModal";
 import { timeAgoTiny } from "../../utils/timeagoTiny";
 import { timeAgoLong } from "../../utils/timeAgoLong";
 import { useIsMobile } from "../../../hooks/useIsMobile";
-import UserHoverCard from "./UserHoverCard";
+
 import OpenGraphCard from "../openGraph/OpenGraphCard";
 import PostMedia from "./PostMedia";
 import MediaModal from "./MediaModal";
-import { shortenUrl } from "../../utils/shortenUrl";
+import UserHoverCard from "./UserHoverCardv2";
+import { Link } from "react-router-dom";
 
 const CardPost = ({ post, media }) => {
   // const [currentIndex, setCurrentIndex] = useState(0);
@@ -88,15 +89,20 @@ const CardPost = ({ post, media }) => {
   };
 
   const closeModal = () => setIsModalOpen(false);
+
+
   return (
     <article className="px-4 py-4 sm:px-6 hover:bg-gray-50/50 dark:hover:bg-gray-900/20 transition-colors border-b border-gray-100 dark:border-gray-800">
       <div className="flex gap-3 items-start">
         {/* Avatar */}
-        <img
+        
+        <Link to={`profile/${post.profiles.id}`}>
+          <img
           src={post.profiles.avatar || "/default-avatar.jpg"}
           alt="avatar"
           className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
         />
+        </Link>
 
         {/* Contenido */}
         <div className="flex-1 min-w-0 w-0">

@@ -1,18 +1,22 @@
-import { Bookmark, Home, Plus, TriangleAlertIcon, UserPen, Users, Search } from "lucide-react";
+import { Bookmark, Home, Plus, TriangleAlertIcon, UserPen, Users } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "sonner";
 
-const sidebarLinks = [
-  { to: ".", icon: <Home size={22} />, text: "Inicio", end: true },
-  { to: "profile", icon: <UserPen size={22} />, text: "Perfil" },
-  { to: "users", icon: <Users size={22} />, text: "Descubrir" },
-  { to: "save-posts", icon: <Bookmark size={22} />, text: "Guardados" },
-];
+
 
 const NavigationD = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  const sidebarLinks = [
+  { to: ".", icon: <Home size={22} />, text: "Inicio", end: true },
+  { to: `profile`, icon: <UserPen size={22} />, text: "Perfil" },
+  { to: "users", icon: <Users size={22} />, text: "Descubrir" },
+  { to: "save-posts", icon: <Bookmark size={22} />, text: "Guardados" },
+];
+
+console.log(user)
 
   const handleCreatePost = () => {
     if (user) {
@@ -68,7 +72,7 @@ const NavigationD = () => {
         </NavLink>
       ))}
 
-    {/* Donation Page*/}
+ 
      <button
     className="flex items-center gap-4 px-4 py-3 rounded-xl bg-linear-to-r from-emerald-500 to-teal-400 text-white font-semibold mt-4 hover:shadow-lg transition-all hover:scale-105 cursor-pointer"
     onClick={handleCreatePost}
