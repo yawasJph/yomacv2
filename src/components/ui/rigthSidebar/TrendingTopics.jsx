@@ -30,8 +30,6 @@ const TrendingTopics = () => {
     navigate(`/search?q=${encodeURIComponent(trendName.trim())}`);
   }
 
-  console.log(trends)
-
   if (loading) return (
     <div className="animate-pulse space-y-4 p-4">
       <div className="h-4 bg-emerald-100 dark:bg-emerald-900/20 rounded w-1/3"></div>

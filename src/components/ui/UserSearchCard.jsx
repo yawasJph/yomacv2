@@ -4,7 +4,6 @@ import { useAuth } from "../../context/AuthContext";
 import UserHoverCard from "./feed/UserHoverCard";
 import { useFollow } from "../../context/FollowContext";
 
-
 const UserSearchCard = ({ profile }) => {
   const { user: currentUser } = useAuth();
   const [actionLoading, setActionLoading] = useState(false);
@@ -13,7 +12,7 @@ const UserSearchCard = ({ profile }) => {
 
   const following = isFollowing(profile.id);
 
- const handleAction = async (e) => {
+  const handleAction = async (e) => {
     e.stopPropagation();
     if (!currentUser || actionLoading) return;
 
@@ -42,7 +41,9 @@ const UserSearchCard = ({ profile }) => {
         <div className="min-w-0 flex-1">
           <UserHoverCard user={profile}>
             <h4 className="font-bold text-gray-900 dark:text-white truncate hover:underline cursor-pointer decoration-emerald-500">
-              {profile.full_name}
+              {profile.full_name.length > 20
+                ? profile.full_name.substring(0, 20) + "..."
+                : profile.full_name}
             </h4>
           </UserHoverCard>
           <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium truncate">
@@ -58,31 +59,40 @@ const UserSearchCard = ({ profile }) => {
 
       {/* Botón de acción: No se muestra si es el perfil del propio usuario logueado */}
       {currentUser?.id !== profile.id && (
-       <button
-        onClick={handleAction}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        disabled={actionLoading}
-        className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-200 min-w-[120px] flex items-center justify-center gap-2 ${
-          following
-            ? isHovered
-              ? "bg-red-100 text-red-600 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/30" // Estado Dejar de seguir
-              : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300" // Estado Siguiendo normal
-            : "bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm shadow-emerald-500/20" // Estado Seguir
-        }`}
-      >
-        {actionLoading ? (
-          <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-        ) : following ? (
-          isHovered ? (
-            <> <UserMinus size={16} /> Dejar de seguir </>
+        <button
+          onClick={handleAction}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          disabled={actionLoading}
+          className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-200 min-w-[120px] flex items-center justify-center gap-2 ${
+            following
+              ? isHovered
+                ? "bg-red-100 text-red-600 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/30" // Estado Dejar de seguir
+                : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300" // Estado Siguiendo normal
+              : "bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm shadow-emerald-500/20" // Estado Seguir
+          }`}
+        >
+          {actionLoading ? (
+            <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+          ) : following ? (
+            isHovered ? (
+              <>
+                {" "}
+                <UserMinus size={16} /> Dejar de seguir{" "}
+              </>
+            ) : (
+              <>
+                {" "}
+                <UserCheck size={16} /> Siguiendo{" "}
+              </>
+            )
           ) : (
-            <> <UserCheck size={16} /> Siguiendo </>
-          )
-        ) : (
-          <> <UserPlus size={16} /> Seguir </>
-        )}
-      </button>
+            <>
+              {" "}
+              <UserPlus size={16} /> Seguir{" "}
+            </>
+          )}
+        </button>
       )}
     </div>
   );
