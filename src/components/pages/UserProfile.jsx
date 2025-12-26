@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft,
   Calendar,
@@ -101,12 +101,13 @@ const UserProfile = () => {
         {/* BOTÓN ACCIÓN (Editar o Seguir) */}
         <div className="flex justify-end p-4">
           {isMe ? (
-            <button
+            <Link
               className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-full font-bold text-sm dark:text-white hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
-              onClick={() => navigate("/editProfile")}
+              to={"/editProfile"}
             >
               Editar perfil
-            </button>
+            </Link>
+            
           ) : (
             <button
               onClick={() =>

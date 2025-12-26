@@ -24,7 +24,7 @@ function App() {
           <Route path="search" element={<ProtectedRoute><SearchPage/></ProtectedRoute> } />
           <Route path="user/:userId/connections" element={<UserConnections/>}/>
           <Route path="profile/:userId" element={<UserProfile/>}/>
-          <Route path="/editProfile" element={<EditProfile/>}/>
+          <Route path="editProfile" element={<EditProfile/>}/>
         </Route>
         <Route path="login" element={<Login/>} />
         
