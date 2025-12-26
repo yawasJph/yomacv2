@@ -13,13 +13,14 @@ import { useAuth } from "../../context/AuthContext";
 import { useFollow } from "../../context/FollowContext";
 import CardPost from "../ui/feed/CardPost";
 import UserProfileSkeleton from "../skeletons/UserProfileSkeleton";
+import ImageModal from "../ui/userProfile/ImageModal";
 
 const UserProfile = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
   const { isFollowing, followUser, unfollowUser } = useFollow();
-
+  const [selectedImg, setSelectedImg] = useState(null);
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,6 +54,8 @@ const UserProfile = () => {
     fetchProfileData();
   }, [userId]);
 
+  console.log(profile)
+
   if (loading) return <UserProfileSkeleton />;
 
   return (
@@ -77,7 +80,8 @@ const UserProfile = () => {
 
       {/* BANNER & AVATAR */}
       <div className="relative">
-        <div className="h-32 md:h-48 bg-gray-200 dark:bg-gray-800">
+        <div className="h-32 md:h-48 bg-gray-200 dark:bg-gray-800 cursor-zoom-in"
+        onClick={() => profile?.cover && setSelectedImg(profile.cover)}>
           {profile?.cover && (
             <img
               src={profile.cover}
@@ -87,11 +91,12 @@ const UserProfile = () => {
           )}
         </div>
 
-        <div className="absolute -bottom-1 left-4">
+        <div className="absolute bottom-3 sm:bottom-0 left-4">
           <img
             src={profile?.avatar || "/default-avatar.jpg"}
             className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white dark:border-black object-cover"
             alt={profile?.full_name}
+            onClick={() => profile?.avatar && setSelectedImg(profile.avatar)}
           />
         </div>
 
@@ -121,8 +126,13 @@ const UserProfile = () => {
         </div>
       </div>
 
+      {/* Renderizar el Modal si hay una imagen seleccionada */}
+      {selectedImg && (
+        <ImageModal src={selectedImg} onClose={() => setSelectedImg(null)} />
+      )}
+
       {/* INFORMACIÓN DEL PERFIL */}
-      <div className="px-4 mt-8 space-y-3">
+      <div className="px-4 mt-5 space-y-3">
         <div>
           <h2 className="text-xl font-extrabold dark:text-white tracking-tight sm:text-2xl sm:font-black">
             {profile?.full_name}
@@ -138,52 +148,6 @@ const UserProfile = () => {
             )}
           </div>
         </div>
-
-        {profile?.socials && (
-          <div className="flex gap-3">
-            {profile?.socials?.web && (
-              <a
-                href={profile.socials.web}
-                className="text-emerald-500"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {profile.socials.web}
-              </a>
-            )}
-
-            {profile?.socials?.github && (
-              <a
-                href={profile.socials.github}
-                className="text-emerald-500"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Github size={20} />
-              </a>
-            )}
-            {profile?.socials?.instagram && (
-              <a
-                href={profile.socials.github}
-                className="text-emerald-500"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Instagram size={20} />
-              </a>
-            )}
-            {profile?.socials?.linkedin && (
-              <a
-                href={profile.socials.linkedin}
-                className="text-emerald-500"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Linkedin size={20} />
-              </a>
-            )}
-          </div>
-        )}
 
         {/* REDES SOCIALES ESTILO PREMIUM */}
         {profile?.socials && (
@@ -211,23 +175,12 @@ const UserProfile = () => {
           </div>
         )}
 
-        {/* {profile?.bio && (
-          <p className="text-gray-700 dark:text-gray-300 text-[15px] leading-normal">
-            {profile.bio}
-          </p>
-        )} */}
         {profile?.bio && (
           <p className="text-gray-800 dark:text-gray-200 text-[15px] leading-[1.6] whitespace-pre-line">
             {profile.bio}
           </p>
         )}
 
-        {/* <div className="flex flex-wrap gap-4 text-gray-500 dark:text-gray-400 text-sm">
-          <span className="flex items-center gap-1">
-            <Calendar size={16} /> Se unió en{" "}
-            {new Date(profile?.created_at).toLocaleDateString()}
-          </span>
-        </div> */}
         <div className="flex items-center gap-4 text-gray-500 dark:text-gray-400 text-[13px] font-medium">
           <span className="flex items-center gap-1.5">
             <Calendar size={14} className="opacity-70" />
@@ -238,35 +191,9 @@ const UserProfile = () => {
             })}
           </span>
         </div>
-
-        {/* STATS (Redirigen a la página que creamos antes) */}
-        {/* <div className="flex gap-4 pt-2">
-          <button
-            onClick={() =>
-              navigate(`/user/${userId}/connections?tab=following`)
-            }
-            className="hover:underline flex gap-1 text-sm dark:text-white sm:cursor-pointer"
-          >
-            <span className="font-bold dark:text-white">
-              {profile?.following_count}
-            </span>
-            <span className="text-gray-500">Siguiendo</span>
-          </button>
-          <button
-            onClick={() =>
-              navigate(`/user/${userId}/connections?tab=followers`)
-            }
-            className="hover:underline flex gap-1 text-sm dark:text-white sm:cursor-pointer"
-          >
-            <span className="font-bold dark:text-white">
-              {profile?.followers_count}
-            </span>
-            <span className="text-gray-500">Seguidores</span>
-          </button>
-        </div> */}
-
-        {/* STATS */}
       </div>
+
+      {/* STATS */}
       <div className="flex gap-6 pt-3 border-t  border-gray-50 dark:border-gray-900 mt-3 px-4">
         <button
           onClick={() => navigate(`/user/${userId}/connections?tab=following`)}
