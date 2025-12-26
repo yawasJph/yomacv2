@@ -54,8 +54,6 @@ const UserProfile = () => {
     fetchProfileData();
   }, [userId]);
 
-  console.log(profile)
-
   if (loading) return <UserProfileSkeleton />;
 
   return (

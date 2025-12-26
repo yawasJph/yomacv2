@@ -1,10 +1,31 @@
-import React from 'react'
-import { useAuth } from '../../context/AuthContext'
-import ToggleThemeButton from '../ui/ToggleThemeButton'
-import { Link } from 'react-router-dom'
+import { useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
+import ToggleThemeButton from "../ui/ToggleThemeButton";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 const Login = () => {
-  const { signinWithGoogle, loading, error } = useAuth()
+  const { signinWithGoogle, loading, error } = useAuth();
+
+  // Dentro de tu componente Login:
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const errorDescription = params.get("error_description");
+
+    if (errorDescription) {
+      // Si el error viene del Trigger, el mensaje suele ser "Database error saving new user"
+      // o el mensaje personalizado que pusiste en el RAISE EXCEPTION
+      console.log("login")
+      toast.error("Error de acceso", {
+        description:
+          "Solo se permiten correos institucionales. Si usaste el correcto, contacta a soporte.",
+        duration: 5000,
+      });
+
+      // Limpiamos la URL para que el mensaje no vuelva a salir si el usuario recarga
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300 relative">
@@ -21,12 +42,11 @@ const Login = () => {
             <div className="flex items-center gap-4 mb-8 justify-center lg:justify-start">
               <div className="w-16 h-16 sm:w-20 sm:h-20 bg-linear-to-r from-emerald-500 to-teal-400 rounded-2xl flex items-center justify-center overflow-hidden">
                 <Link to="/">
-                
-                <img
-                  src="/logo.png"
-                  alt="YoMac logo"
-                  className="w-full h-full object-cover"
-                />
+                  <img
+                    src="/logo.png"
+                    alt="YoMac logo"
+                    className="w-full h-full object-cover"
+                  />
                 </Link>
               </div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-linear-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">
@@ -40,7 +60,8 @@ const Login = () => {
                 Bienvenido a YoMAC
               </h2>
               <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                Únete a nuestra comunidad y comparte tus ideas, conecta con otros usuarios y descubre contenido increíble.
+                Únete a nuestra comunidad y comparte tus ideas, conecta con
+                otros usuarios y descubre contenido increíble.
               </p>
             </div>
           </div>
@@ -111,22 +132,53 @@ const Login = () => {
 
                 {/* Términos y condiciones */}
                 <p className="text-xs text-center text-gray-500 dark:text-gray-400 leading-relaxed">
-                  Al continuar, aceptas nuestros{' '}
-                  <a href="#" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+                  Al continuar, aceptas nuestros{" "}
+                  <a
+                    href="#"
+                    className="text-emerald-600 dark:text-emerald-400 hover:underline"
+                  >
                     Términos de servicio
-                  </a>{' '}
-                  y{' '}
-                  <a href="#" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+                  </a>{" "}
+                  y{" "}
+                  <a
+                    href="#"
+                    className="text-emerald-600 dark:text-emerald-400 hover:underline"
+                  >
                     Política de privacidad
                   </a>
                 </p>
               </div>
             </div>
+            {/* Dentro del Card de login, justo antes del botón de Google */}
+            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-6 flex gap-3 mt-3">
+              <div className="text-blue-600 dark:text-blue-400">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="16" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12.01" y2="8" />
+                </svg>
+              </div>
+              <p className="text-xs text-blue-800 dark:text-blue-300 leading-tight">
+                <span className="font-bold block mb-1">Nota importante:</span>
+                Para acceder, debes utilizar obligatoriamente tu{" "}
+                <strong>correo institucional</strong>.
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

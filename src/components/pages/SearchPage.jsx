@@ -68,9 +68,6 @@ const SearchPage = () => {
     fetchAll();
   }, [query, currentUser?.id]);
 
-
-  console.log(postResults);
-  console.log(userResults);
   return (
     <div className="min-h-screen">
       {/* HEADER DINÁMICO */}
