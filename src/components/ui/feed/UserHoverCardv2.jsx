@@ -18,8 +18,7 @@ export default function UserHoverCard({ user, children }) {
 
   const following = isFollowing(user.id);
   const isMe = currentUser?.id === user.id;
-  console.log(isMobile,isMe)
-
+ 
   // Solo habilitamos el hover en Desktop
   if (isMobile && isMe) return <>{children}</>;
   

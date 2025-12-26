@@ -22,8 +22,7 @@ const EditProfile = () => {
 
   const fileInputRef = useRef(null);
   const coverInputRef = useRef(null);
-  const [uploading, setUploading] = useState({ avatar: false, cover: false });
-
+ 
   // Estados para los archivos seleccionados (no subidos aún)
   const [avatarFile, setAvatarFile] = useState(null);
   const [coverFile, setCoverFile] = useState(null);
@@ -32,7 +31,7 @@ const EditProfile = () => {
   const [previews, setPreviews] = useState({ avatar: null, cover: null });
 
   const handleFileChange = (file, type) => {
-   // const file = e.target.files[0];
+    // const file = e.target.files[0];
     if (!file) return;
 
     // Creamos una URL temporal para mostrar en el <img>
@@ -45,6 +44,7 @@ const EditProfile = () => {
       setCoverFile(file);
       setPreviews((prev) => ({ ...prev, cover: previewUrl }));
     }
+
   };
 
   const BIO_LIMIT = 250;
@@ -100,12 +100,14 @@ const EditProfile = () => {
 
       // A. Subir Avatar solo si cambió
       if (avatarFile) {
-        finalAvatarUrl = await uploadToCloudinary(avatarFile);
+        const res = await uploadToCloudinary(avatarFile);
+        finalAvatarUrl = res.secure_url; // Aquí extraemos la URL
       }
 
       // B. Subir Cover solo si cambió
       if (coverFile) {
-        finalCoverUrl = await uploadToCloudinary(coverFile);
+        const res = await uploadToCloudinary(coverFile);
+        finalCoverUrl = res.secure_url; // Aquí extraemos la URL
       }
 
       // C. Guardar todo en Supabase
@@ -115,8 +117,8 @@ const EditProfile = () => {
           bio: formData.bio,
           carrera: formData.carrera || null,
           ciclo: formData.ciclo || null,
-          avatar: finalAvatarUrl.secure_url,
-          cover: finalCoverUrl.secure_url,
+          avatar: finalAvatarUrl,
+          cover: finalCoverUrl,
           socials: formData.socials,
           updated_at: new Date(),
         })
@@ -183,7 +185,11 @@ const EditProfile = () => {
         {/* Cover */}
         <div className="group relative h-40 bg-gray-200 dark:bg-gray-800 overflow-hidden">
           <img
-            src={previews.cover || formData.cover}
+            src={
+              previews?.cover ||
+              formData?.cover ||
+              "https://images.unsplash.com/photo-1503264116251-35a269479413"
+            }
             className={`w-full h-full object-cover transition-opacity duration-300 ${
               loading ? "opacity-30" : "opacity-60"
             }`}
@@ -206,7 +212,9 @@ const EditProfile = () => {
         <div className="absolute -bottom-12 left-6 group">
           <div className="relative">
             <img
-              src={previews.avatar ||formData.avatar}
+              src={
+                previews?.avatar || formData?.avatar || "/default-avatar.png"
+              }
               className={`w-24 h-24 rounded-full border-4 border-white dark:border-black object-cover transition-opacity ${
                 loading ? "opacity-30" : "opacity-80"
               }`}
