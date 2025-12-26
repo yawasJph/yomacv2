@@ -14,6 +14,7 @@ import { useAuth } from "../../context/AuthContext";
 import { toast } from "sonner"; // O tu librería de notificaciones
 import { validateSocials } from "../utils/validateSocials";
 import { uploadToCloudinary } from "../../cloudinary/upToCloudinary";
+import ProfileEditSkeleton from "../skeletons/ProfileEditSkeleton";
 
 const EditProfile = () => {
   const { user } = useAuth();
@@ -22,7 +23,9 @@ const EditProfile = () => {
 
   const fileInputRef = useRef(null);
   const coverInputRef = useRef(null);
- 
+
+  const [initialLoading, setInitialLoading] = useState(true);
+
   // Estados para los archivos seleccionados (no subidos aún)
   const [avatarFile, setAvatarFile] = useState(null);
   const [coverFile, setCoverFile] = useState(null);
@@ -44,7 +47,6 @@ const EditProfile = () => {
       setCoverFile(file);
       setPreviews((prev) => ({ ...prev, cover: previewUrl }));
     }
-
   };
 
   const BIO_LIMIT = 250;
@@ -61,24 +63,28 @@ const EditProfile = () => {
   });
 
   useEffect(() => {
-    if (!user) return;
     const fetchProfile = async () => {
-      const { data } = await supabaseClient
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
-      if (data) {
-        setFormData({
-          ...data,
-          socials: {
-            web: "",
-            instagram: "",
-            github: "",
-            linkedin: "",
-            ...data.socials,
-          },
-        });
+      try {
+        const { data } = await supabaseClient
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .single();
+        if (data) {
+          setFormData({
+            ...data,
+            bio: data.bio || "", // 👈 IMPORTANTE: Asegura que nunca sea null
+            socials: {
+              web: "",
+              instagram: "",
+              github: "",
+              linkedin: "",
+              ...data.socials,
+            },
+          });
+        }
+      } finally {
+        setInitialLoading(false);
       }
     };
     fetchProfile();
@@ -136,6 +142,7 @@ const EditProfile = () => {
     }
   };
 
+  if (initialLoading) return <ProfileEditSkeleton />;
   return (
     <div className="min-h-screen bg-white dark:bg-black pb-10">
       {/* Header Estilo App */}
