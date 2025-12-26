@@ -86,7 +86,7 @@ const EditProfile = () => {
 
   const handleSave = async () => {
     // 1. Validar Bio
-    if (formData.bio.length > BIO_LIMIT) {
+    if (formData.bio?.length > BIO_LIMIT) {
       return toast.error("La biografía es muy larga");
     }
 
@@ -243,12 +243,12 @@ const EditProfile = () => {
             <label className="text-sm font-bold text-gray-500">Biografía</label>
             <span
               className={`text-xs ${
-                formData.bio.length > BIO_LIMIT
+                formData.bio?.length > BIO_LIMIT
                   ? "text-red-500"
                   : "text-gray-400"
               }`}
             >
-              {formData.bio.length} / {BIO_LIMIT}
+              {formData.bio?.length} / {BIO_LIMIT}
             </span>
           </div>
           <textarea
@@ -256,7 +256,7 @@ const EditProfile = () => {
             value={formData.bio}
             onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
             className={`w-full p-3 bg-gray-50 dark:bg-gray-900 dark:text-white rounded-xl border transition-all outline-none h-24 resize-none ${
-              formData.bio.length > BIO_LIMIT
+              formData.bio?.length > BIO_LIMIT
                 ? "border-red-500"
                 : "border-gray-100 dark:border-gray-800 focus:ring-2 focus:ring-emerald-500"
             }`}
