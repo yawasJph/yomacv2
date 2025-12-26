@@ -3,9 +3,8 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft,
   Calendar,
-  MapPin,
-  Link as LinkIcon,
   Github,
+  Globe,
   Instagram,
   Linkedin,
 } from "lucide-react";
@@ -13,6 +12,7 @@ import { supabaseClient } from "../../supabase/supabaseClient";
 import { useAuth } from "../../context/AuthContext";
 import { useFollow } from "../../context/FollowContext";
 import CardPost from "../ui/feed/CardPost";
+import UserProfileSkeleton from "../skeletons/UserProfileSkeleton";
 
 const UserProfile = () => {
   const { userId } = useParams();
@@ -53,8 +53,7 @@ const UserProfile = () => {
     fetchProfileData();
   }, [userId]);
 
-  //if (loading) return <ProfileSkeleton />;
-  if (loading) return <h1>cargando...</h1>;
+  if (loading) return <UserProfileSkeleton />;
 
   return (
     <div className="min-h-screen bg-white dark:bg-black pb-20">
@@ -105,7 +104,6 @@ const UserProfile = () => {
             >
               Editar perfil
             </Link>
-            
           ) : (
             <button
               onClick={() =>
@@ -126,12 +124,19 @@ const UserProfile = () => {
       {/* INFORMACIÓN DEL PERFIL */}
       <div className="px-4 mt-8 space-y-3">
         <div>
-          <h2 className="text-xl font-extrabold dark:text-white">
+          <h2 className="text-xl font-extrabold dark:text-white tracking-tight sm:text-2xl sm:font-black">
             {profile?.full_name}
           </h2>
-          <p className="text-emerald-600 dark:text-emerald-400 font-medium text-sm">
-            {profile?.carrera || "Estudiante"} {profile?.ciclo}
-          </p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-emerald-600 dark:text-emerald-400 font-bold text-sm bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-md">
+              {profile?.carrera || "Estudiante"}
+            </span>
+            {profile?.ciclo && (
+              <span className="text-gray-500 dark:text-gray-400 text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700">
+                Ciclo {profile.ciclo}
+              </span>
+            )}
+          </div>
         </div>
 
         {profile?.socials && (
@@ -180,21 +185,62 @@ const UserProfile = () => {
           </div>
         )}
 
-        {profile?.bio && (
+        {/* REDES SOCIALES ESTILO PREMIUM */}
+        {profile?.socials && (
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(profile.socials).map(([platform, url]) => {
+              if (!url) return null;
+              const icons = {
+                github: <Github size={18} />,
+                instagram: <Instagram size={18} />,
+                linkedin: <Linkedin size={18} />,
+                web: <Globe size={18} />,
+              };
+              return (
+                <a
+                  key={platform}
+                  href={url.startsWith("http") ? url : `https://${url}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:border-emerald-200 transition-all shadow-sm"
+                >
+                  {icons[platform] || <Globe size={18} />}
+                </a>
+              );
+            })}
+          </div>
+        )}
+
+        {/* {profile?.bio && (
           <p className="text-gray-700 dark:text-gray-300 text-[15px] leading-normal">
+            {profile.bio}
+          </p>
+        )} */}
+        {profile?.bio && (
+          <p className="text-gray-800 dark:text-gray-200 text-[15px] leading-[1.6] whitespace-pre-line">
             {profile.bio}
           </p>
         )}
 
-        <div className="flex flex-wrap gap-4 text-gray-500 dark:text-gray-400 text-sm">
+        {/* <div className="flex flex-wrap gap-4 text-gray-500 dark:text-gray-400 text-sm">
           <span className="flex items-center gap-1">
             <Calendar size={16} /> Se unió en{" "}
             {new Date(profile?.created_at).toLocaleDateString()}
           </span>
+        </div> */}
+        <div className="flex items-center gap-4 text-gray-500 dark:text-gray-400 text-[13px] font-medium">
+          <span className="flex items-center gap-1.5">
+            <Calendar size={14} className="opacity-70" />
+            Se unió en{" "}
+            {new Date(profile?.created_at).toLocaleDateString("es-ES", {
+              month: "long",
+              year: "numeric",
+            })}
+          </span>
         </div>
 
         {/* STATS (Redirigen a la página que creamos antes) */}
-        <div className="flex gap-4 pt-2">
+        {/* <div className="flex gap-4 pt-2">
           <button
             onClick={() =>
               navigate(`/user/${userId}/connections?tab=following`)
@@ -217,11 +263,33 @@ const UserProfile = () => {
             </span>
             <span className="text-gray-500">Seguidores</span>
           </button>
-        </div>
+        </div> */}
+
+        {/* STATS */}
+      </div>
+      <div className="flex gap-6 pt-3 border-t  border-gray-50 dark:border-gray-900 mt-3 px-4">
+        <button
+          onClick={() => navigate(`/user/${userId}/connections?tab=following`)}
+          className="group flex gap-1.5 text-sm"
+        >
+          <span className="font-bold dark:text-white group-hover:underline">
+            {profile?.following_count}
+          </span>
+          <span className="text-gray-500">Siguiendo</span>
+        </button>
+        <button
+          onClick={() => navigate(`/user/${userId}/connections?tab=followers`)}
+          className="group flex gap-1.5 text-sm"
+        >
+          <span className="font-bold dark:text-white group-hover:underline">
+            {profile?.followers_count}
+          </span>
+          <span className="text-gray-500">Seguidores</span>
+        </button>
       </div>
 
       {/* TABS DE CONTENIDO */}
-      <div className="mt-4 border-b border-gray-100 dark:border-gray-800 flex sticky top-[107px] bg-white/80 dark:bg-black/80 backdrop-blur-md z-20">
+      <div className="mt-4 border-b border-t border-gray-100 dark:border-gray-800 flex sticky top-[107px] bg-white/80 dark:bg-black/80 backdrop-blur-md z-20">
         {["posts", "media", "likes"].map((tab) => (
           <button
             key={tab}
