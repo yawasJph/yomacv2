@@ -133,7 +133,7 @@ const CardPost = ({ post, media }) => {
         <div className="flex-1 min-w-0 w-0">
           {/* Header */}
           {/* Header del Post */}
-          <div className="flex flex-col mb-1">
+          <div className="flex flex-col mb-2">
             {/* Nombre */}
             <div className="flex justify-between items-start content-center">
               <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base break-words pr-2 flex-1">
@@ -163,7 +163,7 @@ const CardPost = ({ post, media }) => {
             </div>
 
             {/* Segunda línea: carrera, ciclo, tiempo y botón */}
-            <div className="flex justify-between items-center mt-1">
+            <div className="flex justify-between items-center">
               {/* Carrera y ciclo */}
               <div className="flex gap-1 items-center">
                 {post.profiles.carrera && (
@@ -191,6 +191,7 @@ const CardPost = ({ post, media }) => {
               </div>
             </div>
           </div>
+          
           {/* Texto del Post */}
           <p
             ref={textRef}
