@@ -136,25 +136,69 @@ const CardPost = ({ post, media }) => {
           <div className="flex flex-col mb-2">
             {/* Nombre */}
             <div className="flex justify-between items-start content-center">
-              <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base break-words pr-2 flex-1">
-                {isMobile ? (
-                  <span>
-                    {post.profiles.full_name} 
-                  </span>
-                ) : !isMe ? (
-                  <UserHoverCard user={post.profiles}>
-                    <span className="hover:underline cursor-pointer">
-                      {post.profiles.full_name} 
-                     
+              <div className="flex flex-col">
+                <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base break-words pr-2 flex-1">
+                  {isMobile ? (
+                    <span>
+                      {post.profiles.full_name}
+                      <span
+                        className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-500 font-medium mx-2"
+                        title={new Date(post.created_at).toLocaleString(
+                          "es-PE"
+                        )}
+                      >
+                        {isMobile
+                          ? timeAgoTiny(post.created_at)
+                          : timeAgoLong(post.created_at)}
+                      </span>
                     </span>
-                  </UserHoverCard>
-                ) : (
-                  <span>
-                    {post.profiles.full_name} 
-                    
-                  </span>
-                )}
-              </h3>
+                  ) : !isMe ? (
+                    <div>
+                      <UserHoverCard user={post.profiles}>
+                        <span className="hover:underline cursor-pointer">
+                          {post.profiles.full_name}
+                        </span>
+                      </UserHoverCard>
+                      <span
+                        className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-500 font-medium mx-2"
+                        title={new Date(post.created_at).toLocaleString(
+                          "es-PE"
+                        )}
+                      >
+                        {isMobile
+                          ? timeAgoTiny(post.created_at)
+                          : timeAgoLong(post.created_at)}
+                      </span>
+                    </div>
+                  ) : (
+                    <span>
+                      {post.profiles.full_name}
+                      <span
+                        className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-500 font-medium mx-2"
+                        title={new Date(post.created_at).toLocaleString(
+                          "es-PE"
+                        )}
+                      >
+                        {isMobile
+                          ? timeAgoTiny(post.created_at)
+                          : timeAgoLong(post.created_at)}
+                      </span>
+                    </span>
+                  )}
+                </h3>
+                <div className="flex gap-1 items-center">
+                  {post.profiles.carrera && (
+                    <span className="text-xs px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider">
+                      {post.profiles.carrera}
+                    </span>
+                  )}
+                  {post.profiles.ciclo && (
+                    <span className="text-xs px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400 font-bold border border-gray-200 dark:border-gray-700">
+                      Ciclo {post.profiles.ciclo}
+                    </span>
+                  )}
+                </div>
+              </div>
 
               <button className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
                 <MoreHorizontal size={18} />
@@ -165,33 +209,11 @@ const CardPost = ({ post, media }) => {
             {/* Segunda línea: carrera, ciclo, tiempo y botón */}
             <div className="flex justify-between items-center">
               {/* Carrera y ciclo */}
-              <div className="flex gap-1 items-center">
-                {post.profiles.carrera && (
-                  <span className="text-xs px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider">
-                    {post.profiles.carrera}
-                  </span>
-                )}
-                {post.profiles.ciclo && (
-                  <span className="text-xs px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400 font-bold border border-gray-200 dark:border-gray-700">
-                    Ciclo {post.profiles.ciclo}
-                  </span>
-                )}
-              </div>
 
               {/* Tiempo y botón */}
-              <div className="flex items-center gap-2">
-                <p
-                  className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-500 font-medium"
-                  title={new Date(post.created_at).toLocaleString("es-PE")}
-                >
-                  {isMobile
-                    ? timeAgoTiny(post.created_at)
-                    : timeAgoLong(post.created_at)}
-                </p>
-              </div>
+              <div className="flex items-center gap-2"></div>
             </div>
           </div>
-          
           {/* Texto del Post */}
           <p
             ref={textRef}
@@ -234,10 +256,7 @@ const CardPost = ({ post, media }) => {
               />
               <span className="text-sm">{post.like_count || 0}</span>
             </button>
-            <LikeButton 
-    postId={post.id} 
-    initialLikes={post.like_count || 0} 
-  />
+            <LikeButton postId={post.id} initialLikes={post.like_count || 0} />
 
             <button className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
               <MessageCircle size={20} />
