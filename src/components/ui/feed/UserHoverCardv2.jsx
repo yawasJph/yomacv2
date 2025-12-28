@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
-import { ShieldCheck } from "lucide-react";
+import {
+  Code,
+  Leaf,
+  Stethoscope,
+} from "lucide-react";
 import { useFollow } from "../../../context/FollowContext";
 import { useAuth } from "../../../context/AuthContext";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 import { useNavigate } from "react-router-dom";
 import { supabaseClient } from "../../../supabase/supabaseClient";
+import { useAuthAction } from "../../../hooks/useAuthAction";
 
 export default function UserHoverCard({ user, children }) {
   const [open, setOpen] = useState(false);
@@ -15,13 +20,14 @@ export default function UserHoverCard({ user, children }) {
   const [isLoading, setIsLoading] = useState(false);
   const [targetUser, setTargetUser] = useState(null);
   const navigate = useNavigate();
+  const { executeAction } = useAuthAction();
 
   const following = isFollowing(user.id);
   const isMe = currentUser?.id === user.id;
- 
+
   // Solo habilitamos el hover en Desktop
   if (isMobile && isMe) return <>{children}</>;
-  
+
   const handleAction = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -56,6 +62,18 @@ export default function UserHoverCard({ user, children }) {
     fectData();
   }, []);
 
+  const handleFollowsCount = (tab) => {
+    executeAction(() => {
+      goToFollows(tab);
+    }, "ver los seguidores/seguidos");
+  };
+
+  const handleLike = (e) => {
+    executeAction(() => {
+      handleAction(e);
+    }, "seguir a este usuario");
+  };
+
   return (
     <span
       className="relative inline-block"
@@ -81,20 +99,31 @@ export default function UserHoverCard({ user, children }) {
                 alt={user.full_name}
                 className="w-14 h-14 rounded-full object-cover border-2 border-emerald-500/10"
               />
-              {true && (
-                <div className="absolute -bottom-1 -right-1 bg-black dark:bg-gray-600 rounded-full text-emerald-500">
-                  <ShieldCheck
-                    size={20}
-                    fill="currentColor"
-                    className="text-emerald-500 dark:text-emerald-400"
+              <div className="absolute -bottom-1 -right-1 bg-white dark:bg-gray-800 rounded-full p-1 shadow-md border border-gray-200 dark:border-gray-700">
+                {user?.carrera === "I.A.B." && (
+                  <Leaf
+                    size={18}
+                    className="text-emerald-400 dark:text-emerald-500"
                   />
-                </div>
-              )}
+                )}
+                {user?.carrera === "E.T." && (
+                  <Stethoscope
+                    size={18}
+                    className="text-emerald-400 dark:text-emerald-500"
+                  />
+                )}
+                {user?.carrera === "D.S.I." && (
+                  <Code
+                    size={18}
+                    className="text-emerald-400 dark:text-emerald-500"
+                  />
+                )}
+              </div>
             </div>
 
             {!isMe && (
               <button
-                onClick={handleAction}
+                onClick={handleLike}
                 onMouseEnter={() => setIsHoveredBtn(true)}
                 onMouseLeave={() => setIsHoveredBtn(false)}
                 disabled={isLoading}
@@ -143,7 +172,7 @@ export default function UserHoverCard({ user, children }) {
           {/* Stats: Seguidores / Siguiendo */}
           <div className="mt-4 flex gap-4 text-sm">
             <div
-              onClick={() => goToFollows("following")}
+              onClick={() => handleFollowsCount("following")}
               className="flex gap-1 hover:underline cursor-pointer"
             >
               <span className="font-bold dark:text-white">
@@ -154,7 +183,7 @@ export default function UserHoverCard({ user, children }) {
               </span>
             </div>
             <div
-              onClick={() => goToFollows("followers")}
+              onClick={() => handleFollowsCount("followers")}
               className="flex gap-1 hover:underline cursor-pointer"
             >
               <span className="font-bold dark:text-white">

@@ -41,15 +41,24 @@ const UserSearchCard = ({ profile }) => {
 
         <div className="min-w-0 flex-1">
           <UserHoverCard user={profile}>
-            <h4 className="font-bold text-gray-900 dark:text-white truncate hover:underline cursor-pointer decoration-emerald-500 text-sm">
+            <h4 className="font-bold text-gray-900 dark:text-white truncate hover:underline cursor-pointer decoration-emerald-500 text-sm sm:text-base">
               {profile.full_name.length > 20
                 ? profile.full_name.substring(0, 20) + "..."
                 : profile.full_name}
             </h4>
           </UserHoverCard>
-          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium truncate">
-            {profile.carrera || "Estudiante / Profesional"}
-          </p>
+           <div className="flex gap-1 items-center">
+                {profile.carrera && (
+                  <span className="text-xs px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider">
+                    {profile.carrera}
+                  </span>
+                )}
+                {profile.ciclo && (
+                  <span className="text-xs px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400 font-bold border border-gray-200 dark:border-gray-700">
+                    Ciclo {profile.ciclo}
+                  </span>
+                )}
+              </div>
           {profile.bio && (
             <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mt-0.5">
               {profile.bio}

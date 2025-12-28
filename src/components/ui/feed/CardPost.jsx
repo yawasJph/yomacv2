@@ -18,6 +18,8 @@ import MediaModal from "./MediaModal";
 import UserHoverCard from "./UserHoverCardv2";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { useAuthAction } from "../../../hooks/useAuthAction";
+import LikeButton from "./LikeButton";
 
 const CardPost = ({ post, media }) => {
   // const [currentIndex, setCurrentIndex] = useState(0);
@@ -27,6 +29,7 @@ const CardPost = ({ post, media }) => {
   const [expanded, setExpanded] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
 
+  const { executeAction } = useAuthAction();
   const isMobile = useIsMobile();
   const { user: currentUser } = useAuth();
   const isMe = currentUser?.id === post.profiles.id;
@@ -92,6 +95,20 @@ const CardPost = ({ post, media }) => {
 
   const closeModal = () => setIsModalOpen(false);
 
+  const handleLike = () => {
+    executeAction(() => {
+      // Aquí va tu lógica real de Supabase
+      console.log("Dando like al post:", post.id);
+      // supabase.from('likes').insert(...)
+    }, "dar me gusta");
+  };
+
+  const handleSave = () => {
+    executeAction(() => {
+      console.log("Guardando post...");
+    }, "guardar esta publicación");
+  };
+
   return (
     <article className="px-4 py-4 sm:px-6 hover:bg-gray-50/50 dark:hover:bg-gray-900/20 transition-colors border-b border-gray-100 dark:border-gray-800">
       <div className="flex gap-3 items-start">
@@ -115,35 +132,64 @@ const CardPost = ({ post, media }) => {
         {/* Contenido */}
         <div className="flex-1 min-w-0 w-0">
           {/* Header */}
-          <div className="flex justify-between items-start mb-2">
-            <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base">
+          {/* Header del Post */}
+          <div className="flex flex-col mb-1">
+            {/* Nombre */}
+            <div className="flex justify-between items-start content-center">
+              <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base break-words pr-2 flex-1">
                 {isMobile ? (
-                  <span>{post.profiles.full_name}</span>
+                  <span>
+                    {post.profiles.full_name} 
+                  </span>
                 ) : !isMe ? (
                   <UserHoverCard user={post.profiles}>
                     <span className="hover:underline cursor-pointer">
-                      {post.profiles.full_name}
+                      {post.profiles.full_name} 
+                     
                     </span>
                   </UserHoverCard>
                 ) : (
-                  <span>{post.profiles.full_name}</span>
+                  <span>
+                    {post.profiles.full_name} 
+                    
+                  </span>
                 )}
               </h3>
 
-              <p
-                className="text-sm text-gray-500 dark:text-gray-400"
-                title={new Date(post.created_at).toLocaleString("es-PE")}
-              >
-                {isMobile
-                  ? timeAgoTiny(post.created_at)
-                  : timeAgoLong(post.created_at)}
-              </p>
+              <button className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
+                <MoreHorizontal size={18} />
+              </button>
+              {/* No hay botón aquí, se mueve a la segunda línea */}
             </div>
 
-            <button className="p-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition">
-              <MoreHorizontal size={18} />
-            </button>
+            {/* Segunda línea: carrera, ciclo, tiempo y botón */}
+            <div className="flex justify-between items-center mt-1">
+              {/* Carrera y ciclo */}
+              <div className="flex gap-1 items-center">
+                {post.profiles.carrera && (
+                  <span className="text-xs px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider">
+                    {post.profiles.carrera}
+                  </span>
+                )}
+                {post.profiles.ciclo && (
+                  <span className="text-xs px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400 font-bold border border-gray-200 dark:border-gray-700">
+                    Ciclo {post.profiles.ciclo}
+                  </span>
+                )}
+              </div>
+
+              {/* Tiempo y botón */}
+              <div className="flex items-center gap-2">
+                <p
+                  className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-500 font-medium"
+                  title={new Date(post.created_at).toLocaleString("es-PE")}
+                >
+                  {isMobile
+                    ? timeAgoTiny(post.created_at)
+                    : timeAgoLong(post.created_at)}
+                </p>
+              </div>
+            </div>
           </div>
           {/* Texto del Post */}
           <p
@@ -177,20 +223,30 @@ const CardPost = ({ post, media }) => {
           {/* Renderizado de Imágenes UNIFICADO */}
           {/* Acciones */}
           <div className="flex items-center gap-6 text-gray-500 dark:text-gray-400 mt-3">
-            <button className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors group">
+            <button
+              className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors group"
+              onClick={handleLike}
+            >
               <Heart
                 size={20}
                 className="group-hover:fill-emerald-600 dark:group-hover:fill-emerald-400"
               />
               <span className="text-sm">{post.like_count || 0}</span>
             </button>
+            <LikeButton 
+    postId={post.id} 
+    initialLikes={post.like_count || 0} 
+  />
 
             <button className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
               <MessageCircle size={20} />
               <span className="text-sm">{post.comment_count || 0}</span>
             </button>
 
-            <button className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+            <button
+              className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+              onClick={handleSave}
+            >
               <Bookmark size={20} />
             </button>
           </div>

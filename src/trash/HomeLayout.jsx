@@ -194,6 +194,7 @@ const HomeLayout = () => {
             Así se verá tu publicación cuando sea compartida
           </p>
         </div>
+        
       )}
     </div>
     

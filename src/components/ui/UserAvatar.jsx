@@ -1,9 +1,25 @@
 import { LogOut, UserPen } from "lucide-react";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { supabaseClient } from "../../supabase/supabaseClient";
 
-const UserAvatar = ({ user, signout }) => {
+const UserAvatar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, signout } = useAuth();
+  const[userAvatar, setUserAvatar] = useState(null)
+
+  useEffect(() => {
+    const fechtUserAvatar = async () => {
+      const { data, error } = await supabaseClient
+        .from("profiles")
+        .select("avatar")
+        .eq("id", user?.id);
+      if(error) throw error;
+      setUserAvatar(data)
+    };
+    fechtUserAvatar();
+  }, []);
 
   return (
     <div className="relative">
@@ -13,11 +29,11 @@ const UserAvatar = ({ user, signout }) => {
       >
         <div className="relative">
           <img
-            src={user.user_metadata.avatar_url || "/default-avatar.jpg"}
+            src={userAvatar || "/default-avatar.jpg"}
             alt={user.user_metadata.full_name}
             className="w-9 h-9 rounded-xl border-2 border-emerald-400/50 shadow-sm"
           />
-          
+
           <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-gray-900"></div>
         </div>
       </button>
@@ -39,7 +55,10 @@ const UserAvatar = ({ user, signout }) => {
             >
               <UserPen size={18} /> Perfil
             </NavLink>
-            <button onClick={signout} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors mt-2 cursor-pointer">
+            <button
+              onClick={signout}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors mt-2 cursor-pointer"
+            >
               <LogOut size={18} /> Cerrar Sesión
             </button>
           </div>

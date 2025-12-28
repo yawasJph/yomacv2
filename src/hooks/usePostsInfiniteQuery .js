@@ -12,7 +12,7 @@ export const usePostsInfiniteQuery = () => {
         content,
         og_data,
         created_at,
-        profiles(full_name, avatar, id),
+        profiles(full_name, avatar, id, carrera, ciclo),
         post_media(id, media_url, media_type)
         ` // <-- He quitado la coma que estaba aquí
       )

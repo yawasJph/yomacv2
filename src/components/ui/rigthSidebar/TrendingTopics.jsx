@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { supabaseClient } from "../../../supabase/supabaseClient";
 import { useNavigate } from "react-router-dom";
+import { useAuthAction } from "../../../hooks/useAuthAction";
 
 const TrendingTopics = () => {
   const [trends, setTrends] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate()
+  const {executeAction} = useAuthAction();
   useEffect(() => {
     const fetchTrends = async () => {
       try {
@@ -30,6 +32,12 @@ const TrendingTopics = () => {
     navigate(`/search?q=${encodeURIComponent(trendName.trim())}`);
   }
 
+  const handleClick = (trendName) =>{
+    executeAction(()=>{
+      handleSearchTrend(trendName);
+    },"buscar trends")
+  }
+
   if (loading) return (
     <div className="animate-pulse space-y-4 p-4">
       <div className="h-4 bg-emerald-100 dark:bg-emerald-900/20 rounded w-1/3"></div>
@@ -50,7 +58,7 @@ const TrendingTopics = () => {
             <div
               key={topic.id}
               className="flex justify-between items-center group cursor-pointer p-2 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors duration-200"
-              onClick={()=> handleSearchTrend(topic.name)}
+              onClick={()=> handleClick(topic.name)}
             >
               <span className="text-sm text-gray-800 dark:text-gray-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 font-medium transition-colors">
                 #{topic.name}

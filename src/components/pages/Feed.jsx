@@ -2,17 +2,11 @@ import { useRef, useEffect } from "react";
 import PostCard from "../ui/PostCard";
 import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery ";
 import SkeletonPost from "../skeletons/SkeletonPost";
-import { toast } from "sonner";
-import { useSearchParams } from "react-router-dom";
+import CardPost from "../ui/feed/CardPost";
 
 const Feed = () => {
-  const {
-    data,
-    isLoading,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = usePostsInfiniteQuery();
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    usePostsInfiniteQuery();
 
   const loaderRef = useRef();
 
@@ -38,14 +32,16 @@ const Feed = () => {
   return (
     <>
       {isLoading ? (
-        <div >
-            {[1, 2, 3, 4].map((i) => (
-          <SkeletonPost key={i} />
-        ))}
+        <div>
+          {[1, 2, 3, 4].map((i) => (
+            <SkeletonPost key={i} />
+          ))}
         </div>
       ) : (
         <>
-          <PostCard posts={allPosts} />
+          {allPosts.map((post) => (
+            <CardPost key={post.id} post={post} media={post.post_media ?? []} />
+          ))}
 
           {/* Loader para infinite scroll */}
           <div ref={loaderRef} className="py-4 flex justify-center">

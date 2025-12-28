@@ -60,27 +60,6 @@ const NavigationD = () => {
     }
   };
 
-  const handleCreatePost = () => {
-    if (user) {
-      navigate("create-post");
-    } else {
-      navigate("login");
-      toast.error("Debes iniciar sesión para crear una publicación", {
-        className: "shadow-lg border-l-4 border-red-600",
-
-        action: {
-          label: "Ayuda",
-          onClick: () => {
-            console.log("Abriendo página de soporte...");
-            toast.info("Abriendo centro de ayuda...");
-          },
-          className: "bg-white text-gray-800 hover:bg-gray-100 font-semibold",
-        },
-        icon: <TriangleAlertIcon className="w-5 h-5 text-red-500" />,
-      });
-    }
-  };
-
   return (
     <nav className="flex flex-col gap-1">
       {sidebarLinks.map((l) => (
@@ -102,7 +81,7 @@ const NavigationD = () => {
       ))}
 
       <button
-        className="flex items-center gap-4 px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-white font-semibold mt-4 hover:shadow-lg transition-all hover:scale-105 cursor-pointer"
+        className="flex items-center gap-4 px-4 py-3 rounded-xl bg-linear-to-r from-emerald-500 to-teal-400 text-white font-semibold mt-4 hover:shadow-lg transition-all hover:scale-105 cursor-pointer"
         onClick={() => user ? navigate("create-post") : requireAuth("crear una publicación")}
       >
         <Plus size={25} />

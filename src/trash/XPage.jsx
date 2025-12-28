@@ -139,6 +139,39 @@ const XPage = () => {
           </div>
         </div>
 
+        <div className="flex justify-between items-start mb-2">
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base wrap-break-word">
+                {isMobile ? (
+                  <span>{post.profiles.full_name} sanchez aldair llacuash mercdes escobar pablo</span>
+                ) : !isMe ? (
+                  <UserHoverCard user={post.profiles}>
+                    <span className="hover:underline cursor-pointer">
+                      {post.profiles.full_name}
+                    </span>
+                  </UserHoverCard>
+                ) : (
+                  <span>{post.profiles.full_name}</span>
+                )}
+              </h3>
+              
+
+              <p
+                className="text-sm text-gray-500 dark:text-gray-400"
+                title={new Date(post.created_at).toLocaleString("es-PE")}
+              >
+                {isMobile
+                  ? timeAgoTiny(post.created_at)
+                  : timeAgoLong(post.created_at)}
+              </p>
+            </div>
+
+            <button className="p-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition">
+              <MoreHorizontal size={18} />
+            </button>
+           
+          </div>
+
         {/* Feed de Publicaciones */}
         <div className="divide-y divide-gray-800">
           {/* Publicación 1 */}
