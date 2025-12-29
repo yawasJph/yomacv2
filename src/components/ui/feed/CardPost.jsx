@@ -108,7 +108,7 @@ const CardPost = ({ post, media }) => {
   const handleComment = () => {
     executeAction(() => {
       navigate(`/post/${post.id}`)
-    }, "guardar esta publicación");
+    }, "escribir un comentario");
   };
 
   return (
