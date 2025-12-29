@@ -15,7 +15,7 @@ const BookmarkButton = ({ postId }) => {
 
   return (
     <button 
-      onClick={toggleBookmark}
+      onClick={handlePress}
       className={`p-2 rounded-full transition-all hover:bg-emerald-50 dark:hover:bg-emerald-500/10 ${
         isBookmarked ? "text-emerald-500" : "text-gray-400"
       }`}

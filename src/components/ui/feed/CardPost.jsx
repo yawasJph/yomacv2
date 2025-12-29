@@ -97,7 +97,7 @@ const CardPost = ({ post, media }) => {
 
   const closeModal = () => setIsModalOpen(false);
 
-  const handleLike = () => {
+  const handleSave = () => {
     executeAction(() => {
       // Aquí va tu lógica real de Supabase
       console.log("Dando like al post:", post.id);
