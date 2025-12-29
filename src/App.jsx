@@ -10,6 +10,9 @@ import SearchPage from "./components/pages/SearchPage";
 import UserConnections from "./components/pages/UserConnections";
 import UserProfile from "./components/pages/UserProfile";
 import EditProfile from "./components/pages/EditProfile";
+import SavedPage from "./components/pages/SavedPage";
+import DiscoverPage from "./components/pages/DiscoverPage";
+import PostPage from "./components/pages/PostPage";
 
 function App() {
 
@@ -29,6 +32,9 @@ function App() {
           <Route path="user/:userId/connections" element={<ProtectedRoute><UserConnections/></ProtectedRoute>}/>
           <Route path="profile/:userId" element={<ProtectedRoute><UserProfile/></ProtectedRoute>}/>
           <Route path="editProfile" element={<ProtectedRoute><EditProfile/></ProtectedRoute>}/>
+          <Route path="savedPost" element={<ProtectedRoute><SavedPage/></ProtectedRoute>}/>
+          <Route path="users" element={<ProtectedRoute><DiscoverPage/></ProtectedRoute>}/>
+          <Route path="post/:postId" element={<ProtectedRoute><PostPage/></ProtectedRoute>}/>
         </Route>
         
         

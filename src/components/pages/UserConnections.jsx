@@ -27,6 +27,7 @@ const UserConnections = () => {
           .eq("id", userId)
           .single();
         setTargetUser(userData);
+        console.log(userData);
 
         // 2. Traer AMBAS listas en paralelo
         const [resFollowers, resFollowing] = await Promise.all([
@@ -96,7 +97,18 @@ const UserConnections = () => {
           <h1 className="text-xl font-bold dark:text-white">
             {targetUser?.full_name}
           </h1>
-          <p className="text-xs text-gray-500">{targetUser?.carrera}</p>
+          <div className="flex gap-1 items-center">
+            {targetUser?.carrera && (
+              <span className="text-xs px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider">
+                {targetUser.carrera}
+              </span>
+            )}
+            {targetUser?.ciclo && (
+              <span className="text-xs px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400 font-bold border border-gray-200 dark:border-gray-700">
+                Ciclo {targetUser.ciclo}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 

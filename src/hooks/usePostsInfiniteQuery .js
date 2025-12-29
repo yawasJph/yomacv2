@@ -5,17 +5,12 @@ import { supabaseClient } from "../supabase/supabaseClient";
 export const usePostsInfiniteQuery = () => {
   const fetchPosts = async ({ pageParam = null }) => {
     const query = supabaseClient
-      .from("posts")
-      .select(
-        `
-        id,
-        content,
-        og_data,
-        created_at,
-        profiles(full_name, avatar, id, carrera, ciclo),
-        post_media(id, media_url, media_type)
-        ` // <-- He quitado la coma que estaba aquí
-      )
+     .from("posts_with_counts") // 👈 Cambiamos la tabla por la vista
+      .select(`
+        *,
+        profiles:user_id (id, full_name, avatar, carrera, ciclo),
+        post_media (id, media_url, media_type)
+      `)
       .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .limit(10);

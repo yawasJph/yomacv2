@@ -1,95 +1,64 @@
-import { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
-import { supabaseClient } from "../../../supabase/supabaseClient";
-import { useAuth } from "../../../context/AuthContext";
-import { useAuthAction } from "../../../hooks/useAuthAction";
+import { useLike } from "../../../hooks/useLike";
 
-const LikeButton = ({ postId, initialLikes = 0 }) => {
-  const { user } = useAuth();
-  const { executeAction } = useAuthAction();
-  
-  const [isLiked, setIsLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(initialLikes);
-  const [isAnimating, setIsAnimating] = useState(false);
 
-  // 1. Verificar si el usuario ya dio like al cargar el componente
-  useEffect(() => {
-    if (!user) return;
+const LikeButton = ({ postId, initialCount = 0 }) => {
+  const { isLiked, toggleLike, isLoading } = useLike(postId);
 
-    const checkLikeStatus = async () => {
-      const { data } = await supabaseClient
-        .from("likes")
-        .select("id")
-        .eq("post_id", postId)
-        .eq("user_id", user.id)
-        .single();
+  // Ajustamos el contador visualmente de forma local para el feedback inmediato
+  // (Aunque lo ideal es que el contador venga del query de posts)
 
-      if (data) setIsLiked(true);
-    };
-
-    checkLikeStatus();
-  }, [postId, user]);
-
-  const toggleLike = async () => {
-    executeAction(async () => {
-      try {
-        // --- Lógica Optimista ---
-        const previousLiked = isLiked;
-        const previousCount = likesCount;
-
-        setIsLiked(!previousLiked);
-        setLikesCount(previousLiked ? previousCount - 1 : previousCount + 1);
-        if (!previousLiked) setIsAnimating(true); // Efecto de explosión
-
-        // --- Petición Real ---
-        if (previousLiked) {
-          // Quitar Like
-          await supabaseClient
-            .from("likes")
-            .delete()
-            .eq("post_id", postId)
-            .eq("user_id", user.id);
-        } else {
-          // Dar Like
-          await supabaseClient
-            .from("likes")
-            .insert({ post_id: postId, user_id: user.id });
-        }
-      } catch (error) {
-        // Si falla, revertimos al estado anterior
-        setIsLiked(isLiked);
-        setLikesCount(likesCount);
-        console.error("Error toggling like:", error);
-      } finally {
-        setTimeout(() => setIsAnimating(false), 500);
-      }
-    }, "dar me gusta");
-  };
+  const displayCount = isLiked ? initialCount + 1 : initialCount;
 
   return (
-    <button
-      onClick={toggleLike}
+    <>
+    {/* <button
+      onClick={(e) => {
+        e.stopPropagation();
+        toggleLike();
+      }}
+      className="group flex items-center gap-1.5 transition-colors"
+    >
+      <div className={`p-1 rounded-full transition-colors ${
+        isLiked 
+          ? "text-emerald-500  dark:text-emerald-600" 
+          : "text-gray-500 dark:text-gray-400 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-500/10 group-hover:text-emerald-500"
+      }`}>
+        <Heart 
+          size={20} 
+          fill={isLiked ? "currentColor" : "none"} 
+          className={isLiked ? "animate-heart-pop" : "group-hover:scale-110"}
+        />
+      </div>
+      <span className={`text-sm font-medium dark:text-gray-500 ${isLiked ? "text-emerald-500 dark:text-emerald-600" : "text-gray-500"}`}>
+        {displayCount > 0 && displayCount || 0}
+      </span>
+    </button> */}
+   
+     <button
+     disabled={isLoading}
+       onClick={(e) => {
+        e.stopPropagation();
+        toggleLike();
+      }}
       className={`flex items-center gap-2 transition-colors group ${
         isLiked 
-          ? "text-emerald-500" 
+          ? "text-emerald-400 dark:text-emerald-500" 
           : "text-gray-500 dark:text-gray-400 hover:text-emerald-500"
       }`}
     >
-      <div className={`relative ${isAnimating ? "animate-bounce" : ""}`}>
+      <div className={`relative ${isLiked ? "animate-heart-pop" : ""}`}>
         <Heart
           size={20}
           className={`transition-all duration-300 ${
             isLiked ? "fill-current scale-110" : "group-hover:scale-110"
           }`}
         />
-        {/* Pequeño efecto visual de partículas (opcional) */}
-        {isAnimating && (
-          <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-        )}
       </div>
-      <span className="text-sm font-medium">{likesCount}</span>
+      <span className="text-sm font-medium">{displayCount > 0 && displayCount || 0}</span>
     </button>
+    </>
   );
 };
 
-export default LikeButton;
+export default LikeButton

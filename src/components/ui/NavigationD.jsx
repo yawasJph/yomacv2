@@ -36,7 +36,7 @@ const NavigationD = () => {
       private: false,
     }, // Público para que vean a otros
     {
-      to: "save-posts",
+      to: "savedPost",
       icon: <Bookmark size={22} />,
       text: "Guardados",
       private: true,

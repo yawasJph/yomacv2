@@ -41,17 +41,16 @@ const UserSuggestions = () => {
   const handleToggleFollow = async (targetId) => {
     if (actionId) return; // Evitar múltiples clics
     setActionId(targetId);
-    
+
     if (isFollowing(targetId)) {
       await unfollowUser(targetId);
     } else {
       await followUser(targetId);
     }
-    
+
     setActionId(null);
   };
 
-  console.log(suggestions)
   if (!loading && suggestions.length === 0) return null;
 
   return (
@@ -70,7 +69,7 @@ const UserSuggestions = () => {
         ) : (
           suggestions.map((profile) => {
             const following = isFollowing(profile.id); // 👈 Estado dinámico
-            
+
             return (
               <div
                 className="flex items-center justify-between gap-3 group"
@@ -89,18 +88,18 @@ const UserSuggestions = () => {
                         : profile.full_name}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
-            <span className="text-emerald-600 dark:text-emerald-400 font-bold text-xs bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-md">
-              {profile?.carrera || "Estudiante"}
-            </span>
-            {profile?.ciclo && (
-              <span className="text-gray-500 dark:text-gray-400 text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700">
-                Ciclo {profile.ciclo}
-              </span>
-            )}
-          </div>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-bold text-xs bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                        {profile?.carrera || "Estudiante"}
+                      </span>
+                      {profile?.ciclo && (
+                        <span className="text-gray-500 dark:text-gray-400 text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700">
+                          Ciclo {profile.ciclo}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
-                
+
                 <button
                   onClick={() => handleToggleFollow(profile.id)}
                   disabled={actionId === profile.id}
@@ -114,9 +113,15 @@ const UserSuggestions = () => {
                   {actionId === profile.id ? (
                     <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                   ) : following ? (
-                    <UserMinus size={16} className="animate-in zoom-in duration-300" />
+                    <UserMinus
+                      size={16}
+                      className="animate-in zoom-in duration-300"
+                    />
                   ) : (
-                    <UserPlus size={16} className="animate-in zoom-in duration-300" />
+                    <UserPlus
+                      size={16}
+                      className="animate-in zoom-in duration-300"
+                    />
                   )}
                 </button>
               </div>

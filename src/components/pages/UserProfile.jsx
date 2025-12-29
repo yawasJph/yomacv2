@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -14,6 +14,8 @@ import { useFollow } from "../../context/FollowContext";
 import CardPost from "../ui/feed/CardPost";
 import UserProfileSkeleton from "../skeletons/UserProfileSkeleton";
 import ImageModal from "../ui/userProfile/ImageModal";
+import { useProfile } from "../../hooks/useProfile";
+import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery2";
 
 const UserProfile = () => {
   const { userId } = useParams();
@@ -21,41 +23,48 @@ const UserProfile = () => {
   const { user: currentUser } = useAuth();
   const { isFollowing, followUser, unfollowUser } = useFollow();
   const [selectedImg, setSelectedImg] = useState(null);
-  const [profile, setProfile] = useState(null);
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+ // const [profile, setProfile] = useState(null);
+ // const [posts, setPosts] = useState([]);
+ // const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("posts");
+
+
+  const loaderRef = useRef();
+
+  const { data: profile, isLoading: profileLoading } = useProfile(userId);
+
+  // 2. Cargar posts paginados según el Tab
+  const { 
+    data, 
+    fetchNextPage, 
+    hasNextPage, 
+    isFetchingNextPage, 
+    isLoading: postsLoading 
+  } = usePostsInfiniteQuery({ type: activeTab, userId });
+
+  const allPosts = data?.pages.flat() || [];
+
+  // 3. Observer para el Scroll Infinito
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.5 }
+    );
+    if (loaderRef.current) observer.observe(loaderRef.current);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage]);
+
+  if (profileLoading) return <UserProfileSkeleton />;
+
 
   const isMe = currentUser?.id === userId;
   const following = isFollowing(userId);
 
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      setLoading(true);
-      // 1. Datos del perfil con stats
-      const { data: profileData } = await supabaseClient
-        .from("profiles_with_stats")
-        .select("*")
-        .eq("id", userId)
-        .single();
-
-      // 2. Posts del usuario
-      const { data: postsData } = await supabaseClient
-        .from("posts")
-        .select("*, profiles:user_id(*), post_media(*)")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
-
-      setProfile(profileData);
-      setPosts(postsData || []);
-      setLoading(false);
-    };
-
-    fetchProfileData();
-  }, [userId]);
-
-  if (loading) return <UserProfileSkeleton />;
-
+  
   return (
     <div className="min-h-screen bg-white dark:bg-black pb-20">
       {/* HEADER SUPERIOR (Sticky) */}
@@ -71,15 +80,21 @@ const UserProfile = () => {
             {profile?.full_name}
           </h1>
           <span className="text-xs text-gray-500">
-            {posts.length} publicaciones
+            {allPosts.length} {activeTab === "posts" &&
+                "publicaciones"}
+              {activeTab === "media" && "medias"}
+              {activeTab === "likes" &&
+                "likes"}
           </span>
         </div>
       </div>
 
       {/* BANNER & AVATAR */}
       <div className="relative">
-        <div className="h-32 md:h-48 bg-gray-200 dark:bg-gray-800 cursor-zoom-in"
-        onClick={() => profile?.cover && setSelectedImg(profile.cover)}>
+        <div
+          className="h-32 md:h-48 bg-gray-200 dark:bg-gray-800 cursor-zoom-in"
+          onClick={() => profile?.cover && setSelectedImg(profile.cover)}
+        >
           {profile?.cover && (
             <img
               src={profile.cover}
@@ -230,16 +245,25 @@ const UserProfile = () => {
         ))}
       </div>
 
-      {/* RENDER DE PUBLICACIONES */}
+    
+
+      
+
+      {/* LISTADO DE POSTS CON INFINITE SCROLL */}
       <div className="divide-y divide-gray-100 dark:divide-gray-800">
-        {posts.length > 0 ? (
-          posts.map((post) => (
-            <CardPost key={post.id} post={post} media={post.post_media} />
-          ))
+        {postsLoading ? (
+          <div className="p-10 text-center"><div className="animate-spin inline-block w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full" /></div>
+        ) : allPosts.length > 0 ? (
+          <>
+            {allPosts.map((post) => (
+              <CardPost key={post.id} post={post} media={post.post_media} />
+            ))}
+            <div ref={loaderRef} className="h-10 flex justify-center py-4">
+              {isFetchingNextPage && <div className="animate-spin w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full" />}
+            </div>
+          </>
         ) : (
-          <div className="p-10 text-center text-gray-500">
-            Este usuario aún no tiene publicaciones.
-          </div>
+          <div className="p-20 text-center text-gray-500">No hay contenido para mostrar.</div>
         )}
       </div>
     </div>

@@ -3,23 +3,14 @@ import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
+import { useProfile } from "../../hooks/useProfile";
 
 const UserAvatar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, signout } = useAuth();
   const[userAvatar, setUserAvatar] = useState(null)
 
-  useEffect(() => {
-    const fechtUserAvatar = async () => {
-      const { data, error } = await supabaseClient
-        .from("profiles")
-        .select("avatar")
-        .eq("id", user?.id);
-      if(error) throw error;
-      setUserAvatar(data)
-    };
-    fechtUserAvatar();
-  }, []);
+  const {data} = useProfile(user.id)
 
   return (
     <div className="relative">
@@ -29,7 +20,7 @@ const UserAvatar = () => {
       >
         <div className="relative">
           <img
-            src={userAvatar || "/default-avatar.jpg"}
+            src={data?.avatar || "/default-avatar.jpg"}
             alt={user.user_metadata.full_name}
             className="w-9 h-9 rounded-xl border-2 border-emerald-400/50 shadow-sm"
           />

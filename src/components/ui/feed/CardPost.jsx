@@ -16,10 +16,11 @@ import OpenGraphCard from "../openGraph/OpenGraphCard";
 import PostMedia from "./PostMedia";
 import MediaModal from "./MediaModal";
 import UserHoverCard from "./UserHoverCardv2";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { useAuthAction } from "../../../hooks/useAuthAction";
 import LikeButton from "./LikeButton";
+import BookmarkButton from "./BookmarkButton";
 
 const CardPost = ({ post, media }) => {
   // const [currentIndex, setCurrentIndex] = useState(0);
@@ -33,6 +34,7 @@ const CardPost = ({ post, media }) => {
   const isMobile = useIsMobile();
   const { user: currentUser } = useAuth();
   const isMe = currentUser?.id === post.profiles.id;
+  const navigate = useNavigate()
 
   const renderTextWithLinks = (text) => {
     if (!text) return null;
@@ -103,9 +105,9 @@ const CardPost = ({ post, media }) => {
     }, "dar me gusta");
   };
 
-  const handleSave = () => {
+  const handleComment = () => {
     executeAction(() => {
-      console.log("Guardando post...");
+      navigate(`/post/${post.id}`)
     }, "guardar esta publicación");
   };
 
@@ -167,7 +169,7 @@ const CardPost = ({ post, media }) => {
                 </div>
 
                 {/* Carrera y ciclo */}
-                <div className="flex gap-1 items-center mt-1">
+                <div className="flex gap-1 items-center">
                   {post.profiles.carrera && (
                     <span className="text-xs px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider">
                       {post.profiles.carrera}
@@ -219,29 +221,16 @@ const CardPost = ({ post, media }) => {
           {/* Renderizado de Imágenes UNIFICADO */}
           {/* Acciones */}
           <div className="flex items-center gap-6 text-gray-500 dark:text-gray-400 mt-3">
-            <button
-              className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors group"
-              onClick={handleLike}
-            >
-              <Heart
-                size={20}
-                className="group-hover:fill-emerald-600 dark:group-hover:fill-emerald-400"
-              />
-              <span className="text-sm">{post.like_count || 0}</span>
-            </button>
+            
             <LikeButton postId={post.id} initialLikes={post.like_count || 0} />
 
-            <button className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+            <button className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+            onClick={handleComment}>
               <MessageCircle size={20} />
               <span className="text-sm">{post.comment_count || 0}</span>
             </button>
 
-            <button
-              className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
-              onClick={handleSave}
-            >
-              <Bookmark size={20} />
-            </button>
+            <BookmarkButton postId={post.id}/>
           </div>
         </div>
       </div>

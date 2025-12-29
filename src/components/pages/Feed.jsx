@@ -1,8 +1,7 @@
-import { useRef, useEffect } from "react";
-import PostCard from "../ui/PostCard";
-import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery ";
+import { useRef, useEffect, memo } from "react";
 import SkeletonPost from "../skeletons/SkeletonPost";
 import CardPost from "../ui/feed/CardPost";
+import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery2";
 
 const Feed = () => {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -29,6 +28,9 @@ const Feed = () => {
 
   const allPosts = data?.pages.flat() || [];
 
+  console.log(allPosts)
+  const MemoizedCardPost = memo(CardPost);
+
   return (
     <>
       {isLoading ? (
@@ -40,7 +42,8 @@ const Feed = () => {
       ) : (
         <>
           {allPosts.map((post) => (
-            <CardPost key={post.id} post={post} media={post.post_media ?? []} />
+            //<CardPost key={post.id} post={post} media={post.post_media ?? []} />
+            <MemoizedCardPost key={post.id} post={post} media={post.post_media ?? []} />
           ))}
 
           {/* Loader para infinite scroll */}

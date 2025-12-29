@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { useAuth } from "./AuthContext";
-import { toast } from "sonner";
 
 const FollowContext = createContext();
 

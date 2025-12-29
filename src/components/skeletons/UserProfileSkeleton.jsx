@@ -1,7 +1,5 @@
 const UserProfileSkeleton = () => (
   <div className="min-h-screen bg-white dark:bg-black animate-pulse">
-    {/* Header */}
-    <div className="h-[57px] border-b border-gray-100 dark:border-gray-800" />
     {/* Banner */}
     <div className="h-32 md:h-48 bg-gray-200 dark:bg-gray-800" />
     {/* Avatar & Button */}
