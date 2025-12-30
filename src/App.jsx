@@ -34,7 +34,7 @@ function App() {
           <Route path="editProfile" element={<ProtectedRoute><EditProfile/></ProtectedRoute>}/>
           <Route path="savedPost" element={<ProtectedRoute><SavedPage/></ProtectedRoute>}/>
           <Route path="users" element={<ProtectedRoute><DiscoverPage/></ProtectedRoute>}/>
-          <Route path="post/:postId" element={<ProtectedRoute><PostPage/></ProtectedRoute>}/>
+          <Route path="post/:postId" element={<PostPage/>}/>
         </Route>
         
         

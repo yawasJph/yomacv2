@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import {
-  Bookmark,
-  Heart,
   MessageCircle,
   MoreHorizontal,
   ChevronDown,
   ChevronUp,
+  AlertCircle,
+  Flag,
+  Trash2,
 } from "lucide-react";
 import FullscreenModal from "./FullscreenModal";
 import { timeAgoTiny } from "../../utils/timeagoTiny";
@@ -21,8 +22,11 @@ import { useAuth } from "../../../context/AuthContext";
 import { useAuthAction } from "../../../hooks/useAuthAction";
 import LikeButton from "./LikeButton";
 import BookmarkButton from "./BookmarkButton";
+import { useDeletePost } from "../../../hooks/useDeletePost";
+import { toast } from "sonner";
+import ConfirmModal from "../ConfirmModal";
 
-const CardPost = ({ post, media }) => {
+const CardPost = ({ post, media, isDetailedView = false }) => {
   // const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,7 +38,49 @@ const CardPost = ({ post, media }) => {
   const isMobile = useIsMobile();
   const { user: currentUser } = useAuth();
   const isMe = currentUser?.id === post.profiles.id;
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  const [showOptions, setShowOptions] = useState(false);
+  const { mutate: deletePost, isPending: isDeleting } = useDeletePost();
+  const optionsRef = useRef(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  // Cerrar menú al hacer click fuera
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (optionsRef.current && !optionsRef.current.contains(e.target)) {
+        setShowOptions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleReport = () => {
+    toast.info("Reporte enviado. Nuestro equipo lo revisará.");
+    setShowOptions(false);
+  };
+
+  // Función que se ejecuta al confirmar en el modal
+  const confirmDelete = () => {
+    deletePost(post.id, {
+      onSuccess: () => {
+        setIsDeleteModalOpen(false); // Cerramos el modal al terminar
+      },
+    });
+  };
+
+  // Función para ir al detalle del post
+  const goToPost = (e) => {
+    // Si ya estamos en la vista detallada, no hacemos nada
+    if (isDetailedView) return;
+
+    // Evitamos que navegue si el usuario está seleccionando texto
+    const selection = window.getSelection();
+    if (selection.toString().length > 0) return;
+
+    navigate(`/post/${post.id}`);
+  };
 
   const renderTextWithLinks = (text) => {
     if (!text) return null;
@@ -72,7 +118,7 @@ const CardPost = ({ post, media }) => {
           <span
             key={i}
             className="text-emerald-600 dark:text-emerald-400 font-semibold cursor-pointer hover:underline"
-            onClick={() => console.log("Filtrar por hashtag:", part)}
+            onClick={() => handleClick(part)}
           >
             {part}
           </span>
@@ -82,6 +128,17 @@ const CardPost = ({ post, media }) => {
       // Texto normal
       return part;
     });
+  };
+
+  const handleSearchTrend = (trendName) => {
+    if (!trendName) return;
+    navigate(`/search?q=${encodeURIComponent(trendName.trim())}`);
+  };
+
+  const handleClick = (trendName) => {
+    executeAction(() => {
+      handleSearchTrend(trendName);
+    }, "buscar trends");
   };
 
   useEffect(() => {
@@ -97,39 +154,47 @@ const CardPost = ({ post, media }) => {
 
   const closeModal = () => setIsModalOpen(false);
 
-  const handleSave = () => {
-    executeAction(() => {
-      // Aquí va tu lógica real de Supabase
-      console.log("Dando like al post:", post.id);
-      // supabase.from('likes').insert(...)
-    }, "dar me gusta");
-  };
-
   const handleComment = () => {
     executeAction(() => {
-      navigate(`/post/${post.id}`)
+      navigate(`/post/${post.id}`);
     }, "escribir un comentario");
   };
 
+  const c = (e) => {
+    if (post.content.length < 1000) {
+      setExpanded(!expanded);
+      e.stopPropagation();
+    }
+  };
   return (
-    <article className="px-4 py-4 sm:px-6 hover:bg-gray-50/50 dark:hover:bg-gray-900/20 transition-colors border-b border-gray-100 dark:border-gray-800">
+    <article
+      onClick={goToPost}
+      className={`px-4 py-4 sm:px-6 transition-colors border-b border-gray-100 dark:border-gray-800 
+        ${
+          !isDetailedView
+            ? "hover:bg-gray-200/50 dark:hover:bg-gray-700/20 cursor-pointer"
+            : ""
+        }`}
+    >
       <div className="flex gap-3 items-start">
         {/* Avatar */}
-        {isMe ? (
-          <img
-            src={post.profiles.avatar || "/default-avatar.jpg"}
-            alt="avatar"
-            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
-          />
-        ) : (
-          <Link to={`profile/${post.profiles.id}`}>
+        <div onClick={(e) => e.stopPropagation()}>
+          {isMe ? (
             <img
               src={post.profiles.avatar || "/default-avatar.jpg"}
               alt="avatar"
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
             />
-          </Link>
-        )}
+          ) : (
+            <Link to={`/profile/${post.profiles.id}`}>
+              <img
+                src={post.profiles.avatar || "/default-avatar.jpg"}
+                alt="avatar"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
+              />
+            </Link>
+          )}
+        </div>
 
         {/* Contenido */}
         <div className="flex-1 min-w-0 w-0">
@@ -141,14 +206,18 @@ const CardPost = ({ post, media }) => {
               <div className="flex flex-col flex-1 min-w-0 pr-2">
                 <div className="flex items-start justify-between min-w-0">
                   {/* Contenedor del nombre que puede crecer */}
-                  <div className="flex-1 min-w-0 pr-2">
+                  <div className="flex-1 min-w-0 pr-2" onClick={e => e.stopPropagation()}>
                     <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base break-words">
                       {isMobile ? (
-                        <span>{post.profiles.full_name}</span>
+                        <span
+                          className="hover:underline"
+                        >
+                          {post.profiles.full_name}
+                        </span>
                       ) : !isMe ? (
                         <UserHoverCard user={post.profiles}>
                           <span className="hover:underline cursor-pointer">
-                            {post.profiles.full_name} hola
+                            {post.profiles.full_name}
                           </span>
                         </UserHoverCard>
                       ) : (
@@ -183,24 +252,87 @@ const CardPost = ({ post, media }) => {
                 </div>
               </div>
 
-              {/* Columna 3: Botón MoreHorizontal - siempre al extremo derecho */}
-              <button className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors flex-shrink-0 ml-2">
-                <MoreHorizontal size={18} />
-              </button>
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="relative"
+                ref={optionsRef}
+              >
+                <button
+                  onClick={() => {
+                    setShowOptions(!showOptions);
+                  }}
+                  className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors flex-shrink-0 ml-2"
+                >
+                  <MoreHorizontal size={18} />
+                </button>
+
+                {showOptions && (
+                  <div
+                    className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in duration-100"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {isMe ? (
+                      <button
+                        onClick={() => {
+                          setIsDeleteModalOpen(true); // Abrimos el modal en vez de usar confirm()
+                          setShowOptions(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                      >
+                        <Trash2 size={16} />
+                        <span className="font-medium">Eliminar post</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleReport}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                      >
+                        <Flag size={16} />
+                        <span className="font-medium">Reportar contenido</span>
+                      </button>
+                    )}
+
+                    {/* Botón extra que siempre es útil */}
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          `${window.location.origin}/post/${post.id}`
+                        );
+                        toast.success("Enlace copiado");
+                        setShowOptions(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border-t border-gray-100 dark:border-gray-800"
+                    >
+                      <AlertCircle size={16} />
+                      <span className="font-medium">Copiar enlace</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           {/* Texto del Post */}
-          <p
+          {/* <p
             ref={textRef}
             className={`text-base text-gray-900 dark:text-gray-100 mb-2 whitespace-pre-wrap wrap-break-word ${
               expanded ? "line-clamp-none" : "line-clamp-6"
             }`}
           >
             {renderTextWithLinks(post.content)}
+          </p> */}
+          {/* Texto del Post */}
+          <p
+            ref={textRef}
+            className={`text-base text-gray-900 dark:text-gray-100 mb-2 whitespace-pre-wrap wrap-break-word ${
+              expanded || isDetailedView ? "line-clamp-none" : "line-clamp-6"
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {renderTextWithLinks(post.content)}
           </p>
           {isTruncated && (
             <button
-              onClick={() => setExpanded(!expanded)}
+              onClick={c}
               className="flex items-center gap-1 text-blue-500 dark:text-blue-400 hover:underline font-medium pb-2 text-sm"
             >
               {expanded ? (
@@ -214,35 +346,35 @@ const CardPost = ({ post, media }) => {
               )}
             </button>
           )}
-          {/* LINK PREVIEW CARD */}
-          {post.og_data && <OpenGraphCard og_data={post.og_data} />}
-          {/* <PostImages images={images} onOpen={openModal} /> */}
-          <PostMedia media={media} onOpen={openModal} /> {/*media* */}
-          {/* Renderizado de Imágenes UNIFICADO */}
+          <div onClick={(e) => e.stopPropagation()}>
+            {/* LINK PREVIEW CARD */}
+            {post.og_data && <OpenGraphCard og_data={post.og_data} />}
+
+            <PostMedia media={media} onOpen={openModal} />
+          </div>
+
           {/* Acciones */}
-          <div className="flex items-center gap-6 text-gray-500 dark:text-gray-400 mt-3">
-            
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-6 text-gray-500 dark:text-gray-400 mt-3"
+          >
             <LikeButton postId={post.id} initialLikes={post.like_count || 0} />
 
-            <button className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
-            onClick={handleComment}>
+            <button
+              className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+              onClick={handleComment}
+            >
               <MessageCircle size={20} />
               <span className="text-sm">{post.comment_count || 0}</span>
             </button>
 
-            <BookmarkButton postId={post.id}/>
+            <BookmarkButton postId={post.id} />
           </div>
         </div>
       </div>
 
       {/* MODAL FULLSCREEN (Fuera del flujo visual del post, pero dentro del componente) */}
-      <FullscreenModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        // images={images}
-        // currentIndex={currentIndex}
-        //setCurrentIndex={setCurrentIndex}
-      >
+      <FullscreenModal isOpen={isModalOpen} onClose={closeModal}>
         {isModalOpen && (
           <MediaModal
             media={media}
@@ -251,6 +383,15 @@ const CardPost = ({ post, media }) => {
           /> //media
         )}
       </FullscreenModal>
+
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="¿Eliminar publicación?"
+        message="Esta acción no se puede deshacer. Se borrará de tu perfil, de la cronología de cualquier cuenta que te siga y de los resultados de búsqueda."
+        isLoading={isDeleting}
+      />
     </article>
   );
 };

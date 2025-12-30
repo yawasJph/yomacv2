@@ -7,7 +7,7 @@ import {
 import { useFollow } from "../../../context/FollowContext";
 import { useAuth } from "../../../context/AuthContext";
 import { useIsMobile } from "../../../hooks/useIsMobile";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabaseClient } from "../../../supabase/supabaseClient";
 import { useAuthAction } from "../../../hooks/useAuthAction";
 
@@ -94,11 +94,14 @@ export default function UserHoverCard({ user, children }) {
           {/* Header: Avatar y Botón */}
           <div className="flex justify-between items-start mb-3">
             <div className="relative">
-              <img
+              <Link to={`/profile/${user.id}`}>
+               <img
                 src={user.avatar || "/default-avatar.jpg"}
                 alt={user.full_name}
-                className="w-14 h-14 rounded-full object-cover border-2 border-emerald-500/10"
+                className="w-14 h-14 rounded-full object-cover border-2 border-emerald-500/10 shrink-0"
               />
+            </Link>
+             
               <div className="absolute -bottom-1 -right-1 bg-white dark:bg-gray-800 rounded-full p-1 shadow-md border border-gray-200 dark:border-gray-700">
                 {user?.carrera === "I.A.B." && (
                   <Leaf
@@ -154,9 +157,12 @@ export default function UserHoverCard({ user, children }) {
 
           {/* Información */}
           <div className="space-y-1">
-            <h2 className="text-lg font-extrabold leading-tight dark:text-white hover:text-emerald-500 transition-colors cursor-pointer">
+             <Link to={`/profile/${user.id}`}>
+              <h2 className="text-lg font-extrabold leading-tight dark:text-white hover:text-emerald-500 transition-colors cursor-pointer">
               {user.full_name}
             </h2>
+             </Link>
+           
             <p className="text-emerald-600 dark:text-emerald-400 text-sm font-medium">
               {user.carrera || "Estudiante"}
             </p>

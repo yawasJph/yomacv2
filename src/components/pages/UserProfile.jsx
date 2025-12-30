@@ -8,7 +8,6 @@ import {
   Instagram,
   Linkedin,
 } from "lucide-react";
-import { supabaseClient } from "../../supabase/supabaseClient";
 import { useAuth } from "../../context/AuthContext";
 import { useFollow } from "../../context/FollowContext";
 import CardPost from "../ui/feed/CardPost";
@@ -23,9 +22,6 @@ const UserProfile = () => {
   const { user: currentUser } = useAuth();
   const { isFollowing, followUser, unfollowUser } = useFollow();
   const [selectedImg, setSelectedImg] = useState(null);
- // const [profile, setProfile] = useState(null);
- // const [posts, setPosts] = useState([]);
- // const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("posts");
 
 
