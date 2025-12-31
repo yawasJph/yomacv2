@@ -6,15 +6,18 @@ export const useDeleteComment = (postId) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (commentId) => {
-      const { error } = await supabaseClient.from("comments").delete().eq("id", commentId);
+      const { error } = await supabaseClient
+        .from("comments")
+        .update({ deleted_at: new Date() })
+        .eq("id", commentId);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["comments", postId]);
       toast.success("Comentario eliminado");
     },
-    onError: () =>{
-        toast.error("No se puedo eliminar el comentario");
-    }
+    onError: () => {
+      toast.error("No se puedo eliminar el comentario");
+    },
   });
 };

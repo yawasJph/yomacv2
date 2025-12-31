@@ -17,6 +17,7 @@ import ConfirmModal from "./ConfirmModal";
 import { useDeleteComment } from "../../hooks/useDeleteComment";
 import LikeButtonComment from "./LikeButtonComment";
 import { useNavigate } from "react-router-dom";
+import ReportModal from "./ReportModal";
 
 const CommentItem = ({ comment, postId }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -31,6 +32,7 @@ const CommentItem = ({ comment, postId }) => {
   const displayedText = isExpanded ? text : text.slice(0, LIMIT);
   const optionsRef = useRef(null);
   const navigate = useNavigate();
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { mutate: deleteComment, isLoading: isDeleting } = useDeleteComment(
@@ -54,8 +56,9 @@ const CommentItem = ({ comment, postId }) => {
   }, []);
 
   const handleReport = () => {
-    toast.info("Reporte enviado. Nuestro equipo lo revisará.");
     setShowOptions(false);
+    setIsReportModalOpen(true);
+    // toast.info("Reporte enviado. Nuestro equipo lo revisará.");
   };
 
   const handleCopy = () => {
@@ -235,6 +238,12 @@ const CommentItem = ({ comment, postId }) => {
           message="Esta acción no se puede deshacer."
           isLoading={isDeleting}
         />
+
+        <ReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        commentId={comment.id}
+      />
       </div>
     </>
   );

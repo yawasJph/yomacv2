@@ -20,6 +20,7 @@ export const useComments = (id, type = "post") => {
           profiles:user_id (id, full_name, avatar, carrera, ciclo)
         `
         )
+        .is("deleted_at", null)
         // .eq("post_id", postId)
         .order("created_at", { ascending: false })
         .range(pageParam, pageParam + 9);

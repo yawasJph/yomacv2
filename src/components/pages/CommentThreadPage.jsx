@@ -55,7 +55,7 @@ const CommentThreadPage = () => {
 
   console.log(parentComment);
   // 2. Obtener las respuestas (las tratamos como comentarios de este commentId)
-  const { data: replies, addComment } = useComments(commentId, "comment");
+  const { data: replies, addComment, fetchNextPage, hasNextPage} = useComments(commentId, "comment");
 
   const handleSendComment = (e) => {
     e.preventDefault();
@@ -204,9 +204,30 @@ const CommentThreadPage = () => {
       </div>
 
       {/* Lista de respuestas */}
-      <div className="pb-20">
+      <div className="divide-y divide-gray-100 dark:divide-gray-800 pb-20">
         {replies?.pages.map((page) =>
           page.map((reply) => <CommentItem key={reply.id} comment={reply} />)
+        )}
+        {hasNextPage && (
+          <button
+            onClick={() => fetchNextPage()}
+            className="w-full py-4 text-emerald-600 dark:text-emerald-400 text-sm font-medium hover:bg-emerald-50 dark:hover:bg-emerald-500/5"
+          >
+            Mostrar más respuestas
+          </button>
+        )}
+
+        {replies.length == 0 && 
+        (
+          <div className="text-center py-6 text-gray-600 dark:text-gray-400 text-sm ">
+            No hay comentarios
+          </div>
+        )}
+
+        {!hasNextPage && replies.length > 0 && (
+          <div className="text-center py-6 text-gray-600 dark:text-gray-400 text-sm ">
+            No hay más comentarios
+          </div>
         )}
       </div>
     </div>

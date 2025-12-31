@@ -7,6 +7,8 @@ import {
   AlertCircle,
   Flag,
   Trash2,
+  Share,
+  Repeat2,
 } from "lucide-react";
 import FullscreenModal from "./FullscreenModal";
 import { timeAgoTiny } from "../../utils/timeagoTiny";
@@ -25,6 +27,7 @@ import BookmarkButton from "./BookmarkButton";
 import { useDeletePost } from "../../../hooks/useDeletePost";
 import { toast } from "sonner";
 import ConfirmModal from "../ConfirmModal";
+import ReportModal from "../ReportModal";
 
 const CardPost = ({ post, media, isDetailedView = false }) => {
   // const [currentIndex, setCurrentIndex] = useState(0);
@@ -44,6 +47,7 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
   const { mutate: deletePost, isPending: isDeleting } = useDeletePost();
   const optionsRef = useRef(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   // Cerrar menú al hacer click fuera
   useEffect(() => {
@@ -57,8 +61,9 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
   }, []);
 
   const handleReport = () => {
-    toast.info("Reporte enviado. Nuestro equipo lo revisará.");
     setShowOptions(false);
+    setIsReportModalOpen(true);
+    // toast.info("Reporte enviado. Nuestro equipo lo revisará.");
   };
 
   // Función que se ejecuta al confirmar en el modal
@@ -125,7 +130,6 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
         );
       }
 
-      // Texto normal
       return part;
     });
   };
@@ -166,6 +170,27 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
       e.stopPropagation();
     }
   };
+
+  const handleShareNative = async () => {
+    const shareData = {
+      title: `Post de ${post.profiles.full_name}`,
+      text: post.content,
+      url: `${window.location.origin}/post/${post.id}`,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Si no hay API de compartir (Escritorio), copiamos al portapapeles
+        navigator.clipboard.writeText(shareData.url);
+        toast.success("Enlace copiado al portapapeles");
+      }
+    } catch (err) {
+      console.error("Error al compartir:", err);
+    }
+  };
+
   return (
     <article
       onClick={goToPost}
@@ -206,12 +231,13 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
               <div className="flex flex-col flex-1 min-w-0 pr-2">
                 <div className="flex items-start justify-between min-w-0">
                   {/* Contenedor del nombre que puede crecer */}
-                  <div className="flex-1 min-w-0 pr-2" onClick={e => e.stopPropagation()}>
+                  <div
+                    className="flex-1 min-w-0 pr-2"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base break-words">
                       {isMobile ? (
-                        <span
-                          className="hover:underline"
-                        >
+                        <span className="hover:underline">
                           {post.profiles.full_name}
                         </span>
                       ) : !isMe ? (
@@ -312,15 +338,6 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
             </div>
           </div>
           {/* Texto del Post */}
-          {/* <p
-            ref={textRef}
-            className={`text-base text-gray-900 dark:text-gray-100 mb-2 whitespace-pre-wrap wrap-break-word ${
-              expanded ? "line-clamp-none" : "line-clamp-6"
-            }`}
-          >
-            {renderTextWithLinks(post.content)}
-          </p> */}
-          {/* Texto del Post */}
           <p
             ref={textRef}
             className={`text-base text-gray-900 dark:text-gray-100 mb-2 whitespace-pre-wrap wrap-break-word ${
@@ -368,7 +385,37 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
               <span className="text-sm">{post.comment_count || 0}</span>
             </button>
 
+            {/* REPOST (Retweet) */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                executeAction(
+                  () => toast.info("Función Repost próximamente"),
+                  "repostear"
+                );
+              }}
+              className="flex items-center gap-2 hover:text-blue-500 transition-colors group"
+            >
+              <div className="p-2 group-hover:bg-blue-500/10 rounded-full">
+                <Repeat2 size={20} />
+              </div>
+              <span className="text-sm">0</span>
+            </button>
+
             <BookmarkButton postId={post.id} />
+
+            {/* SHARE */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleShareNative();
+              }}
+              className="flex items-center gap-2 hover:text-emerald-500 transition-colors group"
+            >
+              <div className="p-2 group-hover:bg-emerald-500/10 rounded-full">
+                <Share size={19} />
+              </div>
+            </button>
           </div>
         </div>
       </div>
@@ -391,6 +438,12 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
         title="¿Eliminar publicación?"
         message="Esta acción no se puede deshacer. Se borrará de tu perfil, de la cronología de cualquier cuenta que te siga y de los resultados de búsqueda."
         isLoading={isDeleting}
+      />
+
+      <ReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        postId={post.id}
       />
     </article>
   );
