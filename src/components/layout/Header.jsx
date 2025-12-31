@@ -1,4 +1,4 @@
-import React from "react";
+
 import Logo from "../ui/Logo";
 import UserAvatar from "../ui/UserAvatar";
 import ToggleThemeButton from "../ui/ToggleThemeButton";

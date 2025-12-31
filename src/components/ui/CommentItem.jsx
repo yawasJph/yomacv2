@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import UserHoverCard from "./feed/UserHoverCardv2";
 import { timeAgoTiny } from "../utils/timeagoTiny";
 import { timeAgoLong } from "../utils/timeAgoLong";
-import { Flag, MoreHorizontal, Trash2, Reply, Heart, Copy} from "lucide-react";
+import { Flag, MoreHorizontal, Trash2, Reply, Copy} from "lucide-react";
 import ImageModal from "./userProfile/ImageModal";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { useAuth } from "../../context/AuthContext";
@@ -69,7 +69,7 @@ const CommentItem = ({ comment, postId }) => {
                 <div className="flex items-start justify-between min-w-0">
                   {/* Contenedor del nombre que puede crecer */}
                   <div className="flex-1 min-w-0 pr-2">
-                    <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base  break-words">
+                    <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base wrap-break-word">
                       {isMobile ? (
                         <span>{comment.profiles.full_name}</span>
                       ) : user?.id !== comment.profiles.id ? (
@@ -86,7 +86,7 @@ const CommentItem = ({ comment, postId }) => {
 
                   {/* Columna 2: Tiempo del post - se mueve según el largo del nombre */}
                   <span
-                    className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-500 font-medium whitespace-nowrap p-1.5 flex-shrink-0"
+                    className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-500 font-medium whitespace-nowrap p-1.5 shrink-0"
                     title={new Date(comment.created_at).toLocaleString("es-PE")}
                   >
                     {isMobile
@@ -115,7 +115,7 @@ const CommentItem = ({ comment, postId }) => {
                   onClick={() => {
                     setShowOptions(!showOptions);
                   }}
-                  className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors flex-shrink-0 ml-2"
+                  className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors shrink-0 ml-2"
                 >
                   <MoreHorizontal size={18} />
                 </button>
@@ -150,7 +150,7 @@ const CommentItem = ({ comment, postId }) => {
               </div>
             </div>
           </div>
-          <div className="text-gray-800 dark:text-gray-200 mt-1 text-[15px] whitespace-pre-wrap break-words">
+          <div className="text-gray-800 dark:text-gray-200 mt-1 text-[15px] whitespace-pre-wrap wrap-break-word">
             {displayedText}
             {isLong && !isExpanded && "..."}
 
