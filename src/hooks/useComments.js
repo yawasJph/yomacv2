@@ -13,7 +13,7 @@ export const useComments = (postId) => {
     queryKey: ["comments", postId],
     queryFn: async ({ pageParam = 0 }) => {
       const { data, error } = await supabaseClient
-        .from("comments")
+        .from("comments_with_counts")
         .select(
           `
           *,

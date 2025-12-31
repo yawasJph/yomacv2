@@ -192,7 +192,7 @@ const PostPage = () => {
       {/* LISTA DE COMENTARIOS */}
       <div className="divide-y divide-gray-100 dark:divide-gray-800">
         {allComments.map((comment) => (
-          <CommentItem key={comment.id} comment={comment}/>
+          <CommentItem key={comment.id} comment={comment} postId={post.id}/>
         ))}
 
         {hasNextPage && (

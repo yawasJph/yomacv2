@@ -12,29 +12,6 @@ const LikeButton = ({ postId, initialCount = 0 }) => {
 
   return (
     <>
-    {/* <button
-      onClick={(e) => {
-        e.stopPropagation();
-        toggleLike();
-      }}
-      className="group flex items-center gap-1.5 transition-colors"
-    >
-      <div className={`p-1 rounded-full transition-colors ${
-        isLiked 
-          ? "text-emerald-500  dark:text-emerald-600" 
-          : "text-gray-500 dark:text-gray-400 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-500/10 group-hover:text-emerald-500"
-      }`}>
-        <Heart 
-          size={20} 
-          fill={isLiked ? "currentColor" : "none"} 
-          className={isLiked ? "animate-heart-pop" : "group-hover:scale-110"}
-        />
-      </div>
-      <span className={`text-sm font-medium dark:text-gray-500 ${isLiked ? "text-emerald-500 dark:text-emerald-600" : "text-gray-500"}`}>
-        {displayCount > 0 && displayCount || 0}
-      </span>
-    </button> */}
-   
      <button
      disabled={isLoading}
        onClick={(e) => {

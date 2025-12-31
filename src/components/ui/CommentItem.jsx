@@ -1,15 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import UserHoverCard from "./feed/UserHoverCardv2";
 import { timeAgoTiny } from "../utils/timeagoTiny";
 import { timeAgoLong } from "../utils/timeAgoLong";
-import { Flag, MoreHorizontal, Trash2 } from "lucide-react";
+import { Flag, MoreHorizontal, Trash2, Reply, Heart, Copy} from "lucide-react";
 import ImageModal from "./userProfile/ImageModal";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "sonner";
 import ConfirmModal from "./ConfirmModal";
+import { useDeleteComment } from "../../hooks/useDeleteComment";
+import LikeButtonComment from "./LikeButtonComment";
 
-const CommentItem = ({ comment }) => {
+const CommentItem = ({ comment, postId }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const LIMIT = 250; // Umbral para mostrar el "Ver más"
   const isMobile = useIsMobile();
@@ -21,6 +23,9 @@ const CommentItem = ({ comment }) => {
   const isLong = text.length > LIMIT;
   const displayedText = isExpanded ? text : text.slice(0, LIMIT);
   const optionsRef = useRef(null);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const { mutate: deleteComment, isLoading: isDeleting } = useDeleteComment(comment.post_id);
 
   const isMe = user?.id === comment.profiles.id;
 
@@ -39,6 +44,13 @@ const CommentItem = ({ comment }) => {
     toast.info("Reporte enviado. Nuestro equipo lo revisará.");
     setShowOptions(false);
   };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(comment.content);
+    toast.success("Copiado al portapapeles");
+    setShowOptions(false);
+  };
+
   return (
     <>
       <div
@@ -60,7 +72,7 @@ const CommentItem = ({ comment }) => {
                     <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base  break-words">
                       {isMobile ? (
                         <span>{comment.profiles.full_name}</span>
-                      ) : user.id !== comment.profiles.id ? (
+                      ) : user?.id !== comment.profiles.id ? (
                         <UserHoverCard user={comment.profiles}>
                           <span className="hover:underline cursor-pointer">
                             {comment.profiles.full_name}
@@ -110,6 +122,9 @@ const CommentItem = ({ comment }) => {
 
                 {showOptions && (
                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in duration-100">
+                    <button onClick={handleCopy} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <Copy size={14} /> Copiar texto
+                    </button>
                     {isMe ? (
                       <button
                         onClick={() => {
@@ -158,6 +173,21 @@ const CommentItem = ({ comment }) => {
             />
           )}
 
+          {/* ACCIONES DEL COMENTARIO */}
+          <div className="flex items-center gap-5 mt-3 text-gray-500">
+           <LikeButtonComment commentId={comment.id} postId={postId} initialCount={comment.like_count} />
+            
+            <button 
+             // onClick={() => onReply(comment.profiles.full_name)}
+              className="flex items-center gap-1.5 hover:text-emerald-500 transition-colors group/reply"
+            >
+              <div className="p-1.5 group-hover/reply:bg-emerald-500/10 rounded-full">
+                <Reply size={16} />
+              </div>
+              <span className="text-xs">Responder</span>
+            </button>
+          </div>
+
           {/* Renderizar el Modal si hay una imagen seleccionada */}
           {selectedImg && (
             <ImageModal
@@ -166,6 +196,15 @@ const CommentItem = ({ comment }) => {
             />
           )}
         </div>
+
+        <ConfirmModal 
+        isOpen={isDeleteModalOpen} 
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={() => deleteComment(comment.id)}
+        title="¿Eliminar comentario?"
+        message="Esta acción no se puede deshacer."
+        isLoading={isDeleting}
+      />
       </div>
     </>
   );

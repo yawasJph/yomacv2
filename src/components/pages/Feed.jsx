@@ -28,7 +28,6 @@ const Feed = () => {
 
   const allPosts = data?.pages.flat() || [];
 
-  console.log(allPosts)
   const MemoizedCardPost = memo(CardPost);
 
   return (
