@@ -2,7 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import UserHoverCard from "./feed/UserHoverCardv2";
 import { timeAgoTiny } from "../utils/timeagoTiny";
 import { timeAgoLong } from "../utils/timeAgoLong";
-import { Flag, MoreHorizontal, Trash2, Reply, Copy} from "lucide-react";
+import {
+  Flag,
+  MoreHorizontal,
+  Trash2,
+  Copy,
+  MessageCircle,
+} from "lucide-react";
 import ImageModal from "./userProfile/ImageModal";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { useAuth } from "../../context/AuthContext";
@@ -10,6 +16,7 @@ import { toast } from "sonner";
 import ConfirmModal from "./ConfirmModal";
 import { useDeleteComment } from "../../hooks/useDeleteComment";
 import LikeButtonComment from "./LikeButtonComment";
+import { useNavigate } from "react-router-dom";
 
 const CommentItem = ({ comment, postId }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -23,11 +30,17 @@ const CommentItem = ({ comment, postId }) => {
   const isLong = text.length > LIMIT;
   const displayedText = isExpanded ? text : text.slice(0, LIMIT);
   const optionsRef = useRef(null);
+  const navigate = useNavigate();
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const { mutate: deleteComment, isLoading: isDeleting } = useDeleteComment(comment.post_id);
+  const { mutate: deleteComment, isLoading: isDeleting } = useDeleteComment(
+    comment.post_id
+  );
 
   const isMe = user?.id === comment.profiles.id;
+
+  const contextType = comment.parent_id ? "comment" : "post";
+  const contextId = comment.parent_id || comment.post_id || postId;
 
   // Cerrar menú al hacer click fuera
   useEffect(() => {
@@ -51,15 +64,24 @@ const CommentItem = ({ comment, postId }) => {
     setShowOptions(false);
   };
 
+  const handleReplyNavigation = () => {
+    navigate(`/comment/${comment.id}`);
+  };
+
+  console.log(postId);
+
   return (
     <>
       <div
         key={comment.id}
-        className="p-4 flex gap-3 animate-in fade-in slide-in-from-bottom-2"
+        className="p-4 flex gap-3 animate-in fade-in slide-in-from-bottom-2 relative"
       >
+        {comment.parent_id && (
+          <div className="absolute left-9 top-0 bottom-0 w-0.5 bg-gray-100 dark:bg-gray-800 -z-10" />
+        )}
         <img
           src={comment.profiles.avatar}
-          className="w-10 h-10 rounded-full object-cover shrink-0"
+          className="w-10 h-10 rounded-full object-cover shrink-0 z-10"
         />
         <div className="flex-1">
           <div className="flex flex-col mb-2">
@@ -122,7 +144,10 @@ const CommentItem = ({ comment, postId }) => {
 
                 {showOptions && (
                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in duration-100">
-                    <button onClick={handleCopy} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <button
+                      onClick={handleCopy}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    >
                       <Copy size={14} /> Copiar texto
                     </button>
                     {isMe ? (
@@ -175,16 +200,21 @@ const CommentItem = ({ comment, postId }) => {
 
           {/* ACCIONES DEL COMENTARIO */}
           <div className="flex items-center gap-5 mt-3 text-gray-500">
-           <LikeButtonComment commentId={comment.id} postId={postId} initialCount={comment.like_count} />
-            
-            <button 
-             // onClick={() => onReply(comment.profiles.full_name)}
+            <LikeButtonComment
+              commentId={comment.id}
+              contextId={contextId}
+              contextType={contextType}
+              initialCount={comment.like_count}
+            />
+
+            <button
+              onClick={handleReplyNavigation}
               className="flex items-center gap-1.5 hover:text-emerald-500 transition-colors group/reply"
             >
               <div className="p-1.5 group-hover/reply:bg-emerald-500/10 rounded-full">
-                <Reply size={16} />
+                <MessageCircle size={16} />
               </div>
-              <span className="text-xs">Responder</span>
+              <span className="text-xs">{comment.reply_count}</span>
             </button>
           </div>
 
@@ -197,14 +227,14 @@ const CommentItem = ({ comment, postId }) => {
           )}
         </div>
 
-        <ConfirmModal 
-        isOpen={isDeleteModalOpen} 
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={() => deleteComment(comment.id)}
-        title="¿Eliminar comentario?"
-        message="Esta acción no se puede deshacer."
-        isLoading={isDeleting}
-      />
+        <ConfirmModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={() => deleteComment(comment.id)}
+          title="¿Eliminar comentario?"
+          message="Esta acción no se puede deshacer."
+          isLoading={isDeleting}
+        />
       </div>
     </>
   );

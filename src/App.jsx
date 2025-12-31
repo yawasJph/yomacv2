@@ -13,6 +13,7 @@ import EditProfile from "./components/pages/EditProfile";
 import SavedPage from "./components/pages/SavedPage";
 import DiscoverPage from "./components/pages/DiscoverPage";
 import PostPage from "./components/pages/PostPage";
+import CommentThreadPage from "./components/pages/CommentThreadPage";
 
 function App() {
 
@@ -35,11 +36,9 @@ function App() {
           <Route path="savedPost" element={<ProtectedRoute><SavedPage/></ProtectedRoute>}/>
           <Route path="users" element={<ProtectedRoute><DiscoverPage/></ProtectedRoute>}/>
           <Route path="post/:postId" element={<PostPage/>}/>
+          <Route path="comment/:commentId" element={<CommentThreadPage />} />
         </Route>
-        
-        
       </Routes>
-     
    </BrowserRouter>
    
   );

@@ -1,8 +1,9 @@
 import { Heart } from "lucide-react";
-import { useCommentLike } from "../../hooks/useCommentLike";
+import { useCommentLike } from "../../hooks/useCommentLike2";
 
-const LikeButtonComment = ({ commentId, postId, initialCount }) => {
-  const { isLiked, toggleLike } = useCommentLike(commentId, postId);
+
+const LikeButtonComment = ({ commentId, contextId, contextType, initialCount }) => {
+  const { isLiked, toggleLike } = useCommentLike(commentId, contextId, contextType);
 
   return (
     <button 
