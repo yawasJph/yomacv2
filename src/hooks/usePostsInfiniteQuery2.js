@@ -54,6 +54,22 @@ export const usePostsInfiniteQuery = (filterConfig = {}) => {
 
     if (pageParam) {
       query = query.lt("created_at", pageParam);
+      
+    } else if (filterConfig.type === "reposts") {
+      // NUEVA LÓGICA PARA REPOSTS
+      const { data: repostedIds, error: repostError } = await supabaseClient
+        .from("reposts")
+        .select("post_id")
+        .eq("user_id", filterConfig.userId)
+        .order("created_at", { ascending: false });
+
+      if (repostError) throw repostError;
+
+      const ids = repostedIds?.map((r) => r.post_id) || [];
+      if (ids.length === 0) return []; // Si no hay reposts, devolvemos array vacío
+
+      // Filtramos la query de posts_with_counts por esos IDs
+      query = query.in("id", ids);
     }
 
     const { data, error } = await query;

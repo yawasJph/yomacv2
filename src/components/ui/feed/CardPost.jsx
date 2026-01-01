@@ -14,7 +14,6 @@ import FullscreenModal from "./FullscreenModal";
 import { timeAgoTiny } from "../../utils/timeagoTiny";
 import { timeAgoLong } from "../../utils/timeAgoLong";
 import { useIsMobile } from "../../../hooks/useIsMobile";
-
 import OpenGraphCard from "../openGraph/OpenGraphCard";
 import PostMedia from "./PostMedia";
 import MediaModal from "./MediaModal";
@@ -28,9 +27,11 @@ import { useDeletePost } from "../../../hooks/useDeletePost";
 import { toast } from "sonner";
 import ConfirmModal from "../ConfirmModal";
 import ReportModal from "../ReportModal";
+import { handleShare } from "../../utils/sharePost";
+import RenderTextWithLinks from "../../utils/RenderTextWithLinks";
+import RepostButton from "../RepostButton";
 
-const CardPost = ({ post, media, isDetailedView = false }) => {
-  // const [currentIndex, setCurrentIndex] = useState(0);
+const CardPost = ({ post, media, isDetailedView = false, tab }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const textRef = useRef(null);
@@ -63,7 +64,6 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
   const handleReport = () => {
     setShowOptions(false);
     setIsReportModalOpen(true);
-    // toast.info("Reporte enviado. Nuestro equipo lo revisará.");
   };
 
   // Función que se ejecuta al confirmar en el modal
@@ -73,76 +73,6 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
         setIsDeleteModalOpen(false); // Cerramos el modal al terminar
       },
     });
-  };
-
-  // Función para ir al detalle del post
-  const goToPost = (e) => {
-    // Si ya estamos en la vista detallada, no hacemos nada
-    if (isDetailedView) return;
-
-    // Evitamos que navegue si el usuario está seleccionando texto
-    const selection = window.getSelection();
-    if (selection.toString().length > 0) return;
-
-    navigate(`/post/${post.id}`);
-  };
-
-  const renderTextWithLinks = (text) => {
-    if (!text) return null;
-
-    // Regex combinada para URLs y Hashtags
-    // Grupo 1: URLs | Grupo 2: Hashtags
-    const combinedRegex = /(https?:\/\/[^\s]+)|(#\w+)/g;
-
-    return text.split(combinedRegex).map((part, i) => {
-      if (!part) return null;
-
-      // ¿Es una URL?
-      if (/(https?:\/\/[^\s]+)/.test(part)) {
-        let displayText = part.replace(/(^\w+:|^)\/\/(www\.)?/, "");
-
-        if (displayText.length > 30) {
-          displayText = displayText.substring(0, 30) + "...";
-        }
-        return (
-          <a
-            key={i}
-            href={part}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 dark:text-blue-400 underline break-all"
-          >
-            {displayText}
-          </a>
-        );
-      }
-
-      // ¿Es un Hashtag?
-      if (/#\w+/.test(part)) {
-        return (
-          <span
-            key={i}
-            className="text-emerald-600 dark:text-emerald-400 font-semibold cursor-pointer hover:underline"
-            onClick={() => handleClick(part)}
-          >
-            {part}
-          </span>
-        );
-      }
-
-      return part;
-    });
-  };
-
-  const handleSearchTrend = (trendName) => {
-    if (!trendName) return;
-    navigate(`/search?q=${encodeURIComponent(trendName.trim())}`);
-  };
-
-  const handleClick = (trendName) => {
-    executeAction(() => {
-      handleSearchTrend(trendName);
-    }, "buscar trends");
   };
 
   useEffect(() => {
@@ -171,31 +101,16 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
     }
   };
 
-  const handleShare = async () => { 
-  
-  const shareData = {
-    title: `Post de ${post.profiles.full_name} en YoMAC`,
-    text: post.content?.substring(0, 100) + "...",
-    url: `${window.location.origin}/post/${post.id}`,
+   const goToPost = () => {
+    // Si ya estamos en la vista detallada, no hacemos nada
+    if (isDetailedView) return;
+    // Evitamos que navegue si el usuario está seleccionando texto
+    const selection = window.getSelection();
+    if (selection.toString().length > 0) return;
+    navigate(`/post/${post.id}`);
   };
 
-  try {
-    // 1. Intentar usar la API nativa de compartir (Móviles)
-    if (navigator.share) {
-      await navigator.share(shareData);
-    } else {
-      // 2. Fallback para escritorio: Copiar al portapapeles
-      await navigator.clipboard.writeText(shareData.url);
-      toast.success("Enlace copiado al portapapeles");
-    }
-  } catch (err) {
-    if (err.name !== "AbortError") {
-      console.error("Error al compartir:", err);
-      toast.error("No se pudo compartir");
-    }
-  }
-};
-
+  console.log(post.created_at)
   return (
     <article
       onClick={goToPost}
@@ -206,6 +121,15 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
             : ""
         }`}
     >
+      {/* INDICADOR DE REPOST - Solo aparece si isRepostView es true */}
+      {tab === "reposts" && (
+        <div className="flex items-center gap-2 px-4 sm:px-6 pt-2 pb-1 text-gray-500 dark:text-gray-400">
+          <Repeat2 size={14} className="stroke-[3px]" />
+          <span className="text-[13px] font-bold hover:underline cursor-default">
+            Repostaste
+          </span>
+        </div>
+      )}
       <div className="flex gap-3 items-start">
         {/* Avatar */}
         <div onClick={(e) => e.stopPropagation()}>
@@ -240,7 +164,7 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
                     className="flex-1 min-w-0 pr-2"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base break-words">
+                    <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base wrap-break-word">
                       {isMobile ? (
                         <span className="hover:underline">
                           {post.profiles.full_name}
@@ -259,7 +183,7 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
 
                   {/* Columna 2: Tiempo del post - se mueve según el largo del nombre */}
                   <span
-                    className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-500 font-medium whitespace-nowrap p-1.5 flex-shrink-0"
+                    className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-500 font-medium whitespace-nowrap p-1.5 shrink-0"
                     title={new Date(post.created_at).toLocaleString("es-PE")}
                   >
                     {isMobile
@@ -292,7 +216,7 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
                   onClick={() => {
                     setShowOptions(!showOptions);
                   }}
-                  className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors flex-shrink-0 ml-2"
+                  className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors shrink-0 ml-2"
                 >
                   <MoreHorizontal size={18} />
                 </button>
@@ -350,7 +274,7 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
             }`}
             onClick={(e) => e.stopPropagation()}
           >
-            {renderTextWithLinks(post.content)}
+            <RenderTextWithLinks text={post.content}/>
           </p>
           {isTruncated && (
             <button
@@ -390,22 +314,7 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
               <span className="text-sm">{post.comment_count || 0}</span>
             </button>
 
-            {/* REPOST (Retweet) */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                executeAction(
-                  () => toast.info("Función Repost próximamente"),
-                  "repostear"
-                );
-              }}
-              className="flex items-center gap-2 hover:text-blue-500 transition-colors group"
-            >
-              <div className="p-2 group-hover:bg-blue-500/10 rounded-full">
-                <Repeat2 size={20} />
-              </div>
-              <span className="text-sm">0</span>
-            </button>
+            <RepostButton postId={post.id} initialReposts={post.repost_count}/>
 
             <BookmarkButton postId={post.id} />
 
@@ -413,7 +322,7 @@ const CardPost = ({ post, media, isDetailedView = false }) => {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                handleShare();
+                handleShare(post);
               }}
               className="flex items-center gap-2 hover:text-emerald-500 transition-colors group"
             >

@@ -14,6 +14,7 @@ import SavedPage from "./components/pages/SavedPage";
 import DiscoverPage from "./components/pages/DiscoverPage";
 import PostPage from "./components/pages/PostPage";
 import CommentThreadPage from "./components/pages/CommentThreadPage";
+import NotificationsPage from "./components/pages/NotificationsPage";
 
 function App() {
 
@@ -37,6 +38,7 @@ function App() {
           <Route path="users" element={<ProtectedRoute><DiscoverPage/></ProtectedRoute>}/>
           <Route path="post/:postId" element={<PostPage/>}/>
           <Route path="comment/:commentId" element={<CommentThreadPage />} />
+          <Route path="notifications" element={<NotificationsPage />} />
         </Route>
       </Routes>
    </BrowserRouter>

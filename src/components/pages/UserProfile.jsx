@@ -226,7 +226,7 @@ const UserProfile = () => {
 
       {/* TABS DE CONTENIDO */}
       <div className="mt-4 border-b border-t border-gray-100 dark:border-gray-800 flex sticky top-[107px] bg-white/80 dark:bg-black/80 backdrop-blur-md z-20">
-        {["posts", "media", "likes"].map((tab) => (
+        {["posts", "media", "likes", "reposts"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -241,10 +241,6 @@ const UserProfile = () => {
         ))}
       </div>
 
-    
-
-      
-
       {/* LISTADO DE POSTS CON INFINITE SCROLL */}
       <div className="divide-y divide-gray-100 dark:divide-gray-800">
         {postsLoading ? (
@@ -252,7 +248,7 @@ const UserProfile = () => {
         ) : allPosts.length > 0 ? (
           <>
             {allPosts.map((post) => (
-              <CardPost key={post.id} post={post} media={post.post_media} />
+              <CardPost key={post.id} post={post} media={post.post_media} isRepostView={true} tab={activeTab} />
             ))}
             <div ref={loaderRef} className="h-10 flex justify-center py-4">
               {isFetchingNextPage && <div className="animate-spin w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full" />}

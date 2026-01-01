@@ -4,6 +4,7 @@ import UserAvatar from "../ui/UserAvatar";
 import ToggleThemeButton from "../ui/ToggleThemeButton";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import NotificationIcon from "../ui/NotificationIcon";
 
 const Header = () => {
   const { user} = useAuth();
@@ -20,6 +21,7 @@ const Header = () => {
           <div className="hidden sm:flex items-center gap-3">
             {/* <NotificationButton/>
                 <MessageButton/> */}
+                <NotificationIcon/>
           </div>
           {/* 🔹 Tema claro/oscuro */}
           <ToggleThemeButton />
