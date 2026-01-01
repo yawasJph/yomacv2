@@ -1,5 +1,4 @@
 import { Moon, Sun } from "lucide-react";
-import React from "react";
 import useDarkMode from "../../hooks/useDarkMode";
 
 const ToggleThemeButton = () => {

@@ -21,9 +21,10 @@ const Header = () => {
           <div className="hidden sm:flex items-center gap-3">
             {/* <NotificationButton/>
                 <MessageButton/> */}
-                <NotificationIcon/>
+                
           </div>
           {/* 🔹 Tema claro/oscuro */}
+          <NotificationIcon/>
           <ToggleThemeButton />
           {/* 🔹 Avatar del Usuario  */}
           {user ? (

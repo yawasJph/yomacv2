@@ -84,7 +84,7 @@ const NotificationsPage = () => {
                 </p>
 
                 {notif.post?.content && (
-                  <p className="mt-2 text-sm text-gray-500 line-clamp-2 italic italic border-l-2 border-gray-200 pl-2">
+                  <p className="mt-2 text-sm text-gray-500 line-clamp-2 italic border-l-2 border-gray-200 pl-2">
                     "{notif.post.content}"
                   </p>
                 )}
