@@ -78,7 +78,7 @@ export const useLike = (postId) => {
       // Al final, sincronizamos con la DB para estar 100% seguros
       queryClient.invalidateQueries({ queryKey });
       // También invalidamos el feed completo para que los contadores se actualicen
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", "posts"] });
     },
   });
 
