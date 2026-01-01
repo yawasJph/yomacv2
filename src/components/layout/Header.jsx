@@ -9,7 +9,7 @@ const Header = () => {
   const { user} = useAuth();
   const navigate = useNavigate();
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 bg-white/60 dark:bg-black/10 backdrop-blur-lg border-b border-emerald-500/10 dark:border-emerald-500/20 z-50">
+    <header className="fixed top-0 left-0 right-0 h-16 bg-white/60 dark:bg-black/80 backdrop-blur-lg border-b border-emerald-500/10 dark:border-emerald-500/20 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
         {/* Logo + nombre */}
         <Logo />

@@ -61,6 +61,7 @@ const PostPage = () => {
       content: newComment,
       userId: user.id,
       gifUrl: selectedGif,
+      postId: postId
     });
 
     setNewComment("");

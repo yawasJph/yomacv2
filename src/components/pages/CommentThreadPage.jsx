@@ -217,7 +217,7 @@ const CommentThreadPage = () => {
           </button>
         )}
 
-        {replies.length == 0 && 
+        {replies?.length == 0 && 
         (
           <div className="text-center py-6 text-gray-600 dark:text-gray-400 text-sm ">
             No hay comentarios
