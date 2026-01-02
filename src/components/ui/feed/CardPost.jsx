@@ -14,7 +14,7 @@ import FullscreenModal from "./FullscreenModal";
 import { timeAgoTiny } from "../../utils/timeagoTiny";
 import { timeAgoLong } from "../../utils/timeAgoLong";
 import { useIsMobile } from "../../../hooks/useIsMobile";
-import OpenGraphCard from "../openGraph/OpenGraphCard";
+import OpenGraphCard from "../openGraph/OpenGraphCard2";
 import PostMedia from "./PostMedia";
 import MediaModal from "./MediaModal";
 import UserHoverCard from "./UserHoverCardv2";
@@ -100,6 +100,8 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
       e.stopPropagation();
     }
   };
+
+  console.log(isDeleteModalOpen)
 
    const goToPost = () => {
     // Si ya estamos en la vista detallada, no hacemos nada

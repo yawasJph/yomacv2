@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Heart,
@@ -12,20 +12,14 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { useNotifications } from "../../hooks/useNotifications";
+import NotificationSkeleton from "../skeletons/NotificationSkeleton";
+import ConfirmModal from "../ui/ConfirmModal";
+import ConfirmModal2 from "../ui/ConfirmModal2";
 
 const NotificationsPage = () => {
   const { notifications, isLoading, markAsRead, clearAll } = useNotifications();
   const navigate = useNavigate();
-
-  // Al entrar a la página y después de 2 segundos, marcamos todo como leído
-  // useEffect(() => {
-  //   if (notifications.length > 0) {
-  //     const timer = setTimeout(() => {
-  //       markAsRead();
-  //     }, 2000);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [notifications]);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     if (notifications.some((n) => !n.is_read)) {
@@ -86,17 +80,6 @@ const NotificationsPage = () => {
         navigate(`/profile/${notif.sender_id}`);
         break;
       case "like":
-        //  if (!notif.comments.parent_id) navigate(`/post/${notif.post_id}`);
-        //  else  navigate(
-        //     `/comment/${notif.comments?.parent_id}#comment-${notif.comment_id}`
-        //   );
-        // if (!notif.comments || !notif.comments.parent_id) {
-        //   navigate(`/post/${notif.post_id}`);
-        // } else {
-        //   navigate(
-        //     `/comment/${notif.comments.parent_id}#comment-${notif.comment_id}`
-        //   );
-        // }
         if (!notif.comments?.parent_id) {
           navigate(`/post/${notif.post_id}`);
         } else {
@@ -125,12 +108,14 @@ const NotificationsPage = () => {
     }
   };
 
-  console.log(notifications);
-
   if (isLoading) {
     return (
-      <div className="p-10 text-center animate-pulse text-gray-500">
-        Cargando notificaciones...
+      <div className="max-w-2xl mx-auto min-h-screen border-x border-gray-100 dark:border-gray-800">
+        <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex items-center gap-4">
+          <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-neutral-800 animate-pulse" />
+          <div className="w-32 h-6 bg-gray-200 dark:bg-neutral-800 animate-pulse rounded" />
+        </div>
+        <NotificationSkeleton />
       </div>
     );
   }
@@ -156,7 +141,8 @@ const NotificationsPage = () => {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              if (confirm("¿Borrar todas las notificaciones?")) clearAll();
+              //if (confirm("¿Borrar todas las notificaciones?")) clearAll();
+              setIsDeleteModalOpen(true);
             }}
             className="text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 px-3 py-1.5 rounded-full transition-colors"
           >
@@ -233,6 +219,40 @@ const NotificationsPage = () => {
           ))
         )}
       </div>
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            onClick={() => setIsDeleteModalOpen(false)}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          />
+          <div className="relative bg-white dark:bg-neutral-900 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+            <h3 className="text-xl font-bold mb-2 dark:text-white text-center">
+              ¿Borrar todo?
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 text-center mb-6">
+              Esta acción eliminará permanentemente todas tus notificaciones. No
+              se puede deshacer.
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => {
+                  clearAll();
+                  setIsDeleteModalOpen(false);
+                }}
+                className="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-colors"
+              >
+                Sí, borrar todas
+              </button>
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="w-full py-3 bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-gray-300 font-bold rounded-xl transition-colors"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

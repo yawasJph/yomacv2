@@ -18,6 +18,7 @@ import { useDeleteComment } from "../../hooks/useDeleteComment";
 import LikeButtonComment from "./LikeButtonComment";
 import { useNavigate } from "react-router-dom";
 import ReportModal from "./ReportModal";
+import RenderTextWithLinks from "../utils/RenderTextWithLinks";
 
 const CommentItem = ({ comment, postId }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -191,7 +192,8 @@ useEffect(() => {
             </div>
           </div>
           <div className="text-gray-800 dark:text-gray-200 mt-1 text-[15px] whitespace-pre-wrap wrap-break-word">
-            {displayedText}
+            <RenderTextWithLinks text={displayedText}/>
+            {/* {displayedText} */}
             {isLong && !isExpanded && "..."}
 
             {isLong && (

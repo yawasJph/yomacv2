@@ -16,7 +16,7 @@ const Header = () => {
         <Logo />
 
         {/* Acciones del usuario */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 max-sm:gap-2">
           {/* Botones de acción */}
           <div className="hidden sm:flex items-center gap-3">
             {/* <NotificationButton/>

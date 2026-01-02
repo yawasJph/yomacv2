@@ -1,6 +1,8 @@
-import React from 'react'
+
 
 const OpenGraphCard = ({og_data}) => {
+
+  
   return (
     <a
     href={og_data.url}
