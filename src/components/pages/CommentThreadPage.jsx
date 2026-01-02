@@ -204,7 +204,7 @@ const CommentThreadPage = () => {
       </div>
 
       {/* Lista de respuestas */}
-      <div className="divide-y divide-gray-100 dark:divide-gray-800 pb-20">
+      <div className="divide-y divide-gray-100 dark:divide-gray-100 pb-20">
         {replies?.pages.map((page) =>
           page.map((reply) => <CommentItem key={reply.id} comment={reply} />)
         )}

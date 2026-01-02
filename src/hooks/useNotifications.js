@@ -17,7 +17,8 @@ export const useNotifications = () => {
         .select(`
           *,
           sender:sender_id (full_name, avatar, id),
-          post:post_id (content)
+          post:post_id (content),
+          comments:comment_id (content, parent_id)
         `)
         .order("created_at", { ascending: false })
         .limit(20);
@@ -68,8 +69,21 @@ export const useNotifications = () => {
     
     queryClient.invalidateQueries({ queryKey });
   };
-
+  
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
-  return { notifications, unreadCount, markAsRead, isLoading };
+  const clearAll = async () => {
+  if (!user) return;
+  const { error } = await supabaseClient
+    .from("notifications")
+    .delete()
+    .eq("recipient_id", user.id);
+
+  if (!error) {
+    queryClient.setQueryData(queryKey, []);
+    toast.success("Notificaciones borradas");
+  }
+};
+
+  return { notifications, unreadCount, markAsRead, isLoading , clearAll};
 };

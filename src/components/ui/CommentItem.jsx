@@ -71,13 +71,25 @@ const CommentItem = ({ comment, postId }) => {
     navigate(`/comment/${comment.id}`);
   };
 
-  console.log(postId);
+ // En el componente que lista los comentarios
+useEffect(() => {
+  const hash = window.location.hash;
+  
+  if (hash) {
+    const element = document.querySelector(hash);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      element.classList.add('bg-indigo-100', 'dark:bg-indigo-900/20'); // Resaltado temporal
+    }
+  }
+}, [comment]);
 
   return (
     <>
       <div
         key={comment.id}
-        className="p-4 flex gap-3 animate-in fade-in slide-in-from-bottom-2 relative"
+        className="p-4 flex gap-3 animate-in fade-in slide-in-from-bottom-2 relative  "
+        id={`comment-${comment.id}`}
       >
         {comment.parent_id && (
           <div className="absolute left-9 top-0 bottom-0 w-0.5 bg-gray-100 dark:bg-gray-800 -z-10" />

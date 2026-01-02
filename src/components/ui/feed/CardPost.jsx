@@ -110,7 +110,6 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
     navigate(`/post/${post.id}`);
   };
 
-  console.log(post.created_at)
   return (
     <article
       onClick={goToPost}

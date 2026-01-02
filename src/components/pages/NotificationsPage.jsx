@@ -1,12 +1,20 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, Repeat2, UserPlus, Reply, BellOff, ArrowLeft } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { useNotifications } from '../../hooks/useNotifications';
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Heart,
+  MessageCircle,
+  Repeat2,
+  UserPlus,
+  Reply,
+  BellOff,
+  ArrowLeft,
+} from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { es } from "date-fns/locale";
+import { useNotifications } from "../../hooks/useNotifications";
 
 const NotificationsPage = () => {
-  const { notifications, isLoading, markAsRead } = useNotifications();
+  const { notifications, isLoading, markAsRead, clearAll } = useNotifications();
   const navigate = useNavigate();
 
   // Al entrar a la página y después de 2 segundos, marcamos todo como leído
@@ -21,29 +29,92 @@ const NotificationsPage = () => {
 
   const getIcon = (type) => {
     switch (type) {
-      case 'like': return <Heart className="fill-red-500 stroke-red-500" size={20} />;
-      case 'comment': return <MessageCircle className="text-blue-500" size={20} />;
-      case 'repost': return <Repeat2 className="text-green-500" size={20} />;
-      case 'follow': return <UserPlus className="text-purple-500" size={20} />;
-      case 'reply': return <Reply className="text-sky-500" size={20} />;
-      default: return <BellOff size={20} />;
+      case "like":
+        return <Heart className="fill-red-500 stroke-red-500" size={20} />;
+      case "comment":
+        return <MessageCircle className="text-blue-500" size={20} />;
+      case "repost":
+        return <Repeat2 className="text-green-500" size={20} />;
+      case "follow":
+        return <UserPlus className="text-purple-500" size={20} />;
+      case "reply":
+        return <Reply className="text-sky-500" size={20} />;
+      default:
+        return <BellOff size={20} />;
     }
   };
+
+  //   const getMessage = (notif) => {
+  //     const name = <span className="font-bold">{notif.sender?.full_name}</span>;
+  //     switch (notif.type) {
+  //       case 'like': return <>{name} le dio me gusta a tu publicación</>;
+  //       case 'comment': return <>{name} comentó tu post</>;
+  //       case 'repost': return <>{name} reposteó tu publicación</>;
+  //       case 'follow': return <>{name} comenzó a seguirte</>;
+  //       case 'reply': return <>{name} respondió a tu comentario</>;
+  //       default: return <>{name} interactuó contigo</>;
+  //     }
+  //   };
 
   const getMessage = (notif) => {
     const name = <span className="font-bold">{notif.sender?.full_name}</span>;
+
+    // Si es un LIKE, hay que distinguir si fue al Post o al Comentario
+    if (notif.type === "like") {
+      return notif.comment_id ? (
+        <>{name} le dio me gusta a tu comentario</>
+      ) : (
+        <>{name} le dio me gusta a tu publicación</>
+      );
+    }
+
     switch (notif.type) {
-      case 'like': return <>{name} le dio me gusta a tu publicación</>;
-      case 'comment': return <>{name} comentó tu post</>;
-      case 'repost': return <>{name} reposteó tu publicación</>;
-      case 'follow': return <>{name} comenzó a seguirte</>;
-      case 'reply': return <>{name} respondió a tu comentario</>;
-      default: return <>{name} interactuó contigo</>;
+      case "comment":
+        return <>{name} comentó tu post</>;
+      case "repost":
+        return <>{name} reposteó tu publicación</>;
+      case "follow":
+        return <>{name} comenzó a seguirte</>;
+      case "reply":
+        return <>{name} respondió a tu comentario</>;
+      default:
+        return <>{name} interactuó contigo</>;
+    }
+  };
+  const handleNotificationClick = (notif) => {
+    switch (notif.type) {
+      case "follow":
+        navigate(`/profile/${notif.sender_id}`);
+        break;
+      case "like":
+      case "repost":
+        if (notif.post_id) navigate(`/post/${notif.post_id}`);
+        break;
+      case "comment":
+        // Si tienes scroll al comentario, puedes pasar el ID como hash
+        if (notif.post_id)
+          navigate(`/post/${notif.post_id}#comment-${notif.comment_id}`);
+        break;
+      case "reply":
+        // Si tienes scroll al comentario, puedes pasar el ID como hash
+        if (notif.post_id)
+          navigate(
+            `/comment/${notif.comments.parent_id}#comment-${notif.comment_id}`
+          );
+        break;
+      default:
+        break;
     }
   };
 
+  console.log(notifications);
+
   if (isLoading) {
-    return <div className="p-10 text-center animate-pulse text-gray-500">Cargando notificaciones...</div>;
+    return (
+      <div className="p-10 text-center animate-pulse text-gray-500">
+        Cargando notificaciones...
+      </div>
+    );
   }
 
   return (
@@ -56,42 +127,72 @@ const NotificationsPage = () => {
           <ArrowLeft size={20} className="dark:text-white" />
         </button>
         <h1 className="text-xl font-bold dark:text-white">Notificaiones</h1>
+        {notifications.length > 0 && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (confirm("¿Borrar todas las notificaciones?")) clearAll();
+            }}
+            className="text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 px-3 py-1.5 rounded-full transition-colors"
+          >
+            Limpiar todo
+          </button>
+        )}
       </div>
 
       <div className="divide-y divide-gray-100 dark:divide-gray-800">
         {notifications.length === 0 ? (
           <div className="p-10 text-center text-gray-500">
-            <p className="text-lg font-semibold">No tienes notificaciones aún</p>
-            <p className="text-sm">¡Interactúa con la comunidad para empezar!</p>
+            <p className="text-lg font-semibold">
+              No tienes notificaciones aún
+            </p>
+            <p className="text-sm">
+              ¡Interactúa con la comunidad para empezar!
+            </p>
           </div>
         ) : (
           notifications.map((notif) => (
-            <div 
+            <div
               key={notif.id}
-              onClick={() => notif.post_id && navigate(`/post/${notif.post_id}`)}
-              className={`flex gap-4 p-4 hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer ${!notif.is_read ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
+              onClick={() => handleNotificationClick(notif)}
+              className={`flex gap-4 p-4 hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer ${
+                !notif.is_read ? "bg-blue-50/50 dark:bg-blue-900/10" : ""
+              }`}
             >
               <div className="mt-1">{getIcon(notif.type)}</div>
-              
+
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <img 
-                    src={notif.sender?.avatar} 
-                    alt={notif.sender?.full_name} 
+                  <img
+                    src={notif.sender?.avatar}
+                    alt={notif.sender?.full_name}
                     className="w-8 h-8 rounded-full object-cover border border-gray-200"
                   />
                   <span className="text-xs text-gray-500">
-                    {formatDistanceToNow(new Date(notif.created_at), { addSuffix: true, locale: es })}
+                    {formatDistanceToNow(new Date(notif.created_at), {
+                      addSuffix: true,
+                      locale: es,
+                    })}
                   </span>
                 </div>
-                
+
                 <p className="text-[15px] text-gray-800 dark:text-gray-200">
                   {getMessage(notif)}
                 </p>
 
-                {notif.post?.content && (
+                {/* {notif.post?.content && (
                   <p className="mt-2 text-sm text-gray-500 line-clamp-2 italic border-l-2 border-gray-200 pl-2">
-                    "{notif.post.content}"
+                    "{notif.type === "comment" || notif.type === "reply" ? notif?.comments.content : notif?.post.content}"  
+                  </p>
+                )} */}
+                {/* Muestra el contenido según lo que causó la notificación */}
+                {(notif.post?.content || notif.comments?.content) && (
+                  <p className="mt-2 text-sm text-gray-500 line-clamp-2 italic border-l-2 border-gray-200 pl-2">
+                    "
+                    {notif.comment_id
+                      ? notif.comments?.content
+                      : notif.post?.content}
+                    "
                   </p>
                 )}
               </div>
