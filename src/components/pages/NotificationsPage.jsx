@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Heart,
@@ -18,12 +18,22 @@ const NotificationsPage = () => {
   const navigate = useNavigate();
 
   // Al entrar a la página y después de 2 segundos, marcamos todo como leído
+  // useEffect(() => {
+  //   if (notifications.length > 0) {
+  //     const timer = setTimeout(() => {
+  //       markAsRead();
+  //     }, 2000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [notifications]);
+
   useEffect(() => {
-    if (notifications.length > 0) {
+    if (notifications.some((n) => !n.is_read)) {
+      // Solo si hay alguna no leída
       const timer = setTimeout(() => {
         markAsRead();
       }, 2000);
-      return () => clearTimeout(timer);
+      return () => clearTimeout(timer); // Limpieza crucial
     }
   }, [notifications]);
 
@@ -43,18 +53,6 @@ const NotificationsPage = () => {
         return <BellOff size={20} />;
     }
   };
-
-  //   const getMessage = (notif) => {
-  //     const name = <span className="font-bold">{notif.sender?.full_name}</span>;
-  //     switch (notif.type) {
-  //       case 'like': return <>{name} le dio me gusta a tu publicación</>;
-  //       case 'comment': return <>{name} comentó tu post</>;
-  //       case 'repost': return <>{name} reposteó tu publicación</>;
-  //       case 'follow': return <>{name} comenzó a seguirte</>;
-  //       case 'reply': return <>{name} respondió a tu comentario</>;
-  //       default: return <>{name} interactuó contigo</>;
-  //     }
-  //   };
 
   const getMessage = (notif) => {
     const name = <span className="font-bold">{notif.sender?.full_name}</span>;
@@ -81,12 +79,32 @@ const NotificationsPage = () => {
         return <>{name} interactuó contigo</>;
     }
   };
+
   const handleNotificationClick = (notif) => {
     switch (notif.type) {
       case "follow":
         navigate(`/profile/${notif.sender_id}`);
         break;
       case "like":
+        //  if (!notif.comments.parent_id) navigate(`/post/${notif.post_id}`);
+        //  else  navigate(
+        //     `/comment/${notif.comments?.parent_id}#comment-${notif.comment_id}`
+        //   );
+        // if (!notif.comments || !notif.comments.parent_id) {
+        //   navigate(`/post/${notif.post_id}`);
+        // } else {
+        //   navigate(
+        //     `/comment/${notif.comments.parent_id}#comment-${notif.comment_id}`
+        //   );
+        // }
+        if (!notif.comments?.parent_id) {
+          navigate(`/post/${notif.post_id}`);
+        } else {
+          navigate(
+            `/comment/${notif.comments.parent_id}#comment-${notif.comment_id}`
+          );
+        }
+        break;
       case "repost":
         if (notif.post_id) navigate(`/post/${notif.post_id}`);
         break;
@@ -118,22 +136,29 @@ const NotificationsPage = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto min-h-screen border-x border-gray-100 dark:border-gray-800">
-      <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 flex items-center gap-6 border-b border-gray-100 dark:border-gray-800">
-        <button
-          onClick={() => navigate(-1)}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-full"
-        >
-          <ArrowLeft size={20} className="dark:text-white" />
-        </button>
-        <h1 className="text-xl font-bold dark:text-white">Notificaiones</h1>
+    <div className="max-w-2xl mx-auto min-h-screen border-x border-gray-100 dark:border-gray-800 ">
+      <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 flex items-center gap-6 border-b border-gray-100 dark:border-gray-800 justify-between">
+        <div className="flex items-center justify-between gap-1">
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-full"
+          >
+            <ArrowLeft size={20} className="dark:text-white" />
+          </button>
+          <h1 className="text-xl font-bold dark:text-white">Notificaiones</h1>
+          {notifications.length > 0 && (
+            <span className="px-2.5 py-0.5 bg-indigo-600 dark:bg-indigo-400 text-white text-xs font-bold rounded-full">
+              {notifications.length}
+            </span>
+          )}
+        </div>
         {notifications.length > 0 && (
           <button
             onClick={(e) => {
               e.stopPropagation();
               if (confirm("¿Borrar todas las notificaciones?")) clearAll();
             }}
-            className="text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 px-3 py-1.5 rounded-full transition-colors"
+            className="text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 px-3 py-1.5 rounded-full transition-colors"
           >
             Limpiar todo
           </button>
@@ -142,13 +167,26 @@ const NotificationsPage = () => {
 
       <div className="divide-y divide-gray-100 dark:divide-gray-800">
         {notifications.length === 0 ? (
-          <div className="p-10 text-center text-gray-500">
-            <p className="text-lg font-semibold">
-              No tienes notificaciones aún
+          <div className="text-center py-12 px-4">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-linear-to-br from-gray-100 to-gray-200 dark:from-indigo-900/30 dark:to-indigo-800/20 flex items-center justify-center">
+              <BellOff
+                className="text-gray-400 dark:text-indigo-500"
+                size={32}
+              />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 dark:text-indigo-100 mb-2">
+              Sin notificaciones
+            </h3>
+            <p className="text-gray-500 dark:text-gray-300/70 mb-6 max-w-md mx-auto">
+              ¡Interactúa con la comunidad para empezar a recibir
+              notificaciones!
             </p>
-            <p className="text-sm">
-              ¡Interactúa con la comunidad para empezar!
-            </p>
+            <button
+              onClick={() => navigate("/")}
+              className="px-6 py-2.5 bg-linear-to-r from-indigo-500 to-indigo-600 text-white font-medium rounded-full hover:shadow-lg hover:shadow-emerald-indigo/25 transition-all duration-300"
+            >
+              Explorar contenido
+            </button>
           </div>
         ) : (
           notifications.map((notif) => (
@@ -180,11 +218,6 @@ const NotificationsPage = () => {
                   {getMessage(notif)}
                 </p>
 
-                {/* {notif.post?.content && (
-                  <p className="mt-2 text-sm text-gray-500 line-clamp-2 italic border-l-2 border-gray-200 pl-2">
-                    "{notif.type === "comment" || notif.type === "reply" ? notif?.comments.content : notif?.post.content}"  
-                  </p>
-                )} */}
                 {/* Muestra el contenido según lo que causó la notificación */}
                 {(notif.post?.content || notif.comments?.content) && (
                   <p className="mt-2 text-sm text-gray-500 line-clamp-2 italic border-l-2 border-gray-200 pl-2">

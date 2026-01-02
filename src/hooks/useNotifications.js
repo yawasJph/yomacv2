@@ -1,12 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { useAuth } from "../context/AuthContext";
+import { toast } from "sonner";
 
 export const useNotifications = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const queryKey = ["notifications", user?.id];
+  // Usamos un Ref para el audio para que no se recargue en cada render
+  const audioRef = useRef(new Audio("/sounds/notification.mp3"));
 
   // 1. Obtener notificaciones iniciales
   const { data: notifications = [], isLoading } = useQuery({
@@ -46,6 +49,11 @@ export const useNotifications = () => {
         (payload) => {
           // Cuando llega una nueva, invalidamos la query para refrescar la lista
           queryClient.invalidateQueries({ queryKey });
+
+          audioRef.current.play().catch((error) => {
+            // Esto fallará si el usuario no ha interactuado aún con la web
+            console.log("El sonido no pudo reproducirse por políticas del navegador.");
+          });
           
           // Opcional: Reproducir un sonido o mostrar un aviso visual nativo
           console.log("¡Nueva notificación!", payload);
@@ -79,10 +87,16 @@ export const useNotifications = () => {
     .delete()
     .eq("recipient_id", user.id);
 
-  if (!error) {
-    queryClient.setQueryData(queryKey, []);
-    toast.success("Notificaciones borradas");
+  if (error) {
+    console.error("Error borrando notificaciones:", error);
+    toast.error("No se pudieron borrar las notificaciones");
+    return;
   }
+
+  queryClient.setQueryData(queryKey, []); 
+  queryClient.invalidateQueries({ queryKey });
+  
+  toast.success("Notificaciones borradas");
 };
 
   return { notifications, unreadCount, markAsRead, isLoading , clearAll};

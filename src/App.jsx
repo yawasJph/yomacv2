@@ -15,34 +15,99 @@ import DiscoverPage from "./components/pages/DiscoverPage";
 import PostPage from "./components/pages/PostPage";
 import CommentThreadPage from "./components/pages/CommentThreadPage";
 import NotificationsPage from "./components/pages/NotificationsPage";
+import { useEffect } from "react";
 
 function App() {
+  // Opcional: En tu App.jsx
+  useEffect(() => {
+    const unlockAudio = () => {
+      const audio = new Audio("/sounds/notification.mp3");
+      audio
+        .play()
+        .then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+        })
+        .catch(() => {});
+
+      document.removeEventListener("click", unlockAudio);
+    };
+
+    document.addEventListener("click", unlockAudio);
+  }, []);
 
   return (
-   <BrowserRouter>
-    <Toaster 
-      // 🔄 Opción para que los colores de error y éxito sean más vivos
-      richColors 
-        
-   />
+    <BrowserRouter>
+      <Toaster
+        // 🔄 Opción para que los colores de error y éxito sean más vivos
+        richColors
+      />
       <Routes>
-        <Route path="login" element={<Login/>} />
-        <Route path="/" element={<HomeLayout/>}>
-          <Route index element={<Feed/>} />
-          <Route path="create-post" element={<ProtectedRoute><CreatePost/></ProtectedRoute>} />
-          <Route path="search" element={<ProtectedRoute><SearchPage/></ProtectedRoute> } />
-          <Route path="user/:userId/connections" element={<ProtectedRoute><UserConnections/></ProtectedRoute>}/>
-          <Route path="profile/:userId" element={<ProtectedRoute><UserProfile/></ProtectedRoute>}/>
-          <Route path="editProfile" element={<ProtectedRoute><EditProfile/></ProtectedRoute>}/>
-          <Route path="savedPost" element={<ProtectedRoute><SavedPage/></ProtectedRoute>}/>
-          <Route path="users" element={<ProtectedRoute><DiscoverPage/></ProtectedRoute>}/>
-          <Route path="post/:postId" element={<PostPage/>}/>
+        <Route path="login" element={<Login />} />
+        <Route path="/" element={<HomeLayout />}>
+          <Route index element={<Feed />} />
+          <Route
+            path="create-post"
+            element={
+              <ProtectedRoute>
+                <CreatePost />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="search"
+            element={
+              <ProtectedRoute>
+                <SearchPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="user/:userId/connections"
+            element={
+              <ProtectedRoute>
+                <UserConnections />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="profile/:userId"
+            element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="editProfile"
+            element={
+              <ProtectedRoute>
+                <EditProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="savedPost"
+            element={
+              <ProtectedRoute>
+                <SavedPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="users"
+            element={
+              <ProtectedRoute>
+                <DiscoverPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="post/:postId" element={<PostPage />} />
           <Route path="comment/:commentId" element={<CommentThreadPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
         </Route>
       </Routes>
-   </BrowserRouter>
-   
+    </BrowserRouter>
   );
 }
 
