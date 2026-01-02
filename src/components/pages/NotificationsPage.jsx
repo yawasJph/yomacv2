@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, Repeat2, UserPlus, Reply, BellOff } from 'lucide-react';
+import { Heart, MessageCircle, Repeat2, UserPlus, Reply, BellOff, ArrowLeft } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useNotifications } from '../../hooks/useNotifications';
@@ -48,9 +48,15 @@ const NotificationsPage = () => {
 
   return (
     <div className="max-w-2xl mx-auto min-h-screen border-x border-gray-100 dark:border-gray-800">
-      <header className="sticky top-0 z-10 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md p-4 border-b border-gray-100 dark:border-gray-800">
-        <h1 className="text-xl font-bold">Notificaciones</h1>
-      </header>
+      <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 flex items-center gap-6 border-b border-gray-100 dark:border-gray-800">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-full"
+        >
+          <ArrowLeft size={20} className="dark:text-white" />
+        </button>
+        <h1 className="text-xl font-bold dark:text-white">Notificaiones</h1>
+      </div>
 
       <div className="divide-y divide-gray-100 dark:divide-gray-800">
         {notifications.length === 0 ? (

@@ -7,7 +7,7 @@ const ToggleThemeButton = () => {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-xl bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all cursor-pointer"
+      className="p-2 rounded-xl bg-white dark:bg-neutral-900 shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all cursor-pointer"
       title={`${darkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}`}
     >
       {darkMode ? (

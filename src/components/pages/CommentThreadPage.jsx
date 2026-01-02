@@ -224,7 +224,7 @@ const CommentThreadPage = () => {
           </div>
         )}
 
-        {!hasNextPage && replies.length > 0 && (
+        {!hasNextPage && replies?.length > 0 && (
           <div className="text-center py-6 text-gray-600 dark:text-gray-400 text-sm ">
             No hay más comentarios
           </div>
