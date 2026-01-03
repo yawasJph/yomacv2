@@ -6,8 +6,8 @@ self.addEventListener('push', function (event) {
 
     const options = {
       body: data.body || 'Tienes una nueva notificación',
-      icon: '/icon-192x192.png', // Asegúrate de tener un icono en public
-      badge: '/badge-72x72.png', // Icono pequeño para la barra de estado
+      icon: '/logo.png', // Asegúrate de tener un icono en public
+      badge: '/logo.png', // Icono pequeño para la barra de estado
       data: {
         url: data.url || '/notifications' // Ruta a la que irá al hacer clic
       },
