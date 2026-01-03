@@ -20,7 +20,16 @@ function urlBase64ToUint8Array(base64String) {
 export const usePushNotifications = () => {
   const { user } = useAuth();
 
+  
+
   const subscribeToPush = async () => {
+
+    if (Notification.permission === 'default') {
+  const permission = await Notification.requestPermission();
+  if (permission !== 'granted') {
+    throw new Error('Permiso de notificaciones no concedido');
+  }
+}
     console.log("1. Iniciando suscripción...");
     try {
       if (!("serviceWorker" in navigator)) {
