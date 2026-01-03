@@ -6,12 +6,14 @@ export const usePushNotifications = () => {
   const { user } = useAuth();
 
   const subscribeToPush = async () => {
+    console.log("1. Iniciando suscripción...");
     try {
       if (!('serviceWorker' in navigator)) {
         throw new Error("Service Worker no soportado");
       }
       
       const registration = await navigator.serviceWorker.ready;
+      console.log("2. Service Worker listo.");
       
       // Verifica si ya hay una suscripción activa
       let subscription = await registration.pushManager.getSubscription();
@@ -22,6 +24,7 @@ export const usePushNotifications = () => {
           applicationServerKey: 'BCQUCSKlyz9Eux_zMFAyUYGr-TY7Pfqm_IW3l1sOS9zZJsum8IPYR0UtwBj01rIlp0bsUPR1a_FJ7Srl1f9gWKU'
         });
       }
+      console.log("3. Suscripción obtenida del navegador.");
 
       const { error } = await supabaseClient
         .from('push_subscriptions')
