@@ -1,4 +1,4 @@
-import { LogOut, UserPen } from "lucide-react";
+import { LogOut, Settings, UserPen } from "lucide-react";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -52,6 +52,12 @@ const UserAvatar = () => {
               className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 transition-colors"
             >
               <UserPen size={18} /> Perfil
+            </NavLink>
+             <NavLink
+              to="settings"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 transition-colors"
+            >
+              <Settings size={18} /> Configuración
             </NavLink>
             <button
               onClick={signout}

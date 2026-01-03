@@ -13,8 +13,6 @@ import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { useNotifications } from "../../hooks/useNotifications";
 import NotificationSkeleton from "../skeletons/NotificationSkeleton";
-import ConfirmModal from "../ui/ConfirmModal";
-import ConfirmModal2 from "../ui/ConfirmModal2";
 
 const NotificationsPage = () => {
   const { notifications, isLoading, markAsRead, clearAll } = useNotifications();

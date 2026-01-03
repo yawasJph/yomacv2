@@ -16,8 +16,20 @@ import PostPage from "./components/pages/PostPage";
 import CommentThreadPage from "./components/pages/CommentThreadPage";
 import NotificationsPage from "./components/pages/NotificationsPage";
 import { useEffect } from "react";
+import PushSettings from "./components/pages/PushSettings";
 
 function App() {
+  
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then((reg) => console.log("Service Worker registrado con éxito", reg))
+        .catch((err) =>
+          console.error("Error al registrar el Service Worker", err)
+        );
+    });
+  }
   // Opcional: En tu App.jsx
   useEffect(() => {
     const unlockAudio = () => {
@@ -105,6 +117,7 @@ function App() {
           <Route path="post/:postId" element={<PostPage />} />
           <Route path="comment/:commentId" element={<CommentThreadPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
+          <Route path="settings" element={<PushSettings />} />
         </Route>
       </Routes>
     </BrowserRouter>
