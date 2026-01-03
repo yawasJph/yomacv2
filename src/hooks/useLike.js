@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
-
+///hago cambios
 export const useLike = (postId) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -41,15 +41,40 @@ export const useLike = (postId) => {
           .insert({ post_id: postId, user_id: user.id });
       }
     },
-    // Dentro de useLike.js -> onMutate:
+   // Dentro de useLike.js -> onMutate:
+    // onMutate: async () => {
+    //   await queryClient.cancelQueries({ queryKey: ["posts"] }); // Cancelar el feed
+
+    //   const previousPosts = queryClient.getQueryData(["posts"]);
+
+    //   // Actualizar el contador dentro de las páginas de InfiniteQuery
+    //   queryClient.setQueryData(["posts"], (old) => {
+    //     if (!old) return old;
+    //     return {
+    //       ...old,
+    //       pages: old.pages.map((page) =>
+    //         page.map((post) =>
+    //           post.id === postId
+    //             ? {
+    //                 ...post,
+    //                 like_count: isLiked
+    //                   ? post.like_count - 1
+    //                   : post.like_count + 1,
+    //               }
+    //             : post
+    //         )
+    //       ),
+    //     };
+    //   });
+
+    //   return { previousPosts };
+    // },
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["posts"] }); // Cancelar el feed
+      await queryClient.cancelQueries({ queryKey: ["posts"] });
 
-      const previousPosts = queryClient.getQueryData(["posts"]);
+      queryClient.setQueriesData({ queryKey: ["posts"] }, (old) => {
+        if (!old?.pages) return old;
 
-      // Actualizar el contador dentro de las páginas de InfiniteQuery
-      queryClient.setQueryData(["posts"], (old) => {
-        if (!old) return old;
         return {
           ...old,
           pages: old.pages.map((page) =>
@@ -66,8 +91,6 @@ export const useLike = (postId) => {
           ),
         };
       });
-
-      return { previousPosts };
     },
 
     onError: (err, newState, context) => {
@@ -78,7 +101,7 @@ export const useLike = (postId) => {
       // Al final, sincronizamos con la DB para estar 100% seguros
       queryClient.invalidateQueries({ queryKey });
       // También invalidamos el feed completo para que los contadores se actualicen
-      queryClient.invalidateQueries({ queryKey: ["posts", "posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] }); //{ queryKey: ["posts", "posts"] }
     },
   });
 

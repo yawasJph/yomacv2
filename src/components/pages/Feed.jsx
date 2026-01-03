@@ -28,7 +28,9 @@ const Feed = () => {
 
   const allPosts = data?.pages.flat() || [];
 
-  const MemoizedCardPost = memo(CardPost);
+  //const MemoizedCardPost = memo(CardPost);
+
+  console.log(allPosts)
 
   return (
     <>
@@ -42,7 +44,7 @@ const Feed = () => {
         <>
           {allPosts.map((post) => (
             //<CardPost key={post.id} post={post} media={post.post_media ?? []} />
-            <MemoizedCardPost key={post.id} post={post} media={post.post_media ?? []} />
+            <CardPost key={post.id} post={post} media={post.post_media ?? []} />
           ))}
 
           {/* Loader para infinite scroll */}

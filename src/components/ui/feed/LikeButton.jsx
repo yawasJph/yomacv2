@@ -7,8 +7,9 @@ const LikeButton = ({ postId, initialCount = 0 }) => {
 
   // Ajustamos el contador visualmente de forma local para el feedback inmediato
   // (Aunque lo ideal es que el contador venga del query de posts)
-
-  const displayCount = isLiked ? initialCount + 1 : initialCount;
+  
+  console.log(initialCount)
+ // const displayCount = isLiked ? initialCount + 1 : initialCount;
 
   return (
     <>
@@ -32,7 +33,7 @@ const LikeButton = ({ postId, initialCount = 0 }) => {
           }`}
         />
       </div>
-      <span className="text-sm font-medium">{displayCount > 0 && displayCount || 0}</span>
+      <span className="text-sm font-medium">{initialCount}</span>
     </button>
     </>
   );

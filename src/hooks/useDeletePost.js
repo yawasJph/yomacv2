@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { toast } from "sonner";
 
-export const useDeletePost = () => {
+export const useDeletePost = (post_id) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -17,6 +17,7 @@ export const useDeletePost = () => {
     onSuccess: () => {
       // Invalidamos el feed para que el post desaparezca
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      //, {queryKey: ["post", post_id]}
       toast.success("Publicación eliminada");
     },
     onError: () => {

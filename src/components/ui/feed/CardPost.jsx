@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   MessageCircle,
   MoreHorizontal,
@@ -72,6 +72,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
       onSuccess: () => {
         setIsDeleteModalOpen(false); // Cerramos el modal al terminar
       },
+      
     });
   };
 
@@ -101,8 +102,6 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
     }
   };
 
-  console.log(isDeleteModalOpen)
-
    const goToPost = () => {
     // Si ya estamos en la vista detallada, no hacemos nada
     if (isDetailedView) return;
@@ -111,6 +110,8 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
     if (selection.toString().length > 0) return;
     navigate(`/post/${post.id}`);
   };
+
+   console.log(post.like_count)
 
   return (
     <article
@@ -305,7 +306,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
             onClick={(e) => e.stopPropagation()}
             className="flex items-center gap-6 text-gray-500 dark:text-gray-400 mt-3"
           >
-            <LikeButton postId={post.id} initialLikes={post.like_count || 0} />
+            <LikeButton postId={post.id} initialCount={post.like_count} />
 
             <button
               className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"

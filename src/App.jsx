@@ -24,7 +24,7 @@ function App() {
     window.addEventListener("load", () => {
       navigator.serviceWorker
         .register("/sw.js")
-        .then((reg) => console.log("Service Worker registrado con éxito", reg))
+        .then()
         .catch((err) =>
           console.error("Error al registrar el Service Worker", err)
         );
