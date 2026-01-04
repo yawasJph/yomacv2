@@ -18,9 +18,13 @@ export const useDeletePost = (post_id) => {
       // Invalidamos el feed para que el post desaparezca
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       //, {queryKey: ["post", post_id]}
+      // 2. IMPORTANTÍSIMO: Invalidamos los hashtags
+      // Esto hará que el conteo en el componente TrendingTopics se actualice
+      queryClient.invalidateQueries({ queryKey: ["trending_hashtags"] });
       toast.success("Publicación eliminada");
     },
     onError: () => {
+      console.error(error);
       toast.error("No se pudo eliminar la publicación");
     }
   });

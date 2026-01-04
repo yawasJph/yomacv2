@@ -7,8 +7,6 @@ const LikeButton = ({ postId, initialCount = 0 }) => {
 
   // Ajustamos el contador visualmente de forma local para el feedback inmediato
   // (Aunque lo ideal es que el contador venga del query de posts)
-  
-  console.log(initialCount)
  // const displayCount = isLiked ? initialCount + 1 : initialCount;
 
   return (

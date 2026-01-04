@@ -6,13 +6,16 @@ import EmojiPicker from "emoji-picker-react";
 import GifPicker from "../utils/GifPicker";
 import { usePostState } from "../../hooks/usePostState"; // 👈 Nuevo Hook de Estado
 import { useLinkPreview } from "../../hooks/useLinkPreview2"; // 👈 Nuevo Hook de Preview
-import { usePostCreation } from "../../hooks/usePostCreation"; // 👈 Nuevo Hook de Creación
+//import { usePostCreation } from "../../hooks/usePostCreation"; // 👈 Nuevo Hook de Creación
 import LinkPreviewCard from "../ui/createPost/LinkPreviewCard"; // 👈 Nuevo Componente
 import PostMediaGrid from "../ui/createPost/PostMediaGrid"; // 👈 Nuevo Componente
 import { toast } from "sonner";
+import { usePostCreation } from "../../hooks/usePostCreation2";
+import { useProfile } from "../../hooks/useProfile";
 
 const CreatePost = () => {
   const { user } = useAuth();
+  const { data: profile } = useProfile(user.id);
   const { createPost } = usePostCreation();
 
   // 1. Lógica de Estado (del formulario)
@@ -146,8 +149,8 @@ const CreatePost = () => {
         {/* Avatar */}
         {/* ... (Tu JSX de avatar) ... */}
         <img
-          src={user.user_metadata.avatar_url || "/default-avatar.jpg"}
-          alt={user.user_metadata.full_name}
+          src={profile?.avatar || "/default-avatar.jpg"}
+          alt={profile?.full_name}
           className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
         />
 

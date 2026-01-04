@@ -111,8 +111,6 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
     navigate(`/post/${post.id}`);
   };
 
-   console.log(post.like_count)
-
   return (
     <article
       onClick={goToPost}

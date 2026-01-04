@@ -28,10 +28,6 @@ const Feed = () => {
 
   const allPosts = data?.pages.flat() || [];
 
-  //const MemoizedCardPost = memo(CardPost);
-
-  console.log(allPosts)
-
   return (
     <>
       {isLoading ? (

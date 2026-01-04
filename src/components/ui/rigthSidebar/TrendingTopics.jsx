@@ -1,31 +1,13 @@
-import { useEffect, useState } from "react";
-import { supabaseClient } from "../../../supabase/supabaseClient";
+
 import { useNavigate } from "react-router-dom";
 import { useAuthAction } from "../../../hooks/useAuthAction";
+import { useTrendingHashtags } from "../../../hooks/useTrendingHashtags";
 
 const TrendingTopics = () => {
-  const [trends, setTrends] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: trends, isLoading } = useTrendingHashtags();
   const navigate = useNavigate()
   const {executeAction} = useAuthAction();
-  useEffect(() => {
-    const fetchTrends = async () => {
-      try {
-        const { data, error } = await supabaseClient
-          .from("trending_hashtags")
-          .select("*");
-
-        if (error) throw error;
-        setTrends(data);
-      } catch (error) {
-        console.error("Error cargando tendencias:", error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTrends();
-  }, []);
+ 
 
   const handleSearchTrend = (trendName)=>{
     if(!trendName) return
@@ -38,7 +20,7 @@ const TrendingTopics = () => {
     },"buscar trends")
   }
 
-  if (loading) return (
+  if (isLoading) return (
     <div className="animate-pulse space-y-4 p-4">
       <div className="h-4 bg-emerald-100 dark:bg-emerald-900/20 rounded w-1/3"></div>
       <div className="space-y-2">
