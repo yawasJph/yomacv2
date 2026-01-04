@@ -3,10 +3,14 @@ import { motion } from 'framer-motion';
 import { useProfile } from '../../hooks/useProfile'; // Reutilizamos tu hook
 
 const CARD_IMAGES = [
-  { type: 'IAB', icon: '🌿' },
-  { type: 'DSI', icon: '💻' },
-  { type: 'ET', icon: '🩺' },
-  // ... más iconos o fotos de perfil
+  { type: "IAB", icon: "🌿" },
+  { type: "DSI", icon: "💻" },
+  { type: "ET", icon: "🩺" },
+  { type: "AR", icon: "🎨" },
+  { type: "MU", icon: "🎵" },
+  { type: "CI", icon: "🧪" },
+  { type: "MA", icon: "📐" },
+  { type: "CO", icon: "🍳" },
 ];
 
 const MemoryGame = () => {

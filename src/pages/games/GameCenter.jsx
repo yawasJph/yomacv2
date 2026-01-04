@@ -77,7 +77,7 @@ const GameCenter = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
             onClick={() => navigate(game.path)}
-            className={`relative overflow-hidden cursor-pointer group p-6 rounded-3xl border border-gray-100 dark:border-gray-800 bg-gradient-to-br ${game.color} hover:border-emerald-500/50 transition-all`}
+            className={`relative overflow-hidden cursor-pointer group p-6 rounded-3xl border border-gray-100 dark:border-gray-800 bg-linear-to-br ${game.color} hover:border-emerald-500/50 transition-all`}
           >
             <div className="flex justify-between items-start relative z-10">
               <div className="p-3 bg-white dark:bg-gray-900 rounded-2xl shadow-sm">
