@@ -20,6 +20,7 @@ import PushSettings from "./components/pages/PushSettings";
 import UserConnections from "./components/pages/UserConnections2";
 import GameCenter from "./pages/games/GameCenter";
 import MemoryGame from "./components/games/MemoryGame";
+import Leaderboard from "./pages/games/Leaderboard";
 
 function App() {
   
@@ -123,6 +124,7 @@ function App() {
           <Route path="settings" element={<PushSettings />} />
           <Route path="games" element={<GameCenter />} />
           <Route path="games/memory" element={<MemoryGame />} />
+          <Route path="games/leaderboard" element={<Leaderboard />} />
         </Route>
       </Routes>
     </BrowserRouter>

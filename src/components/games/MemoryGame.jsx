@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useProfile } from '../../hooks/useProfile'; // Reutilizamos tu hook
+import React, { useState, useEffect } from "react";
+import MemoryCard from "./MemoryCard";
+import { Hash, RefreshCcw, Star, Timer } from "lucide-react";
+import VictoryModal from "./VictoryModal";
+import confetti from "canvas-confetti";
+import { supabaseClient } from "../../supabase/supabaseClient";
+
 
 const CARD_IMAGES = [
   { type: "IAB", icon: "🌿" },
@@ -18,66 +22,178 @@ const MemoryGame = () => {
   const [flippedCards, setFlippedCards] = useState([]);
   const [matched, setMatched] = useState([]);
   const [moves, setMoves] = useState(0);
+  const [seconds, setSeconds] = useState(0);
+  const [isActive, setIsActive] = useState(false);
+  const [showVictory, setShowVictory] = useState(false);
+  const [finalScore, setFinalScore] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Inicializar juego
-  useEffect(() => {
+  const resetGame = () => {
+    // Generar IDs únicos reales para cada carta duplicada
     const duplicatedCards = [...CARD_IMAGES, ...CARD_IMAGES]
-      .map((card, index) => ({ ...card, id: index }))
-      .sort(() => Math.random() - 0.5);
+      .sort(() => Math.random() - 0.5)
+      .map((card, index) => ({
+        ...card,
+        id: `${card.type}-${index}-${Math.random()}`,
+      }));
+
     setCards(duplicatedCards);
+    setFlippedCards([]);
+    setMatched([]);
+    setMoves(0);
+    setSeconds(0);
+    setIsActive(false);
+    setShowVictory(false);
+    setIsSaving(false)
+  };
+
+  useEffect(() => {
+    resetGame();
   }, []);
 
+  // Función para guardar en Supabase (RPC)
+  const saveGameResult = async (score, steps, time) => {
+    if (isSaving) return;
+    setIsSaving(true);
+
+    try {
+      const { data, error } = await supabaseClient.rpc("submit_game_score", {
+        p_game_id: "memory",
+        p_score: score,
+        p_moves: steps,
+        p_time_seconds: time,
+      });
+
+      if (error) throw error;
+      console.log("Resultado guardado con éxito:", data);
+    } catch (error) {
+      console.error("Error al guardar el resultado:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    let interval = null;
+    if (isActive && matched.length < cards.length) {
+      interval = setInterval(() => setSeconds((s) => s + 1), 1000);
+    } else {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isActive, matched, cards.length]);
+
   const handleFlip = (index) => {
-    if (flippedCards.length === 2 || flippedCards.includes(index) || matched.includes(index)) return;
-    
+    if (
+      flippedCards.length === 2 ||
+      flippedCards.includes(index) ||
+      matched.includes(index)
+    )
+      return;
+
+    if (!isActive) setIsActive(true);
+
     const newFlipped = [...flippedCards, index];
     setFlippedCards(newFlipped);
 
     if (newFlipped.length === 2) {
-      setMoves(m => m + 1);
+      setMoves((m) => m + 1);
       const [first, second] = newFlipped;
+
       if (cards[first].type === cards[second].type) {
-        setMatched([...matched, first, second]);
+        setMatched((prev) => [...prev, first, second]);
         setFlippedCards([]);
       } else {
-        setTimeout(() => setFlippedCards([]), 1000);
+        setTimeout(() => setFlippedCards([]), 1000); // Un segundo para memorizar
       }
     }
   };
 
+  // Efecto de Victoria
+  useEffect(() => {
+    if (matched.length === cards.length && cards.length > 0) {
+      setIsActive(false); // Detener cronómetro
+
+      // Disparar Confeti
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ["#10b981", "#3b82f6", "#f59e0b"],
+      });
+
+      // Calcular score final para el modal
+      const score = Math.max(0, 1000 - moves * 10 - seconds * 2);
+      setFinalScore(score);
+
+      saveGameResult(score, moves, seconds);
+
+      // Mostrar modal con un pequeño delay
+      setTimeout(() => setShowVictory(true), 1000);
+    }
+  }, [matched, cards.length]);
+
   return (
-    <div className="max-w-md mx-auto p-4">
-      <div className="flex justify-between mb-4 items-center">
-        <h2 className="text-xl font-bold dark:text-white">Movimientos: {moves}</h2>
-        <button onClick={() => window.location.reload()} className="text-emerald-500 font-bold">Reiniciar</button>
+    <div className="max-w-2xl mx-auto p-4 select-none">
+      {/* HUD de Juego */}
+      <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col items-center">
+          <Timer className="text-emerald-500 mb-1" size={18} />
+          <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+            Tiempo
+          </span>
+          <span className="text-lg font-black dark:text-white tabular-nums">
+            {seconds}s
+          </span>
+        </div>
+        <div className="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col items-center">
+          <Hash className="text-blue-500 mb-1" size={18} />
+          <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+            Pasos
+          </span>
+          <span className="text-lg font-black dark:text-white tabular-nums">
+            {moves}
+          </span>
+        </div>
+        <div className="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col items-center">
+          <Star className="text-yellow-500 mb-1" size={18} />
+          <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+            Puntos
+          </span>
+          <span className="text-lg font-black dark:text-white tabular-nums">
+            {Math.max(0, 1000 - moves * 10 - seconds * 2)}
+          </span>
+        </div>
       </div>
-      
-      <div className="grid grid-cols-4 gap-3">
+
+      {/* Grid 4x4 */}
+      <div className="grid grid-cols-4 gap-3 sm:gap-4">
         {cards.map((card, index) => (
-          <div 
-            key={index}
+          <MemoryCard
+            key={card.id}
+            card={card}
+            isFlipped={flippedCards.includes(index)}
+            isMatched={matched.includes(index)}
             onClick={() => handleFlip(index)}
-            className="relative h-24 cursor-pointer"
-          >
-            <motion.div
-              animate={{ rotateY: flippedCards.includes(index) || matched.includes(index) ? 180 : 0 }}
-              transition={{ duration: 0.3 }}
-              className="w-full h-full relative"
-              style={{ transformStyle: 'preserve-3d' }}
-            >
-              {/* Parte Trasera (Oculta) */}
-              <div className="absolute inset-0 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-2xl" 
-                   style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
-                {card.icon}
-              </div>
-              {/* Parte Frontal (Visible) */}
-              <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800 rounded-xl border-2 border-emerald-500/20 shadow-inner" 
-                   style={{ backfaceVisibility: 'hidden' }}>
-              </div>
-            </motion.div>
-          </div>
+            isDisabled={matched.length === cards.length}
+          />
         ))}
       </div>
+
+      <div className="mt-8 flex justify-center">
+        <button
+          onClick={resetGame}
+          className="flex items-center gap-2 px-8 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl font-bold text-gray-600 dark:text-gray-300 hover:border-emerald-500 hover:text-emerald-500 transition-all active:scale-95 shadow-sm"
+        >
+          <RefreshCcw size={18} /> Reiniciar Desafío
+        </button>
+      </div>
+
+      <VictoryModal
+        isOpen={showVictory}
+        score={finalScore}
+        time={seconds}
+        moves={moves}
+        onReset={resetGame}
+      />
     </div>
   );
 };
