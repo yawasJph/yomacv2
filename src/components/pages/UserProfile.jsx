@@ -15,6 +15,7 @@ import UserProfileSkeleton from "../skeletons/UserProfileSkeleton";
 import ImageModal from "../ui/userProfile/ImageModal";
 import { useProfile } from "../../hooks/useProfile";
 import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery2";
+import { useQueryClient } from "@tanstack/react-query";
 
 const UserProfile = () => {
   const { userId } = useParams();
@@ -23,19 +24,49 @@ const UserProfile = () => {
   const { isFollowing, followUser, unfollowUser } = useFollow();
   const [selectedImg, setSelectedImg] = useState(null);
   const [activeTab, setActiveTab] = useState("posts");
-
+  const queryClient = useQueryClient(); // 👈 Inicializar
+  const [actionLoading, setActionLoading] = useState(false);
 
   const loaderRef = useRef();
 
   const { data: profile, isLoading: profileLoading } = useProfile(userId);
 
+  // 🔥 NUEVA LÓGICA DE SEGUIMIENTO 🔥
+  const handleFollowToggle = async () => {
+    if (actionLoading) return;
+    setActionLoading(true);
+
+    try {
+      if (following) {
+        await unfollowUser(userId);
+      } else {
+        await followUser(userId);
+      }
+
+      // Sincronizar todas las vistas relacionadas
+      // 1. Refrescar los datos de este perfil (para actualizar contadores)
+      queryClient.invalidateQueries({ queryKey: ["profile", userId] });
+
+      // 2. Refrescar tu propio perfil (para actualizar tu contador de "Siguiendo")
+      queryClient.invalidateQueries({ queryKey: ["profile", currentUser?.id] });
+
+      // 3. Refrescar sugerencias y conexiones
+      queryClient.invalidateQueries({ queryKey: ["user_suggestions"] });
+      queryClient.invalidateQueries({ queryKey: ["connections", userId] });
+    } catch (error) {
+      console.error("Error al cambiar estado de seguimiento", error);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   // 2. Cargar posts paginados según el Tab
-  const { 
-    data, 
-    fetchNextPage, 
-    hasNextPage, 
-    isFetchingNextPage, 
-    isLoading: postsLoading 
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: postsLoading,
   } = usePostsInfiniteQuery({ type: activeTab, userId });
 
   const allPosts = data?.pages.flat() || [];
@@ -56,11 +87,9 @@ const UserProfile = () => {
 
   if (profileLoading) return <UserProfileSkeleton />;
 
-
   const isMe = currentUser?.id === userId;
   const following = isFollowing(userId);
 
-  
   return (
     <div className="min-h-screen bg-white dark:bg-black pb-20">
       {/* HEADER SUPERIOR (Sticky) */}
@@ -76,11 +105,9 @@ const UserProfile = () => {
             {profile?.full_name}
           </h1>
           <span className="text-xs text-gray-500">
-            {allPosts.length} {activeTab === "posts" &&
-                "publicaciones"}
-              {activeTab === "media" && "medias"}
-              {activeTab === "likes" &&
-                "likes"}
+            {allPosts.length} {activeTab === "posts" && "publicaciones"}
+            {activeTab === "media" && "medias"}
+            {activeTab === "likes" && "likes"}
           </span>
         </div>
       </div>
@@ -120,16 +147,21 @@ const UserProfile = () => {
             </Link>
           ) : (
             <button
-              onClick={() =>
-                following ? unfollowUser(userId) : followUser(userId)
-              }
-              className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
+              onClick={handleFollowToggle}
+              disabled={actionLoading}
+              className={`px-6 py-2 rounded-full font-bold text-sm transition-all flex items-center gap-2 ${
                 following
-                  ? "border border-gray-300 dark:border-gray-700 dark:text-white"
+                  ? "border border-gray-300 dark:border-gray-700 dark:text-white hover:bg-red-50 dark:hover:bg-red-900/10 hover:text-red-600 hover:border-red-200"
                   : "bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg shadow-emerald-500/20"
-              }`}
+              } ${actionLoading ? "opacity-70 cursor-not-allowed" : ""}`}
             >
-              {following ? "Siguiendo" : "Seguir"}
+              {actionLoading ? (
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              ) : following ? (
+                "Siguiendo"
+              ) : (
+                "Seguir"
+              )}
             </button>
           )}
         </div>
@@ -244,18 +276,30 @@ const UserProfile = () => {
       {/* LISTADO DE POSTS CON INFINITE SCROLL */}
       <div className="divide-y divide-gray-100 dark:divide-gray-800">
         {postsLoading ? (
-          <div className="p-10 text-center"><div className="animate-spin inline-block w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full" /></div>
+          <div className="p-10 text-center">
+            <div className="animate-spin inline-block w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full" />
+          </div>
         ) : allPosts.length > 0 ? (
           <>
             {allPosts.map((post) => (
-              <CardPost key={post.id} post={post} media={post.post_media} isRepostView={true} tab={activeTab} />
+              <CardPost
+                key={post.id}
+                post={post}
+                media={post.post_media}
+                isRepostView={true}
+                tab={activeTab}
+              />
             ))}
             <div ref={loaderRef} className="h-10 flex justify-center py-4">
-              {isFetchingNextPage && <div className="animate-spin w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full" />}
+              {isFetchingNextPage && (
+                <div className="animate-spin w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full" />
+              )}
             </div>
           </>
         ) : (
-          <div className="p-20 text-center text-gray-500">No hay contenido para mostrar.</div>
+          <div className="p-20 text-center text-gray-500">
+            No hay contenido para mostrar.
+          </div>
         )}
       </div>
     </div>

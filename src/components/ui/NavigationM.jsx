@@ -1,4 +1,4 @@
-import { Plus, TriangleAlertIcon } from "lucide-react";
+import { Gamepad2, Plus, TriangleAlertIcon } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../../context/AuthContext";
@@ -67,6 +67,12 @@ const NavigationM = ({ mobileNavLinks }) => {
           className="p-3 bg-linear-to-r from-emerald-500 to-teal-400 text-white rounded-xl shadow-lg hover:shadow-xl transition-all cursor-pointer font-semibold  hover:scale-105"
         >
           <Plus size={22} />
+        </button>
+        <button
+          onClick={()=> navigate("games")}
+          className="p-3 bg-linear-to-r from-emerald-500 to-teal-400 text-white rounded-xl shadow-lg hover:shadow-xl transition-all cursor-pointer font-semibold  hover:scale-105"
+        >
+          <Gamepad2 size={22} />
         </button>
       </div>
     </nav>

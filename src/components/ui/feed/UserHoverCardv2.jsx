@@ -44,6 +44,7 @@ export default function UserHoverCard({ user, children }) {
     navigate(`/user/${user.id}/connections?tab=${tab}`);
   };
 
+
   useEffect(() => {
     const fectData = async () => {
       // 1. Obtener info del usuario dueño del perfil

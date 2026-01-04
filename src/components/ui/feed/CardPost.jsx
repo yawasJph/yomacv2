@@ -17,7 +17,7 @@ import { useIsMobile } from "../../../hooks/useIsMobile";
 import OpenGraphCard from "../openGraph/OpenGraphCard2";
 import PostMedia from "./PostMedia";
 import MediaModal from "./MediaModal";
-import UserHoverCard from "./UserHoverCardv2";
+//import UserHoverCard from "./UserHoverCardv2";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { useAuthAction } from "../../../hooks/useAuthAction";
@@ -30,6 +30,7 @@ import ReportModal from "../ReportModal";
 import { handleShare } from "../../utils/sharePost";
 import RenderTextWithLinks from "../../utils/RenderTextWithLinks";
 import RepostButton from "../RepostButton";
+import UserHoverCard from "./UserHoverCard3";
 
 const CardPost = ({ post, media, isDetailedView = false, tab }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);

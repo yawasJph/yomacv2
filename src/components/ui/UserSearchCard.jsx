@@ -10,7 +10,6 @@ const UserSearchCard = ({ profile }) => {
   const [actionLoading, setActionLoading] = useState(false);
   const { isFollowing, followUser, unfollowUser } = useFollow();
   const [isHovered, setIsHovered] = useState(false);
-  
 
   const isMobile = useIsMobile();
   const following = isFollowing(profile.id);

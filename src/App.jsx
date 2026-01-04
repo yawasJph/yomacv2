@@ -7,7 +7,7 @@ import CreatePost from "./components/pages/CreatePost";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
 import { Toaster } from "sonner";
 import SearchPage from "./components/pages/SearchPage";
-import UserConnections from "./components/pages/UserConnections";
+//import UserConnections from "./components/pages/UserConnections";
 import UserProfile from "./components/pages/UserProfile";
 import EditProfile from "./components/pages/EditProfile";
 import SavedPage from "./components/pages/SavedPage";
@@ -17,6 +17,9 @@ import CommentThreadPage from "./components/pages/CommentThreadPage";
 import NotificationsPage from "./components/pages/NotificationsPage";
 import { useEffect } from "react";
 import PushSettings from "./components/pages/PushSettings";
+import UserConnections from "./components/pages/UserConnections2";
+import GameCenter from "./pages/games/GameCenter";
+import MemoryGame from "./components/games/MemoryGame";
 
 function App() {
   
@@ -118,6 +121,8 @@ function App() {
           <Route path="comment/:commentId" element={<CommentThreadPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
           <Route path="settings" element={<PushSettings />} />
+          <Route path="games" element={<GameCenter />} />
+          <Route path="games/memory" element={<MemoryGame />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,5 +1,6 @@
 import TrendingTopics from "../ui/rigthSidebar/TrendingTopics";
-import UserSuggestions from "../ui/rigthSidebar/UserSuggestions";
+import UserSuggestions from "../ui/rigthSidebar/UserSuggestions2";
+//import UserSuggestions from "../ui/rigthSidebar/UserSuggestions";
 import SearchBar from "../ui/SearchBar";
 
 const RigthSidebar = () => {

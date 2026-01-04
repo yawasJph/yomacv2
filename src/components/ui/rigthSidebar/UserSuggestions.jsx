@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { UserPlus, UserMinus, UserCheck } from "lucide-react"; // Añadimos iconos
+import { useEffect, useState } from "react";
+import { UserPlus, UserMinus } from "lucide-react"; // Añadimos iconos
 import { supabaseClient } from "../../../supabase/supabaseClient";
 import { useAuth } from "../../../context/AuthContext";
 import { useFollow } from "../../../context/FollowContext"; // 👈 Importamos el contexto

@@ -27,7 +27,6 @@ const UserConnections = () => {
           .eq("id", userId)
           .single();
         setTargetUser(userData);
-        console.log(userData);
 
         // 2. Traer AMBAS listas en paralelo
         const [resFollowers, resFollowing] = await Promise.all([
