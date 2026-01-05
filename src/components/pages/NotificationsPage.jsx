@@ -108,7 +108,7 @@ const NotificationsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="max-w-2xl mx-auto min-h-screen border-x border-gray-100 dark:border-gray-800">
+      <div className="max-w-2xl mx-auto border-x border-gray-100 dark:border-gray-800">{/**min-h-screen */}
         <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex items-center gap-4">
           <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-neutral-800 animate-pulse" />
           <div className="w-32 h-6 bg-gray-200 dark:bg-neutral-800 animate-pulse rounded" />
@@ -119,7 +119,7 @@ const NotificationsPage = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto min-h-screen border-x border-gray-100 dark:border-gray-800 ">
+    <div className="max-w-2xl mx-auto border-x border-gray-100 dark:border-gray-800 ">{/**min-h-screen */}
       <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 flex items-center gap-6 border-b border-gray-100 dark:border-gray-800 justify-between">
         <div className="flex items-center justify-between gap-1">
           <button

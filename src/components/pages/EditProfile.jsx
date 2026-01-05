@@ -223,7 +223,7 @@ const EditProfile = () => {
 
   if (initialLoading) return <ProfileEditSkeleton />;
   return (
-    <div className="min-h-screen bg-white dark:bg-black pb-10">
+    <div className="bg-white dark:bg-black pb-10">{/* min-h-screen */}
       {/* Header Estilo App */}
       <div className="sticky top-0 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
         <div className="flex items-center gap-4">

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { UserPlus, UserCheck, UserMinus } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import UserHoverCard from "./feed/UserHoverCard";
 import { useFollow } from "../../context/FollowContext";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { useQueryClient } from "@tanstack/react-query"; // 👈 Importamos QueryClient
@@ -14,7 +13,7 @@ const UserSearchCard = ({ profile }) => {
   const [actionLoading, setActionLoading] = useState(false);
   const { isFollowing, followUser, unfollowUser } = useFollow();
   const [isHovered, setIsHovered] = useState(false);
-
+  const isMe = currentUser.id === profile.id;
   const isMobile = useIsMobile();
   const following = isFollowing(profile.id);
 
@@ -31,19 +30,24 @@ const UserSearchCard = ({ profile }) => {
       }
 
       // 🔥 SINCRONIZACIÓN DE CACHÉ 🔥
-      
+
       // 1. Invalida sugerencias (para que se refresquen si estamos ahí)
-      queryClient.invalidateQueries({ queryKey: ["user_suggestions", currentUser.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["user_suggestions", currentUser.id],
+      });
 
       // 2. Si estamos viendo una lista de seguidores/seguidos, refrescarla
       if (profileIdInParams) {
-        queryClient.invalidateQueries({ queryKey: ["connections", profileIdInParams] });
-        queryClient.invalidateQueries({ queryKey: ["profile", profileIdInParams] });
+        queryClient.invalidateQueries({
+          queryKey: ["connections", profileIdInParams],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["profile", profileIdInParams],
+        });
       }
 
       // 3. Invalida el perfil específico del usuario al que acabamos de seguir/dejar de seguir
       queryClient.invalidateQueries({ queryKey: ["profile", profile.id] });
-
     } catch (error) {
       console.error("Error en la acción de seguimiento:", error);
     } finally {
@@ -61,11 +65,59 @@ const UserSearchCard = ({ profile }) => {
         />
 
         <div className="min-w-0 flex-1">
-          <UserHoverCard user={profile}>
-            <h4 className="font-bold text-gray-900 dark:text-white truncate hover:underline cursor-pointer decoration-emerald-500 text-sm sm:text-base">
-              {profile.full_name}
-            </h4>
-          </UserHoverCard>
+          {isMe ? (
+            <>
+              <h4 className="font-bold text-gray-900 dark:text-white truncate hover:underline cursor-pointer decoration-emerald-500 text-sm sm:text-base">
+                {profile.full_name.length > 20
+                  ? profile.full_name.substring(0, 20) + "..."
+                  : profile.full_name}
+              </h4>
+              {/* RENDERIZADO DE INSIGNIAS EN EL FEED (LIMITADO A 3) */}
+              <span className="flex items-center gap-0.5 ml-1 shrink-0">
+                {profile.equipped_badges?.slice(0, 3).map((item, idx) => (
+                  <span
+                    key={idx}
+                    className="text-[14px] sm:text-[16px] select-none"
+                    title={item.badges?.name || item.name}
+                  >
+                    {item.badges?.icon || item.icon}
+                  </span>
+                ))}
+                {profile.equipped_badges?.length > 3 && (
+                  <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 ml-0.5">
+                    +{profile.equipped_badges.length - 3}
+                  </span>
+                )}
+              </span>
+            </>
+          ) : (
+            <>
+              <Link to={`/profile/${profile.id}`}>
+                <h4 className="font-bold text-gray-900 dark:text-white truncate hover:underline cursor-pointer decoration-emerald-500 text-sm sm:text-base">
+                  {profile.full_name.length > 20
+                    ? profile.full_name.substring(0, 20) + "..."
+                    : profile.full_name}
+                </h4>
+              </Link>
+              {/* RENDERIZADO DE INSIGNIAS EN EL FEED (LIMITADO A 3) */}
+              <span className="flex items-center gap-0.5 ml-1 shrink-0">
+                {profile.equipped_badges?.slice(0, 3).map((item, idx) => (
+                  <span
+                    key={idx}
+                    className="text-[14px] sm:text-[16px] select-none"
+                    title={item.badges?.name || item.name}
+                  >
+                    {item.badges?.icon || item.icon}
+                  </span>
+                ))}
+                {profile.equipped_badges?.length > 3 && (
+                  <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 ml-0.5">
+                    +{profile.equipped_badges.length - 3}
+                  </span>
+                )}
+              </span>
+            </>
+          )}
           <div className="flex gap-1 items-center">
             {profile.carrera && (
               <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold uppercase">
@@ -95,7 +147,7 @@ const UserSearchCard = ({ profile }) => {
           className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-200 min-w-[100px] sm:min-w-[120px] flex items-center justify-center gap-2 ${
             following
               ? isHovered
-                ? "bg-red-100 text-red-600 border border-red-200 dark:bg-red-900/20 dark:text-red-400" 
+                ? "bg-red-100 text-red-600 border border-red-200 dark:bg-red-900/20 dark:text-red-400"
                 : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"
               : "bg-emerald-500 hover:bg-emerald-600 text-white"
           }`}
@@ -104,12 +156,18 @@ const UserSearchCard = ({ profile }) => {
             <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
           ) : following ? (
             isHovered ? (
-              <><UserMinus size={16} /> {!isMobile && "Dejar de seguir"}</>
+              <>
+                <UserMinus size={16} /> {!isMobile && "Dejar de seguir"}
+              </>
             ) : (
-              <><UserCheck size={16} /> {!isMobile && "Siguiendo"}</>
+              <>
+                <UserCheck size={16} /> {!isMobile && "Siguiendo"}
+              </>
             )
           ) : (
-            <><UserPlus size={16} /> {!isMobile && "Seguir"}</>
+            <>
+              <UserPlus size={16} /> {!isMobile && "Seguir"}
+            </>
           )}
         </button>
       )}

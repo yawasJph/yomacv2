@@ -38,7 +38,7 @@ const SavedPage = () => {
   const allSavedPosts = data?.pages.flat() || [];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
+    <div className="bg-white dark:bg-black">{/* min-h-screen */}
       {/* HEADER */}
       <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 flex items-center gap-6 border-b border-gray-100 dark:border-gray-800">
         <button

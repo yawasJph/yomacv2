@@ -46,7 +46,7 @@ const GameCenter = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black p-4 pb-24">
+    <div className="bg-white dark:bg-black p-4 pb-10">{/* min-h-screen */}
       {/* Header */}
       <div className="flex justify-between items-center mb-8 mt-4">
         <div>

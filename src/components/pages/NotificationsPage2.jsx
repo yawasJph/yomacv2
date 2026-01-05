@@ -102,7 +102,7 @@ const NotificationsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-black p-4">
+      <div className="min-h-screen bg-linear-to-b from-gray-50 to-white dark:from-gray-950 dark:to-black p-4">
         <div className="max-w-2xl mx-auto">
           <div className="mb-6 bg-white dark:bg-gray-900 rounded-2xl shadow-sm dark:shadow-emerald-900/5 p-4 animate-pulse">
             <div className="h-6 bg-gray-200 dark:bg-gray-800 rounded w-1/4 mb-2"></div>
@@ -125,7 +125,7 @@ const NotificationsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-black">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white dark:from-gray-950 dark:to-black">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="sticky top-0 z-40 bg-white/90 dark:bg-black/90 backdrop-blur-xl border-b border-gray-100 dark:border-emerald-900/30 px-4 py-3">
@@ -139,7 +139,7 @@ const NotificationsPage = () => {
               </button>
               <div className="flex items-center gap-2">
                 <Sparkles className="text-emerald-500 hidden sm:block" size={20} />
-                <h1 className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-emerald-400 dark:to-emerald-300 bg-clip-text text-transparent">
+                <h1 className="text-xl font-bold bg-linear-to-r from-gray-800 to-gray-600 dark:from-emerald-400 dark:to-emerald-300 bg-clip-text text-transparent">
                   Notificaciones
                 </h1>
                 {notifications.length > 0 && (
@@ -169,7 +169,7 @@ const NotificationsPage = () => {
         <div className="p-4">
           {notifications.length === 0 ? (
             <div className="text-center py-12 px-4">
-              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-emerald-900/30 dark:to-emerald-800/20 flex items-center justify-center">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-linear-to-br from-gray-100 to-gray-200 dark:from-emerald-900/30 dark:to-emerald-800/20 flex items-center justify-center">
                 <BellOff className="text-gray-400 dark:text-emerald-500" size={32} />
               </div>
               <h3 className="text-xl font-bold text-gray-800 dark:text-emerald-100 mb-2">
@@ -180,7 +180,7 @@ const NotificationsPage = () => {
               </p>
               <button
                 onClick={() => navigate("/explore")}
-                className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-medium rounded-full hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300"
+                className="px-6 py-2.5 bg-linear-to-r from-emerald-500 to-emerald-600 text-white font-medium rounded-full hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300"
               >
                 Explorar contenido
               </button>
@@ -193,7 +193,7 @@ const NotificationsPage = () => {
                   onClick={() => handleNotificationClick(notif)}
                   className={`group relative bg-white dark:bg-gray-900/80 rounded-2xl border border-gray-100 dark:border-emerald-900/20 p-4 cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-emerald-200 dark:hover:border-emerald-800/50 hover:scale-[1.02] active:scale-[0.99]
                     ${!notif.is_read ? 
-                      "ring-2 ring-emerald-500/20 dark:ring-emerald-500/30 bg-gradient-to-r from-white to-emerald-50 dark:from-gray-900 dark:to-emerald-900/10" 
+                      "ring-2 ring-emerald-500/20 dark:ring-emerald-500/30 bg-linear-to-r from-white to-emerald-50 dark:from-gray-900 dark:to-emerald-900/10" 
                       : ""}`}
                 >
                   {/* Unread indicator */}
@@ -203,8 +203,8 @@ const NotificationsPage = () => {
                   
                   <div className="flex gap-4">
                     {/* Icon with gradient background */}
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-emerald-900/30 dark:to-emerald-800/40 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <div className="shrink-0">
+                      <div className="w-12 h-12 rounded-xl bg-linear-to-br from-gray-50 to-gray-100 dark:from-emerald-900/30 dark:to-emerald-800/40 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                         {getIcon(notif.type)}
                       </div>
                     </div>
@@ -237,7 +237,7 @@ const NotificationsPage = () => {
 
                       {/* Content preview */}
                       {(notif.post?.content || notif.comments?.content) && (
-                        <div className="relative pl-4 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-gradient-to-b before:from-emerald-400 before:to-emerald-500">
+                        <div className="relative pl-4 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-linear-to-b before:from-emerald-400 before:to-emerald-500">
                           <p className="text-sm text-gray-600 dark:text-emerald-300/80 italic line-clamp-2">
                             "
                             {notif.comment_id

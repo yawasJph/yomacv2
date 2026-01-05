@@ -28,7 +28,7 @@ const Login = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300 relative">
+    <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300 relative">{/* min-h-screen*/}
       {/* ToggleThemeButton en la esquina superior derecha */}
       <div className="absolute top-4 right-4 z-10">
         <ToggleThemeButton />

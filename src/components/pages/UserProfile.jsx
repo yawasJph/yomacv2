@@ -26,12 +26,8 @@ const UserProfile = () => {
   const [activeTab, setActiveTab] = useState("posts");
   const queryClient = useQueryClient(); // 👈 Inicializar
   const [actionLoading, setActionLoading] = useState(false);
-
   const loaderRef = useRef();
-
   const { data: profile, isLoading: profileLoading } = useProfile(userId);
-
-  console.log(profile)
 
   // 🔥 NUEVA LÓGICA DE SEGUIMIENTO 🔥
   const handleFollowToggle = async () => {
@@ -90,10 +86,10 @@ const UserProfile = () => {
   const isMe = currentUser?.id === userId;
   const following = isFollowing(userId);
 
-
   if (profileLoading) return <UserProfileSkeleton />;
+
   return (
-    <div className="min-h-screen bg-white dark:bg-black pb-20">
+    <div className="min-h-screen bg-white dark:bg-black pb-10">{/* min-h-screen */}
       {/* HEADER SUPERIOR (Sticky) */}
       <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-2 flex items-center gap-6 border-b border-transparent">
         <button
@@ -315,7 +311,13 @@ const UserProfile = () => {
             No hay contenido para mostrar.
           </div>
         )}
+       
       </div>
+       {allPosts.length>0 && !hasNextPage && (
+          <div className=" text-center text-gray-500">
+            No hay contenido para mostrar.
+          </div>
+        )}
     </div>
   );
 };

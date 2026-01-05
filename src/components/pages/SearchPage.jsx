@@ -24,9 +24,9 @@ const SearchPage = () => {
 
   const { data, isLoading } = useSearch(query, user?.id);
   const results = data || { posts: [], users: [] };
-console.log(results)
+
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
+    <div className="bg-white dark:bg-black">{/* min-h-acreen */}
       {/* HEADER */}
       <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 border-b border-gray-100 dark:border-gray-800">
         <div className="flex items-center gap-3">

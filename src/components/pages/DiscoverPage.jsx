@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Search, Filter, GraduationCap } from "lucide-react";
 import { useDiscoverProfiles } from "../../hooks/useDiscoverProfiles";
-import UserSearchCard from "../ui/UserSearchCard";
+import UserSearchCard from "../ui/UserSearchCard2";
+//import UserSearchCard from "../ui/UserSearchCard";
 
 const DiscoverPage = () => {
   const [activeTab, setActiveTab] = useState("TODOS");
@@ -33,7 +34,7 @@ const DiscoverPage = () => {
   const ciclos = ["I", "II", "III", "IV", "V", "VI"];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
+    <div className="bg-white dark:bg-black">{/* min-h-screen */}
       {/* HEADER & BUSCADOR */}
       <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 space-y-4 border-b border-gray-100 dark:border-gray-800">
         <div className="relative">

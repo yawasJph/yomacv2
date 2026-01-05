@@ -68,7 +68,7 @@ const UserSearchCard = ({ profile }) => {
                     {item.badges?.icon || item.icon}
                   </span>
                 ))}
-                {post.profiles.equipped_badges?.length > 3 && (
+                {profile.equipped_badges?.length > 3 && (
                   <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 ml-0.5">
                     +{profile.equipped_badges.length - 3}
                   </span>

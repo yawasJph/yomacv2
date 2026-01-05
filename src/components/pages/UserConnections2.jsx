@@ -32,7 +32,7 @@ const UserConnections = () => {
   );
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
+    <div className="bg-white dark:bg-black">{/* min-h-screen */}
       {/* Header */}
       <div className="flex items-center gap-6 p-2 sticky top-0 bg-white/80 dark:bg-black/80 backdrop-blur-md z-10 border-b border-gray-100 dark:border-gray-800">
         <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-full">
