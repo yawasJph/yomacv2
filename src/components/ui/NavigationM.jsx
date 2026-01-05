@@ -68,12 +68,6 @@ const NavigationM = ({ mobileNavLinks }) => {
         >
           <Plus size={22} />
         </button>
-        <button
-          onClick={()=> navigate("games")}
-          className="p-3 bg-linear-to-r from-emerald-500 to-teal-400 text-white rounded-xl shadow-lg hover:shadow-xl transition-all cursor-pointer font-semibold  hover:scale-105"
-        >
-          <Gamepad2 size={22} />
-        </button>
       </div>
     </nav>
   );

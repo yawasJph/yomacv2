@@ -41,6 +41,11 @@ const NavigationD = () => {
       icon: <Bookmark size={22} />,
       text: "Guardados",
       private: true,
+    },{
+      to: "games",
+      icon: <Gamepad2 size={22} />,
+      text: "Juegos",
+      private: true,
     },
   ];
 
@@ -88,13 +93,13 @@ const NavigationD = () => {
         <Plus size={25} />
         Crear Publicación
       </button>
-       <button
+       {/* <button
         className="flex items-center gap-4 px-4 py-3 rounded-xl bg-linear-to-r from-emerald-500 to-teal-400 text-white font-semibold mt-4 hover:shadow-lg transition-all hover:scale-105 cursor-pointer"
         onClick={() => user ? navigate("games") : requireAuth("crear una publicación")}
       >
         <Gamepad2 size={25} />
         Games
-      </button>
+      </button> */}
     </nav>
   );
 };

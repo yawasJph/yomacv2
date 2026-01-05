@@ -19,6 +19,7 @@ const BadgeStore = ({ userCredits }) => {
   };
 
   const handleBuy = async (badgeId) => {
+    
     const { data, error } = await supabaseClient.rpc('buy_badge', { p_badge_id: badgeId });
     if (error) toast.error(error.message);
     else {

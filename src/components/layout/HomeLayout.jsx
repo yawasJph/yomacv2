@@ -8,6 +8,7 @@ import {
   Search,
   UserPen,
   Bookmark,
+  Gamepad2,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "sonner";
@@ -15,13 +16,13 @@ import NavigationM from "../ui/NavigationM";
 
 const HomeLayout = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   // Navegación móvil inferior
   const mobileNavLinks = [
     { to: ".", icon: <Home size={24} />, text: "Inicio", end: true },
     { to: "search", icon: <Search size={24} />, text: "Buscar" },
     { to: `profile/${user?.id}`, icon: <UserPen size={24} />, text: "Perfil" },
     { to: "savedPost", icon: <Bookmark size={24} />, text: "Guardados" },
+    { to: "games", icon: <Gamepad2 size={24} />, text: "Juegos" },
   ];
 
   useEffect(() => {
