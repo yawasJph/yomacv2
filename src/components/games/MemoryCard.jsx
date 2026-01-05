@@ -3,9 +3,9 @@ import { motion } from "framer-motion";
 const MemoryCard = ({ card, isFlipped, isMatched, onClick, isDisabled }) => {
   return (
     <div
-      className={`relative h-28 sm:h-32 w-full ${
+      className={`relative h-22 sm:h-32 w-full ${ //h-28
         isDisabled ? "cursor-default" : "cursor-pointer"
-      }`}
+      }`} 
       style={{ perspective: "1000px" }}
       onClick={onClick}
     >
