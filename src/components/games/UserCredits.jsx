@@ -21,8 +21,6 @@ const UserCredits = ({ userId }) => {
 
     getInitialCredits();
 
-    console.log(credits)
-
     // 2. Escuchar cambios en TIEMPO REAL
     const channel = supabaseClient
       .channel(`profile_changes_${userId}`)

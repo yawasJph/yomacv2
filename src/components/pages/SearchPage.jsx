@@ -9,8 +9,9 @@ import CardPost from "../ui/feed/CardPost";
 import UserSearchCard from "../ui/UserSearchCard";
 import SearchBar from "../ui/SearchBar";
 import TrendingTopics from "../ui/rigthSidebar/TrendingTopics";
-import UserSuggestions from "../ui/rigthSidebar/UserSuggestions";
+//import UserSuggestions from "../ui/rigthSidebar/UserSuggestions";
 import NoResultsMessage from "../ui/NoResultsMessage";
+import UserSuggestions from "../ui/rigthSidebar/UserSuggestions2";
 
 const SearchPage = () => {
   const { user } = useAuth();
@@ -23,7 +24,7 @@ const SearchPage = () => {
 
   const { data, isLoading } = useSearch(query, user?.id);
   const results = data || { posts: [], users: [] };
-
+console.log(results)
   return (
     <div className="min-h-screen bg-white dark:bg-black">
       {/* HEADER */}

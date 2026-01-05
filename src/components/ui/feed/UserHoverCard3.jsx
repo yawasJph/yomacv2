@@ -38,10 +38,12 @@ export default function UserHoverCard({ user, children }) {
       } else {
         await followUser(user.id);
       }
-      
+
       // 🔥 Sincronización: Invalidamos para que los contadores del hover card y perfil se actualicen
       queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
-      queryClient.invalidateQueries({ queryKey: ["user_suggestions", currentUser?.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["user_suggestions", currentUser?.id],
+      });
       queryClient.invalidateQueries({ queryKey: ["connections", user.id] });
     } finally {
       setIsLoadingAction(false);
@@ -80,11 +82,17 @@ export default function UserHoverCard({ user, children }) {
                   className="w-14 h-14 rounded-full object-cover border-2 border-emerald-500/10 shrink-0"
                 />
               </Link>
-              
+
               <div className="absolute -bottom-1 -right-1 bg-white dark:bg-gray-800 rounded-full p-1 shadow-md border border-gray-200 dark:border-gray-700">
-                {user?.carrera === "I.A.B." && <Leaf size={16} className="text-emerald-500" />}
-                {user?.carrera === "E.T." && <Stethoscope size={16} className="text-emerald-500" />}
-                {user?.carrera === "D.S.I." && <Code size={16} className="text-emerald-500" />}
+                {user?.carrera === "I.A.B." && (
+                  <Leaf size={16} className="text-emerald-500" />
+                )}
+                {user?.carrera === "E.T." && (
+                  <Stethoscope size={16} className="text-emerald-500" />
+                )}
+                {user?.carrera === "D.S.I." && (
+                  <Code size={16} className="text-emerald-500" />
+                )}
               </div>
             </div>
 
@@ -104,8 +112,14 @@ export default function UserHoverCard({ user, children }) {
               >
                 {isLoadingAction ? (
                   <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                ) : following ? (
+                  isHoveredBtn ? (
+                    "Dejar de seguir"
+                  ) : (
+                    "Siguiendo"
+                  )
                 ) : (
-                  following ? (isHoveredBtn ? "Dejar de seguir" : "Siguiendo") : "Seguir"
+                  "Seguir"
                 )}
               </button>
             )}
@@ -118,6 +132,23 @@ export default function UserHoverCard({ user, children }) {
                 {user.full_name}
               </h2>
             </Link>
+            {/* RENDERIZADO DE INSIGNIAS EN EL FEED (LIMITADO A 3) */}
+            <span className="flex items-center gap-0.5 ml-1 shrink-0">
+              {user.equipped_badges?.slice(0, 3).map((item, idx) => (
+                <span
+                  key={idx}
+                  className="text-[14px] sm:text-[16px] select-none"
+                  title={item.badges?.name || item.name}
+                >
+                  {item.badges?.icon || item.icon}
+                </span>
+              ))}
+              {user.equipped_badges?.length > 3 && (
+                <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 ml-0.5">
+                  +{user.equipped_badges.length - 3}
+                </span>
+              )}
+            </span>
             <p className="text-emerald-600 dark:text-emerald-400 text-sm font-medium">
               {user.carrera || "Estudiante"}
             </p>
@@ -136,18 +167,22 @@ export default function UserHoverCard({ user, children }) {
               className="flex gap-1 hover:underline group"
             >
               <span className="font-bold dark:text-white group-hover:text-emerald-500">
-                {targetUser?.following_count ?? '...'}
+                {targetUser?.following_count ?? "..."}
               </span>
-              <span className="text-gray-500 dark:text-gray-400">Siguiendo</span>
+              <span className="text-gray-500 dark:text-gray-400">
+                Siguiendo
+              </span>
             </button>
             <button
               onClick={() => handleFollowsCount("followers")}
               className="flex gap-1 hover:underline group"
             >
               <span className="font-bold dark:text-white group-hover:text-emerald-500">
-                {targetUser?.followers_count ?? '...'}
+                {targetUser?.followers_count ?? "..."}
               </span>
-              <span className="text-gray-500 dark:text-gray-400">Seguidores</span>
+              <span className="text-gray-500 dark:text-gray-400">
+                Seguidores
+              </span>
             </button>
           </div>
         </div>

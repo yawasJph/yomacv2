@@ -18,7 +18,10 @@ export const useSearch = (query, currentUserId) => {
         
         supabaseClient
           .from("profiles")
-          .select(`*, followers!following_id (follower_id)`)
+          .select(`*, followers!following_id (follower_id),equipped_badges:user_badges ( 
+        is_equipped,
+        badges ( icon, name )
+      )`)
           .or(`full_name.ilike.%${cleanQuery}%, carrera.ilike.%${cleanQuery}%`)
       ]);
 

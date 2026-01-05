@@ -15,7 +15,7 @@ export const usePostsInfiniteQuery = (filterConfig = {}) => {
     //   )
     //   .is("deleted_at", null)
     //   .order("created_at", { ascending: false })
-    //   .limit(10);
+    //   .limit(10); 
     // En tu hook usePostsInfiniteQuery.js
     let query = supabaseClient
       .from("posts_with_counts")

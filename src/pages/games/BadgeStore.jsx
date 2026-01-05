@@ -38,7 +38,7 @@ const BadgeStore = ({ userCredits }) => {
         {badges.map((badge) => {
           const owned = myBadges.includes(badge.id);
           return (
-            <div key={badge.id} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-4 rounded-[24px] flex items-center justify-between shadow-sm">
+            <div key={badge.id} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-4 rounded-3xl flex items-center justify-between shadow-sm">
               <div className="flex items-center gap-4">
                 <div className="text-4xl bg-gray-50 dark:bg-gray-800 w-16 h-16 flex items-center justify-center rounded-2xl">
                   {badge.icon}

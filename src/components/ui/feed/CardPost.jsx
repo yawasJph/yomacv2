@@ -179,7 +179,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
                         <span>{post.profiles.full_name}</span>
                       )}
                       {/* RENDERIZADO DE INSIGNIAS EN EL FEED (LIMITADO A 3) */}
-                      <div className="flex items-center gap-0.5 ml-1 shrink-0">
+                      <span className="flex items-center gap-0.5 ml-1 shrink-0">
                         {post.profiles.equipped_badges
                           ?.slice(0, 3)
                           .map((item, idx) => (
@@ -191,14 +191,12 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
                               {item.badges?.icon || item.icon}
                             </span>
                           ))}
-
-                        {/* Si tiene más de 3, mostrar un +N discreto */}
                         {post.profiles.equipped_badges?.length > 3 && (
                           <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 ml-0.5">
                             +{post.profiles.equipped_badges.length - 3}
                           </span>
                         )}
-                      </div>
+                      </span>
                     </h3>
                   </div>
 

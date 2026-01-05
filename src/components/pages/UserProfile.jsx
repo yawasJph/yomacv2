@@ -31,6 +31,8 @@ const UserProfile = () => {
 
   const { data: profile, isLoading: profileLoading } = useProfile(userId);
 
+  console.log(profile)
+
   // 🔥 NUEVA LÓGICA DE SEGUIMIENTO 🔥
   const handleFollowToggle = async () => {
     if (actionLoading) return;
@@ -85,11 +87,11 @@ const UserProfile = () => {
     return () => observer.disconnect();
   }, [hasNextPage, isFetchingNextPage]);
 
-  if (profileLoading) return <UserProfileSkeleton />;
-
   const isMe = currentUser?.id === userId;
   const following = isFollowing(userId);
 
+
+  if (profileLoading) return <UserProfileSkeleton />;
   return (
     <div className="min-h-screen bg-white dark:bg-black pb-20">
       {/* HEADER SUPERIOR (Sticky) */}
