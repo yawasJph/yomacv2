@@ -10,21 +10,23 @@ const Leaderboard = ({ gameId = "memory" }) => {
   const fetchLeaderboard = async () => {
     setLoading(true);
     try {
-      // Consultamos los mejores puntajes únicos por usuario
+      // Consultamos la VISTA en lugar de la tabla
       const { data, error } = await supabaseClient
-        .from("leaderboards")
-        .select(`
-          score,
-          time_seconds,
-          profiles (
-            full_name,
-            avatar,
-            carrera,
-            ciclo
-          )
-        `)
+        .from("best_scores_per_user")
+        .select(
+          `
+        score:max_score,
+        time_seconds:best_time,
+        profiles!inner (
+          full_name,
+          avatar,
+          carrera,
+          ciclo
+        )
+      `
+        )
         .eq("game_id", gameId)
-        .order("score", { ascending: false })
+        .order("max_score", { ascending: false })
         .limit(10);
 
       if (error) throw error;
@@ -36,12 +38,17 @@ const Leaderboard = ({ gameId = "memory" }) => {
     }
   };
 
+  console.log(leaders);
   useEffect(() => {
     fetchLeaderboard();
   }, [gameId]);
 
   if (loading) {
-    return <div className="p-8 text-center text-gray-500 animate-pulse">Cargando campeones...</div>;
+    return (
+      <div className="p-8 text-center text-gray-500 animate-pulse">
+        Cargando campeones...
+      </div>
+    );
   }
 
   return (
@@ -51,7 +58,9 @@ const Leaderboard = ({ gameId = "memory" }) => {
         <div className="flex items-center gap-3">
           <Trophy className="text-yellow-300" size={28} />
           <div>
-            <h2 className="text-xl font-black italic uppercase tracking-wider">Top 10 Campus</h2>
+            <h2 className="text-xl font-black italic uppercase tracking-wider">
+              Top 10 Campus
+            </h2>
             <p className="text-xs text-emerald-100">Los mejores de la semana</p>
           </div>
         </div>
@@ -60,7 +69,11 @@ const Leaderboard = ({ gameId = "memory" }) => {
       <div className="p-4 space-y-3">
         {leaders.map((entry, index) => {
           const isTop3 = index < 3;
-          const medalColors = ["text-yellow-500", "text-gray-400", "text-orange-400"];
+          const medalColors = [
+            "text-yellow-500",
+            "text-gray-400",
+            "text-orange-400",
+          ];
 
           return (
             <motion.div
@@ -69,9 +82,9 @@ const Leaderboard = ({ gameId = "memory" }) => {
               transition={{ delay: index * 0.1 }}
               key={index}
               className={`flex items-center gap-4 p-3 rounded-2xl border transition-all ${
-                isTop3 
-                ? "bg-emerald-50/50 dark:bg-emerald-500/5 border-emerald-100 dark:border-emerald-500/20" 
-                : "bg-gray-50/50 dark:bg-gray-800/30 border-transparent"
+                isTop3
+                  ? "bg-emerald-50/50 dark:bg-emerald-500/5 border-emerald-100 dark:border-emerald-500/20"
+                  : "bg-gray-50/50 dark:bg-gray-800/30 border-transparent"
               }`}
             >
               {/* Posición */}
@@ -114,7 +127,12 @@ const Leaderboard = ({ gameId = "memory" }) => {
                   <Star size={14} className="fill-emerald-500" />
                   {entry.score}
                 </div>
-                <p className="text-[10px] text-gray-400 font-bold uppercase">{entry.time_seconds}s</p>
+                <p className="text-[10px] text-gray-400 ">
+                  <span className="font-bold uppercase">
+                    {entry.time_seconds}
+                  </span>{" "}
+                  seg
+                </p>
               </div>
             </motion.div>
           );

@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Trophy, Gamepad2, Brain, Grid3X3, Type, ArrowRight } from "lucide-react";
+import { Trophy, Gamepad2, Brain, Grid3X3, Type, ArrowRight, Store } from "lucide-react";
 import { motion } from "framer-motion";
 
 const GAMES_LIST = [
@@ -114,6 +114,26 @@ const GameCenter = () => {
         <p className="text-gray-500 text-sm italic">
           Nuevos desafíos cada semana. ¡Mantente atento!
         </p>
+      </div>
+
+      <div className="flex justify-between items-center mb-8 mt-4">
+        <div>
+          <h1 className="text-3xl font-black dark:text-white flex items-center gap-3">
+            Tienda <Gamepad2 className="text-emerald-500" />
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
+            Compra diversos items con tus mac coins.
+          </p>
+        </div>
+        
+        {/* Botón de Ranking Global */}
+        <button 
+          onClick={() => navigate("/games/store")}
+          className="p-3 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center gap-2 font-bold hover:scale-105 transition-transform border border-emerald-500/20"
+        >
+          <Store size={20} />
+          <span className="hidden sm:inline">Tienda</span>
+        </button>
       </div>
     </div>
   );

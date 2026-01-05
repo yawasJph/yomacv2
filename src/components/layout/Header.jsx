@@ -5,6 +5,8 @@ import ToggleThemeButton from "../ui/ToggleThemeButton";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import NotificationIcon from "../ui/NotificationIcon";
+import UserCredits from "../games/UserCredits";
+import { use } from "react";
 
 const Header = () => {
   const { user} = useAuth();
@@ -28,7 +30,10 @@ const Header = () => {
           <ToggleThemeButton />
           {/* 🔹 Avatar del Usuario  */}
           {user ? (
+            <>
             <UserAvatar/>
+            <UserCredits userId={user?.id} />
+            </>
           ) : (
             <button
               className="px-4 py-2 bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700 transition-colors"

@@ -73,7 +73,6 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
       onSuccess: () => {
         setIsDeleteModalOpen(false); // Cerramos el modal al terminar
       },
-      
     });
   };
 
@@ -103,7 +102,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
     }
   };
 
-   const goToPost = () => {
+  const goToPost = () => {
     // Si ya estamos en la vista detallada, no hacemos nada
     if (isDetailedView) return;
     // Evitamos que navegue si el usuario está seleccionando texto
@@ -179,6 +178,27 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
                       ) : (
                         <span>{post.profiles.full_name}</span>
                       )}
+                      {/* RENDERIZADO DE INSIGNIAS EN EL FEED (LIMITADO A 3) */}
+                      <div className="flex items-center gap-0.5 ml-1 shrink-0">
+                        {post.profiles.equipped_badges
+                          ?.slice(0, 3)
+                          .map((item, idx) => (
+                            <span
+                              key={idx}
+                              className="text-[14px] sm:text-[16px] select-none"
+                              title={item.badges?.name || item.name}
+                            >
+                              {item.badges?.icon || item.icon}
+                            </span>
+                          ))}
+
+                        {/* Si tiene más de 3, mostrar un +N discreto */}
+                        {post.profiles.equipped_badges?.length > 3 && (
+                          <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 ml-0.5">
+                            +{post.profiles.equipped_badges.length - 3}
+                          </span>
+                        )}
+                      </div>
                     </h3>
                   </div>
 
@@ -275,7 +295,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
             }`}
             onClick={(e) => e.stopPropagation()}
           >
-            <RenderTextWithLinks text={post.content}/>
+            <RenderTextWithLinks text={post.content} />
           </p>
           {isTruncated && (
             <button
@@ -315,7 +335,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
               <span className="text-sm">{post.comment_count || 0}</span>
             </button>
 
-            <RepostButton postId={post.id} initialReposts={post.repost_count}/>
+            <RepostButton postId={post.id} initialReposts={post.repost_count} />
 
             <BookmarkButton postId={post.id} />
 

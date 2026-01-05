@@ -4,15 +4,39 @@ import { supabaseClient } from "../supabase/supabaseClient";
 // src/hooks/usePostsInfiniteQuery.js
 export const usePostsInfiniteQuery = (filterConfig = {}) => {
   const fetchPosts = async ({ pageParam = null }) => {
+    // let query = supabaseClient
+    //   .from("posts_with_counts")
+    //   .select(
+    //     `
+    //     *,
+    //     profiles:user_id (id, full_name, avatar, carrera, ciclo),
+    //     post_media (id, media_url, media_type)
+    //   `
+    //   )
+    //   .is("deleted_at", null)
+    //   .order("created_at", { ascending: false })
+    //   .limit(10);
+    // En tu hook usePostsInfiniteQuery.js
     let query = supabaseClient
       .from("posts_with_counts")
       .select(
         `
-        *,
-        profiles:user_id (id, full_name, avatar, carrera, ciclo),
-        post_media (id, media_url, media_type)
-      `
+    *,
+    profiles:user_id (
+      id, 
+      full_name, 
+      avatar, 
+      carrera, 
+      ciclo,
+      equipped_badges:user_badges ( 
+        is_equipped,
+        badges ( icon, name )
       )
+    ),
+    post_media (id, media_url, media_type)
+  `
+      )
+      .filter("profiles.user_badges.is_equipped", "eq", true) // Solo traemos las activas
       .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .limit(10);
@@ -54,7 +78,6 @@ export const usePostsInfiniteQuery = (filterConfig = {}) => {
 
     if (pageParam) {
       query = query.lt("created_at", pageParam);
-      
     } else if (filterConfig.type === "reposts") {
       // NUEVA LÓGICA PARA REPOSTS
       const { data: repostedIds, error: repostError } = await supabaseClient

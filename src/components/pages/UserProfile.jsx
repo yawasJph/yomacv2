@@ -178,6 +178,18 @@ const UserProfile = () => {
           <h2 className="text-xl font-extrabold dark:text-white tracking-tight sm:text-2xl sm:font-black">
             {profile?.full_name}
           </h2>
+          {/* RENDERIZADO DE INSIGNIAS */}
+          <div className="flex items-center gap-1">
+            {profile?.equipped_badges?.map((badge) => (
+              <span
+                key={badge.id}
+                title={badge.name}
+                className="text-lg animate-fade-in"
+              >
+                {badge.icon}
+              </span>
+            ))}
+          </div>
           <div className="flex items-center gap-2 mt-1">
             <span className="text-emerald-600 dark:text-emerald-400 font-bold text-sm bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-md">
               {profile?.carrera || "Estudiante"}

@@ -8,6 +8,7 @@ import {
   Github,
   Linkedin,
   Save,
+  Check,
 } from "lucide-react";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import { useAuth } from "../../context/AuthContext";
@@ -15,12 +16,13 @@ import { toast } from "sonner"; // O tu librería de notificaciones
 import { validateSocials } from "../utils/validateSocials";
 import { uploadToCloudinary } from "../../cloudinary/upToCloudinary";
 import ProfileEditSkeleton from "../skeletons/ProfileEditSkeleton";
+import { useQueryClient } from "@tanstack/react-query";
 
 const EditProfile = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-
+  const queryClient = useQueryClient()
   const fileInputRef = useRef(null);
   const coverInputRef = useRef(null);
 
@@ -63,32 +65,109 @@ const EditProfile = () => {
   });
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchProfileAndBadges = async () => {
       try {
-        const { data } = await supabaseClient
+        // 1. Obtener datos del perfil (tu código actual)
+        const { data: profileData } = await supabaseClient
           .from("profiles")
           .select("*")
           .eq("id", user.id)
           .single();
-        if (data) {
+
+        // 2. NUEVO: Obtener todas las insignias del usuario
+        const { data: badgeData } = await supabaseClient
+          .from("user_badges")
+          .select(
+            `
+          is_equipped,
+          badge_id,
+          badges ( id, name, icon )
+        `
+          )
+          .eq("user_id", user.id);
+
+        // Mapeamos los datos para que sean fáciles de usar en el estado
+        const formattedBadges =
+          badgeData?.map((item) => ({
+            id: item.badge_id,
+            is_equipped: item.is_equipped,
+            name: item.badges.name,
+            icon: item.badges.icon,
+          })) || [];
+
+        if (profileData) {
           setFormData({
-            ...data,
-            bio: data.bio || "", // 👈 IMPORTANTE: Asegura que nunca sea null
+            ...profileData,
+            bio: profileData.bio || "",
             socials: {
               web: "",
               instagram: "",
               github: "",
               linkedin: "",
-              ...data.socials,
+              ...profileData.socials,
             },
+            all_user_badges: formattedBadges, // 👈 Guardamos las insignias en el estado
           });
         }
       } finally {
         setInitialLoading(false);
       }
     };
-    fetchProfile();
+    fetchProfileAndBadges();
   }, [user]);
+
+  const toggleBadge = async (badgeId, currentStatus) => {
+    try {
+      const { error } = await supabaseClient
+        .from("user_badges")
+        .update({ is_equipped: !currentStatus })
+        .eq("user_id", user.id)
+        .eq("badge_id", badgeId);
+
+      if (error) throw error;
+
+      // Actualizar el estado local para que la UI reaccione instantáneamente
+      setFormData((prev) => ({
+        ...prev,
+        all_user_badges: prev.all_user_badges.map((b) =>
+          b.id === badgeId ? { ...b, is_equipped: !currentStatus } : b
+        ),
+      }));
+
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      toast.success("Insignia actualizada");
+    } catch (err) {
+      toast.error("No se pudo actualizar la insignia");
+    }
+  };
+
+  // useEffect(() => {
+  //   const fetchProfile = async () => {
+  //     try {
+  //       const { data } = await supabaseClient
+  //         .from("profiles")
+  //         .select("*")
+  //         .eq("id", user.id)
+  //         .single();
+  //       if (data) {
+  //         setFormData({
+  //           ...data,
+  //           bio: data.bio || "",
+  //           socials: {
+  //             web: "",
+  //             instagram: "",
+  //             github: "",
+  //             linkedin: "",
+  //             ...data.socials,
+  //           },
+  //         });
+  //       }
+  //     } finally {
+  //       setInitialLoading(false);
+  //     }
+  //   };
+  //   fetchProfile();
+  // }, [user]);
 
   const handleSave = async () => {
     // 1. Validar Bio
@@ -350,6 +429,45 @@ const EditProfile = () => {
                 />
               </div>
             ))}
+          </div>
+        </div>
+        {/* GESTIÓN DE INSIGNIAS */}
+        <div className="space-y-4 pt-4">
+          <h3 className="font-bold dark:text-white border-b border-gray-800 pb-2">
+            Mis Insignias (Toca para equipar/desequipar)
+          </h3>
+
+          <div className="flex flex-wrap gap-3">
+            {/* SECCIÓN DE INSIGNIAS */}
+            {formData.all_user_badges?.length > 0 && (
+              <div className="space-y-4 border-gray-100 dark:border-gray-800">
+                <p className="text-xs text-gray-500">
+                  Selecciona las que quieres mostrar en tu perfil público
+                </p>
+
+                <div className="flex flex-wrap gap-4">
+                  {formData.all_user_badges.map((badge) => (
+                    <button
+                      key={badge.id}
+                      type="button"
+                      onClick={() => toggleBadge(badge.id, badge.is_equipped)}
+                      className={`relative p-4 rounded-2xl border-2 transition-all active:scale-90 ${
+                        badge.is_equipped
+                          ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500 shadow-md shadow-emerald-500/10"
+                          : "bg-gray-50 dark:bg-gray-900 border-transparent grayscale opacity-60"
+                      }`}
+                    >
+                      <span className="text-3xl">{badge.icon}</span>
+                      {badge.is_equipped && (
+                        <div className="absolute -top-2 -right-2 bg-emerald-500 text-white rounded-full p-0.5 border-2 border-white dark:border-black">
+                          <Check size={12} strokeWidth={4} />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

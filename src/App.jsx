@@ -21,6 +21,7 @@ import UserConnections from "./components/pages/UserConnections2";
 import GameCenter from "./pages/games/GameCenter";
 import MemoryGame from "./components/games/MemoryGame";
 import Leaderboard from "./pages/games/Leaderboard";
+import BadgeStore from "./pages/games/BadgeStore";
 
 function App() {
   
@@ -125,6 +126,7 @@ function App() {
           <Route path="games" element={<GameCenter />} />
           <Route path="games/memory" element={<MemoryGame />} />
           <Route path="games/leaderboard" element={<Leaderboard />} />
+          <Route path="games/store" element={<BadgeStore />} />
         </Route>
       </Routes>
     </BrowserRouter>
