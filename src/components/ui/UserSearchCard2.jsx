@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useFollow } from "../../context/FollowContext";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { useQueryClient } from "@tanstack/react-query"; // 👈 Importamos QueryClient
-import { useParams } from "react-router-dom"; // 👈 Para saber si estamos en un perfil
+import { Link, useParams } from "react-router-dom"; // 👈 Para saber si estamos en un perfil
 
 const UserSearchCard = ({ profile }) => {
   const { user: currentUser } = useAuth();

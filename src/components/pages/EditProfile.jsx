@@ -135,6 +135,7 @@ const EditProfile = () => {
       }));
 
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
       toast.success("Insignia actualizada");
     } catch (err) {
       toast.error("No se pudo actualizar la insignia");
@@ -225,7 +226,7 @@ const EditProfile = () => {
   return (
     <div className="bg-white dark:bg-black pb-10">{/* min-h-screen */}
       {/* Header Estilo App */}
-      <div className="sticky top-0 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
+      <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(-1)}

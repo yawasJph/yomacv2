@@ -1,4 +1,3 @@
-import React from "react";
 
 const Logo = () => {
   return (
@@ -10,7 +9,7 @@ const Logo = () => {
           className="w-full h-full object-cover"
         />
       </div>
-      <h1 className="text-xl font-bold bg-linear-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">
+      <h1 className="text-xl font-bold bg-linear-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent hidden sm:inline">
         YoMAC
       </h1>
     </div>

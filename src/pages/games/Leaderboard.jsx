@@ -114,7 +114,7 @@ const Leaderboard = ({ gameId = "memory" }) => {
               {/* Info Usuario */}
               <div className="flex-1">
                 <h3 className="font-bold text-gray-800 dark:text-gray-100 leading-tight">
-                  {entry.profiles?.full_name || "Usuario Anónimo"}
+                  {entry.profiles?.full_name || "Usuario Anónimo"} gonzales xapata trujillo
                 </h3>
                 <p className="text-[10px] text-gray-500 font-medium truncate uppercase tracking-tight">
                   {entry.profiles?.carrera} • Ciclo {entry.profiles?.ciclo}

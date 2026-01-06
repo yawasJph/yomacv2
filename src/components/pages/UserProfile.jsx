@@ -16,6 +16,9 @@ import ImageModal from "../ui/userProfile/ImageModal";
 import { useProfile } from "../../hooks/useProfile";
 import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery2";
 import { useQueryClient } from "@tanstack/react-query";
+import bird from "../../assets/img/bird.webp"
+
+
 
 const UserProfile = () => {
   const { userId } = useParams();
@@ -89,7 +92,8 @@ const UserProfile = () => {
   if (profileLoading) return <UserProfileSkeleton />;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black pb-10">{/* min-h-screen */}
+    <div className="min-h-screen bg-white dark:bg-black pb-10">
+      {/* min-h-screen */}
       {/* HEADER SUPERIOR (Sticky) */}
       <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-2 flex items-center gap-6 border-b border-transparent">
         <button
@@ -174,20 +178,23 @@ const UserProfile = () => {
       <div className="px-4 mt-5 space-y-3">
         <div>
           <h2 className="text-xl font-extrabold dark:text-white tracking-tight sm:text-2xl sm:font-black">
-            {profile?.full_name}
+            {profile?.full_name} carrasco gonzales carrasco gonzales carrasco gonzales
+            
           </h2>
-          {/* RENDERIZADO DE INSIGNIAS */}
-          <div className="flex items-center gap-1">
-            {profile?.equipped_badges?.map((badge) => (
-              <span
-                key={badge.id}
-                title={badge.name}
-                className="text-lg animate-fade-in"
-              >
-                {badge.icon}
-              </span>
-            ))}
-          </div>
+          {/* RENDERIZADO DE INSIGNIAS */}  
+            <div className="flex items-center gap-1">
+              {profile?.equipped_badges?.map((badge) => (
+                <>
+                <span
+                  key={badge.id}
+                  title={badge.name}
+                  className={`text-lg ${badge.name === "El Crack" ? "animate-spin" : badge.name === "Cocinero Pro" ? "animate-bounce" : "" }`}
+                >
+                  {badge.icon}
+                </span>
+                </>
+              ))}
+            </div>
           <div className="flex items-center gap-2 mt-1">
             <span className="text-emerald-600 dark:text-emerald-400 font-bold text-sm bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-md">
               {profile?.carrera || "Estudiante"}
@@ -311,13 +318,12 @@ const UserProfile = () => {
             No hay contenido para mostrar.
           </div>
         )}
-       
       </div>
-       {allPosts.length>0 && !hasNextPage && (
-          <div className=" text-center text-gray-500">
-            No hay contenido para mostrar.
-          </div>
-        )}
+      {allPosts.length > 0 && !hasNextPage && (
+        <div className=" text-center text-gray-500">
+          No hay contenido para mostrar.
+        </div>
+      )}
     </div>
   );
 };
