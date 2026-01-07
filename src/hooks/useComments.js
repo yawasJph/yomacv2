@@ -14,12 +14,29 @@ export const useComments = (id, type = "post") => {
     queryFn: async ({ pageParam = 0 }) => {
       let query = supabaseClient
         .from("comments_with_counts")
-        .select(
-          `
-          *,
-          profiles:user_id (id, full_name, avatar, carrera, ciclo)
-        `
-        )
+        // .select(
+        //   `
+        //   *,
+        //   profiles:user_id (id, full_name, avatar, carrera, ciclo)
+        // `
+        // )
+         .select(
+       `
+    *,
+    profiles:user_id (
+      id, 
+      full_name, 
+      avatar, 
+      carrera, 
+      ciclo,
+      equipped_badges:user_badges ( 
+        is_equipped,
+        badges ( icon, name )
+      )
+    )
+  `
+      )
+         .filter("profiles.user_badges.is_equipped", "eq", true)
         .is("deleted_at", null)
         // .eq("post_id", postId)
         .order("created_at", { ascending: false })

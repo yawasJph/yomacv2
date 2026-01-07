@@ -31,6 +31,7 @@ import { handleShare } from "../../utils/sharePost";
 import RenderTextWithLinks from "../../utils/RenderTextWithLinks";
 import RepostButton from "../RepostButton";
 import UserHoverCard from "./UserHoverCard3";
+import { useQueryClient } from "@tanstack/react-query";
 
 const CardPost = ({ post, media, isDetailedView = false, tab }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -50,6 +51,8 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
   const optionsRef = useRef(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const queryClient = useQueryClient()
+ 
 
   // Cerrar menú al hacer click fuera
   useEffect(() => {
@@ -72,6 +75,9 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
     deletePost(post.id, {
       onSuccess: () => {
         setIsDeleteModalOpen(false); // Cerramos el modal al terminar
+        if(isDetailedView){
+          navigate("/")
+        }
       },
     });
   };

@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 import ReportModal from "./ReportModal";
 import RenderTextWithLinks from "../utils/RenderTextWithLinks";
 
-const CommentItem = ({ comment, postId }) => {
+const CommentItem = ({ comment, postId, isDetailedView = false }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const LIMIT = 250; // Umbral para mostrar el "Ver más"
   const isMobile = useIsMobile();
@@ -36,7 +36,7 @@ const CommentItem = ({ comment, postId }) => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const { mutate: deleteComment, isLoading: isDeleting } = useDeleteComment(
+  const { mutate: deleteComment, isLoading: isDeleting, isPending } = useDeleteComment(
     comment.post_id
   );
 
@@ -44,6 +44,16 @@ const CommentItem = ({ comment, postId }) => {
 
   const contextType = comment.parent_id ? "comment" : "post";
   const contextId = comment.parent_id || comment.post_id || postId;
+
+  const handleDeleteCommment = ()=>{
+    if(isDetailedView){
+      setIsDeleteModalOpen(false)
+      deleteComment(comment.id)
+      navigate(-1)
+    }else{
+      deleteComment(comment.id)
+    }
+  }
 
   // Cerrar menú al hacer click fuera
   useEffect(() => {
@@ -120,6 +130,25 @@ useEffect(() => {
                         <span>{comment.profiles.full_name}</span>
                       )}
                     </h3>
+                    {/* RENDERIZADO DE INSIGNIAS EN EL FEED (LIMITADO A 3) */}
+                      <span className="flex items-center gap-0.5 ml-1 shrink-0">
+                        {comment.profiles.equipped_badges
+                          ?.slice(0, 3)
+                          .map((item, idx) => (
+                            <span
+                              key={idx}
+                              className="text-[14px] sm:text-[16px] select-none"
+                              title={item.badges?.name || item.name}
+                            >
+                              {item.badges?.icon || item.icon}
+                            </span>
+                          ))}
+                        {comment.profiles.equipped_badges?.length > 3 && (
+                          <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 ml-0.5">
+                            +{comment.profiles.equipped_badges.length - 3}
+                          </span>
+                        )}
+                      </span>
                   </div>
 
                   {/* Columna 2: Tiempo del post - se mueve según el largo del nombre */}
@@ -175,7 +204,7 @@ useEffect(() => {
                         className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                       >
                         <Trash2 size={16} />
-                        <span className="font-medium">Eliminar post</span>
+                        <span className="font-medium">Eliminar comentario</span>
                       </button>
                     ) : (
                       <button
@@ -247,10 +276,10 @@ useEffect(() => {
         <ConfirmModal
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}
-          onConfirm={() => deleteComment(comment.id)}
+          onConfirm={handleDeleteCommment}
           title="¿Eliminar comentario?"
           message="Esta acción no se puede deshacer."
-          isLoading={isDeleting}
+          isLoading={isPending}
         />
 
         <ReportModal

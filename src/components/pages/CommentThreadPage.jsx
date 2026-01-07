@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Smile, X, ImageIcon } from "lucide-react";
 import CommentItem from "../ui/CommentItem";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useComments } from "../../hooks/useComments";
 import { useState } from "react";
 import { supabaseClient } from "../../supabase/supabaseClient";
@@ -21,6 +21,7 @@ const CommentThreadPage = () => {
   const [selectedGif, setSelectedGif] = useState(null);
   const { user } = useAuth();
   const { data: currentUserProfiles } = useProfile(user?.id);
+  const queryClient = useQueryClient()
 
   // 1. Necesitas un fetch del comentario padre específicamente
   const { data: parentComment, isLoading } = useQuery({
@@ -28,18 +29,35 @@ const CommentThreadPage = () => {
     queryFn: async () => {
       const { data, error } = await supabaseClient
         .from("comments_with_counts")
-        .select(
-          `
-        *,
-        profiles:user_id (
-          id, 
-          full_name, 
-          avatar, 
-          carrera, 
-          ciclo
-        )
-      `
-        )
+      //   .select(
+      //     `
+      //   *,
+      //   profiles:user_id (
+      //     id, 
+      //     full_name, 
+      //     avatar, 
+      //     carrera, 
+      //     ciclo
+      //   )
+      // `
+      //   )
+       .select(
+       `
+    *,
+    profiles:user_id (
+      id, 
+      full_name, 
+      avatar, 
+      carrera, 
+      ciclo,
+      equipped_badges:user_badges ( 
+        is_equipped,
+        badges ( icon, name )
+      )
+    )
+  `
+      )
+         .filter("profiles.user_badges.is_equipped", "eq", true)
         .eq("id", commentId)
         .single();
 
@@ -47,7 +65,6 @@ const CommentThreadPage = () => {
         console.error("Error de Supabase:", error.message);
         throw error;
       }
-      //console.log(parentComment)
       return data;
     },
     enabled: !!commentId, // Solo ejecuta si el ID existe
@@ -99,7 +116,7 @@ const CommentThreadPage = () => {
       {/* El Comentario Padre destacado */}
       <div className="border-b dark:border-gray-800 bg-emerald-50/30 dark:bg-emerald-500/5">
         {parentComment && (
-          <CommentItem comment={parentComment} isParentView={true} />
+          <CommentItem comment={parentComment} isParentView={true} isDetailedView/>
         )}
       </div>
 
@@ -203,7 +220,7 @@ const CommentThreadPage = () => {
       </div>
 
       {/* Lista de respuestas */}
-      <div className="divide-y divide-gray-100 dark:divide-gray-100 pb-20">
+      <div className="divide-y divide-gray-100 dark:divide-gray-600 pb-88">
         {replies?.pages.map((page) =>
           page.map((reply) => <CommentItem key={reply.id} comment={reply} />)
         )}

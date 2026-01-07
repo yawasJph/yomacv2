@@ -34,7 +34,25 @@ const PostPage = () => {
     queryFn: async () => {
       const { data, error } = await supabaseClient
         .from("posts_with_counts")
-        .select("*, profiles:user_id(*), post_media(*)")
+        //.select("*, profiles:user_id(*,equpipped_badges:user_badges(is_equipped,badges(icon,name))), post_media(*)")
+         .select(
+        `
+    *,
+    profiles:user_id (
+      id, 
+      full_name, 
+      avatar, 
+      carrera, 
+      ciclo,
+      equipped_badges:user_badges ( 
+        is_equipped,
+        badges ( icon, name )
+      )
+    ),
+    post_media (id, media_url, media_type)
+  `
+      )
+         .filter("profiles.user_badges.is_equipped", "eq", true)
         .eq("id", postId)
         .single();
       if (error) throw error;
@@ -77,7 +95,7 @@ const PostPage = () => {
   if (postLoading) return <SkeletonPost />;
 
   return (
-    <div className="bg-white dark:bg-black pb-24">{/* min-h-screen */}
+    <div className="bg-white dark:bg-black pb-24 min-h-screen">
       {/* HEADER */}
       <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 flex items-center gap-6 border-b border-gray-100 dark:border-gray-800">
         <button
@@ -109,8 +127,7 @@ const PostPage = () => {
                 className="w-full bg-transparent dark:text-white resize-none outline-none text-lg"
                 rows={3}
               />
-              
-
+        
               {/* Previsualización del GIF seleccionado */}
               {selectedGif && (
                 <div className="relative mt-2 inline-block">
@@ -186,7 +203,7 @@ const PostPage = () => {
       </div>
 
       {/* LISTA DE COMENTARIOS */}
-      <div className="divide-y divide-gray-100 dark:divide-gray-800">
+      <div className="divide-y divide-gray-100 dark:divide-gray-800 pb-65" >
         {allComments.map((comment) => (
           <CommentItem key={comment.id} comment={comment} postId={post.id}/>
         ))}
