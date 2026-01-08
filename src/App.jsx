@@ -23,6 +23,7 @@ import MemoryGame from "./components/games/MemoryGame";
 import Leaderboard from "./pages/games/Leaderboard";
 import BadgeStore from "./pages/games/BadgeStore";
 import YoMACStore from "./pages/games/YoMACStore";
+import RpgHud from "./components/games/RpgHud";
 
 function App() {
   
