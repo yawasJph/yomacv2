@@ -31,7 +31,7 @@ export const useComments = (id, type = "post") => {
       ciclo,
       equipped_badges:user_badges ( 
         is_equipped,
-        badges ( icon, name )
+        badges ( icon, name, category, resource_url )
       )
     )
   `
@@ -95,6 +95,7 @@ export const useComments = (id, type = "post") => {
 
       // 2. Opcional: Invalidar el detalle del comentario padre para que el reply_count suba
       queryClient.invalidateQueries({ queryKey: ["comment_detail", id] });
+      queryClient.invalidateQueries({ queryKey: ["post", id] });
     },
   });
 

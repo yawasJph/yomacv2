@@ -108,6 +108,7 @@ const UserProfile = () => {
             {allPosts.length} {activeTab === "posts" && "publicaciones"}
             {activeTab === "media" && "medias"}
             {activeTab === "likes" && "likes"}
+            {activeTab === "reposts" && "reposts"}
           </span>
         </div>
       </div>

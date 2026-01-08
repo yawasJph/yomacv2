@@ -12,17 +12,35 @@ export const useSearch = (query, currentUserId) => {
       const [resPosts, resUsers] = await Promise.all([
         supabaseClient
           .from("posts_search_view")
-          .select("*, profiles:user_id(*), post_media(*)")
-          .or(`content.ilike.%${cleanQuery}%, hashtag_names.ilike.%${cleanQuery}%`)
+          .select(
+            `*,  profiles:user_id (
+      id, 
+      full_name, 
+      avatar, 
+      carrera, 
+      ciclo,
+      equipped_badges:user_badges ( 
+        is_equipped,
+        badges ( icon, name, category, resource_url )
+      )
+    ), post_media(*)`
+          )
+          .filter("profiles.user_badges.is_equipped", "eq", true)
+          .or(
+            `content.ilike.%${cleanQuery}%, hashtag_names.ilike.%${cleanQuery}%`
+          )
           .order("created_at", { ascending: false }),
-        
+
         supabaseClient
           .from("profiles")
-          .select(`*, followers!following_id (follower_id),equipped_badges:user_badges ( 
+          .select(
+            `*, followers!following_id (follower_id),equipped_badges:user_badges ( 
         is_equipped,
-        badges ( icon, name )
-      )`)
-          .or(`full_name.ilike.%${cleanQuery}%, carrera.ilike.%${cleanQuery}%`)
+        badges ( icon, name , category, resource_url )
+      )`
+          )
+          .filter("equipped_badges.is_equipped", "eq", true)
+          .or(`full_name.ilike.%${cleanQuery}%, carrera.ilike.%${cleanQuery}%`),
       ]);
 
       if (resPosts.error) throw resPosts.error;
@@ -31,7 +49,9 @@ export const useSearch = (query, currentUserId) => {
       // Procesar si ya los sigues
       const processedUsers = (resUsers.data || []).map((profile) => ({
         ...profile,
-        is_already_followed: profile.followers?.some(f => f.follower_id === currentUserId),
+        is_already_followed: profile.followers?.some(
+          (f) => f.follower_id === currentUserId
+        ),
       }));
 
       return {

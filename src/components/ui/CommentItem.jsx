@@ -19,6 +19,9 @@ import LikeButtonComment from "./LikeButtonComment";
 import { useNavigate } from "react-router-dom";
 import ReportModal from "./ReportModal";
 import RenderTextWithLinks from "../utils/RenderTextWithLinks";
+import { useQueryClient } from "@tanstack/react-query";
+import BadgeIcon from "./BadgeIcon";
+import BadgeMedia from "./BadgeMedia";
 
 const CommentItem = ({ comment, postId, isDetailedView = false }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -34,26 +37,29 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
   const optionsRef = useRef(null);
   const navigate = useNavigate();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-
+  const queryClient = useQueryClient();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const { mutate: deleteComment, isLoading: isDeleting, isPending } = useDeleteComment(
-    comment.post_id
-  );
+  const {
+    mutate: deleteComment,
+    isLoading: isDeleting,
+    isPending,
+  } = useDeleteComment(comment.post_id);
 
   const isMe = user?.id === comment.profiles.id;
 
   const contextType = comment.parent_id ? "comment" : "post";
   const contextId = comment.parent_id || comment.post_id || postId;
 
-  const handleDeleteCommment = ()=>{
-    if(isDetailedView){
-      setIsDeleteModalOpen(false)
-      deleteComment(comment.id)
-      navigate(-1)
-    }else{
-      deleteComment(comment.id)
+  const handleDeleteCommment = () => {
+    if (isDetailedView) {
+      setIsDeleteModalOpen(false);
+      deleteComment(comment.id);
+      navigate(-1);
+    } else {
+      deleteComment(comment.id);
     }
-  }
+    //queryClient.invalidateQueries({queryKey: ["post", postId]})
+  };
 
   // Cerrar menú al hacer click fuera
   useEffect(() => {
@@ -82,18 +88,19 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
     navigate(`/comment/${comment.id}`);
   };
 
- // En el componente que lista los comentarios
-useEffect(() => {
-  const hash = window.location.hash;
-  
-  if (hash) {
-    const element = document.querySelector(hash);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      element.classList.add('bg-indigo-100', 'dark:bg-indigo-900/20'); // Resaltado temporal
+  // En el componente que lista los comentarios
+  useEffect(() => {
+    const hash = window.location.hash;
+
+    if (hash) {
+      const element = document.querySelector(hash);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+        element.classList.add("bg-indigo-100", "dark:bg-indigo-900/20"); // Resaltado temporal
+      }
     }
-  }
-}, [comment]);
+  }, [comment]);
+
 
   return (
     <>
@@ -116,7 +123,7 @@ useEffect(() => {
               <div className="flex flex-col flex-1 min-w-0 pr-2">
                 <div className="flex items-start justify-between min-w-0">
                   {/* Contenedor del nombre que puede crecer */}
-                  <div className="flex-1 min-w-0 pr-2">
+                  <div className="flex-1 min-w-0 pr-2 mb-2">
                     <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base wrap-break-word">
                       {isMobile ? (
                         <span>{comment.profiles.full_name}</span>
@@ -131,24 +138,42 @@ useEffect(() => {
                       )}
                     </h3>
                     {/* RENDERIZADO DE INSIGNIAS EN EL FEED (LIMITADO A 3) */}
-                      <span className="flex items-center gap-0.5 ml-1 shrink-0">
-                        {comment.profiles.equipped_badges
-                          ?.slice(0, 3)
-                          .map((item, idx) => (
-                            <span
-                              key={idx}
-                              className="text-[14px] sm:text-[16px] select-none"
-                              title={item.badges?.name || item.name}
-                            >
-                              {item.badges?.icon || item.icon}
-                            </span>
-                          ))}
-                        {comment.profiles.equipped_badges?.length > 3 && (
-                          <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 ml-0.5">
-                            +{comment.profiles.equipped_badges.length - 3}
-                          </span>
-                        )}
-                      </span>
+                    <span className="flex items-center gap-0.5 ml-1 shrink-0">
+                      {comment.profiles.equipped_badges
+                        ?.slice(0, 3)
+                        .map((item) => (
+                          <BadgeIcon
+                            key={item.badges.id}
+                            icon={item.badges.icon}
+                            name={item.badges.name}
+                            rare
+                          />
+                        ))}
+                      {comment.profiles.equipped_badges?.length > 3 && (
+                        <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 ml-0.5">
+                          +{comment.profiles.equipped_badges.length - 3}
+                        </span>
+                      )}
+                    </span>
+                    {/* <div className="flex flex-wrap items-center gap-1 max-w-full mb-2">
+                      {comment.profiles?.equipped_badges?.map((item) => (
+                        <div key={item.badges.id} className="shrink-0">
+                          {item.badges.category === "badge" ? (
+                            <BadgeIcon
+                              icon={item.badges.icon}
+                              name={item.badges.name}
+                              rare
+                            />
+                          ) : (
+                            <BadgeMedia
+                              src={item.badges.resource_url}
+                              name={item.badges.name}
+                              rare
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div> */}
                   </div>
 
                   {/* Columna 2: Tiempo del post - se mueve según el largo del nombre */}
@@ -221,7 +246,7 @@ useEffect(() => {
             </div>
           </div>
           <div className="text-gray-800 dark:text-gray-200 mt-1 text-[15px] whitespace-pre-wrap wrap-break-word">
-            <RenderTextWithLinks text={displayedText}/>
+            <RenderTextWithLinks text={displayedText} />
             {/* {displayedText} */}
             {isLong && !isExpanded && "..."}
 
@@ -283,10 +308,10 @@ useEffect(() => {
         />
 
         <ReportModal
-        isOpen={isReportModalOpen}
-        onClose={() => setIsReportModalOpen(false)}
-        commentId={comment.id}
-      />
+          isOpen={isReportModalOpen}
+          onClose={() => setIsReportModalOpen(false)}
+          commentId={comment.id}
+        />
       </div>
     </>
   );

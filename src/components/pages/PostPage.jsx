@@ -8,7 +8,7 @@ import {
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useComments } from "../../hooks/useComments";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import CardPost from "../ui/feed/CardPost";
 import SkeletonPost from "../skeletons/SkeletonPost";
@@ -46,7 +46,7 @@ const PostPage = () => {
       ciclo,
       equipped_badges:user_badges ( 
         is_equipped,
-        badges ( icon, name )
+        badges ( icon, name, category, resource_url )
       )
     ),
     post_media (id, media_url, media_type)
@@ -81,7 +81,7 @@ const PostPage = () => {
       gifUrl: selectedGif,
       postId: postId
     });
-
+    queryClient.invalidateQueries( {queryKey: ["post", postId]})
     setNewComment("");
     setSelectedGif(null);
     setShowEmoji(false)

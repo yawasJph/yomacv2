@@ -118,7 +118,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
     navigate(`/post/${post.id}`);
   };
 
-  console.log(post.profiles.equipped_badges);
+  //console.log(post.comment_count);
   return (
     <article
       onClick={goToPost}
