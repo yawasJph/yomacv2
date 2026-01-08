@@ -16,9 +16,7 @@ import ImageModal from "../ui/userProfile/ImageModal";
 import { useProfile } from "../../hooks/useProfile";
 import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery2";
 import { useQueryClient } from "@tanstack/react-query";
-import bird from "../../assets/img/bird.webp"
-
-
+import bird from "../../assets/img/bird.webp";
 
 const UserProfile = () => {
   const { userId } = useParams();
@@ -178,23 +176,28 @@ const UserProfile = () => {
       <div className="px-4 mt-5 space-y-3">
         <div>
           <h2 className="text-xl font-extrabold dark:text-white tracking-tight sm:text-2xl sm:font-black">
-            {profile?.full_name} carrasco gonzales carrasco gonzales carrasco gonzales
-            
+            {profile?.full_name} carrasco gonzales carrasco gonzales carrasco
+            gonzales
           </h2>
-          {/* RENDERIZADO DE INSIGNIAS */}  
-            <div className="flex items-center gap-1">
-              {profile?.equipped_badges?.map((badge) => (
-                <>
-                <span
-                  key={badge.id}
-                  title={badge.name}
-                  className={`text-lg ${badge.name === "El Crack" ? "animate-spin" : badge.name === "Cocinero Pro" ? "animate-bounce" : "" }`}
-                >
-                  {badge.icon}
-                </span>
-                </>
-              ))}
-            </div>
+          {/* RENDERIZADO DE INSIGNIAS */}
+          <div className="flex items-center gap-1">
+            {profile?.equipped_badges?.map((badge) => (
+              <>
+                {badge.category === "badge" ? (
+                  <span key={badge.id} title={badge.name} className={`text-lg`}>
+                    {badge.icon}
+                  </span>
+                ) : (
+                  <img
+                    src={badge.url}
+                    alt="Cover"
+                    className="object-cover size-8"
+                  />
+                )}
+              </>
+            ))}
+          </div>
+
           <div className="flex items-center gap-2 mt-1">
             <span className="text-emerald-600 dark:text-emerald-400 font-bold text-sm bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-md">
               {profile?.carrera || "Estudiante"}

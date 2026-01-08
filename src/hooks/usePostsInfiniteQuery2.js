@@ -30,7 +30,7 @@ export const usePostsInfiniteQuery = (filterConfig = {}) => {
       ciclo,
       equipped_badges:user_badges ( 
         is_equipped,
-        badges ( icon, name )
+        badges ( icon, name , category, resource_url)
       )
     ),
     post_media (id, media_url, media_type)

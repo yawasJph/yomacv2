@@ -32,6 +32,8 @@ import RenderTextWithLinks from "../../utils/RenderTextWithLinks";
 import RepostButton from "../RepostButton";
 import UserHoverCard from "./UserHoverCard3";
 import { useQueryClient } from "@tanstack/react-query";
+import BadgeIcon from "../BadgeIcon";
+import BadgeMedia from "../BadgeMedia";
 
 const CardPost = ({ post, media, isDetailedView = false, tab }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -51,8 +53,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
   const optionsRef = useRef(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const queryClient = useQueryClient()
- 
+  const queryClient = useQueryClient();
 
   // Cerrar menú al hacer click fuera
   useEffect(() => {
@@ -75,8 +76,8 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
     deletePost(post.id, {
       onSuccess: () => {
         setIsDeleteModalOpen(false); // Cerramos el modal al terminar
-        if(isDetailedView){
-          navigate("/")
+        if (isDetailedView) {
+          navigate("/");
         }
       },
     });
@@ -117,6 +118,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
     navigate(`/post/${post.id}`);
   };
 
+  console.log(post.profiles.equipped_badges);
   return (
     <article
       onClick={goToPost}
@@ -185,7 +187,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
                         <span>{post.profiles.full_name}</span>
                       )}
                       {/* RENDERIZADO DE INSIGNIAS EN EL FEED (LIMITADO A 3) */}
-                      <span className="flex items-center gap-0.5 ml-1 shrink-0">
+                      {/* <span className="flex items-center gap-0.5 ml-1 shrink-0">
                         {post.profiles.equipped_badges
                           ?.slice(0, 3)
                           .map((item, idx) => (
@@ -202,13 +204,33 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
                             +{post.profiles.equipped_badges.length - 3}
                           </span>
                         )}
-                      </span>
+                      </span> */}
                     </h3>
+                    {/* RENDERIZADO DE INSIGNIAS */}
+                    <div className="flex flex-wrap items-center gap-1 max-w-full mb-2">
+                      {post.profiles?.equipped_badges?.map((item) => (
+                        <div key={item.badges.id} className="shrink-0">
+                          {item.badges.category === "badge" ? (
+                            <BadgeIcon
+                              icon={item.badges.icon}
+                              name={item.badges.name}
+                              rare
+                            />
+                          ) : (
+                            <BadgeMedia
+                              src={item.badges.resource_url}
+                              name={item.badges.name}
+                              rare
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   {/* Columna 2: Tiempo del post - se mueve según el largo del nombre */}
                   <span
-                    className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-500 font-medium whitespace-nowrap p-1.5 shrink-0"
+                    className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-500 font-medium whitespace-nowrap p-1.5 shrink-0 "
                     title={new Date(post.created_at).toLocaleString("es-PE")}
                   >
                     {isMobile

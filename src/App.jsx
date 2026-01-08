@@ -22,6 +22,7 @@ import GameCenter from "./pages/games/GameCenter";
 import MemoryGame from "./components/games/MemoryGame";
 import Leaderboard from "./pages/games/Leaderboard";
 import BadgeStore from "./pages/games/BadgeStore";
+import YoMACStore from "./pages/games/YoMACStore";
 
 function App() {
   
@@ -126,7 +127,7 @@ function App() {
           <Route path="games" element={<GameCenter />} />
           <Route path="games/memory" element={<MemoryGame />} />
           <Route path="games/leaderboard" element={<Leaderboard />} />
-          <Route path="games/store" element={<BadgeStore />} />
+          <Route path="games/store" element={<YoMACStore />} />
         </Route>
       </Routes>
     </BrowserRouter>
