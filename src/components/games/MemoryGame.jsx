@@ -5,9 +5,11 @@ import VictoryModal from "./VictoryModal";
 import confetti from "canvas-confetti";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import bajara1 from "../../assets/data-game/baraja1.json";
-//import bajara2 from "../../assets/data-game/baraja2.json";
-//import bajara3 from "../../assets/data-game/baraja2.json";
+import bajara2 from "../../assets/data-game/baraja2.json";
+import bajara3 from "../../assets/data-game/baraja3.json";
 import bajara4 from "../../assets/data-game/baraja4.json";
+import bajara5 from "../../assets/data-game/baraja5.json";
+import bajara6 from "../../assets/data-game/baraja6.json";
 
 const MemoryGame = () => {
   const [cards, setCards] = useState([]);
@@ -21,7 +23,7 @@ const MemoryGame = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [selectedBaraja, setSelectedBaraja] = useState(null)
 
-  const barajas = [bajara1, bajara4];
+  const barajas = [bajara1, bajara4, bajara2, bajara3, bajara5, bajara6];
   
   const getRandomBaraja = () => {
     const randomIndex = Math.floor(Math.random() * barajas.length);

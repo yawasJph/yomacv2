@@ -1,0 +1,13 @@
+{
+  "type": "img",
+  "baraja": [
+    { "type": "a", "icon": "/img/iab/acuñagladys.jpg" },
+    { "type": "b", "icon": "/img/iab/floresaguilarErick.jpg" },
+    { "type": "c", "icon": "/img/iab/juarez.png" },
+    { "type": "d", "icon": "/img/iab/lopezrosalesolivia.jpg" },
+    { "type": "e", "icon": "/img/iab/millonesnelida.jpg" },
+    { "type": "f", "icon": "/img/iab/morenomario.jpg" },
+    { "type": "g", "icon": "/img/iab/paucarana.jpg" },
+    { "type": "h", "icon": "/img/iab/zumarandante.jpg" }
+  ]
+}

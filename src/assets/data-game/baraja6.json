@@ -1,0 +1,13 @@
+{
+  "type": "img",
+  "baraja": [
+    { "type": "a", "icon": "/img/et/berrospiaguilar.jpg" },
+    { "type": "b", "icon": "/img/et/durand.jpg" },
+    { "type": "c", "icon": "/img/et/huamanjuan.jpg" },
+    { "type": "d", "icon": "/img/et/icocheaisabel.jpg" },
+    { "type": "e", "icon": "/img/et/lozanoc.png" },
+    { "type": "f", "icon": "/img/et/montoya.jpg" },
+    { "type": "g", "icon": "/img/et/ortega.jpg" },
+    { "type": "h", "icon": "/img/et/varamilagros.jpg" }
+  ]
+}

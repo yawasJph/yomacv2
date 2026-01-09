@@ -1,4 +1,7 @@
-[
+
+{
+  "type": "icon",
+  "baraja": [
     {"type": "a" , "icon": "😼"},
     {"type": "b" , "icon": "🙉"},
     {"type": "c" , "icon": "🐶"},
@@ -7,4 +10,5 @@
     {"type": "f" , "icon": "🐯"},
     {"type": "g" , "icon": "🦒"},
     {"type": "h" , "icon": "🦊"}
-]
+  ]
+}
