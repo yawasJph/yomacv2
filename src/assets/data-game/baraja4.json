@@ -1,0 +1,13 @@
+{
+  "type": "img",
+  "baraja": [
+    { "type": "a", "icon": "/img/caroengeles.jpg" },
+    { "type": "b", "icon": "/img/floreselvin.jpg" },
+    { "type": "c", "icon": "/img/jflores.jpg" },
+    { "type": "d", "icon": "/img/lino.jpg" },
+    { "type": "e", "icon": "/img/saavedradaniel.jpg" },
+    { "type": "f", "icon": "/img/torres.png" },
+    { "type": "g", "icon": "/img/varamilagros.jpg" },
+    { "type": "h", "icon": "/img/virhuezdamian.jpg" }
+  ]
+}

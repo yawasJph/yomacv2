@@ -4,18 +4,10 @@ import { Hash, RefreshCcw, Star, Timer } from "lucide-react";
 import VictoryModal from "./VictoryModal";
 import confetti from "canvas-confetti";
 import { supabaseClient } from "../../supabase/supabaseClient";
-
-
-const CARD_IMAGES = [
-  { type: "IAB", icon: "🌿" },
-  { type: "DSI", icon: "💻" },
-  { type: "ET", icon: "🩺" },
-  { type: "AR", icon: "🎨" },
-  { type: "MU", icon: "🎵" },
-  { type: "CI", icon: "🧪" },
-  { type: "MA", icon: "📐" },
-  { type: "CO", icon: "🍳" },
-];
+import bajara1 from "../../assets/data-game/baraja1.json";
+//import bajara2 from "../../assets/data-game/baraja2.json";
+//import bajara3 from "../../assets/data-game/baraja2.json";
+import bajara4 from "../../assets/data-game/baraja4.json";
 
 const MemoryGame = () => {
   const [cards, setCards] = useState([]);
@@ -27,10 +19,20 @@ const MemoryGame = () => {
   const [showVictory, setShowVictory] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedBaraja, setSelectedBaraja] = useState(null)
+
+  const barajas = [bajara1, bajara4];
+  
+  const getRandomBaraja = () => {
+    const randomIndex = Math.floor(Math.random() * barajas.length);
+    setSelectedBaraja(barajas[randomIndex])
+    return barajas[randomIndex].baraja;
+  };
 
   const resetGame = () => {
     // Generar IDs únicos reales para cada carta duplicada
-    const duplicatedCards = [...CARD_IMAGES, ...CARD_IMAGES]
+    const selectedBaraja = getRandomBaraja(); // 🎲 baraja aleatoria
+    const duplicatedCards = [...selectedBaraja, ...selectedBaraja]
       .sort(() => Math.random() - 0.5)
       .map((card, index) => ({
         ...card,
@@ -44,7 +46,7 @@ const MemoryGame = () => {
     setSeconds(0);
     setIsActive(false);
     setShowVictory(false);
-    setIsSaving(false)
+    setIsSaving(false);
   };
 
   useEffect(() => {
@@ -131,8 +133,11 @@ const MemoryGame = () => {
     }
   }, [matched, cards.length]);
 
+  console.log(selectedBaraja)
   return (
+    
     <div className="max-w-2xl mx-auto p-4 select-none">
+     
       {/* HUD de Juego */}
       <div className="grid grid-cols-3 gap-4 mb-3 sm:mb-8">
         <div className="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col items-center">
@@ -174,11 +179,12 @@ const MemoryGame = () => {
             isMatched={matched.includes(index)}
             onClick={() => handleFlip(index)}
             isDisabled={matched.length === cards.length}
+            cardType={selectedBaraja.type}
           />
         ))}
       </div>
 
-      <div className="mt-6 flex justify-center sm:mt-8" >
+      <div className="mt-6 flex justify-center sm:mt-8">
         <button
           onClick={resetGame}
           className="flex items-center gap-2 px-8 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl font-bold text-gray-600 dark:text-gray-300 hover:border-emerald-500 hover:text-emerald-500 transition-all active:scale-95 shadow-sm"

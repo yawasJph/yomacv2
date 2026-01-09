@@ -16,7 +16,6 @@ import ImageModal from "../ui/userProfile/ImageModal";
 import { useProfile } from "../../hooks/useProfile";
 import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery2";
 import { useQueryClient } from "@tanstack/react-query";
-import bird from "../../assets/img/bird.webp";
 
 const UserProfile = () => {
   const { userId } = useParams();

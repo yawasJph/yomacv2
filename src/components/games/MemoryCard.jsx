@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-const MemoryCard = ({ card, isFlipped, isMatched, onClick, isDisabled }) => {
+const MemoryCard = ({ card, isFlipped, isMatched, onClick, isDisabled, cardType }) => {
   return (
     <div
       className={`relative h-22 sm:h-32 w-full ${ //h-28
@@ -51,7 +51,8 @@ const MemoryCard = ({ card, isFlipped, isMatched, onClick, isDisabled }) => {
             transform: "rotateY(180deg)",
           }}
         >
-          <span className="relative z-10">{card.icon}</span>
+          {cardType === "icon" ? (<span className="relative z-10">{card.icon}</span>) : (<img src={card.icon}  className="w-full h-full rounded-2xl object-cover shadow-lg "/>)}
+          
           {isMatched && (
             <motion.div
               initial={{ opacity: 0 }}
