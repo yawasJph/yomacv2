@@ -1,10 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  ArrowLeft,
-  ImageIcon,
-  Smile,
-  X,
-} from "lucide-react";
+import { ArrowLeft, BellOff, ImageIcon, Smile, X } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useComments } from "../../hooks/useComments";
@@ -35,8 +30,8 @@ const PostPage = () => {
       const { data, error } = await supabaseClient
         .from("posts_with_counts")
         //.select("*, profiles:user_id(*,equpipped_badges:user_badges(is_equipped,badges(icon,name))), post_media(*)")
-         .select(
-        `
+        .select(
+          `
     *,
     profiles:user_id (
       id, 
@@ -51,8 +46,8 @@ const PostPage = () => {
     ),
     post_media (id, media_url, media_type)
   `
-      )
-         .filter("profiles.user_badges.is_equipped", "eq", true)
+        )
+        .filter("profiles.user_badges.is_equipped", "eq", true)
         .eq("id", postId)
         .single();
       if (error) throw error;
@@ -79,12 +74,12 @@ const PostPage = () => {
       content: newComment,
       userId: user.id,
       gifUrl: selectedGif,
-      postId: postId
+      postId: postId,
     });
-    queryClient.invalidateQueries( {queryKey: ["post", postId]})
+    queryClient.invalidateQueries({ queryKey: ["post", postId] });
     setNewComment("");
     setSelectedGif(null);
-    setShowEmoji(false)
+    setShowEmoji(false);
   };
 
   const onEmojiClick = (emojiData) => {
@@ -112,100 +107,123 @@ const PostPage = () => {
 
       {/* CAJA DE COMENTARIOS */}
       <div className="p-4 border-b border-gray-100 dark:border-gray-800">
-        <form onSubmit={handleSendComment}>
-          <div className="flex gap-3">
-            <img
-              src={data?.avatar}
-              className="w-10 h-10 rounded-full object-cover"
-            />
-            <div className="flex-1">
-              <textarea
-                maxLength={MAX_CHARS}
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Postea tu respuesta"
-                className="w-full bg-transparent dark:text-white resize-none outline-none text-lg"
-                rows={3}
+        {user ? (
+          <form onSubmit={handleSendComment}>
+            <div className="flex gap-3">
+              <img
+                src={data?.avatar}
+                className="w-10 h-10 rounded-full object-cover"
               />
-        
-              {/* Previsualización del GIF seleccionado */}
-              {selectedGif && (
-                <div className="relative mt-2 inline-block">
-                  <img
-                    src={selectedGif}
-                    className="h-40 rounded-xl border dark:border-gray-700"
-                  />
-                  <button
-                    onClick={() => setSelectedGif(null)}
-                    className="absolute top-2 right-2 bg-black/60 p-1 rounded-full text-white"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              )}
+              <div className="flex-1">
+                <textarea
+                  maxLength={MAX_CHARS}
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Postea tu respuesta"
+                  className="w-full bg-transparent dark:text-white resize-none outline-none text-lg"
+                  rows={3}
+                />
 
-              <div className="flex items-center justify-between mt-3">
-                <div className="flex gap-2 text-emerald-500">
-                  <button
-                    type="button"
-                    onClick={() => setShowEmoji(!showEmoji)}
-                    className="p-2 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-full"
-                  >
-                    <Smile size={20} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowGif(true)}
-                    className="p-2 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-full"
-                  >
-                    <ImageIcon size={20} />
-                  </button>
-                </div>
+                {/* Previsualización del GIF seleccionado */}
+                {selectedGif && (
+                  <div className="relative mt-2 inline-block">
+                    <img
+                      src={selectedGif}
+                      className="h-40 rounded-xl border dark:border-gray-700"
+                    />
+                    <button
+                      onClick={() => setSelectedGif(null)}
+                      className="absolute top-2 right-2 bg-black/60 p-1 rounded-full text-white"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
 
-                {/* Indicador de caracteres */}
-              <div className="flex justify-end items-center gap-4 ">
-                <span
-                  className={`text-xs ${
-                    newComment.length >= MAX_CHARS
-                      ? "text-red-500 font-bold"
-                      : "text-gray-400"
-                  }`}
-                >
-                  {newComment.length} / {MAX_CHARS}
-                </span>
-                <button
-                  disabled={
-                    (!newComment.trim() && !selectedGif) ||
-                    newComment.length > MAX_CHARS
-                  }
-                  className="bg-emerald-500 text-white px-4 py-1.5 rounded-full font-bold disabled:opacity-50"
-                >
-                  Responder
-                </button>
-              </div>
+                <div className="flex items-center justify-between mt-3">
+                  <div className="flex gap-2 text-emerald-500">
+                    <button
+                      type="button"
+                      onClick={() => setShowEmoji(!showEmoji)}
+                      className="p-2 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-full"
+                    >
+                      <Smile size={20} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowGif(true)}
+                      className="p-2 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-full"
+                    >
+                      <ImageIcon size={20} />
+                    </button>
+                  </div>
+
+                  {/* Indicador de caracteres */}
+                  <div className="flex justify-end items-center gap-4 ">
+                    <span
+                      className={`text-xs ${
+                        newComment.length >= MAX_CHARS
+                          ? "text-red-500 font-bold"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      {newComment.length} / {MAX_CHARS}
+                    </span>
+                    <button
+                      disabled={
+                        (!newComment.trim() && !selectedGif) ||
+                        newComment.length > MAX_CHARS
+                      }
+                      className="bg-emerald-500 text-white px-4 py-1.5 rounded-full font-bold disabled:opacity-50"
+                    >
+                      Responder
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
+            {/* Pickers Flotantes/Modales */}
+            {showEmoji && (
+              <div className="absolute z-50 mt-2">
+                <EmojiPicker onEmojiClick={onEmojiClick} theme="auto" />
+              </div>
+            )}
+            {showGif && (
+              <GifPicker
+                onSelect={(url) => setSelectedGif(url)}
+                onClose={() => setShowGif(false)}
+              />
+            )}
+          </form>
+        ) : (
+          <div className="text-center py-12 px-4">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-linear-to-br from-gray-100 to-gray-200 dark:from-indigo-900/30 dark:to-indigo-800/20 flex items-center justify-center">
+              <BellOff
+                className="text-gray-400 dark:text-indigo-500"
+                size={32}
+              />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 dark:text-indigo-100 mb-2">
+              Sin notificaciones
+            </h3>
+            <p className="text-gray-500 dark:text-gray-300/70 mb-6 max-w-md mx-auto">
+              ¡Interactúa con la comunidad para empezar a recibir
+              notificaciones!
+            </p>
+            <button
+              onClick={() => navigate("/")}
+              className="px-6 py-2.5 bg-linear-to-r from-indigo-500 to-indigo-600 text-white font-medium rounded-full hover:shadow-lg hover:shadow-emerald-indigo/25 transition-all duration-300"
+            >
+              Explorar contenido
+            </button>
           </div>
-        </form>
-
-        {/* Pickers Flotantes/Modales */}
-        {showEmoji && (
-          <div className="absolute z-50 mt-2">
-            <EmojiPicker onEmojiClick={onEmojiClick} theme="auto" />
-          </div>
-        )}
-        {showGif && (
-          <GifPicker
-            onSelect={(url) => setSelectedGif(url)}
-            onClose={() => setShowGif(false)}
-          />
         )}
       </div>
 
       {/* LISTA DE COMENTARIOS */}
-      <div className="divide-y divide-gray-100 dark:divide-gray-800 pb-65" >
+      <div className="divide-y divide-gray-100 dark:divide-gray-800 pb-65">
         {allComments.map((comment) => (
-          <CommentItem key={comment.id} comment={comment} postId={post.id}/>
+          <CommentItem key={comment.id} comment={comment} postId={post.id} />
         ))}
 
         {hasNextPage && (
@@ -217,8 +235,7 @@ const PostPage = () => {
           </button>
         )}
 
-        {allComments.length == 0 && 
-        (
+        {allComments.length == 0 && (
           <div className="text-center py-6 text-gray-600 dark:text-gray-400 text-sm ">
             No hay comentarios
           </div>
