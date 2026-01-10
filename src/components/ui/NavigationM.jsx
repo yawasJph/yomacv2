@@ -1,11 +1,45 @@
-import { Gamepad2, Plus, TriangleAlertIcon } from "lucide-react";
+import { Bookmark, Gamepad2, Home, Plus, TriangleAlertIcon, UserPen, Users } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../../context/AuthContext";
 
-const NavigationM = ({ mobileNavLinks }) => {
+const NavigationM = () => {
   const navigate = useNavigate();
   const {user} = useAuth()
+
+  const mobileNavLinks = [
+    {
+      to: ".",
+      icon: <Home size={22} />,
+      text: "Inicio",
+      end: true,
+      private: false,
+    },
+    {
+      to: `profile/${user?.id}`,
+      icon: <UserPen size={22} />,
+      text: "Perfil",
+      private: true,
+    },
+    {
+      to: "users",
+      icon: <Users size={22} />,
+      text: "Descubrir",
+      private: false,
+    },
+    {
+      to: "savedPost",
+      icon: <Bookmark size={22} />,
+      text: "Guardados",
+      private: true,
+    },
+    {
+      to: "/games",
+      icon: <Gamepad2 size={22} />,
+      text: "Juegos",
+      private: false,
+    },
+  ];
 
   const handleCreatePost = () => {
     if (user) {

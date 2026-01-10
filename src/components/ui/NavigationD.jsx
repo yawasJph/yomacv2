@@ -1,4 +1,5 @@
 import {
+  Bell,
   Bookmark,
   Gamepad2,
   Home,
@@ -14,7 +15,7 @@ import { toast } from "sonner";
 const NavigationD = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+
   // Definimos qué rutas requieren login
   const sidebarLinks = [
     {
@@ -35,18 +36,31 @@ const NavigationD = () => {
       icon: <Users size={22} />,
       text: "Descubrir",
       private: false,
-    }, // Público para que vean a otros
+    },
     {
       to: "savedPost",
       icon: <Bookmark size={22} />,
       text: "Guardados",
       private: true,
-    },{
-      to: "games",
+    },
+    {
+      to: "/games",
       icon: <Gamepad2 size={22} />,
       text: "Juegos",
       private: false,
     },
+    // {
+    //   to: "/games/store",
+    //   icon: <ShoppingBag size={24} />,
+    //   text: "Tienda Campus",
+    //   private: false,
+    // }, // Agregado
+    // {
+    //   to: "notifications",
+    //   icon: <Bell size={24} />,
+    //   text: "Notificaciones",
+    //   private: true,
+    // }, // Agregado
   ];
 
   // Función genérica para mostrar el error y redirigir
@@ -88,12 +102,13 @@ const NavigationD = () => {
 
       <button
         className="flex items-center gap-4 px-4 py-3 rounded-xl bg-linear-to-r from-emerald-500 to-teal-400 text-white font-semibold mt-4 hover:shadow-lg transition-all hover:scale-105 cursor-pointer"
-        onClick={() => user ? navigate("create-post") : requireAuth("crear una publicación")}
+        onClick={() =>
+          user ? navigate("create-post") : requireAuth("crear una publicación")
+        }
       >
         <Plus size={25} />
         Crear Publicación
       </button>
-    
     </nav>
   );
 };

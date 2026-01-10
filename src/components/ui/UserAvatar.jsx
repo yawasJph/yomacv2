@@ -46,7 +46,7 @@ const UserAvatar = () => {
               {/* {profile.full_name.length > 20
                 ? profile.full_name.substring(0, 20) + "..."
                 : profile.full_name}  */}
-              {profile.full_name} carraco tapia gonzales
+              {profile.full_name}
               {/* RENDERIZADO DE INSIGNIAS EN EL FEED (LIMITADO A 3) */}
               <span className="flex items-center gap-0.5 ml-1 shrink-0">
                 {profile.equipped_badges?.slice(0, 3).map((item, idx) => (

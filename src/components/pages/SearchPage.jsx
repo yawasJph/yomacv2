@@ -58,7 +58,7 @@ const SearchPage = () => {
               <TrendingTopics />
             </section>
             <section>
-              <h3 className="text-lg font-bold dark:text-white mb-4 px-2">Recomendados</h3>
+              {user && <h3 className="text-lg font-bold dark:text-white mb-4 px-2">Recomendados</h3>}
               <UserSuggestions />
             </section>
           </div>

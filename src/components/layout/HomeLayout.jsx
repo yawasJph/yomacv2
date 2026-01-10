@@ -3,27 +3,15 @@ import { Outlet, useNavigate} from "react-router-dom";
 import Header from "./Header";
 import LeftSidebar from "./LeftSidebar";
 import RigthSidebar from "./RigthSidebar";
-import {
-  Home,
-  Search,
-  UserPen,
-  Bookmark,
-  Gamepad2,
-} from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
 import { toast } from "sonner";
-import NavigationM from "../ui/NavigationM";
+import NavigationM from "../ui/NavigationM2";
+import HeaderM from "./HeaderM";
+import {useIsMobile} from "../../hooks/useIsMobile"
+//import NavigationM from "../ui/NavigationM";
 
 const HomeLayout = () => {
-  const { user } = useAuth();
-  // Navegación móvil inferior
-  const mobileNavLinks = [
-    { to: ".", icon: <Home size={24} />, text: "Inicio", end: true },
-    { to: "search", icon: <Search size={24} />, text: "Buscar" },
-    { to: `profile/${user?.id}`, icon: <UserPen size={24} />, text: "Perfil" },
-    { to: "savedPost", icon: <Bookmark size={24} />, text: "Guardados" },
-    { to: "games", icon: <Gamepad2 size={24} />, text: "Juegos" },
-  ];
+  
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -41,12 +29,11 @@ const HomeLayout = () => {
     }
   }, []);
 
-  
   return (
     <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300">
       {/* Header fijo */}
-      <Header />
-
+      {isMobile ? (  <HeaderM/>) : (<Header />)}
+     
       {/* Layout Principal */}
       <div className="pt-16 flex max-w-7xl mx-auto min-h-[calc(100vh-64px)]">
         {/* Sidebar Izquierdo - Desktop */}
@@ -66,7 +53,7 @@ const HomeLayout = () => {
       </div>
 
       {/* Navegación Móvil Inferior - Estilo Threads */}
-      <NavigationM mobileNavLinks={mobileNavLinks}/>
+      <NavigationM />
 
       {/* Espaciado inferior para móvil (evitar que el contenido quede oculto detrás de la navegación) */}
       <div className="h-16 lg:hidden" />
