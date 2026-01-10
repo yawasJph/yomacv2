@@ -11,6 +11,10 @@ import { useProfile } from "../../hooks/useProfile";
 import EmojiPicker from "emoji-picker-react";
 import GifPicker from "../utils/GifPicker";
 import CommentItem from "../ui/CommentItem";
+import { useAuthModal } from "../../context/AuthModalContext";
+import { useAuthAction } from "../../hooks/useAuthAction";
+//import AuthModal from "../ui/AuthModal ";
+
 
 const PostPage = () => {
   const { postId } = useParams();
@@ -22,6 +26,10 @@ const PostPage = () => {
   const [selectedGif, setSelectedGif] = useState(null);
   const { data } = useProfile(user?.id);
   const MAX_CHARS = 500;
+  //const [openAuthModal, setOpenAuthModal] = useState(false)
+ // const {open, openAuthModal, closeAuthModal} = useAuthModal()
+ const { openAuthModal } = useAuthModal();
+ const {executeAction} = useAuthAction()
 
   // 1. Cargar el post principal
   const { data: post, isLoading: postLoading } = useQuery({
@@ -86,6 +94,10 @@ const PostPage = () => {
     setNewComment((prev) => prev + emojiData.emoji);
     setShowEmoji(false);
   };
+
+  const hanldeNextComments = () =>{
+    executeAction(fetchNextPage,"ver mas comentarios")
+  }
 
   if (postLoading) return <SkeletonPost />;
 
@@ -197,24 +209,18 @@ const PostPage = () => {
           </form>
         ) : (
           <div className="text-center py-12 px-4">
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-linear-to-br from-gray-100 to-gray-200 dark:from-indigo-900/30 dark:to-indigo-800/20 flex items-center justify-center">
-              <BellOff
-                className="text-gray-400 dark:text-indigo-500"
-                size={32}
-              />
-            </div>
-            <h3 className="text-xl font-bold text-gray-800 dark:text-indigo-100 mb-2">
-              Sin notificaciones
-            </h3>
+           
+            {/* <h3 className="text-xl font-bold text-gray-800 dark:text-indigo-100 mb-2">
+              Iniciar Sesion
+            </h3> */}
             <p className="text-gray-500 dark:text-gray-300/70 mb-6 max-w-md mx-auto">
-              ¡Interactúa con la comunidad para empezar a recibir
-              notificaciones!
+              Debes iniciar sesion para escribir un comentario
             </p>
             <button
-              onClick={() => navigate("/")}
-              className="px-6 py-2.5 bg-linear-to-r from-indigo-500 to-indigo-600 text-white font-medium rounded-full hover:shadow-lg hover:shadow-emerald-indigo/25 transition-all duration-300"
+              onClick={openAuthModal}
+              className="px-6 py-2.5 bg-linear-to-r from-emerald-500 to-emerald-600 text-white font-medium rounded-full hover:shadow-lg hover:shadow-emerald-indigo/25 transition-all duration-300 dark:from-emerald-600 dark:to-emerald-500 hover:scale-100"
             >
-              Explorar contenido
+              Iniciar Sesion
             </button>
           </div>
         )}
@@ -228,7 +234,7 @@ const PostPage = () => {
 
         {hasNextPage && (
           <button
-            onClick={() => fetchNextPage()}
+            onClick={hanldeNextComments}
             className="w-full py-4 text-emerald-600 dark:text-emerald-400 text-sm font-medium hover:bg-emerald-50 dark:hover:bg-emerald-500/5"
           >
             Mostrar más respuestas
@@ -247,6 +253,8 @@ const PostPage = () => {
           </div>
         )}
       </div>
+
+     
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Hash, Search } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
@@ -6,12 +6,13 @@ import { useSearch } from "../../hooks/useSearch";
 import { useIsMobile } from "../../hooks/useIsMobile";
 // UI Components
 import CardPost from "../ui/feed/CardPost";
-import UserSearchCard from "../ui/UserSearchCard";
+import UserSearchCard from "../ui/UserSearchCard2";
 import SearchBar from "../ui/SearchBar";
 import TrendingTopics from "../ui/rigthSidebar/TrendingTopics";
 //import UserSuggestions from "../ui/rigthSidebar/UserSuggestions";
 import NoResultsMessage from "../ui/NoResultsMessage";
 import UserSuggestions from "../ui/rigthSidebar/UserSuggestions2";
+
 
 const SearchPage = () => {
   const { user } = useAuth();
@@ -20,6 +21,7 @@ const SearchPage = () => {
   const isMobile = useIsMobile();
   
   const query = searchParams.get("q") || "";
+  
   const [activeTab, setActiveTab] = useState("posts");
 
   const { data, isLoading } = useSearch(query, user?.id);
@@ -88,7 +90,7 @@ const SearchPage = () => {
             <div className="divide-y divide-gray-50 dark:divide-gray-900">
               {activeTab === "posts" ? (
                 results.posts.length > 0 ? (
-                  results.posts.map((post) => <CardPost key={post.id} post={post} media={post.post_media} />)
+                  results.posts.map((post) => <CardPost key={post.id} post={post} media={post.post_media} query={query}/>)
                 ) : <NoResultsMessage query={query} />
               ) : (
                 results.users.length > 0 ? (

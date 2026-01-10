@@ -2,11 +2,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useAuth } from "../../context/AuthContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
+import { useSearch } from "../../context/SearchContext";
 
 export const useRepost = (postId) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const queryKey = ["post_repost", postId, user?.id];
+  const {queryG} = useSearch()
 
   // 1. Consultar si el post ya tiene repost del usuario
   const { data: isReposted } = useQuery({
@@ -76,6 +78,8 @@ export const useRepost = (postId) => {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["post", postId] });
+      queryClient.invalidateQueries({  queryKey: ["search", queryG, user.id], });
     },
      onSuccess: () => {
       if(!isReposted) return toast.success("Has reposteado");

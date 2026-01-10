@@ -16,6 +16,7 @@ import ImageModal from "../ui/userProfile/ImageModal";
 import { useProfile } from "../../hooks/useProfile";
 import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery2";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuthAction } from "../../hooks/useAuthAction";
 
 const UserProfile = () => {
   const { userId } = useParams();
@@ -28,6 +29,11 @@ const UserProfile = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const loaderRef = useRef();
   const { data: profile, isLoading: profileLoading } = useProfile(userId);
+  const {executeAction} = useAuthAction()
+
+  const hanldeFollowAction = () =>{
+    executeAction(handleFollowToggle,"para segui a este usuario")
+  }
 
   // 🔥 NUEVA LÓGICA DE SEGUIMIENTO 🔥
   const handleFollowToggle = async () => {
@@ -147,7 +153,7 @@ const UserProfile = () => {
             </Link>
           ) : (
             <button
-              onClick={handleFollowToggle}
+              onClick={hanldeFollowAction}
               disabled={actionLoading}
               className={`px-6 py-2 rounded-full font-bold text-sm transition-all flex items-center gap-2 ${
                 following

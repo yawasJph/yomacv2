@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { UserPlus, UserCheck, UserMinus } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import UserHoverCard from "./feed/UserHoverCard";
 import { useFollow } from "../../context/FollowContext";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { Link } from "react-router-dom";
@@ -15,7 +14,7 @@ const UserSearchCard = ({ profile }) => {
   const isMobile = useIsMobile();
   const following = isFollowing(profile.id);
 
-  const isMe = currentUser.id === profile.id;
+  const isMe = currentUser?.id === profile.id;
 
   const handleAction = async (e) => {
     e.stopPropagation();
@@ -29,6 +28,8 @@ const UserSearchCard = ({ profile }) => {
     }
     setActionLoading(false);
   };
+
+  //console.log("hola")
 
   //if (currentUser?.id === profile.id) return null;
   return (

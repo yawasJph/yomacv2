@@ -3,6 +3,7 @@ import { X, AlertTriangle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "../../context/AuthContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
+import { useAuthAction } from "../../hooks/useAuthAction";
 
 const REPORT_REASONS = [
   "Contenido inapropiado",
@@ -23,6 +24,7 @@ const ReportModal = ({ isOpen, onClose, postId, commentId }) => {
 
   if (!isOpen) return null;
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!reason) return toast.error("Por favor selecciona una razón");
@@ -30,7 +32,7 @@ const ReportModal = ({ isOpen, onClose, postId, commentId }) => {
     setIsSubmitting(true);
     try {
       const { error } = await supabaseClient.from("reports").insert({
-        reporter_id: user.id,
+        reporter_id: user?.id,
         post_id: postId || null,
         comment_id: commentId || null,
         reason,
@@ -52,7 +54,7 @@ const ReportModal = ({ isOpen, onClose, postId, commentId }) => {
       setReason("");
       setDetails("");
     } catch (error) {
-      tconsole.error("Error al reportar:", error);
+      console.error("Error al reportar:", error);
       toast.error(
         "Hubo un problema al enviar el reporte. Inténtalo más tarde."
       );

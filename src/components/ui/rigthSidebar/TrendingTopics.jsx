@@ -40,7 +40,7 @@ const TrendingTopics = () => {
             <div
               key={topic.id}
               className="flex justify-between items-center group cursor-pointer p-2 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors duration-200"
-              onClick={()=> handleClick(topic.name)}
+              onClick={()=> handleSearchTrend(topic.name)}
             >
               <span className="text-sm text-gray-800 dark:text-gray-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 font-medium transition-colors">
                 #{topic.name}

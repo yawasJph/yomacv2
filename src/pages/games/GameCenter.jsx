@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Trophy, Gamepad2, Brain, Grid3X3, Type, ArrowRight, Store } from "lucide-react";
 import { motion } from "framer-motion";
+import { useAuthAction } from "../../hooks/useAuthAction";
 
 const GAMES_LIST = [
   {
@@ -44,7 +45,11 @@ const GAMES_LIST = [
 
 const GameCenter = () => {
   const navigate = useNavigate();
+  const {executeAction} = useAuthAction()
 
+  const handleGameNavigate = (path) =>{
+    executeAction(()=>navigate(path),"para jugar")
+  }
   return (
     <div className="bg-white dark:bg-black p-4 pb-10">{/* min-h-screen */}
       {/* Header */}
@@ -76,7 +81,7 @@ const GameCenter = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            onClick={() => navigate(game.path)}
+            onClick={() => handleGameNavigate(game.path)}
             className={`relative overflow-hidden cursor-pointer group p-6 rounded-3xl border border-gray-100 dark:border-gray-800 bg-linear-to-br ${game.color} hover:border-emerald-500/50 transition-all`}
           >
             <div className="flex justify-between items-start relative z-10">

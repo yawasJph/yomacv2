@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabaseClient } from "../supabase/supabaseClient";
 
 export const useSearch = (query, currentUserId) => {
+
   return useQuery({
     queryKey: ["search", query, currentUserId],
     queryFn: async () => {

@@ -31,29 +31,27 @@ import { handleShare } from "../../utils/sharePost";
 import RenderTextWithLinks from "../../utils/RenderTextWithLinks";
 import RepostButton from "../RepostButton";
 import UserHoverCard from "./UserHoverCard3";
-import { useQueryClient } from "@tanstack/react-query";
+
 import BadgeIcon from "../BadgeIcon";
 import BadgeMedia from "../BadgeMedia";
 
-const CardPost = ({ post, media, isDetailedView = false, tab }) => {
+const CardPost = ({ post, media, isDetailedView = false, tab , query = ""}) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const textRef = useRef(null);
   const [expanded, setExpanded] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
-
   const { executeAction } = useAuthAction();
   const isMobile = useIsMobile();
   const { user: currentUser } = useAuth();
   const isMe = currentUser?.id === post.profiles.id;
   const navigate = useNavigate();
-
   const [showOptions, setShowOptions] = useState(false);
   const { mutate: deletePost, isPending: isDeleting } = useDeletePost();
   const optionsRef = useRef(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const queryClient = useQueryClient();
+
 
   // Cerrar menú al hacer click fuera
   useEffect(() => {
@@ -70,6 +68,11 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
     setShowOptions(false);
     setIsReportModalOpen(true);
   };
+
+  const handleReportAction = () =>{
+    setShowOptions(false)
+    executeAction(handleReport,"para reportar")
+  }
 
   // Función que se ejecuta al confirmar en el modal
   const confirmDelete = () => {
@@ -97,6 +100,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
   const closeModal = () => setIsModalOpen(false);
 
   const handleComment = () => {
+    if(isDetailedView) return
     executeAction(() => {
       navigate(`/post/${post.id}`);
     }, "escribir un comentario");
@@ -286,7 +290,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
                       </button>
                     ) : (
                       <button
-                        onClick={handleReport}
+                        onClick={handleReportAction}
                         className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                       >
                         <Flag size={16} />
@@ -351,7 +355,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab }) => {
             onClick={(e) => e.stopPropagation()}
             className="flex items-center gap-6 text-gray-500 dark:text-gray-400 mt-3"
           >
-            <LikeButton postId={post.id} initialCount={post.like_count} />
+            <LikeButton postId={post.id} initialCount={post.like_count} query={query}/>
 
             <button
               className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"

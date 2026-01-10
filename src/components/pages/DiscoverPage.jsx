@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Search, Filter, GraduationCap } from "lucide-react";
 import { useDiscoverProfiles } from "../../hooks/useDiscoverProfiles";
 import UserSearchCard from "../ui/UserSearchCard2";
-//import UserSearchCard from "../ui/UserSearchCard";
 
 const DiscoverPage = () => {
   const [activeTab, setActiveTab] = useState("TODOS");

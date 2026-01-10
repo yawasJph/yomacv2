@@ -7,7 +7,6 @@ import {
   Image as ImageIcon,
   Gift,
   Wallet,
-  Filter,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "../../context/AuthContext";
@@ -18,7 +17,7 @@ const YoMACStore = () => {
   const [myItems, setMyItems] = useState([]);
   const [activeTab, setActiveTab] = useState("badge"); // 'badge', 'sticker', 'gif'
   const [loading, setLoading] = useState(true);
-  const [userCredits, setUserCredits] = useState(null);
+  const [userCredits, setUserCredits] = useState(0);
   // Añade estos estados a tu componente CampusStore
   const [filter, setFilter] = useState("all"); // 'all', 'carrera', 'affordable'
   const [sortBy, setSortBy] = useState("newest"); // 'newest', 'price-low', 'price-high'
@@ -33,29 +32,41 @@ const YoMACStore = () => {
 
   useEffect(() => {
     fetchStoreData();
+    fetchUserCredits();
   }, []);
 
   const fetchStoreData = async () => {
-    setLoading(true);
-    const { data: b } = await supabaseClient.from("badges").select("*");
-    const {
-      data: { user },
-    } = await supabaseClient.auth.getUser();
-    const { data: ub } = await supabaseClient
-      .from("user_badges")
-      .select("badge_id")
-      .eq("user_id", user.id);
+    if (currentUser) {
+      setLoading(true);
+      const { data: b } = await supabaseClient.from("badges").select("*");
+      // const {
+      //   data: { user },
+      // } = await supabaseClient.auth.getUser();
+      const { data: ub } = await supabaseClient
+        .from("user_badges")
+        .select("badge_id")
+        .eq("user_id", currentUser?.id);
 
+      setItems(b || []);
+      setMyItems(ub?.map((x) => x.badge_id) || []);
+      setLoading(false);
+    } else {
+      setLoading(true);
+      const { data: b } = await supabaseClient.from("badges").select("*");
+      setItems(b || []);
+      setMyItems([]);
+      setLoading(false);
+    }
+  };
+
+  const fetchUserCredits = async () => {
+    if (!currentUser) return;
     const { data, error } = await supabaseClient
       .from("profiles")
       .select("credits")
-      .eq("id", user.id)
+      .eq("id", currentUser?.id)
       .single();
     if (data) setUserCredits(data.credits);
-
-    setItems(b || []);
-    setMyItems(ub?.map((x) => x.badge_id) || []);
-    setLoading(false);
   };
 
   const handleBuy = async (itemId) => {
@@ -106,20 +117,22 @@ const YoMACStore = () => {
           </p>
         </div>
 
-        <div className="bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-2xl flex items-center gap-3">
-          <div className="bg-emerald-500 p-1.5 rounded-lg text-white">
-            <Wallet size={20} />
+        
+          <div className="bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-2xl flex items-center gap-3">
+            <div className="bg-emerald-500 p-1.5 rounded-lg text-white">
+              <Wallet size={20} />
+            </div>
+            <div>
+              <p className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 leading-none">
+                Tu Saldo
+              </p>
+              <p className="text-lg font-black dark:text-white">
+                {userCredits}{" "}
+                <span className="text-xs font-medium text-gray-500">CC</span>
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 leading-none">
-              Tu Saldo
-            </p>
-            <p className="text-lg font-black dark:text-white">
-              {userCredits}{" "}
-              <span className="text-xs font-medium text-gray-500">CC</span>
-            </p>
-          </div>
-        </div>
+        
       </div>
 
       {/* TABS DE NAVEGACIÓN */}
@@ -200,7 +213,7 @@ const YoMACStore = () => {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
           {filteredItems.map((item) => {
-            const isOwned = myItems.includes(item.id);
+            const isOwned = myItems?.includes(item.id);
             const canAfford = userCredits >= item.price;
             // Nueva validación: ¿El ítem es para otra carrera?
             const isWrongCarrera =

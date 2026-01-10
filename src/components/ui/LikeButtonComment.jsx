@@ -1,15 +1,21 @@
 import { Heart } from "lucide-react";
 import { useCommentLike } from "../../hooks/useCommentLike2";
+import { useAuthAction } from "../../hooks/useAuthAction";
 
 
 const LikeButtonComment = ({ commentId, contextId, contextType, initialCount }) => {
   const { isLiked, toggleLike } = useCommentLike(commentId, contextId, contextType);
+  const {executeAction} = useAuthAction()
+
+  const handleLikeComment = () =>{
+    executeAction(toggleLike,"para dar like")
+  }
 
   return (
     <button 
       onClick={(e) => {
         e.stopPropagation();
-        toggleLike();
+        handleLikeComment();
       }}
       className={`flex items-center gap-1.5 transition-colors group/like 
         ${isLiked ? "text-emerald-500" : "text-gray-500 hover:text-emerald-500"}`}

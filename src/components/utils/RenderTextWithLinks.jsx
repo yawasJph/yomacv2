@@ -1,13 +1,21 @@
 import { useNavigate } from "react-router-dom";
 import { useAuthAction } from "../../hooks/useAuthAction";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSearch } from "../../context/SearchContext";
+import { useAuth } from "../../context/AuthContext";
 const RenderTextWithLinks = ({ text }) => {
   if (!text) return null;
   const { executeAction } = useAuthAction();
   const navigate = useNavigate();
+  const queryClient = useQueryClient()
+  const {queryG} = useSearch()
+  const {user} = useAuth()
   
   const handleSearchTrend = (trendName) => {
     if (!trendName) return;
+   // queryClient.invalidateQueries({  queryKey: ["search", queryG, user.id], });
     navigate(`/search?q=${encodeURIComponent(trendName.trim())}`);
+    
   };
 
   const handleClick = (trendName) => {
@@ -48,7 +56,7 @@ const RenderTextWithLinks = ({ text }) => {
         <span
           key={i}
           className="text-emerald-600 dark:text-emerald-400 font-semibold cursor-pointer hover:underline"
-          onClick={() => handleClick(part)}
+          onClick={() => handleSearchTrend(part)}
         >
           {part}
         </span>

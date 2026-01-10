@@ -5,6 +5,7 @@ import { useFollow } from "../../context/FollowContext";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { useQueryClient } from "@tanstack/react-query"; // 👈 Importamos QueryClient
 import { Link, useParams } from "react-router-dom"; // 👈 Para saber si estamos en un perfil
+import { useAuthAction } from "../../hooks/useAuthAction";
 
 const UserSearchCard = ({ profile }) => {
   const { user: currentUser } = useAuth();
@@ -13,9 +14,14 @@ const UserSearchCard = ({ profile }) => {
   const [actionLoading, setActionLoading] = useState(false);
   const { isFollowing, followUser, unfollowUser } = useFollow();
   const [isHovered, setIsHovered] = useState(false);
-  const isMe = currentUser.id === profile.id;
+  const isMe = currentUser?.id === profile.id;
   const isMobile = useIsMobile();
   const following = isFollowing(profile.id);
+  const { executeAction } = useAuthAction();
+
+  const handleLikeAction = () => {
+    executeAction(handleAction, "para dar like");
+  };
 
   const handleAction = async (e) => {
     e.stopPropagation();
@@ -118,7 +124,7 @@ const UserSearchCard = ({ profile }) => {
               </span>
             </>
           )}
-          <div className="flex gap-1 items-center">
+          {/* <div className="flex gap-1 items-center">
             {profile.carrera && (
               <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold uppercase">
                 {profile.carrera}
@@ -134,13 +140,30 @@ const UserSearchCard = ({ profile }) => {
             <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mt-0.5">
               {profile.bio}
             </p>
+          )} */}
+          <div className="flex gap-1 items-center">
+            {profile.carrera && (
+              <span className="text-xs px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider">
+                {profile.carrera}
+              </span>
+            )}
+            {profile.ciclo && (
+              <span className="text-xs px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400 font-bold border border-gray-200 dark:border-gray-700">
+                Ciclo {profile.ciclo}
+              </span>
+            )}
+          </div>
+          {profile.bio && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mt-0.5">
+              {profile.bio}
+            </p>
           )}
         </div>
       </div>
 
       {currentUser?.id !== profile.id && (
         <button
-          onClick={handleAction}
+          onClick={handleLikeAction}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           disabled={actionLoading}

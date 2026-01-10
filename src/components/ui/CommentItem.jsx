@@ -19,9 +19,9 @@ import LikeButtonComment from "./LikeButtonComment";
 import { useNavigate } from "react-router-dom";
 import ReportModal from "./ReportModal";
 import RenderTextWithLinks from "../utils/RenderTextWithLinks";
-import { useQueryClient } from "@tanstack/react-query";
 import BadgeIcon from "./BadgeIcon";
 import BadgeMedia from "./BadgeMedia";
+import { useAuthAction } from "../../hooks/useAuthAction";
 
 const CommentItem = ({ comment, postId, isDetailedView = false }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -30,14 +30,13 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
   const [selectedImg, setSelectedImg] = useState(null);
   const { user } = useAuth();
   const [showOptions, setShowOptions] = useState(false);
-
+  const {executeAction} = useAuthAction()
   const text = comment.content;
   const isLong = text.length > LIMIT;
   const displayedText = isExpanded ? text : text.slice(0, LIMIT);
   const optionsRef = useRef(null);
   const navigate = useNavigate();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const queryClient = useQueryClient();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const {
     mutate: deleteComment,
@@ -75,8 +74,12 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
   const handleReport = () => {
     setShowOptions(false);
     setIsReportModalOpen(true);
-    // toast.info("Reporte enviado. Nuestro equipo lo revisará.");
   };
+
+  const handleReportAction = () =>{
+    setShowOptions(false);
+    executeAction(handleReport, "para reportar")
+  }
 
   const handleCopy = () => {
     navigator.clipboard.writeText(comment.content);
@@ -87,6 +90,10 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
   const handleReplyNavigation = () => {
     navigate(`/comment/${comment.id}`);
   };
+
+  const handleReplyAction = () =>{
+    executeAction(handleReplyNavigation,"para dar reply")
+  }
 
   // En el componente que lista los comentarios
   useEffect(() => {
@@ -233,7 +240,7 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
                       </button>
                     ) : (
                       <button
-                        onClick={handleReport}
+                        onClick={handleReportAction}
                         className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                       >
                         <Flag size={16} />
@@ -279,7 +286,7 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
             />
 
             <button
-              onClick={handleReplyNavigation}
+              onClick={handleReplyAction}
               className="flex items-center gap-1.5 hover:text-emerald-500 transition-colors group/reply"
             >
               <div className="p-1.5 group-hover/reply:bg-emerald-500/10 rounded-full">

@@ -1,12 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { useAuth } from "../context/AuthContext";
-import { toast } from "sonner";
+import { useSearch } from "../context/SearchContext";
 ///hago cambios
-export const useLike = (postId) => {
+export const useLike = (postId, query) => {
+  
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const queryKey = ["post_like", postId, user?.id];
+  const { queryG } = useSearch();
 
   // 1. Consultar si el post ya tiene like del usuario
   const { data: isLiked } = useQuery({
@@ -27,7 +29,7 @@ export const useLike = (postId) => {
   // 2. Mutación para dar/quitar Like (Optimista)
   const toggleLike = useMutation({
     mutationFn: async () => {
-      if (!user) throw toast.error("Debe iniciar sesion para dar like");
+      if (!user) throw new Error("Debes iniciar sesion");
 
       if (isLiked) {
         return await supabaseClient
@@ -100,8 +102,12 @@ export const useLike = (postId) => {
     onSettled: () => {
       // Al final, sincronizamos con la DB para estar 100% seguros
       queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({  queryKey: ["search", queryG, user.id], });
       // También invalidamos el feed completo para que los contadores se actualicen
       queryClient.invalidateQueries({ queryKey: ["posts"] }); //{ queryKey: ["posts", "posts"] }
+      
+      queryClient.invalidateQueries({ queryKey: ["post", postId] });
+
     },
   });
 

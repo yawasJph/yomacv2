@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { Search, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useSearch } from "../../context/SearchContext";
 
 const SearchBar = () => {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
+  const { updateQuery } = useSearch();
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (!query.trim()) return;
     // Navegamos a la página de búsqueda con el parámetro q
+    updateQuery(query.trim())
     navigate(`/search?q=${encodeURIComponent(query.trim())}`);
   };
 
