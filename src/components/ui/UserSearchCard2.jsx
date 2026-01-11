@@ -64,11 +64,20 @@ const UserSearchCard = ({ profile }) => {
   return (
     <div className="p-4 hover:bg-gray-50/50 dark:hover:bg-gray-900/20 transition-colors border-b border-gray-100 dark:border-gray-800 flex items-center justify-between gap-4">
       <div className="flex items-center gap-3 min-w-0 flex-1">
-        <img
+        {isMe ? ( <img
+          src={profile.avatar || "/default-avatar.jpg"}
+          alt={profile.full_name}
+          className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 border border-emerald-500/10 cursor-pointer"
+        />): (
+          <Link to={`/profile/${profile.id}`}>
+             <img
           src={profile.avatar || "/default-avatar.jpg"}
           alt={profile.full_name}
           className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 border border-emerald-500/10 cursor-pointer"
         />
+          </Link>
+        )}
+       
 
         <div className="min-w-0 flex-1">
           {isMe ? (
