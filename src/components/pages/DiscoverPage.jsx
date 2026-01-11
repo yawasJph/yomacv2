@@ -69,7 +69,7 @@ const DiscoverPage = () => {
             <select
               value={selectedCiclo}
               onChange={(e) => setSelectedCiclo(e.target.value)}
-              className="appearance-none pl-3 pr-8 py-2 bg-gray-100 dark:bg-gray-900 text-xs font-bold rounded-xl outline-none border border-transparent focus:border-emerald-500 dark:text-gray-300" 
+              className="appearance-none pl-3 pr-8 py-2 bg-gray-100 dark:bg-gray-900 text-xs font-bold rounded-xl outline-none border border-transparent focus:border-emerald-500 dark:text-gray-300  max-sm:max-w-30" 
             >
               <option value="">Todos los Ciclos</option>
               {ciclos.map((c) => (
@@ -91,6 +91,7 @@ const DiscoverPage = () => {
           <div className="grid grid-cols-1 divide-y divide-gray-50 dark:divide-gray-900">
             {profiles.map((profile) => (
               <UserSearchCard key={profile.id} profile={profile} />
+              
             ))}
           </div>
         ) : (
