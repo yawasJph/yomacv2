@@ -16,15 +16,13 @@ import PostPage from "./components/pages/PostPage";
 import CommentThreadPage from "./components/pages/CommentThreadPage";
 import NotificationsPage from "./components/pages/NotificationsPage";
 import { useEffect } from "react";
-import PushSettings from "./components/pages/PushSettings";
 import UserConnections from "./components/pages/UserConnections2";
 import GameCenter from "./pages/games/GameCenter";
 import MemoryGame from "./components/games/MemoryGame";
 import Leaderboard from "./pages/games/Leaderboard";
-import BadgeStore from "./pages/games/BadgeStore";
 import YoMACStore from "./pages/games/YoMACStore";
-import RpgHud from "./components/games/RpgHud";
 import { SearchProvider } from "./context/SearchContext";
+import TriviaGame from "./pages/games/TriviaGame";
 
 function App() {
   if ("serviceWorker" in navigator) {
@@ -106,8 +104,10 @@ function App() {
           <Route path="notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
           <Route path="games" element={<GameCenter/>} />
           <Route path="games/memory" element={<MemoryGame />} />
+          <Route path="games/trivia" element ={<TriviaGame/>}/>
           <Route path="games/leaderboard" element={<Leaderboard />} />
           <Route path="games/store" element={<YoMACStore />} />
+          
         </Route>
       </Routes>
       </SearchProvider>

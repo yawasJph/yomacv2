@@ -1,11 +1,13 @@
 import { useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import ToggleThemeButton from "../ui/ToggleThemeButton";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { ArrowLeft } from "lucide-react";
 
 const Login = () => {
   const { signinWithGoogle, loading, error } = useAuth();
+   const navigate = useNavigate();
 
   // Dentro de tu componente Login:
   useEffect(() => {
@@ -15,7 +17,7 @@ const Login = () => {
     if (errorDescription) {
       // Si el error viene del Trigger, el mensaje suele ser "Database error saving new user"
       // o el mensaje personalizado que pusiste en el RAISE EXCEPTION
-      console.log("login")
+      console.log("login");
       toast.error("Error de acceso", {
         description:
           "Solo se permiten correos institucionales. Si usaste el correcto, contacta a soporte.",
@@ -28,7 +30,27 @@ const Login = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300 relative">{/* min-h-screen*/}
+    <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300 relative">
+      {/* min-h-screen*/}
+
+      {/* Botón volver – solo móvil */}
+      <div className="absolute top-4 left-4 z-10 lg:hidden">
+        <button
+           onClick={() => navigate(-1)}
+          className="
+      p-2
+      rounded-full
+      bg-white/90 dark:bg-black/80
+      backdrop-blur
+      shadow-md
+      hover:scale-105
+      active:scale-95
+      transition
+    "
+        >
+          <ArrowLeft size={20} className="text-gray-700 dark:text-gray-200" />
+        </button>
+      </div>
       {/* ToggleThemeButton en la esquina superior derecha */}
       <div className="absolute top-4 right-4 z-10">
         <ToggleThemeButton />
@@ -39,6 +61,7 @@ const Login = () => {
         <div className="w-full lg:w-2/3 flex items-center justify-center px-6 sm:px-8 lg:px-12 py-8 lg:py-0">
           <div className="max-w-md w-full space-y-6 text-center lg:text-left">
             {/* Logo grande */}
+
             <div className="flex items-center gap-4 mb-8 justify-center lg:justify-start">
               <div className="w-16 h-16 sm:w-20 sm:h-20 bg-linear-to-r from-emerald-500 to-teal-400 rounded-2xl flex items-center justify-center overflow-hidden">
                 <Link to="/">

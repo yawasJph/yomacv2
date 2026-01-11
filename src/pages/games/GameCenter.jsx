@@ -1,6 +1,14 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Trophy, Gamepad2, Brain, Grid3X3, Type, ArrowRight, Store } from "lucide-react";
+import {
+  Trophy,
+  Gamepad2,
+  Brain,
+  Grid3X3,
+  Type,
+  ArrowRight,
+  Store,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuthAction } from "../../hooks/useAuthAction";
 
@@ -12,7 +20,7 @@ const GAMES_LIST = [
     icon: <Grid3X3 className="text-emerald-500" size={32} />,
     color: "from-emerald-500/20 to-emerald-500/5",
     path: "/games/memory",
-    difficulty: "Fácil"
+    difficulty: "Fácil",
   },
   {
     id: "trivia",
@@ -21,7 +29,7 @@ const GAMES_LIST = [
     icon: <Brain className="text-blue-500" size={32} />,
     color: "from-blue-500/20 to-blue-500/5",
     path: "/games/trivia",
-    difficulty: "Medio"
+    difficulty: "Medio",
   },
   {
     id: "michi",
@@ -30,7 +38,7 @@ const GAMES_LIST = [
     icon: <Gamepad2 className="text-purple-500" size={32} />,
     color: "from-purple-500/20 to-purple-500/5",
     path: "/games/michi",
-    difficulty: "Medio"
+    difficulty: "Medio",
   },
   {
     id: "wordle",
@@ -39,20 +47,22 @@ const GAMES_LIST = [
     icon: <Type className="text-orange-500" size={32} />,
     color: "from-orange-500/20 to-orange-500/5",
     path: "/games/wordle",
-    difficulty: "Difícil"
+    difficulty: "Difícil",
   },
 ];
 
 const GameCenter = () => {
   const navigate = useNavigate();
-  const {executeAction} = useAuthAction()
+  const { executeAction } = useAuthAction();
 
-  const handleGameNavigate = (path) =>{
-    executeAction(()=>navigate(path),"para jugar")
-  }
+  const handleGameNavigate = (path) => {
+    executeAction(() => navigate(path), "para jugar");
+  };
   return (
-    <div className="bg-white dark:bg-black p-4 pb-10">{/* min-h-screen */}
+    <div className="bg-white dark:bg-black p-4 pb-10">
+      {/* min-h-screen */}
       {/* Header */}
+
       <div className="flex justify-between items-center mb-8 mt-4">
         <div>
           <h1 className="text-3xl font-black dark:text-white flex items-center gap-3">
@@ -62,9 +72,9 @@ const GameCenter = () => {
             Gana puntos y escala en el ranking de la comunidad.
           </p>
         </div>
-        
+
         {/* Botón de Ranking Global */}
-        <button 
+        <button
           onClick={() => navigate("/games/leaderboard")}
           className="p-3 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center gap-2 font-bold hover:scale-105 transition-transform border border-emerald-500/20"
         >
@@ -103,7 +113,11 @@ const GameCenter = () => {
             </div>
 
             <div className="mt-4 flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-sm relative z-10">
-              Jugar ahora <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              Jugar ahora{" "}
+              <ArrowRight
+                size={16}
+                className="group-hover:translate-x-1 transition-transform"
+              />
             </div>
 
             {/* Elemento decorativo de fondo */}
@@ -119,26 +133,6 @@ const GameCenter = () => {
         <p className="text-gray-500 text-sm italic">
           Nuevos desafíos cada semana. ¡Mantente atento!
         </p>
-      </div>
-
-      <div className="flex justify-between items-center mb-8 mt-4">
-        <div>
-          <h1 className="text-3xl font-black dark:text-white flex items-center gap-3">
-            Tienda <Gamepad2 className="text-emerald-500" />
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
-            Compra diversos items con tus mac coins.
-          </p>
-        </div>
-        
-        {/* Botón de Ranking Global */}
-        <button 
-          onClick={() => navigate("/games/store")}
-          className="p-3 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center gap-2 font-bold hover:scale-105 transition-transform border border-emerald-500/20"
-        >
-          <Store size={20} />
-          <span className="hidden sm:inline">Tienda</span>
-        </button>
       </div>
     </div>
   );
