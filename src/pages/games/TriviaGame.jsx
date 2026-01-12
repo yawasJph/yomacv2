@@ -335,7 +335,7 @@ const TriviaGame = () => {
       </div>
 
       {/* HUD Secundario: Barra de tiempo y progreso */}
-      <div className="flex flex-col gap-4 mb-4 md:mb-8">{/**mb-8  -(md:mb-8)*/}
+      <div className="flex flex-col gap-4 mb-3  md:mb-8">{/**mb-8  -(md:mb-8)*/}
         <div className="flex justify-between items-end">
           <div>
             <span className="text-[10px] font-black uppercase text-emerald-500 tracking-widest">
@@ -376,9 +376,9 @@ const TriviaGame = () => {
       </div>
 
       {/* HUD de Puntos y Racha - Ponlo arriba de la pregunta */}
-      <div className="flex justify-between items-center"> {/**mb-4 */}
+      <div className="flex justify-between items-center mb-2"> {/**mb-4 */}
         {/* Marcador de Puntos Totales */}
-        {/* <div className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-2xl">
+        <div className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-2xl">
           <span className="text-[10px] font-black uppercase opacity-60 block">
             Puntos
           </span>
@@ -390,10 +390,10 @@ const TriviaGame = () => {
           >
             {points.toLocaleString()}
           </motion.span>
-        </div> */}
+        </div>
 
         {/* Contador de Racha (Solo se muestra si racha > 1) */}
-        {/* <AnimatePresence>
+        <AnimatePresence>
           {streak > 1 && (
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -405,7 +405,7 @@ const TriviaGame = () => {
               <span className="font-black italic">COMBO X{streak}</span>
             </motion.div>
           )}
-        </AnimatePresence> */}
+        </AnimatePresence>
       </div>
 
       {/* Animación de puntos flotantes */}
