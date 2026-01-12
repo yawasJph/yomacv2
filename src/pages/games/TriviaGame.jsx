@@ -307,7 +307,7 @@ const TriviaGame = () => {
   const currentQ = questions[currentIndex];
 
   return (
-    <div className="max-w-2xl mx-auto p-4 md:pt-10 pt-0" >{/* md:pt-10 */}
+    <div className="max-w-2xl mx-auto p-4 md:pt-10 pt-2" >{/* md:pt-10 */}
       {/* HUD Superior: Barra de tiempo y progreso */}
       {/* HUD Superior: Categoría y Dificultad */}
       <div className="flex justify-between items-center mb-2 md:mb-6 ">{/**mb-6  -(md:mb-6)*/}
@@ -376,7 +376,7 @@ const TriviaGame = () => {
       </div>
 
       {/* HUD de Puntos y Racha - Ponlo arriba de la pregunta */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center"> {/**mb-4 */}
         {/* Marcador de Puntos Totales */}
         {/* <div className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-2xl">
           <span className="text-[10px] font-black uppercase opacity-60 block">
@@ -444,7 +444,7 @@ const TriviaGame = () => {
           exit={{ opacity: 0, x: -20 }}
           className="min-h-[300px]"
         >
-          <div className="bg-white dark:bg-neutral-900 p-8 rounded-[2.5rem] border border-gray-100 dark:border-neutral-800 shadow-xl shadow-gray-200/50 dark:shadow-none mb-6 relative overflow-hidden">
+          <div className="bg-white dark:bg-neutral-900 p-2 md:p-8 rounded-[2.5rem] border border-gray-100 dark:border-neutral-800 shadow-xl shadow-gray-200/50 dark:shadow-none mb-6 relative overflow-hidden">{/**p-8 */}
             {/* Marca de agua de dificultad al fondo */}
             <span className="absolute -bottom-4 -right-2 text-8xl font-black opacity-[0.03] dark:opacity-[0.05] pointer-events-none select-none">
               {currentQ.difficulty}
