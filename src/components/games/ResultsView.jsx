@@ -23,8 +23,7 @@ const ResultsView = ({ points, accuracy, totalQuestions, earnedCredits }) => {
   };
 
   const rank = getRank();
-  console.log(points)
-  console.log(accuracy)
+
   return (
     <div className="flex flex-col items-center justify-center min-h-[500px] p-6">
       {/* Icono Central con Brillo */}

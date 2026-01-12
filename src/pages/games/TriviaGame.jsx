@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
 import { useAuth } from "../../context/AuthContext";
-import { Timer as TimerIcon, Trophy, Zap, AlertCircle } from "lucide-react";
+import { Timer as TimerIcon, Zap, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import ResultsView from "../../components/games/ResultsView";
+import { useProfile } from "../../hooks/useProfile";
 
 const TriviaGame = () => {
   const { user } = useAuth();
+  const { data: profile } = useProfile(user?.id);
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -20,6 +21,17 @@ const TriviaGame = () => {
   const [streak, setStreak] = useState(0);
   const [lastPointsEarned, setLastPointsEarned] = useState(0); // Para la animación de "+150"
   const [isCorrect, setIsCorrect] = useState(false);
+  // Añade este estado para acumular el tiempo usado
+  const [totalTimeUsed, setTotalTimeUsed] = useState(0);
+  const [showBoost, setShowBoost] = useState(false); // Estado para feedback visual del boost
+  const [activeCategory, setActiveCategory] = useState(null);
+
+  // CONFIGURACIÓN DE DIFICULTAD
+  const DIFFICULTY_SETTINGS = {
+    Fácil: { time: 15, basePoints: 100, multiplier: 1 },
+    Medio: { time: 10, basePoints: 150, multiplier: 1.5 },
+    Difícil: { time: 5, basePoints: 200, multiplier: 2 },
+  };
 
   // 1. Cargar Categoría Aleatoria y sus Preguntas
   useEffect(() => {
@@ -30,20 +42,44 @@ const TriviaGame = () => {
           .from("trivia_categories")
           .select("*");
 
-        if (categories && categories.length > 0) {
+        if (categories && categories?.length > 0) {
           // Elegir una al azar
           const randomCat =
             categories[Math.floor(Math.random() * categories.length)];
+          setActiveCategory(randomCat);
 
-          const { data: qs, error } = await supabaseClient
-            .from("trivia_questions")
-            .select("*")
-            .eq("category_id", randomCat.id)
-            .limit(10);
+          // 2. Llamamos a la RPC pasándole el ID de la categoría sorteada
+          const { data: qs, error } = await supabaseClient.rpc(
+            "get_random_questions",
+            {
+              p_category_id: randomCat.id,
+              p_limit: 10,
+            }
+          );
 
           if (error) throw error;
 
-          setQuestions(qs.sort(() => Math.random() - 0.5));
+          if (qs && qs.length > 0) {
+            const shuffledQuestions = qs.map((q) => {
+              // 1. Identificamos el texto de la respuesta correcta antes de mezclar
+              const correctText = q.options[q.correct_option_index];
+
+              // 2. Mezclamos las opciones
+              const newOptions = shuffleArray(q.options);
+
+              // 3. Encontramos el nuevo índice donde quedó el texto correcto
+              const newCorrectIndex = newOptions.indexOf(correctText);
+
+              return {
+                ...q,
+                options: newOptions,
+                correct_option_index: newCorrectIndex, // Sobrescribimos con el nuevo índice
+              };
+            });
+
+            setQuestions(shuffledQuestions);
+          }
+
           setGameState("playing");
         }
       } catch (error) {
@@ -52,6 +88,14 @@ const TriviaGame = () => {
     };
     initGame();
   }, []);
+
+  // 1. Al cargar preguntas, el primer timer debe ajustarse a la primera pregunta
+  useEffect(() => {
+    if (questions.length > 0 && currentIndex === 0) {
+      const diff = questions[0].difficulty || "Fácil";
+      setTimeLeft(DIFFICULTY_SETTINGS[diff].time);
+    }
+  }, [questions]);
 
   // 2. Lógica del Temporizador
   useEffect(() => {
@@ -69,99 +113,93 @@ const TriviaGame = () => {
     return () => clearTimeout(timerRef.current);
   }, [timeLeft, gameState, selectedOption]);
 
-//   const handleAnswer = (index) => {
-//     if (selectedOption !== null) return;
-//     clearTimeout(timerRef.current);
+  // Función para mezclar un array (Algoritmo Fisher-Yates)
+  const shuffleArray = (array) => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  };
 
-//     setSelectedOption(index);
-//     const correct = index === questions[currentIndex].correct_option_index;
-
-//     if (correct) {
-//       setIsCorrect(true);
-//       // CALCULO DE TIME BONUS + STREAK
-//       const basePoints = 100;
-//       const timeBonus = timeLeft * 10;
-//       const currentStreakBonus = Math.min(streak * 20, 100); // Max +100 por racha
-
-//       const totalForThisRound = basePoints + timeBonus + currentStreakBonus;
-
-//       setPoints((prev) => prev + totalForThisRound);
-//       setScore((prev) => prev + 1);
-//       setStreak((prev) => prev + 1);
-//       setLastPointsEarned(totalForThisRound);
-//     } else {
-//       setIsCorrect(false);
-//       setStreak(0); // Se rompe la racha
-//       setLastPointsEarned(0);
-//     }
-
-//     // Esperar y pasar a la siguiente
-//     setTimeout(() => {
-//       if (currentIndex < questions.length - 1) {
-//         setCurrentIndex((prev) => prev + 1);
-//         setSelectedOption(null);
-//         setIsCorrect(false);
-//         setTimeLeft(15); // Reiniciar timer
-//       } else {
-//         setGameState("finished");
-//         //saveResults();
-//         saveResults(points + roundPoints, score + (correct ? 1 : 0));
-//       }
-//     }, 1500);
-//   };
-
-    const handleAnswer = (index) => {
+  const handleAnswer = (index) => {
     if (selectedOption !== null) return;
     clearTimeout(timerRef.current);
 
     setSelectedOption(index);
-    const correct = index === questions[currentIndex].correct_option_index;
+    const currentQuestion = questions[currentIndex];
+    const diffSetting =
+      DIFFICULTY_SETTINGS[currentQuestion.difficulty || "Fácil"];
+    const correct = index === currentQuestion.correct_option_index;
 
-    // Calculamos los valores de esta ronda
     let roundPoints = 0;
-    let isCorrectRound = false;
+    let timeUsedInThisRound = 0;
 
     if (correct) {
-      isCorrectRound = true;
-      const basePoints = 100;
-      const timeBonus = timeLeft * 10;
+      setIsCorrect(true);
+
+      // 1. Cálculo Base con Dificultad
+      const timeBonus = timeLeft * 20 * diffSetting.multiplier;
       const currentStreakBonus = Math.min(streak * 20, 100);
-      roundPoints = basePoints + timeBonus + currentStreakBonus;
+      roundPoints = Math.floor(
+        diffSetting.basePoints + timeBonus + currentStreakBonus
+      );
+
+      // 2. APLICACIÓN DEL BOOST DE CARRERA (Bonus del 20%)
+      const isCarreraMatch =
+        currentQuestion.carrera_restriccion &&
+        profile?.carrera === currentQuestion.carrera_restriccion;
+
+      if (isCarreraMatch) {
+        roundPoints = Math.floor(roundPoints * 1.2);
+        setShowBoost(true); // Activamos la notificación visual
+      }
+
+      timeUsedInThisRound = diffSetting.time - timeLeft;
+      setTotalTimeUsed((prev) => prev + timeUsedInThisRound);
 
       setPoints((prev) => prev + roundPoints);
       setScore((prev) => prev + 1);
       setStreak((prev) => prev + 1);
       setLastPointsEarned(roundPoints);
-      setIsCorrect(true);
     } else {
+      setIsCorrect(false);
       setStreak(0);
       setLastPointsEarned(0);
-      setIsCorrect(false);
+      timeUsedInThisRound = diffSetting.time - timeLeft;
+      setTotalTimeUsed((prev) => prev + timeUsedInThisRound);
     }
 
+    // Limpiar el boost y pasar a la siguiente pregunta
     setTimeout(() => {
+      setShowBoost(false);
       if (currentIndex < questions.length - 1) {
+        const nextQuestion = questions[currentIndex + 1];
+        const nextDiff =
+          DIFFICULTY_SETTINGS[nextQuestion.difficulty || "Fácil"];
+
         setCurrentIndex((prev) => prev + 1);
         setSelectedOption(null);
         setIsCorrect(false);
-        setTimeLeft(15);
+        setTimeLeft(nextDiff.time);
       } else {
         setGameState("finished");
-        // IMPORTANTE: Pasamos los valores calculados manualmente 
-        // sumándolos al estado actual para no perder la última pregunta
-        saveResults(points + roundPoints, score + (correct ? 1 : 0));
+        saveResults(
+          points + roundPoints,
+          score + (correct ? 1 : 0),
+          totalTimeUsed + timeUsedInThisRound
+        );
       }
     }, 1500);
   };
 
-  const saveResults = async (finalPoints,finalScore) => {
-    //const totalTimeUsed = (questions.length * 15) - totalTimeLeft;
+  const saveResults = async (finalPoints, finalScore, finalTime) => {
     const { data, error } = await supabaseClient.rpc("submit_trivia_score", {
       p_points: finalPoints, // El estado 'points' con el Time-Bonus
       p_accuracy: finalScore, // El estado 'score' con los aciertos (0-10)
-      p_time_seconds: 0, // Opcional: tiempo total
+      p_time_seconds: finalTime, // Opcional: tiempo total
     });
-    console.log("Enviado a Supabase:", finalPoints, finalScore);
 
     if (error) console.error(error);
   };
@@ -179,7 +217,7 @@ const TriviaGame = () => {
         points={points}
         accuracy={score}
         totalQuestions={questions.length}
-        earnedCredits={score * 5} // Asegúrate que coincida con tu lógica de SQL
+        earnedCredits={score * 2} // Asegúrate que coincida con tu lógica de SQL
       />
     );
   }
@@ -189,40 +227,58 @@ const TriviaGame = () => {
   return (
     <div className="max-w-2xl mx-auto p-4 md:pt-10">
       {/* HUD Superior: Barra de tiempo y progreso */}
-      <div className="flex flex-col gap-4 mb-8">
-        <div className="flex justify-between items-end">
-          <div>
-            <span className="text-[10px] font-black uppercase text-emerald-500 tracking-widest">
-              Trivia Pro
-            </span>
-            <h2 className="text-gray-400 font-bold text-sm">
-              Pregunta {currentIndex + 1} de {questions.length}
-            </h2>
-          </div>
+      {/* HUD Superior: Categoría y Dificultad */}
+    <div className="flex justify-between items-center mb-6">
+      {/* Categoría Activa */}
+      <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 px-3 py-1.5 rounded-full shadow-sm">
+        <span className="text-xl">{activeCategory?.icon || '🎮'}</span>
+        <span className="text-xs font-black uppercase tracking-tight dark:text-gray-300">
+          {activeCategory?.name || 'Cargando...'}
+        </span>
+      </div>
 
-          {/* Timer Visual */}
-          <div
-            className={`flex items-center gap-2 px-4 py-2 rounded-2xl font-black ${
-              timeLeft < 5
-                ? "bg-red-500 text-white animate-pulse"
-                : "bg-gray-100 dark:bg-neutral-900 dark:text-white"
-            }`}
-          >
-            <TimerIcon size={18} />
-            {timeLeft}s
-          </div>
+      {/* Chip de Dificultad */}
+      <div className={`text-[10px] font-black uppercase px-3 py-1 rounded-full border-2 
+        ${currentQ.difficulty === 'Fácil' ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 
+          currentQ.difficulty === 'Medio' ? 'bg-amber-50 border-amber-200 text-amber-600' : 
+          'bg-red-50 border-red-200 text-red-600 animate-pulse'}`}>
+        Nivel {currentQ.difficulty}
+      </div>
+    </div>
+
+    {/* HUD Secundario: Barra de tiempo y progreso */}
+    <div className="flex flex-col gap-4 mb-8">
+      <div className="flex justify-between items-end">
+        <div>
+          <span className="text-[10px] font-black uppercase text-emerald-500 tracking-widest">
+            Pregunta {currentIndex + 1} / {questions.length}
+          </span>
+          <h2 className="text-gray-400 font-bold text-sm leading-none">
+            {activeCategory?.description}
+          </h2>
         </div>
 
-        {/* Barra de Progreso de la Partida */}
-        <div className="h-1.5 w-full bg-gray-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-          <motion.div
-            animate={{
-              width: `${((currentIndex + 1) / questions.length) * 100}%`,
-            }}
-            className="h-full bg-emerald-500"
-          />
+        {/* Timer Visual Mejorado */}
+        <div className={`flex items-center gap-2 px-4 py-2 rounded-2xl font-black transition-colors
+          ${timeLeft < 4 
+            ? "bg-red-500 text-white animate-bounce" 
+            : "bg-gray-100 dark:bg-neutral-900 dark:text-white border-b-4 border-gray-200 dark:border-neutral-800"
+          }`}
+        >
+          <TimerIcon size={18} className={timeLeft < 4 ? "animate-spin" : ""} />
+          {timeLeft}s
         </div>
       </div>
+
+      {/* Barra de Progreso */}
+      <div className="h-1.5 w-full bg-gray-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
+          className="h-full bg-emerald-500"
+        />
+      </div>
+    </div>
 
       {/* HUD de Puntos y Racha - Ponlo arriba de la pregunta */}
       <div className="flex justify-between items-center mb-4">
@@ -257,34 +313,52 @@ const TriviaGame = () => {
         </AnimatePresence>
       </div>
 
-      {/* Animación de puntos flotantes al acertar */}
+      {/* Animación de puntos flotantes */}
       <AnimatePresence>
         {selectedOption !== null && isCorrect && (
-          <motion.div
-            initial={{ opacity: 0, y: 0 }}
-            animate={{ opacity: 1, y: -50 }}
-            exit={{ opacity: 0 }}
-            className="absolute right-10 top-1/2 text-emerald-500 font-black text-2xl z-50"
-          >
-            +{lastPointsEarned}
-          </motion.div>
+          <div className="absolute right-10 top-1/2 z-50 flex flex-col items-end">
+            <motion.div
+              initial={{ opacity: 0, y: 0 }}
+              animate={{ opacity: 1, y: -50 }}
+              exit={{ opacity: 0 }}
+              className="text-emerald-500 font-black text-3xl"
+            >
+              +{lastPointsEarned}
+            </motion.div>
+
+            {/* Etiqueta de Boost de Carrera */}
+            {showBoost && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-indigo-500 text-white text-[10px] px-2 py-1 rounded-md font-bold uppercase tracking-tighter"
+              >
+                🚀 Boost {profile?.carrera} +20%
+              </motion.div>
+            )}
+          </div>
         )}
       </AnimatePresence>
 
       {/* Pregunta */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={currentIndex}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          className="min-h-[300px]"
+         key={currentIndex}
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+        className="min-h-[300px]" 
         >
-          <div className="bg-white dark:bg-neutral-900 p-8 rounded-[2.5rem] border border-gray-100 dark:border-neutral-800 shadow-sm mb-6">
-            <h3 className="text-xl md:text-2xl font-bold dark:text-white text-center leading-tight">
-              {currentQ.question_text}
-            </h3>
-          </div>
+         <div className="bg-white dark:bg-neutral-900 p-8 rounded-[2.5rem] border border-gray-100 dark:border-neutral-800 shadow-xl shadow-gray-200/50 dark:shadow-none mb-6 relative overflow-hidden">
+          {/* Marca de agua de dificultad al fondo */}
+          <span className="absolute -bottom-4 -right-2 text-8xl font-black opacity-[0.03] dark:opacity-[0.05] pointer-events-none select-none">
+            {currentQ.difficulty}
+          </span>
+          
+          <h3 className="text-xl md:text-2xl font-bold dark:text-white text-center leading-tight relative z-10">
+            {currentQ.question_text}
+          </h3>
+        </div>
 
           {/* Opciones */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 dark:text-white">
