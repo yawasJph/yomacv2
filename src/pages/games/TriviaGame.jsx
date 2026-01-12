@@ -444,7 +444,7 @@ const TriviaGame = () => {
           exit={{ opacity: 0, x: -20 }}
           className="min-h-[300px]"
         >
-          <div className="bg-white dark:bg-neutral-900 p-2 md:p-8 rounded-[2.5rem] border border-gray-100 dark:border-neutral-800 shadow-xl shadow-gray-200/50 dark:shadow-none mb-6 relative overflow-hidden">{/**p-8 */}
+          <div className="bg-white dark:bg-neutral-900 p-3 md:p-8 rounded-[2.5rem] border border-gray-100 dark:border-neutral-800 shadow-xl shadow-gray-200/50 dark:shadow-none mb-6 relative overflow-hidden">{/**p-8 */}
             {/* Marca de agua de dificultad al fondo */}
             <span className="absolute -bottom-4 -right-2 text-8xl font-black opacity-[0.03] dark:opacity-[0.05] pointer-events-none select-none">
               {currentQ.difficulty}
@@ -467,7 +467,7 @@ const TriviaGame = () => {
                   key={idx}
                   disabled={showResult}
                   onClick={() => handleAnswer(idx)}
-                  className={`p-5 rounded-2xl border-2 font-bold text-sm transition-all duration-200 flex items-center justify-between
+                  className={`p-3 md:p-5 rounded-2xl border-2 font-bold text-sm transition-all duration-200 flex items-center justify-between
                     ${
                       !showResult
                         ? "bg-white dark:bg-neutral-900 border-gray-100 dark:border-neutral-800 hover:border-emerald-500 active:scale-95"

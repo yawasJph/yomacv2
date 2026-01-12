@@ -33,7 +33,7 @@ const NavigationM = () => {
   };
 
   return (
-    <div className="fixed -bottom-2 left-0 right-0 z-100 lg:hidden">{/**bottom-0 */}
+    <div className="fixed -bottom-1 left-0 right-0 z-100 lg:hidden">{/**bottom-0 */}
       {/* Efecto de degradado de fondo para que no corte el contenido bruscamente */}
       <div className="absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-black/20 dark:from-black/40 to-transparent pointer-events-none" />
 
