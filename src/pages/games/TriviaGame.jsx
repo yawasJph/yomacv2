@@ -243,7 +243,7 @@ const TriviaGame = () => {
   // 1. Pantalla de Carga Inicial (Fetching de datos)
   if (gameState === "loading") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-black">
+      <div className="flex flex-col items-center justify-center bg-white dark:bg-black">{/**min-h-screen */}
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
@@ -259,7 +259,7 @@ const TriviaGame = () => {
   // 2. Pantalla de Cuenta Regresiva (3, 2, 1)
   if (gameState === "starting") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-black overflow-hidden">
+      <div className="flex flex-col items-center justify-center bg-white dark:bg-black overflow-hidden">{/*min-h-screen*/ }
         <motion.div
           key={countdown}
           initial={{ scale: 0.5, opacity: 0 }}
@@ -307,7 +307,7 @@ const TriviaGame = () => {
   const currentQ = questions[currentIndex];
 
   return (
-    <div className="max-w-2xl mx-auto p-4 md:pt-10">
+    <div className="max-w-2xl mx-auto p-4 md:pt-10">{/* md:pt-10 */}
       {/* HUD Superior: Barra de tiempo y progreso */}
       {/* HUD Superior: Categoría y Dificultad */}
       <div className="flex justify-between items-center mb-6">
