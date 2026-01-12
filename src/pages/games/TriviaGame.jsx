@@ -259,7 +259,7 @@ const TriviaGame = () => {
   // 2. Pantalla de Cuenta Regresiva (3, 2, 1)
   if (gameState === "starting") {
     return (
-      <div className="flex flex-col items-center justify-center bg-white dark:bg-black overflow-hidden">{/*min-h-screen*/ }
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-black overflow-hidden">{/*min-h-screen*/ }
         <motion.div
           key={countdown}
           initial={{ scale: 0.5, opacity: 0 }}
