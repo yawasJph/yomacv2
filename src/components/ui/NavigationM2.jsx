@@ -33,7 +33,7 @@ const NavigationM = () => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-100 lg:hidden">
+    <div className="fixed -bottom-2 left-0 right-0 z-100 lg:hidden">{/**bottom-0 */}
       {/* Efecto de degradado de fondo para que no corte el contenido bruscamente */}
       <div className="absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-black/20 dark:from-black/40 to-transparent pointer-events-none" />
 
@@ -61,13 +61,13 @@ const NavigationM = () => {
           </div>
 
           {/* Botón Central Flotante */}
-          <div className="relative -mt-10">
+          <div className="relative">{/**-mt-10 */}
             <button
               onClick={() =>
                 user ? navigate("create-post") : navigate("login")
               }
-              className="p-4 bg-linear-to-tr from-emerald-500 to-teal-400 text-white rounded-2xl shadow-lg shadow-emerald-500/40 active:scale-90 transition-transform border-4 border-white dark:border-neutral-900"
-            >
+              className="p-2 bg-linear-to-tr from-emerald-500 to-teal-400 text-white rounded-2xl shadow-lg shadow-emerald-500/40 active:scale-90 transition-transform border-4 border-white dark:border-neutral-900"
+            >{/**p-4 */}
               <Plus size={28} strokeWidth={3} />
             </button>
           </div>

@@ -243,7 +243,7 @@ const TriviaGame = () => {
   // 1. Pantalla de Carga Inicial (Fetching de datos)
   if (gameState === "loading") {
     return (
-      <div className="flex flex-col items-center justify-center bg-white dark:bg-black">{/**min-h-screen */}
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-black">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
@@ -259,7 +259,7 @@ const TriviaGame = () => {
   // 2. Pantalla de Cuenta Regresiva (3, 2, 1)
   if (gameState === "starting") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-black overflow-hidden">{/*min-h-screen*/ }
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-black overflow-hidden">
         <motion.div
           key={countdown}
           initial={{ scale: 0.5, opacity: 0 }}
@@ -307,10 +307,10 @@ const TriviaGame = () => {
   const currentQ = questions[currentIndex];
 
   return (
-    <div className="max-w-2xl mx-auto p-4 md:pt-10">{/* md:pt-10 */}
+    <div className="max-w-2xl mx-auto p-4 md:pt-10 pt-0" >{/* md:pt-10 */}
       {/* HUD Superior: Barra de tiempo y progreso */}
       {/* HUD Superior: Categoría y Dificultad */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-2 md:mb-6 ">{/**mb-6  -(md:mb-6)*/}
         {/* Categoría Activa */}
         <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 px-3 py-1.5 rounded-full shadow-sm">
           <span className="text-xl">{activeCategory?.icon || "🎮"}</span>
@@ -335,7 +335,7 @@ const TriviaGame = () => {
       </div>
 
       {/* HUD Secundario: Barra de tiempo y progreso */}
-      <div className="flex flex-col gap-4 mb-8">
+      <div className="flex flex-col gap-4 mb-4 md:mb-8">{/**mb-8  -(md:mb-8)*/}
         <div className="flex justify-between items-end">
           <div>
             <span className="text-[10px] font-black uppercase text-emerald-500 tracking-widest">
@@ -378,7 +378,7 @@ const TriviaGame = () => {
       {/* HUD de Puntos y Racha - Ponlo arriba de la pregunta */}
       <div className="flex justify-between items-center mb-4">
         {/* Marcador de Puntos Totales */}
-        <div className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-2xl">
+        {/* <div className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-2xl">
           <span className="text-[10px] font-black uppercase opacity-60 block">
             Puntos
           </span>
@@ -390,10 +390,10 @@ const TriviaGame = () => {
           >
             {points.toLocaleString()}
           </motion.span>
-        </div>
+        </div> */}
 
         {/* Contador de Racha (Solo se muestra si racha > 1) */}
-        <AnimatePresence>
+        {/* <AnimatePresence>
           {streak > 1 && (
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -405,7 +405,7 @@ const TriviaGame = () => {
               <span className="font-black italic">COMBO X{streak}</span>
             </motion.div>
           )}
-        </AnimatePresence>
+        </AnimatePresence> */}
       </div>
 
       {/* Animación de puntos flotantes */}
