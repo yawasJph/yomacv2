@@ -7,7 +7,6 @@ import {
   Grid3X3,
   Type,
   ArrowRight,
-  Store,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuthAction } from "../../hooks/useAuthAction";

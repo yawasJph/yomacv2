@@ -14,10 +14,14 @@ const NotificationIcon = () => {
     }, "ver notificaiopnes");
   };
 
+   const onViewCredits = ["games"].some((route) =>
+    location.pathname.includes(route)
+  );
+
   return (
     <>
       <div
-        className="relative rounded-full transition-colors dark:text-indigo-400"
+        className={`relative rounded-full transition-colors dark:text-indigo-400 ${onViewCredits && "hidden"}`}
       >
         <button
           className="p-2 rounded-xl bg-white dark:bg-neutral-900 shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-xs transition-all cursor-pointer "

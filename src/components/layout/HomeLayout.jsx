@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Outlet, useNavigate} from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import LeftSidebar from "./LeftSidebar";
 import RigthSidebar from "./RigthSidebar";
@@ -33,6 +33,7 @@ const HomeLayout = () => {
     <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300">
       {/* Header fijo */}
       {isMobile ? (  <HeaderM/>) : (<Header />)}
+      {/* <Header /> */}
      
       {/* Layout Principal */}
       <div className="pt-16 flex max-w-7xl mx-auto min-h-[calc(100vh-64px)]">

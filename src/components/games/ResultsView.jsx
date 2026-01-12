@@ -3,7 +3,7 @@ import { motion, useSpring, useTransform } from 'framer-motion';
 import { Trophy, Star, ArrowRight, Coins, Zap, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const ResultsView = ({ points, accuracy, totalQuestions, earnedCredits }) => {
+const ResultsView = ({ points, accuracy, totalQuestions, earnedCredits, onReset }) => {
   const navigate = useNavigate();
   
   // Animación del contador de puntos
@@ -84,7 +84,7 @@ const ResultsView = ({ points, accuracy, totalQuestions, earnedCredits }) => {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => window.location.reload()}
+          onClick={onReset}
           className="py-4 bg-emerald-500 text-white rounded-2xl font-black uppercase tracking-wider shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
         >
           <Zap size={18} fill="currentColor" /> Reintentar

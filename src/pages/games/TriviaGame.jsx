@@ -25,6 +25,7 @@ const TriviaGame = () => {
   const [totalTimeUsed, setTotalTimeUsed] = useState(0);
   const [showBoost, setShowBoost] = useState(false); // Estado para feedback visual del boost
   const [activeCategory, setActiveCategory] = useState(null);
+  const [countdown, setCountdown] = useState(3);
 
   // CONFIGURACIÓN DE DIFICULTAD
   const DIFFICULTY_SETTINGS = {
@@ -33,61 +34,64 @@ const TriviaGame = () => {
     Difícil: { time: 5, basePoints: 200, multiplier: 2 },
   };
 
-  // 1. Cargar Categoría Aleatoria y sus Preguntas
   useEffect(() => {
-    const initGame = async () => {
-      try {
-        // Obtener todas las categorías disponibles
-        const { data: categories } = await supabaseClient
-          .from("trivia_categories")
-          .select("*");
-
-        if (categories && categories?.length > 0) {
-          // Elegir una al azar
-          const randomCat =
-            categories[Math.floor(Math.random() * categories.length)];
-          setActiveCategory(randomCat);
-
-          // 2. Llamamos a la RPC pasándole el ID de la categoría sorteada
-          const { data: qs, error } = await supabaseClient.rpc(
-            "get_random_questions",
-            {
-              p_category_id: randomCat.id,
-              p_limit: 10,
-            }
-          );
-
-          if (error) throw error;
-
-          if (qs && qs.length > 0) {
-            const shuffledQuestions = qs.map((q) => {
-              // 1. Identificamos el texto de la respuesta correcta antes de mezclar
-              const correctText = q.options[q.correct_option_index];
-
-              // 2. Mezclamos las opciones
-              const newOptions = shuffleArray(q.options);
-
-              // 3. Encontramos el nuevo índice donde quedó el texto correcto
-              const newCorrectIndex = newOptions.indexOf(correctText);
-
-              return {
-                ...q,
-                options: newOptions,
-                correct_option_index: newCorrectIndex, // Sobrescribimos con el nuevo índice
-              };
-            });
-
-            setQuestions(shuffledQuestions);
-          }
-
-          setGameState("playing");
-        }
-      } catch (error) {
-        toast.error("No se pudieron cargar las preguntas");
-      }
-    };
     initGame();
   }, []);
+
+  // 1. Cargar Categoría Aleatoria y sus Preguntas
+
+  const initGame = async () => {
+    try {
+      // Obtener todas las categorías disponibles
+      const { data: categories } = await supabaseClient
+        .from("trivia_categories")
+        .select("*");
+
+      if (categories && categories?.length > 0) {
+        // Elegir una al azar
+        const randomCat =
+          categories[Math.floor(Math.random() * categories.length)];
+        setActiveCategory(randomCat);
+
+        // 2. Llamamos a la RPC pasándole el ID de la categoría sorteada
+        const { data: qs, error } = await supabaseClient.rpc(
+          "get_random_questions",
+          {
+            p_category_id: randomCat.id,
+            p_limit: 10,
+          }
+        );
+
+        if (error) throw error;
+
+        if (qs && qs.length > 0) {
+          const shuffledQuestions = qs.map((q) => {
+            // 1. Identificamos el texto de la respuesta correcta antes de mezclar
+            const correctText = q.options[q.correct_option_index];
+
+            // 2. Mezclamos las opciones
+            const newOptions = shuffleArray(q.options);
+
+            // 3. Encontramos el nuevo índice donde quedó el texto correcto
+            const newCorrectIndex = newOptions.indexOf(correctText);
+
+            return {
+              ...q,
+              options: newOptions,
+              correct_option_index: newCorrectIndex, // Sobrescribimos con el nuevo índice
+            };
+          });
+
+          setQuestions(shuffledQuestions);
+        }
+
+        //setGameState("playing");
+        setGameState("starting");
+      }
+    } catch (error) {
+      toast.error("No se pudieron cargar las preguntas");
+    }
+  };
 
   // 1. Al cargar preguntas, el primer timer debe ajustarse a la primera pregunta
   useEffect(() => {
@@ -96,6 +100,18 @@ const TriviaGame = () => {
       setTimeLeft(DIFFICULTY_SETTINGS[diff].time);
     }
   }, [questions]);
+
+  // Efecto para la cuenta regresiva
+  useEffect(() => {
+    if (gameState === "starting") {
+      if (countdown > 0) {
+        const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+        return () => clearTimeout(timer);
+      } else {
+        setGameState("playing");
+      }
+    }
+  }, [gameState, countdown]);
 
   // 2. Lógica del Temporizador
   useEffect(() => {
@@ -194,6 +210,26 @@ const TriviaGame = () => {
     }, 1500);
   };
 
+  const handleReset = () => {
+    // Resetear estados de juego
+    setPoints(0);
+    setScore(0);
+    setStreak(0);
+    setCurrentIndex(0);
+    setSelectedOption(null);
+    setIsCorrect(false);
+    setTotalTimeUsed(0);
+    setCountdown(3);
+    setGameState("loading");
+
+    // Volver al estado de carga para disparar el useEffect de initGame
+    // O mejor aún: crear una función 'fetchQuestions' aparte para reutilizarla
+    initGame();
+
+    // Si moviste la lógica de initGame a una función externa, llámala aquí.
+    // Si no, el useEffect [gameState] detectará el cambio y reiniciará.
+  };
+
   const saveResults = async (finalPoints, finalScore, finalTime) => {
     const { data, error } = await supabaseClient.rpc("submit_trivia_score", {
       p_points: finalPoints, // El estado 'points' con el Time-Bonus
@@ -204,12 +240,57 @@ const TriviaGame = () => {
     if (error) console.error(error);
   };
 
-  if (gameState === "loading")
+  // 1. Pantalla de Carga Inicial (Fetching de datos)
+  if (gameState === "loading") {
     return (
-      <div className="p-10 text-center dark:text-white font-bold">
-        Cargando desafío...
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-black">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+          className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full mb-4"
+        />
+        <p className="text-gray-500 dark:text-gray-400 font-black animate-pulse uppercase tracking-widest text-xs">
+          Preparando Preguntas...
+        </p>
       </div>
     );
+  }
+
+  // 2. Pantalla de Cuenta Regresiva (3, 2, 1)
+  if (gameState === "starting") {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-black overflow-hidden">
+        <motion.div
+          key={countdown}
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1.5, opacity: 1 }}
+          exit={{ scale: 3, opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col items-center"
+        >
+          <span className="text-8xl md:text-9xl font-black text-emerald-500 italic">
+            {countdown > 0 ? countdown : "¡YA!"}
+          </span>
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="text-gray-400 font-bold uppercase tracking-[0.3em] mt-8"
+          >
+            Prepárate
+          </motion.p>
+        </motion.div>
+
+        {/* Círculos decorativos de fondo */}
+        <div className="absolute inset-0 z-[-1] flex items-center justify-center">
+          <motion.div
+            animate={{ scale: [1, 2], opacity: [0.1, 0] }}
+            transition={{ duration: 1, repeat: Infinity }}
+            className="w-64 h-64 border-2 border-emerald-500 rounded-full absolute"
+          />
+        </div>
+      </div>
+    );
+  }
 
   if (gameState === "finished") {
     return (
@@ -218,6 +299,7 @@ const TriviaGame = () => {
         accuracy={score}
         totalQuestions={questions.length}
         earnedCredits={score * 2} // Asegúrate que coincida con tu lógica de SQL
+        onReset={handleReset}
       />
     );
   }
@@ -228,57 +310,70 @@ const TriviaGame = () => {
     <div className="max-w-2xl mx-auto p-4 md:pt-10">
       {/* HUD Superior: Barra de tiempo y progreso */}
       {/* HUD Superior: Categoría y Dificultad */}
-    <div className="flex justify-between items-center mb-6">
-      {/* Categoría Activa */}
-      <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 px-3 py-1.5 rounded-full shadow-sm">
-        <span className="text-xl">{activeCategory?.icon || '🎮'}</span>
-        <span className="text-xs font-black uppercase tracking-tight dark:text-gray-300">
-          {activeCategory?.name || 'Cargando...'}
-        </span>
-      </div>
-
-      {/* Chip de Dificultad */}
-      <div className={`text-[10px] font-black uppercase px-3 py-1 rounded-full border-2 
-        ${currentQ.difficulty === 'Fácil' ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 
-          currentQ.difficulty === 'Medio' ? 'bg-amber-50 border-amber-200 text-amber-600' : 
-          'bg-red-50 border-red-200 text-red-600 animate-pulse'}`}>
-        Nivel {currentQ.difficulty}
-      </div>
-    </div>
-
-    {/* HUD Secundario: Barra de tiempo y progreso */}
-    <div className="flex flex-col gap-4 mb-8">
-      <div className="flex justify-between items-end">
-        <div>
-          <span className="text-[10px] font-black uppercase text-emerald-500 tracking-widest">
-            Pregunta {currentIndex + 1} / {questions.length}
+      <div className="flex justify-between items-center mb-6">
+        {/* Categoría Activa */}
+        <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 px-3 py-1.5 rounded-full shadow-sm">
+          <span className="text-xl">{activeCategory?.icon || "🎮"}</span>
+          <span className="text-xs font-black uppercase tracking-tight dark:text-gray-300">
+            {activeCategory?.name || "Cargando..."}
           </span>
-          <h2 className="text-gray-400 font-bold text-sm leading-none">
-            {activeCategory?.description}
-          </h2>
         </div>
 
-        {/* Timer Visual Mejorado */}
-        <div className={`flex items-center gap-2 px-4 py-2 rounded-2xl font-black transition-colors
-          ${timeLeft < 4 
-            ? "bg-red-500 text-white animate-bounce" 
-            : "bg-gray-100 dark:bg-neutral-900 dark:text-white border-b-4 border-gray-200 dark:border-neutral-800"
-          }`}
+        {/* Chip de Dificultad */}
+        <div
+          className={`text-[10px] font-black uppercase px-3 py-1 rounded-full border-2 
+        ${
+          currentQ.difficulty === "Fácil"
+            ? "bg-emerald-50 border-emerald-200 text-emerald-600"
+            : currentQ.difficulty === "Medio"
+            ? "bg-amber-50 border-amber-200 text-amber-600"
+            : "bg-red-50 border-red-200 text-red-600 animate-pulse"
+        }`}
         >
-          <TimerIcon size={18} className={timeLeft < 4 ? "animate-spin" : ""} />
-          {timeLeft}s
+          Nivel {currentQ.difficulty}
         </div>
       </div>
 
-      {/* Barra de Progreso */}
-      <div className="h-1.5 w-full bg-gray-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
-          className="h-full bg-emerald-500"
-        />
+      {/* HUD Secundario: Barra de tiempo y progreso */}
+      <div className="flex flex-col gap-4 mb-8">
+        <div className="flex justify-between items-end">
+          <div>
+            <span className="text-[10px] font-black uppercase text-emerald-500 tracking-widest">
+              Pregunta {currentIndex + 1} / {questions.length}
+            </span>
+            <h2 className="text-gray-400 font-bold text-sm leading-none">
+              {activeCategory?.description}
+            </h2>
+          </div>
+
+          {/* Timer Visual Mejorado */}
+          <div
+            className={`flex items-center gap-2 px-4 py-2 rounded-2xl font-black transition-colors
+          ${
+            timeLeft < 4
+              ? "bg-red-500 text-white animate-bounce"
+              : "bg-gray-100 dark:bg-neutral-900 dark:text-white border-b-4 border-gray-200 dark:border-neutral-800"
+          }`}
+          >
+            <TimerIcon
+              size={18}
+              className={timeLeft < 4 ? "animate-spin" : ""}
+            />
+            {timeLeft}s
+          </div>
+        </div>
+
+        {/* Barra de Progreso */}
+        <div className="h-1.5 w-full bg-gray-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{
+              width: `${((currentIndex + 1) / questions.length) * 100}%`,
+            }}
+            className="h-full bg-emerald-500"
+          />
+        </div>
       </div>
-    </div>
 
       {/* HUD de Puntos y Racha - Ponlo arriba de la pregunta */}
       <div className="flex justify-between items-center mb-4">
@@ -343,22 +438,22 @@ const TriviaGame = () => {
       {/* Pregunta */}
       <AnimatePresence mode="wait">
         <motion.div
-         key={currentIndex}
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -20 }}
-        className="min-h-[300px]" 
+          key={currentIndex}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          className="min-h-[300px]"
         >
-         <div className="bg-white dark:bg-neutral-900 p-8 rounded-[2.5rem] border border-gray-100 dark:border-neutral-800 shadow-xl shadow-gray-200/50 dark:shadow-none mb-6 relative overflow-hidden">
-          {/* Marca de agua de dificultad al fondo */}
-          <span className="absolute -bottom-4 -right-2 text-8xl font-black opacity-[0.03] dark:opacity-[0.05] pointer-events-none select-none">
-            {currentQ.difficulty}
-          </span>
-          
-          <h3 className="text-xl md:text-2xl font-bold dark:text-white text-center leading-tight relative z-10">
-            {currentQ.question_text}
-          </h3>
-        </div>
+          <div className="bg-white dark:bg-neutral-900 p-8 rounded-[2.5rem] border border-gray-100 dark:border-neutral-800 shadow-xl shadow-gray-200/50 dark:shadow-none mb-6 relative overflow-hidden">
+            {/* Marca de agua de dificultad al fondo */}
+            <span className="absolute -bottom-4 -right-2 text-8xl font-black opacity-[0.03] dark:opacity-[0.05] pointer-events-none select-none">
+              {currentQ.difficulty}
+            </span>
+
+            <h3 className="text-xl md:text-2xl font-bold dark:text-white text-center leading-tight relative z-10">
+              {currentQ.question_text}
+            </h3>
+          </div>
 
           {/* Opciones */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 dark:text-white">

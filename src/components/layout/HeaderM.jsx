@@ -71,7 +71,8 @@ const HeaderM = () => {
 
           {/* DERECHA: Notificaciones y Avatar */}
           <div className="flex items-center gap-2">
-            {!onViewCredits && <ToggleThemeButton />}
+            {/* {!onViewCredits && <ToggleThemeButton />} */}
+            <ToggleThemeButton />
 
             {/* <button
               className="relative p-2 text-gray-600 dark:text-gray-400"

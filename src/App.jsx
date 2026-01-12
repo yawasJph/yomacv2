@@ -98,15 +98,16 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="users" element={<DiscoverPage />} />
-          <Route path="post/:postId" element={<PostPage />} />
-          <Route path="comment/:commentId" element={<ProtectedRoute><CommentThreadPage/></ProtectedRoute>} />
-          <Route path="notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
           <Route path="games" element={<GameCenter/>} />
           <Route path="games/memory" element={<MemoryGame />} />
           <Route path="games/trivia" element ={<TriviaGame/>}/>
           <Route path="games/leaderboard" element={<Leaderboard />} />
           <Route path="games/store" element={<YoMACStore />} />
+          <Route path="users" element={<DiscoverPage />} />
+          <Route path="post/:postId" element={<PostPage />} />
+          <Route path="comment/:commentId" element={<ProtectedRoute><CommentThreadPage/></ProtectedRoute>} />
+          <Route path="notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
+          
           
         </Route>
       </Routes>
