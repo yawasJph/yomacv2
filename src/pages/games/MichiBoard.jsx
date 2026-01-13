@@ -98,7 +98,7 @@ const MichiBoard = ({ onBack }) => {
   return (
     <div className="flex flex-col items-center justify-center p-4">
       {/* Header HUD */}
-      <div className="w-full max-w-[320px] flex justify-between items-center mb-2  md:mb-8">
+      <div className="w-full max-w-[320px] flex justify-between items-center mb-8">
         <button onClick={onBack} className="p-2 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full transition-colors">
           <ArrowLeft size={24} />
         </button>
@@ -114,7 +114,7 @@ const MichiBoard = ({ onBack }) => {
       </div>
 
       {/* Indicador de Estado */}
-      <div className="md:mb-6 h-6 mb-2">
+      <div className="mb-6 h-6">
         <AnimatePresence mode="wait">
           {!winner && (
             <motion.p 
@@ -170,9 +170,9 @@ const MichiBoard = ({ onBack }) => {
             <p className="text-[10px] font-bold text-gray-500 mt-2 uppercase tracking-widest">
               {winner === 'X' ? '+10 CRÉDITOS' : winner === 'draw' ? '+1 CRÉDITOS' : 'MÁS SUERTE LA PRÓXIMA'}
             </p>
-            <button onClick={resetGame} className="mt-6 px-10 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest transition-all">
+            {/* <button onClick={resetGame} className="mt-6 px-10 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest transition-all">
               Revancha
-            </button>
+            </button> */}
           </motion.div>
         )}
       </AnimatePresence>
