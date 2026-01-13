@@ -98,7 +98,7 @@ const MichiBoard = ({ onBack }) => {
   return (
     <div className="flex flex-col items-center justify-center p-4">
       {/* Header HUD */}
-      <div className="w-full max-w-[320px] flex justify-between items-center mb-8">
+      <div className="w-full max-w-[320px] flex justify-between items-center mb-2  md:mb-8">
         <button onClick={onBack} className="p-2 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full transition-colors">
           <ArrowLeft size={24} />
         </button>
@@ -114,7 +114,7 @@ const MichiBoard = ({ onBack }) => {
       </div>
 
       {/* Indicador de Estado */}
-      <div className="mb-6 h-6">
+      <div className="md:mb-6 h-6 mb-2">
         <AnimatePresence mode="wait">
           {!winner && (
             <motion.p 
