@@ -23,6 +23,7 @@ import YoMACStore from "./pages/games/YoMACStore";
 import { SearchProvider } from "./context/SearchContext";
 import TriviaGame from "./pages/games/TriviaGame";
 import Leaderboard from "./pages/games/Leaderboard2";
+import MichiGame from "./pages/games/MichiGame";
 
 function App() {
   if ("serviceWorker" in navigator) {
@@ -101,14 +102,13 @@ function App() {
           <Route path="games" element={<GameCenter/>} />
           <Route path="games/memory" element={<MemoryGame />} />
           <Route path="games/trivia" element ={<TriviaGame/>}/>
+          <Route path="games/michi" element ={<MichiGame/>}/>
           <Route path="games/leaderboard" element={<Leaderboard />} />
           <Route path="games/store" element={<YoMACStore />} />
           <Route path="users" element={<DiscoverPage />} />
           <Route path="post/:postId" element={<PostPage />} />
           <Route path="comment/:commentId" element={<ProtectedRoute><CommentThreadPage/></ProtectedRoute>} />
           <Route path="notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
-          
-          
         </Route>
       </Routes>
       </SearchProvider>
