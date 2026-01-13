@@ -7,7 +7,6 @@ import CreatePost from "./components/pages/CreatePost";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
 import { Toaster } from "sonner";
 import SearchPage from "./components/pages/SearchPage";
-//import UserConnections from "./components/pages/UserConnections";
 import UserProfile from "./components/pages/UserProfile";
 import EditProfile from "./components/pages/EditProfile";
 import SavedPage from "./components/pages/SavedPage";
@@ -19,10 +18,11 @@ import { useEffect } from "react";
 import UserConnections from "./components/pages/UserConnections2";
 import GameCenter from "./pages/games/GameCenter";
 import MemoryGame from "./components/games/MemoryGame";
-import Leaderboard from "./pages/games/Leaderboard";
+//import Leaderboard from "./pages/games/Leaderboard";
 import YoMACStore from "./pages/games/YoMACStore";
 import { SearchProvider } from "./context/SearchContext";
 import TriviaGame from "./pages/games/TriviaGame";
+import Leaderboard from "./pages/games/Leaderboard2";
 
 function App() {
   if ("serviceWorker" in navigator) {
