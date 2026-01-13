@@ -237,6 +237,7 @@ const TriviaGame = () => {
       p_time_seconds: finalTime, // Opcional: tiempo total
     });
 
+    console.log("supabase", finalPoints,finalScore, finalTime)
     if (error) console.error(error);
   };
 
@@ -307,10 +308,12 @@ const TriviaGame = () => {
   const currentQ = questions[currentIndex];
 
   return (
-    <div className="max-w-2xl mx-auto p-4 md:pt-10 pt-2" >{/* md:pt-10 */}
+    <div className="max-w-2xl mx-auto p-4 md:pt-10 pt-2">
+      {/* md:pt-10 */}
       {/* HUD Superior: Barra de tiempo y progreso */}
       {/* HUD Superior: Categoría y Dificultad */}
-      <div className="flex justify-between items-center mb-2 md:mb-6 ">{/**mb-6  -(md:mb-6)*/}
+      <div className="flex justify-between items-center mb-2 md:mb-6 ">
+        {/**mb-6  -(md:mb-6)*/}
         {/* Categoría Activa */}
         <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 px-3 py-1.5 rounded-full shadow-sm">
           <span className="text-xl">{activeCategory?.icon || "🎮"}</span>
@@ -335,7 +338,8 @@ const TriviaGame = () => {
       </div>
 
       {/* HUD Secundario: Barra de tiempo y progreso */}
-      <div className="flex flex-col gap-4 mb-3  md:mb-8">{/**mb-8  -(md:mb-8)*/}
+      <div className="flex flex-col gap-4 mb-3  md:mb-8">
+        {/**mb-8  -(md:mb-8)*/}
         <div className="flex justify-between items-end">
           <div>
             <span className="text-[10px] font-black uppercase text-emerald-500 tracking-widest">
@@ -376,7 +380,9 @@ const TriviaGame = () => {
       </div>
 
       {/* HUD de Puntos y Racha - Ponlo arriba de la pregunta */}
-      <div className="flex justify-between items-center mb-4"> {/**mb-4 */}
+      <div className="flex justify-between items-center mb-4">
+        {" "}
+        {/**mb-4 */}
         {/* Marcador de Puntos Totales */}
         <div className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-2xl">
           <span className="text-[10px] font-black uppercase opacity-60 block">
@@ -391,7 +397,6 @@ const TriviaGame = () => {
             {points.toLocaleString()}
           </motion.span>
         </div>
-
         {/* Contador de Racha (Solo se muestra si racha > 1) */}
         <AnimatePresence>
           {streak > 1 && (
@@ -444,7 +449,8 @@ const TriviaGame = () => {
           exit={{ opacity: 0, x: -20 }}
           className="min-h-[300px]"
         >
-          <div className="bg-white dark:bg-neutral-900 p-3 md:p-8 rounded-[2.5rem] border border-gray-100 dark:border-neutral-800 shadow-xl shadow-gray-200/50 dark:shadow-none mb-6 relative overflow-hidden">{/**p-8 */}
+          <div className="bg-white dark:bg-neutral-900 p-3 md:p-8 rounded-[2.5rem] border border-gray-100 dark:border-neutral-800 shadow-xl shadow-gray-200/50 dark:shadow-none mb-6 relative overflow-hidden">
+            {/**p-8 */}
             {/* Marca de agua de dificultad al fondo */}
             <span className="absolute -bottom-4 -right-2 text-8xl font-black opacity-[0.03] dark:opacity-[0.05] pointer-events-none select-none">
               {currentQ.difficulty}
@@ -456,7 +462,7 @@ const TriviaGame = () => {
           </div>
 
           {/* Opciones */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 dark:text-white">
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-3 dark:text-white">
             {currentQ.options.map((option, idx) => {
               const isSelected = selectedOption === idx;
               const isCorrect = idx === currentQ.correct_option_index;
@@ -492,6 +498,53 @@ const TriviaGame = () => {
                 >
                   {option}
                   {showResult && isCorrect && <Zap size={16} fill="white" />}
+                </button>
+              );
+            })}
+          </div> */}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 dark:text-white">
+            {currentQ.options.map((option, idx) => {
+              const isSelected = selectedOption === idx;
+              const isCorrect = idx === currentQ.correct_option_index;
+              const showResult = selectedOption !== null;
+
+              return (
+                <button
+                  key={idx}
+                  disabled={showResult}
+                  onClick={() => handleAnswer(idx)}
+                  className={`p-3 md:p-5 rounded-2xl border-2 font-bold text-sm transition-all duration-200 flex items-center justify-between
+          ${
+            !showResult
+              ? "bg-white dark:bg-neutral-900 border-gray-100 dark:border-neutral-800 hover:border-emerald-500 active:scale-95 text-gray-700 dark:text-gray-200"
+              : ""
+          }
+          {/* SI ACERTÓ: Se pone verde */}
+          ${
+            showResult && isSelected && isCorrect
+              ? "bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/30"
+              : ""
+          }
+          {/* SI FALLÓ: El que eligió se pone rojo y NO revelamos el verde */}
+          ${
+            showResult && isSelected && !isCorrect
+              ? "bg-red-500 border-red-500 text-white shadow-lg shadow-red-500/30"
+              : ""
+          }
+          {/* ESTADO NEUTRO: Para las opciones que no eligió */}
+          ${
+            showResult && !isSelected
+              ? "opacity-40 border-gray-100 dark:border-neutral-800 dark:text-gray-500"
+              : ""
+          }
+        `}
+                >
+                  {option}
+                  {/* Solo mostramos el rayito si acertó */}
+                  {showResult && isSelected && isCorrect && (
+                    <Zap size={16} fill="white" />
+                  )}
                 </button>
               );
             })}

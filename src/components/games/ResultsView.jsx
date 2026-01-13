@@ -16,6 +16,8 @@ const ResultsView = ({ points, accuracy, totalQuestions, earnedCredits, onReset 
 
   // Determinar rango basado en puntos
   const getRank = () => {
+    if (points > 4000) return { label: 'ZAFIRO', color: 'text-indigo-400', bg: 'bg-emerald-500/10' };
+    if (points > 3000) return { label: 'RUBY', color: 'text-red-400', bg: 'bg-red-500/10' };
     if (points > 2000) return { label: 'DIAMANTE', color: 'text-cyan-400', bg: 'bg-cyan-500/10' };
     if (points > 1500) return { label: 'ORO', color: 'text-amber-400', bg: 'bg-amber-500/10' };
     if (points > 1000) return { label: 'PLATA', color: 'text-slate-400', bg: 'bg-slate-500/10' };
