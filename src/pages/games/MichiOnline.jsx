@@ -57,9 +57,13 @@ const MichiOnline = ({ user, onBack }) => {
         .maybeSingle();
 
       if (room) {
+        // MEJORA 1: Al unirse el segundo, decidimos el turno al azar
+        const players = [room.player_1, user.id];
+        const randomTurn = players[Math.floor(Math.random() * 2)];
+
         const { data } = await supabaseClient
           .from("michi_rooms")
-          .update({ player_2: user.id, status: "playing", turn: room.player_1 })
+          .update({ player_2: user.id, status: "playing", turn: randomTurn })
           .eq("id", room.id)
           .select()
           .single();

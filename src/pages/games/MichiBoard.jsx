@@ -74,6 +74,7 @@ const MichiBoard = ({ onBack }) => {
     try {
       const { data, error } = await supabaseClient.rpc('submit_game_score', {
         p_game_id: 'michi',
+        p_moves: 0,
         p_score: points,  
         p_time_seconds: 0
       });
