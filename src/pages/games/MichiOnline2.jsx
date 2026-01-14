@@ -192,6 +192,31 @@ const MichiOnline = ({ user, onBack }) => {
       .eq("id", roomData.id);
   };
 
+  const handleExit = async () => {
+    try {
+      // 1. Desconectarse del canal inmediatamente para evitar eventos fantasma
+      console.log("DEBUG: Saliendo de la sala y limpiando recursos...");
+
+      // 2. Si la partida ya terminó, podemos intentar borrar la sala
+      // Nota: Esto es opcional, también podrías dejarla marcada como 'finished'
+      // Pero borrarla mantiene la tabla michi_rooms ligera.
+      if (roomData?.id) {
+        const { error } = await supabaseClient
+          .from("michi_rooms")
+          .delete()
+          .eq("id", roomData.id);
+
+        if (error) console.error("Error al limpiar sala:", error.message);
+      }
+
+      // 3. Volver al menú principal
+      onBack();
+    } catch (err) {
+      console.error("Error en handleExit:", err);
+      onBack(); // Salir de todos modos si algo falla
+    }
+  };
+
   const checkWinnerLocal = (board) => {
     const lines = [
       [0, 1, 2],
@@ -292,7 +317,7 @@ const MichiOnline = ({ user, onBack }) => {
               : "💀 DERROTA"}
           </h2>
           <button
-            onClick={onBack}
+            onClick={handleExit}
             className="mt-6 bg-emerald-500 text-white px-10 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-transform shadow-lg"
           >
             Finalizar
