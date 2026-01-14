@@ -84,7 +84,7 @@ const MichiOnline = ({ user, onBack }) => {
       config: { presence: { key: user.id } }
     });
 
-    channel
+   channel
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "michi_rooms", filter: `id=eq.${roomData.id}` },
         (payload) => {
           setRoomData(payload.new);
@@ -93,26 +93,31 @@ const MichiOnline = ({ user, onBack }) => {
         }
       )
       // Lógica de Presencia para detectar si el rival se va
-      .on("presence", { event: "leave" }, ({ leftPresences }) => {
-        // Si estamos jugando y alguien se va, el que queda gana
-        if (gameState === "playing" && !winner) {
+     .on("presence", { event: "leave" }, ({ key, leftPresences }) => {
+        // CORRECCIÓN: Solo si el que se va NO soy yo y estamos jugando
+        // 'key' es el ID del usuario que se fue
+        const opponentId = user.id === roomData.player_1 ? roomData.player_2 : roomData.player_1;
+        
+        if (key === opponentId && gameState === "playing" && !winner) {
           handleOpponentLeft();
         }
       })
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
+          // Rastreamos nuestra presencia
           await channel.track({ online_at: new Date().toISOString() });
         }
       });
 
-    return () => {
+   return () => {
       supabaseClient.removeChannel(channel);
     };
-  }, [roomData?.id, gameState, winner]);
+  }, [roomData?.id, gameState, winner, roomData?.player_2]);
 
-  const handleOpponentLeft = async () => {
+ const handleOpponentLeft = async () => {
     setOpponentLeft(true);
-    setWinner(user.id); // Ganador por abandono
+    setWinner(user.id);
+    // Marcamos en la DB que terminó por abandono
     await supabaseClient
       .from("michi_rooms")
       .update({ status: "finished", winner: user.id })
