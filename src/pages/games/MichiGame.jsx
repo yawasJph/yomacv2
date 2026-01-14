@@ -80,6 +80,7 @@ const MichiGame = () => {
           Cambiar modo
         </button>
       )}
+       
     </div>
   );
 };
