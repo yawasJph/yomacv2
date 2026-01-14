@@ -6,7 +6,6 @@ import { Zap, Flame, Swords } from 'lucide-react';
 const MichiVersus = ({ roomData, currentUser, onComplete }) => {
   const [player1, setPlayer1] = useState(null);
   const [player2, setPlayer2] = useState(null);
-console.log("players", player1, player2)
   useEffect(() => {
     const fetchPlayers = async () => {
       const { data } = await supabaseClient

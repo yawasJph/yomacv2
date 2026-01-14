@@ -19,7 +19,8 @@ const MichiOnline = ({ user, onBack }) => {
           try {
             await supabaseClient.rpc("submit_game_score", {
               p_game_id: "michi_online", // ID único para el ranking online
-              p_points: 300, // 1000 puntos por ganar
+              p_moves: 0,
+              p_score: 300, // 1000 puntos por ganar
               p_time_seconds: 0,
             });
             console.log("Victoria Online registrada");
@@ -33,7 +34,8 @@ const MichiOnline = ({ user, onBack }) => {
       else if (winner === 'draw') {
          await supabaseClient.rpc('submit_game_score', {
             p_game_id: 'michi_online',
-            p_points: 100, // Menos puntos por empate
+            p_moves: 0,
+            p_score: 100, // Menos puntos por empate
             p_time_seconds: 0
          });
       }
