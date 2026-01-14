@@ -12,7 +12,6 @@ const MichiBoard = ({ onBack }) => {
   const [winner, setWinner] = useState(null);
   const [winningLine, setWinningLine] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
-  const navigate = useNavigate()
 
   // Al montar el componente, decidimos quién empieza
   useEffect(() => {
@@ -101,7 +100,7 @@ const MichiBoard = ({ onBack }) => {
     <div className="flex flex-col items-center justify-center p-4">
       {/* Header HUD */}
       <div className="w-full max-w-[320px] flex justify-between items-center mb-8">
-        <button onClick={()=>navigate(-1)} className="p-2 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full transition-colors">
+        <button onClick={onBack} className="p-2 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full transition-colors">
           <ArrowLeft size={24} />
         </button>
         <div className="flex flex-col items-center">

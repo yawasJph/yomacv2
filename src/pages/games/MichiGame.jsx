@@ -52,7 +52,7 @@ const MichiGame = () => {
   return (
     <div className="flex flex-col items-center justify-center">
        {/* Tablero de Michi... */}
-       <MichiBoard/>
+       <MichiBoard onBack={()=>setGameMode(null)}/>
        <p className="dark:text-white font-bold">Modo: {gameMode.toUpperCase()}</p>
        <button onClick={() => setGameMode(null)} className="text-emerald-500 mt-4 underline">Cambiar modo</button>
     </div>
