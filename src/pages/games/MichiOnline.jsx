@@ -22,7 +22,7 @@ const MichiOnline = ({ user, onBack }) => {
               p_moves: 0,
               p_score: 300, // 1000 puntos por ganar
               p_time_seconds: 0,
-            });
+            }); 
             console.log("Victoria Online registrada");
           } catch (error) {
             console.error("Error al registrar victoria:", error);

@@ -1,18 +1,16 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { User, Cpu, RotateCcw, Trophy, ArrowLeft } from "lucide-react";
+import { motion } from "framer-motion";
+import { User, Cpu, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import MichiBoard from "./MichiBoard";
 import MichiPVP from "./MichiPVP";
-import MichiOnline from "./MichiOnline";
+//import MichiOnline from "./MichiOnline";
 import { useAuth } from "../../context/AuthContext";
+import MichiOnline from "./MichiOnline2";
 
 const MichiGame = () => {
   const navigate = useNavigate();
   const [gameMode, setGameMode] = useState(null); // null, 'ia', 'pvp'
-  const [board, setBoard] = useState(Array(9).fill(null));
-  const [isXNext, setIsXNext] = useState(true);
-  const [winner, setWinner] = useState(null);
   const { user } = useAuth()
 
   // Pantalla de Selección Inicial
