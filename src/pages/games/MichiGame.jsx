@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import MichiBoard from "./MichiBoard";
 import MichiPVP from "./MichiPVP";
 import MichiOnline from "./MichiOnline";
+import { useAuth } from "../../context/AuthContext";
 
 const MichiGame = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const MichiGame = () => {
   const [board, setBoard] = useState(Array(9).fill(null));
   const [isXNext, setIsXNext] = useState(true);
   const [winner, setWinner] = useState(null);
+  const { user } = useAuth()
 
   // Pantalla de Selección Inicial
   if (!gameMode) {
@@ -67,7 +69,7 @@ const MichiGame = () => {
       {gameMode === "ia" && <MichiBoard onBack={() => setGameMode(null)} />}
       {gameMode === "pvp" && <MichiPVP onBack={() => setGameMode(null)} />}
       {gameMode === "online" && (
-        <MichiOnline user={User} onBack={() => setGameMode(null)} />
+        <MichiOnline user={user} onBack={() => setGameMode(null)} />
       )}
       <p className="dark:text-white font-bold">
         Modo: {gameMode.toUpperCase()}
