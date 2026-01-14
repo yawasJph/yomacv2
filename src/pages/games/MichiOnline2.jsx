@@ -10,6 +10,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import MichiVersus from "./MichiVersus";
+import confetti from "canvas-confetti";
 
 const MichiOnline = ({ user, onBack }) => {
   const [gameState, setGameState] = useState("searching");
@@ -45,6 +46,12 @@ const MichiOnline = ({ user, onBack }) => {
       try {
         // CASO A: VICTORIA (Solo el que ganó registra)
         if (winner !== "draw" && winner === user.id) {
+          confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ["#10b981", "#3b82f6", "#f59e0b"],
+          });
           await supabaseClient.rpc("submit_game_score", {
             p_game_id: "michi_online",
             p_moves: 0,
@@ -356,7 +363,7 @@ const MichiOnline = ({ user, onBack }) => {
             onClick={handleExit}
             className="mt-6 bg-emerald-500 text-white px-10 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-transform shadow-lg"
           >
-            Finalizar
+            Finalizar y Salir
           </button>
         </motion.div>
       )}
@@ -364,6 +371,12 @@ const MichiOnline = ({ user, onBack }) => {
       {winner === "draw" && (
         <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mt-2">
           +1 Credito
+        </p>
+      )}
+
+      {winner && (
+        <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mt-2">
+          +3 Creditos
         </p>
       )}
     </div>

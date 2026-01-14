@@ -11,7 +11,7 @@ import MichiOnline from "./MichiOnline2";
 const MichiGame = () => {
   const navigate = useNavigate();
   const [gameMode, setGameMode] = useState(null); // null, 'ia', 'pvp'
-  const { user } = useAuth()
+  const { user } = useAuth();
 
   // Pantalla de Selección Inicial
   if (!gameMode) {
@@ -72,12 +72,14 @@ const MichiGame = () => {
       <p className="dark:text-white font-bold">
         Modo: {gameMode.toUpperCase()}
       </p>
-      <button
-        onClick={() => setGameMode(null)}
-        className="text-emerald-500 mt-4 underline"
-      >
-        Cambiar modo
-      </button>
+      {gameMode != "online" && (
+        <button
+          onClick={() => setGameMode(null)}
+          className="text-emerald-500 mt-4 underline"
+        >
+          Cambiar modo
+        </button>
+      )}
     </div>
   );
 };
