@@ -4,9 +4,9 @@ import { User, Cpu, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import MichiBoard from "./MichiBoard";
 import MichiPVP from "./MichiPVP";
-import MichiOnline from "./MichiOnline";
+//import MichiOnline from "./MichiOnline";
 import { useAuth } from "../../context/AuthContext";
-//import MichiOnline from "./MichiOnline2";
+import MichiOnline from "./MichiOnline2";
 
 const MichiGame = () => {
   const navigate = useNavigate();
