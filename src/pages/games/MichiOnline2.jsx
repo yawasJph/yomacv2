@@ -18,23 +18,58 @@ const MichiOnline = ({ user, onBack }) => {
   const [opponentLeft, setOpponentLeft] = useState(false);
 
   // --- 1. REGISTRO DE VICTORIA ---
+  // useEffect(() => {
+  //   if (winner && winner !== "draw" && winner === user.id) {
+  //     const saveWin = async () => {
+  //       try {
+  //         await supabaseClient.rpc("submit_game_score", {
+  //           p_game_id: "michi_online",
+  //           p_moves: 0,
+  //           p_score: 300,
+  //           p_time_seconds: 0,
+  //         });
+  //         console.log("DEBUG: Victoria guardada en DB exitosamente.");
+  //       } catch (error) {
+  //         console.error("DEBUG: Error al guardar victoria:", error);
+  //       }
+  //     };
+  //     saveWin();
+  //   }
+  // }, [winner, user.id]);
+
+  // --- 1. REGISTRO DE RESULTADOS ---
   useEffect(() => {
-    if (winner && winner !== "draw" && winner === user.id) {
-      const saveWin = async () => {
-        try {
+    if (!winner) return;
+
+    const saveResult = async () => {
+      try {
+        // CASO A: VICTORIA (Solo el que ganó registra)
+        if (winner !== "draw" && winner === user.id) {
           await supabaseClient.rpc("submit_game_score", {
             p_game_id: "michi_online",
             p_moves: 0,
             p_score: 300,
             p_time_seconds: 0,
           });
-          console.log("DEBUG: Victoria guardada en DB exitosamente.");
-        } catch (error) {
-          console.error("DEBUG: Error al guardar victoria:", error);
+          console.log("DEBUG: Victoria guardada (+300 pts)");
         }
-      };
-      saveWin();
-    }
+
+        // CASO B: EMPATE (Ambos registran)
+        else if (winner === "draw") {
+          await supabaseClient.rpc("submit_game_score", {
+            p_game_id: "michi_online",
+            p_moves: 0,
+            p_score: 100, // Recompensa por esfuerzo
+            p_time_seconds: 0,
+          });
+          console.log("DEBUG: Empate guardado (+100 pts)");
+        }
+      } catch (error) {
+        console.error("DEBUG: Error al registrar puntos:", error);
+      }
+    };
+
+    saveResult();
   }, [winner, user.id]);
 
   // --- 2. MATCHMAKING CON TURNO AL AZAR ---
@@ -316,6 +351,7 @@ const MichiOnline = ({ user, onBack }) => {
               ? "🤝 EMPATE"
               : "💀 DERROTA"}
           </h2>
+
           <button
             onClick={handleExit}
             className="mt-6 bg-emerald-500 text-white px-10 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-transform shadow-lg"
@@ -323,6 +359,12 @@ const MichiOnline = ({ user, onBack }) => {
             Finalizar
           </button>
         </motion.div>
+      )}
+
+      {winner === "draw" && (
+        <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mt-2">
+          +1 Credito
+        </p>
       )}
     </div>
   );
