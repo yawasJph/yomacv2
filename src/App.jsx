@@ -18,12 +18,12 @@ import { useEffect } from "react";
 import UserConnections from "./components/pages/UserConnections2";
 import GameCenter from "./pages/games/GameCenter";
 import MemoryGame from "./components/games/MemoryGame";
-//import Leaderboard from "./pages/games/Leaderboard";
 import YoMACStore from "./pages/games/YoMACStore";
 import { SearchProvider } from "./context/SearchContext";
 import TriviaGame from "./pages/games/TriviaGame";
-import Leaderboard from "./pages/games/Leaderboard2";
+//import Leaderboard from "./pages/games/Leaderboard2";
 import MichiGame from "./pages/games/MichiGame";
+import Leaderboard from "./pages/games/Leaderboard3";
 
 function App() {
   if ("serviceWorker" in navigator) {
