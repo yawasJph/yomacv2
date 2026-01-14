@@ -6,7 +6,7 @@ import { Zap, Flame, Swords } from 'lucide-react';
 const MichiVersus = ({ roomData, currentUser, onComplete }) => {
   const [player1, setPlayer1] = useState(null);
   const [player2, setPlayer2] = useState(null);
-
+console.log("players", player1, player2)
   useEffect(() => {
     const fetchPlayers = async () => {
       const { data } = await supabaseClient
@@ -45,7 +45,7 @@ const MichiVersus = ({ roomData, currentUser, onComplete }) => {
           initial={{ x: -200, opacity: 0 }} 
           animate={{ x: 0, opacity: 1 }}
           transition={{ type: "spring", damping: 12 }}
-          className="flex items-center gap-4 self-start bg-white dark:bg-neutral-900 p-4 rounded-[2rem] shadow-2xl border-2 border-emerald-500 w-[80%]"
+          className="flex items-center gap-4 self-start bg-white dark:bg-neutral-900 p-4 rounded-4xl shadow-2xl border-2 border-emerald-500 w-[80%]"
         >
           <div className="relative">
             <img src={player1.avatar} className="w-16 h-16 rounded-2xl object-cover" alt="p1" />
@@ -74,7 +74,7 @@ const MichiVersus = ({ roomData, currentUser, onComplete }) => {
           initial={{ x: 200, opacity: 0 }} 
           animate={{ x: 0, opacity: 1 }}
           transition={{ type: "spring", damping: 12 }}
-          className="flex items-center flex-row-reverse gap-4 self-end bg-white dark:bg-neutral-900 p-4 rounded-[2rem] shadow-2xl border-2 border-rose-500 w-[80%]"
+          className="flex items-center flex-row-reverse gap-4 self-end bg-white dark:bg-neutral-900 p-4 rounded-4xl shadow-2xl border-2 border-rose-500 w-[80%]"
         >
           <div className="relative">
             <img src={player2.avatar} className="w-16 h-16 rounded-2xl object-cover" alt="p2" />

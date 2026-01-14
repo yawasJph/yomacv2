@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Cpu, RotateCcw, ArrowLeft, Zap, Flame, Clock } from 'lucide-react';
 import { supabaseClient } from '../../supabase/supabaseClient';
 import { getBestMove } from '../../components/games/utils/minimax';
-import { useNavigate } from 'react-router-dom';
-
 
 const MichiBoard = ({ onBack }) => {
   const [board, setBoard] = useState(Array(9).fill(null));
@@ -76,7 +74,6 @@ const MichiBoard = ({ onBack }) => {
     try {
       const { data, error } = await supabaseClient.rpc('submit_game_score', {
         p_game_id: 'michi',
-        p_moves: 0,
         p_score: points,  
         p_time_seconds: 0
       });

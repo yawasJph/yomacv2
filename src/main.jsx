@@ -12,7 +12,7 @@ import { SearchProvider } from "./context/SearchContext.jsx";
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  
     <AuthModalProvider>
       <AuthContextProvider>
         
@@ -25,5 +25,5 @@ createRoot(document.getElementById("root")).render(
         
       </AuthContextProvider>
     </AuthModalProvider>
-  </StrictMode>
+  
 );
