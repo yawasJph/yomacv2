@@ -70,44 +70,58 @@ const MichiOnline = ({ user, onBack }) => {
   useEffect(() => {
     if (!roomData?.id) return;
 
-    console.log("DEBUG: Suscribiendo al canal de la sala:", roomData.id);
-    const channel = supabaseClient.channel(`room_${roomData.id}`, {
+    // Usamos una variable de referencia para el ID del rival
+    // Así evitamos que el efecto se reinicie cuando roomData cambie
+    const currentRoomId = roomData.id;
+
+    console.log("DEBUG: Creando canal estable para sala:", currentRoomId);
+    const channel = supabaseClient.channel(`room_${currentRoomId}`, {
       config: { presence: { key: user.id } }
     });
 
     channel
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "michi_rooms", filter: `id=eq.${roomData.id}` },
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "michi_rooms", filter: `id=eq.${currentRoomId}` },
         (payload) => {
-          console.log("DEBUG: Cambio detectado en DB:", payload.new.status);
           setRoomData(payload.new);
-          if (payload.new.player_2 && gameState === "searching") setGameState("versus");
-          if (payload.new.status === "finished") setWinner(payload.new.winner || "draw");
+          // Cambiar a versus solo si no estamos ya jugando o terminando
+          setGameState(prev => {
+            if (payload.new.player_2 && prev === "searching") return "versus";
+            if (payload.new.status === "finished") return "playing"; // Mantener tablero
+            return prev;
+          });
+          
+          if (payload.new.status === "finished") {
+             setWinner(payload.new.winner || "draw");
+          }
         }
       )
-      .on("presence", { event: "leave" }, ({ key, leftPresences }) => {
-        // Obtenemos quién es el oponente
-        const opponentId = user.id === roomData.player_1 ? roomData.player_2 : roomData.player_1;
-        
-        console.log(`DEBUG: Alguien salió del canal. Key: ${key} | Mi ID: ${user.id} | Rival ID: ${opponentId}`);
-
-        // Solo procesar abandono si el ID que salió es el del rival y estamos en juego
-        if (key === opponentId && gameState === "playing" && !winner) {
-          console.log("DEBUG: ¡EL RIVAL ABANDONÓ! Procesando victoria por default...");
-          handleOpponentLeft();
+      .on("presence", { event: "leave" }, ({ key }) => {
+        // Obtenemos el oponente desde el ESTADO ACTUALIZADO de roomData
+        // Pero usamos un truco: si el ID que sale NO es el mío, es el rival.
+        if (key !== user.id && !winner) {
+            console.log("DEBUG: El rival salió. Validando estado...");
+            // Solo ganamos si el juego estaba en curso (playing)
+            setGameState(current => {
+                if (current === "playing") {
+                    handleOpponentLeft(currentRoomId);
+                }
+                return current;
+            });
         }
       })
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
-          console.log("DEBUG: Suscrito con éxito. Enviando track de presencia...");
           await channel.track({ online_at: new Date().toISOString() });
         }
       });
 
     return () => {
-      console.log("DEBUG: Limpiando canal de Realtime...");
+      // Solo limpiamos si el componente se desmonta (onBack)
+      // O si la sala cambia de ID
       supabaseClient.removeChannel(channel);
     };
-  }, [roomData?.id, gameState, winner, roomData?.player_1, roomData?.player_2]);
+    // quitamos roomData y winner de las dependencias para que no se reinicie el canal
+  }, [roomData?.id]);
 
   const handleOpponentLeft = async () => {
     setOpponentLeft(true);
