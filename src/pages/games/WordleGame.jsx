@@ -19,6 +19,20 @@ const COLORS = {
   active: "border-emerald-400 dark:border-emerald-500 scale-105 shadow-md",
 };
 
+const toastStyle = {
+  style: {
+    borderRadius: "1.2rem",
+    background: "#171717", // Neutral 900
+    color: "#fff",
+    border: "2px solid #10b981", // Emerald 500
+    fontSize: "12px",
+    fontWeight: "900",
+    textTransform: "uppercase",
+    letterSpacing: "1px",
+    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.5)",
+  },
+};
+
 const WordleGame = () => {
   const { user } = useAuth();
   const [targetWord, setTargetWord] = useState("");
@@ -108,7 +122,11 @@ const WordleGame = () => {
     // 1. VALIDACIÓN DE LONGITUD (Menos de 5 letras)
     if (currentGuess.length < 5) {
       setIsInvalid(true);
-      toast.warning("Faltan letras"); // Toast para palabra incompleta
+      toast.error("Faltan letras", {
+        ...toastStyle,
+        icon: "⌨️",
+        style: { ...toastStyle.style, border: "2px solid #f59e0b" }, // Borde ámbar para advertencia
+      });
       setTimeout(() => setIsInvalid(false), 400);
       return;
     }
@@ -119,7 +137,10 @@ const WordleGame = () => {
       wordToValidate !== targetWord
     ) {
       setIsInvalid(true);
-      toast.info("Palabra no encontrada");
+      toast.info("No está en el diccionario", {
+        ...toastStyle,
+        icon: "📚",
+      });
       setTimeout(() => setIsInvalid(false), 400);
       return;
     }
@@ -221,7 +242,7 @@ const WordleGame = () => {
     const text = `Palabra del Día #Campus\n${currentRow + 1}/6\n\n${emojiGrid}`;
 
     navigator.clipboard.writeText(text);
-    toast.info('¡Resultados copiados al portapapeles!');
+    toast.info("¡Resultados copiados al portapapeles!");
   };
 
   const triggerConfetti = () => {
@@ -255,7 +276,8 @@ const WordleGame = () => {
   };
 
   return (
-    <div className="flex flex-col items-center max-w-md mx-auto p-4 justify-center">{/**min-h-[80vh] */}
+    <div className="flex flex-col items-center max-w-md mx-auto p-4 justify-center">
+      {/**min-h-[80vh] */}
       {/* Header con Pista */}
       <div className="w-full flex justify-between items-center mb-8 max-sm:mb-3">
         <h1 className="text-xl font-black italic uppercase dark:text-white tracking-tighter">

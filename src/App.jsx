@@ -57,62 +57,80 @@ function App() {
 
   return (
     <BrowserRouter>
-    <SearchProvider>
-      <Toaster
-        // 🔄 Opción para que los colores de error y éxito sean más vivos
-        richColors
-      />
-      <Routes>
-        <Route path="login" element={<Login />} />
-        <Route path="/" element={<HomeLayout />}>
-          <Route index element={<Feed />} />
-          <Route
-            path="create-post"
-            element={
-              <ProtectedRoute>
-                <CreatePost />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="search" element={<SearchPage />} />
-          <Route
-            path="user/:userId/connections"
-            element={
-              <ProtectedRoute>
-                <UserConnections />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="profile/:userId" element={<UserProfile />} />
-          <Route
-            path="editProfile"
-            element={
-              <ProtectedRoute>
-                <EditProfile />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="savedPost"
-            element={
-              <ProtectedRoute>
-                <SavedPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="games" element={<GameCenter/>} />
-          <Route path="games/memory" element={<MemoryGame />} />
-          <Route path="games/trivia" element ={<TriviaGame/>}/>
-          <Route path="games/michi" element ={<MichiGame/>}/>
-          <Route path="games/wordle" element ={<WordleGame/>}/>
-          <Route path="games/leaderboard" element={<Leaderboard />} />
-          <Route path="games/store" element={<YoMACStore />} />
-          <Route path="users" element={<DiscoverPage />} />
-          <Route path="post/:postId" element={<PostPage />} />
-          <Route path="comment/:commentId" element={<ProtectedRoute><CommentThreadPage/></ProtectedRoute>} />
-          <Route path="notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
-        </Route>
-      </Routes>
+      <SearchProvider>
+        <Toaster
+          // 🔄 Opción para que los colores de error y éxito sean más vivos
+          richColors
+          position="top-center"
+          toastOptions={{
+            duration: 2000,
+          }}
+        />
+        <Routes>
+          <Route path="login" element={<Login />} />
+          <Route path="/" element={<HomeLayout />}>
+            <Route index element={<Feed />} />
+            <Route
+              path="create-post"
+              element={
+                <ProtectedRoute>
+                  <CreatePost />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="search" element={<SearchPage />} />
+            <Route
+              path="user/:userId/connections"
+              element={
+                <ProtectedRoute>
+                  <UserConnections />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="profile/:userId" element={<UserProfile />} />
+            <Route
+              path="editProfile"
+              element={
+                <ProtectedRoute>
+                  <EditProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="savedPost"
+              element={
+                <ProtectedRoute>
+                  <SavedPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="games" element={<GameCenter />} />
+            <Route path="games/memory" element={<MemoryGame />} />
+            <Route path="games/trivia" element={<TriviaGame />} />
+            <Route path="games/michi" element={<MichiGame />} />
+            <Route path="games/wordle" element={<WordleGame />} />
+            <Route path="games/leaderboard" element={<Leaderboard />} />
+            <Route path="games/store" element={<YoMACStore />} />
+            <Route path="users" element={<DiscoverPage />} />
+            <Route path="post/:postId" element={<PostPage />} />
+            <Route
+              path="comment/:commentId"
+              element={
+                <ProtectedRoute>
+                  <CommentThreadPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="notifications"
+              element={
+                <ProtectedRoute>
+                  <NotificationsPage />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+        </Routes>
       </SearchProvider>
     </BrowserRouter>
   );
