@@ -24,6 +24,7 @@ import TriviaGame from "./pages/games/TriviaGame";
 //import Leaderboard from "./pages/games/Leaderboard2";
 import MichiGame from "./pages/games/MichiGame";
 import Leaderboard from "./pages/games/Leaderboard3";
+import WordleGame from "./pages/games/WordleGame";
 
 function App() {
   if ("serviceWorker" in navigator) {
@@ -103,6 +104,7 @@ function App() {
           <Route path="games/memory" element={<MemoryGame />} />
           <Route path="games/trivia" element ={<TriviaGame/>}/>
           <Route path="games/michi" element ={<MichiGame/>}/>
+          <Route path="games/wordle" element ={<WordleGame/>}/>
           <Route path="games/leaderboard" element={<Leaderboard />} />
           <Route path="games/store" element={<YoMACStore />} />
           <Route path="users" element={<DiscoverPage />} />

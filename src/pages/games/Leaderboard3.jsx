@@ -31,7 +31,7 @@ const Leaderboard = () => {
         const { data: michiTop } = await supabaseClient
           .from("michi_online_ranking")
           .select("*")
-          .limit(2);
+          .limit(10);
 
         // Normalizamos los datos de la vista para el componente
         topData = michiTop?.map(row => ({
