@@ -468,7 +468,7 @@ const Keyboard = ({ onChar, onDelete, onEnter, usedLetters }) => {
   };
 
   return (
-    <div className="w-full max-w-lg mt-8 px-1">
+    <div className="w-full max-w-lg mt-8 max-sm:mt-3 px-1">
       {rows.map((row, i) => (
         <div key={i} className="flex justify-center gap-1.5 mb-2 touch-none">
           {row.map((key) => (
