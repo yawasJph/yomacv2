@@ -255,9 +255,9 @@ const WordleGame = () => {
   };
 
   return (
-    <div className="flex flex-col items-center max-w-md mx-auto p-4 min-h-[80vh] justify-center">
+    <div className="flex flex-col items-center max-w-md mx-auto p-4 justify-center">{/**min-h-[80vh] */}
       {/* Header con Pista */}
-      <div className="w-full flex justify-between items-center mb-8">
+      <div className="w-full flex justify-between items-center mb-8 max-sm:mb-3">
         <h1 className="text-xl font-black italic uppercase dark:text-white tracking-tighter">
           Palabra <span className="text-emerald-500">Día</span>
         </h1>
@@ -270,7 +270,7 @@ const WordleGame = () => {
       </div>
 
       {/* Grid del Juego */}
-      <div className="grid grid-rows-6 gap-2 mb-8">
+      <div className="grid grid-rows-6 gap-2 mb-8 max-sm:mb-0">
         {guesses.map((guess, i) => (
           <motion.div
             key={i}
@@ -300,7 +300,7 @@ const WordleGame = () => {
       <AnimatePresence>
         {/* 1. Modal de Pista */}
         {showClue && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
