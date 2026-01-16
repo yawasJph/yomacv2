@@ -4,6 +4,7 @@ import { supabaseClient } from "../../supabase/supabaseClient";
 import { useAuth } from "../../context/AuthContext";
 import { Timer, Target, Zap, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const GAME_DURATION = 30;
 
@@ -13,6 +14,7 @@ const CazaTalentos = ({ onBack }) => {
   const [timeLeft, setTimeLeft] = useState(GAME_DURATION);
   const [gameState, setGameState] = useState("idle"); // idle, playing, ended
   const [targets, setTargets] = useState([]);
+  const navigate = useNavigate()
 
   // Iconos que representan las "carreras" o talentos
   const icons = ["🎓", "💻", "⚖️", "🏥", "🏗️", "🎨", "🧬", "🍎"];
@@ -108,7 +110,7 @@ const CazaTalentos = ({ onBack }) => {
       {/* Header Info */}
       <div className="p-6 flex justify-between items-center z-10">
         <button
-          onClick={onBack}
+          onClick={()=>navigate(-1)}
           className="p-2 bg-white dark:bg-neutral-800 rounded-full shadow-md"
         >
           <ArrowLeft size={20} className="dark:text-white" />

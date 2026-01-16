@@ -13,17 +13,19 @@ import {
   VolumeX, // Icono silenciado
 } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const GRID_SIZE = 8;
 const MINES_COUNT = 10;
 
-const BuscaMinas = ({ onBack }) => {
+const BuscaMinas = () => {
   const { user } = useAuth();
   const [board, setBoard] = useState([]);
   const [gameState, setGameState] = useState("playing"); // playing, won, lost
   const [timer, setTimer] = useState(0);
   const [flagsCount, setFlagsCount] = useState(0);
   const [isMuted, setIsMuted] = useState(false); // Estado del Mute
+  const navigate = useNavigate();
 
   const [playClick] = useSound("/sounds/click.mp3", { volume: 0.5 });
   const [playFlag] = useSound("/sounds/flag.mp3", { volume: 0.4 });
@@ -194,7 +196,7 @@ const BuscaMinas = ({ onBack }) => {
       {/* Header */}
       <div className="flex justify-between items-center mb-6 px-2">
         <button
-          onClick={onBack}
+          onClick={() => navigate(-1)}
           className="p-3 bg-white dark:bg-neutral-800 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-700"
         >
           <ArrowLeft size={20} className="dark:text-white" />
@@ -240,7 +242,7 @@ const BuscaMinas = ({ onBack }) => {
       </div>
 
       {/* Grid del Juego */}
-      <div className="relative mx-auto bg-gray-200 dark:bg-neutral-900 p-2 rounded-[2rem] shadow-inner">
+      <div className="relative mx-auto bg-gray-200 dark:bg-neutral-900 p-2 rounded-4xl shadow-inner">
         <div className="grid grid-cols-8 gap-1.5 mx-auto">
           {board.map((row, r) =>
             row.map((cell, c) => (
@@ -258,7 +260,7 @@ const BuscaMinas = ({ onBack }) => {
                       : "bg-white dark:bg-neutral-800"
                     : cell.flagged
                     ? "bg-amber-100 dark:bg-amber-500/20 border-2 border-amber-500 shadow-none"
-                    : "bg-emerald-500 shadow-[0_4px_0_0_#059669] hover:translate-y-[2px] hover:shadow-[0_2px_0_0_#059669]"
+                    : "bg-emerald-500 shadow-[0_4px_0_0_#059669] hover:translate-y-0.5 hover:shadow-[0_2px_0_0_#059669]"
                 }`}
               >
                 <AnimatePresence mode="wait">
@@ -306,52 +308,60 @@ const BuscaMinas = ({ onBack }) => {
         </div>
       </div>
 
-      {/* Modal de Estado Abajo */}
+      {/* Modal de Estado Ahora Centrado */}
       <AnimatePresence>
         {gameState !== "playing" && (
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            className="mt-6 p-6 rounded-[2.5rem] text-center bg-white dark:bg-neutral-900 shadow-2xl border-2 border-gray-100 dark:border-neutral-800 relative overflow-hidden"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
           >
-            {/* Adorno de fondo */}
-            <div
-              className={`absolute top-0 left-0 w-full h-1.5 ${
-                gameState === "won" ? "bg-emerald-500" : "bg-red-500"
-              }`}
-            />
+            <div className="max-w-md w-full p-6 rounded-[2.5rem] text-center bg-white dark:bg-neutral-900 shadow-2xl border-2 border-gray-100 dark:border-neutral-800 relative overflow-hidden">
+              {/* Adorno de fondo */}
+              <div
+                className={`absolute top-0 left-0 w-full h-1.5 ${
+                  gameState === "won" ? "bg-emerald-500" : "bg-red-500"
+                }`}
+              />
 
-            <div
-              className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${
-                gameState === "won" ? "bg-emerald-100" : "bg-red-100"
-              }`}
-            >
-              {gameState === "won" ? (
-                <GraduationCap size={32} className="text-emerald-600" />
-              ) : (
-                <span className="text-2xl font-black text-red-600 italic">
-                  05
-                </span>
-              )}
+              <div
+                className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${
+                  gameState === "won" ? "bg-emerald-100" : "bg-red-100"
+                }`}
+              >
+                {gameState === "won" ? (
+                  <GraduationCap size={32} className="text-emerald-600" />
+                ) : (
+                  <span className="text-2xl font-black text-red-600 italic">
+                    05
+                  </span>
+                )}
+              </div>
+
+              <h3 className="text-2xl font-black uppercase dark:text-white tracking-tighter leading-tight">
+                {gameState === "won" ? "¡Semestre Invicto!" : "¡Examen Jalado!"}
+              </h3>
+
+              <p className="text-[10px] font-black text-gray-400 mt-2 uppercase tracking-[0.2em]">
+                {gameState === "won"
+                  ? `Aprobaste en solo ${timer} segundos`
+                  : "Te descuidaste y te mandaron a la bica"}
+              </p>
+
+              <button
+                onClick={initBoard}
+                className="mt-6 w-full bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-emerald-500/30 active:scale-95 transition-all"
+              >
+                Volver a Matricularme
+              </button>
+              <button
+                onClick={() => navigate(-1)}
+                className="mt-3 w-full bg-neutral-900 dark:bg-white text-white dark:text-black py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-transform active:scale-95"
+              >
+                Volver al Arcade
+              </button>
             </div>
-
-            <h3 className="text-2xl font-black uppercase dark:text-white tracking-tighter leading-tight">
-              {gameState === "won" ? "¡Semestre Invicto!" : "¡Examen Jalado!"}
-            </h3>
-
-            <p className="text-[10px] font-black text-gray-400 mt-2 uppercase tracking-[0.2em]">
-              {gameState === "won"
-                ? `Aprobaste en solo ${timer} segundos`
-                : "Te descuidaste y te mandaron a la bica"}
-            </p>
-
-            <button
-              onClick={initBoard}
-              className="mt-6 w-full bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-emerald-500/30 active:scale-95 transition-all"
-            >
-              Volver a Matricularme
-            </button>
           </motion.div>
         )}
       </AnimatePresence>
