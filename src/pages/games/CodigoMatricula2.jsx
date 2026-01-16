@@ -6,6 +6,7 @@ import { ArrowLeft, RefreshCw, Clock } from "lucide-react";
 import { toast } from "sonner";
 import useSound from "use-sound";
 import { da } from "date-fns/locale";
+import { useNavigate } from "react-router-dom";
 
 // --- DEFINICIÓN DE TEMAS ---
 const GAME_THEMES = [
@@ -64,6 +65,7 @@ const CodigoMatricula = ({ onBack }) => {
   const [history, setHistory] = useState([]);
   const [gameState, setGameState] = useState("playing");
   const [timer, setTimer] = useState(0);
+  const navigate = useNavigate();
 
   const [playPop] = useSound("/sounds/click.mp3", { volume: 0.5 });
   const [playWin] = useSound("/sounds/win.mp3", { volume: 0.7 });
@@ -169,9 +171,9 @@ const CodigoMatricula = ({ onBack }) => {
   return (
     <div className="max-w-md mx-auto p-4 flex flex-col h-full bg-neutral-950 rounded-[2.5rem] text-white overflow-hidden relative">
       {/* Header Dinámico */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 max-sm:mb-1">
         <button
-          onClick={onBack}
+          onClick={()=>navigate(-1)}
           className="p-3 bg-neutral-900 rounded-2xl border border-neutral-800 active:scale-90 transition-transform"
         >
           <ArrowLeft size={20} />
@@ -198,7 +200,7 @@ const CodigoMatricula = ({ onBack }) => {
       </div>
 
       {/* Historial con Iconos del Tema */}
-      <div className="flex-1 overflow-y-auto space-y-2 mb-4 px-2 no-scrollbar">
+      <div className="flex-1 overflow-y-auto space-y-2 max-sm:space-y-0 mb-4 max-sm:mb-1 px-2 no-scrollbar">
         {Array.from({ length: MAX_ATTEMPTS }).map((_, i) => {
           const attempt = history[i];
           return (

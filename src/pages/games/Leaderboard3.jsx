@@ -14,6 +14,7 @@ import {
   Bomb,
   ChevronRight,
   ChevronLeft,
+  CombineIcon,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
@@ -235,6 +236,12 @@ const Leaderboard = () => {
               onClick={() => setActiveGame("buscaminas")}
               icon={<Bomb size={16} />}
               label="BuscaMinas"
+            />
+             <TabButton
+              active={activeGame === "mastermind"}
+              onClick={() => setActiveGame("mastermind")}
+              icon={<CombineIcon size={16} />}
+              label="Codigo Matricula"
             />
           </div>
         </div>
