@@ -10,6 +10,8 @@ import {
   Clock,
   Swords,
   MessageSquareText,
+  Target,
+  Bomb
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
@@ -183,6 +185,18 @@ const Leaderboard = () => {
           onClick={() => setActiveGame("michi_online")}
           icon={<Swords size={14} />}
           label="Michi"
+        />
+        <TabButton
+          active={activeGame === "hunter-talents"}
+          onClick={() => setActiveGame("hunter-talents")}
+          icon={<Target size={14} />}
+          label="Talentos"
+        />
+        <TabButton
+          active={activeGame === "buscaminas"}
+          onClick={() => setActiveGame("buscaminas")}
+          icon={<Bomb size={14} />}
+          label="Busca minas"
         />
       </div>
 

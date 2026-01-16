@@ -7,6 +7,7 @@ import { VALID_WORDS } from "../../components/games/utils/dictionary";
 import { useNavigate } from "react-router-dom";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
+import filteredWords from "../../../scripts/filtered_words.json";
 
 // Configuración de colores
 const COLORS = {
@@ -133,7 +134,7 @@ const WordleGame = () => {
 
     const wordToValidate = currentGuess.toUpperCase();
     if (
-      !VALID_WORDS.includes(wordToValidate) &&
+      !filteredWords.includes(wordToValidate) &&
       wordToValidate !== targetWord
     ) {
       setIsInvalid(true);

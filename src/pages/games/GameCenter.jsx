@@ -7,6 +7,8 @@ import {
   Grid3X3,
   Type,
   ArrowRight,
+  Target,
+  Bomb,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuthAction } from "../../hooks/useAuthAction";
@@ -48,6 +50,24 @@ const GAMES_LIST = [
     path: "/games/wordle",
     difficulty: "Difícil",
   },
+   {
+    id: "caza-talentos",
+    title: "Caza Talentos",
+    description: "Muestra tu destreza con los reflejos.",
+    icon: <Target className="text-amber-500" size={32} />,
+    color: "from-amber-500/20 to-amber-500/5",
+    path: "/games/caza-talentos",
+    difficulty: "Facil",
+  },
+   {
+    id: "busca-minas",
+    title: "Busca Minas",
+    description: "Evita toparte con los examenes sorpresas.",
+    icon: <Bomb className="text-cyan-500" size={32} />,
+    color: "from-cyan-500/20 to-cyan-500/5",
+    path: "/games/busca-minas",
+    difficulty: "Facil",
+  }
 ];
 
 const GameCenter = () => {
