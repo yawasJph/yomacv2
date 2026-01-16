@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import {
   Trophy,
@@ -11,7 +11,9 @@ import {
   Swords,
   MessageSquareText,
   Target,
-  Bomb
+  Bomb,
+  ChevronRight,
+  ChevronLeft,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
@@ -22,6 +24,23 @@ const Leaderboard = () => {
   const [leaders, setLeaders] = useState([]);
   const [userStats, setUserStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) {
+      const onWheel = (e) => {
+        if (e.deltaY === 0) return;
+        e.preventDefault();
+        el.scrollTo({
+          left: el.scrollLeft + e.deltaY * 2,
+          behavior: "smooth",
+        });
+      };
+      el.addEventListener("wheel", onWheel);
+      return () => el.removeEventListener("wheel", onWheel);
+    }
+  }, []);
 
   const fetchLeaderboard = async () => {
     setLoading(true);
@@ -153,51 +172,85 @@ const Leaderboard = () => {
   }, [activeGame]);
 
   return (
-    <div className="max-w-md mx-auto bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden mt-2">
+    <div className="max-w-md max-sm:max-w-sm mx-auto bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden mt-2">
       <div className="bg-linear-to-r from-emerald-500 to-teal-600 p-6 text-white text-center">
         <h2 className="text-2xl font-black uppercase tracking-tighter italic flex items-center justify-center gap-2">
           <Trophy className="text-yellow-300" /> Ranking Campus
         </h2>
       </div>
 
-      {/* Tabs compactos para que quepan 3 */}
-      <div className="flex p-1.5 bg-gray-100 dark:bg-gray-800 m-4 rounded-2xl gap-1">
-        <TabButton
-          active={activeGame === "memory"}
-          onClick={() => setActiveGame("memory")}
-          icon={<LayoutGrid size={14} />}
-          label="Memo"
-        />
-        <TabButton
-          active={activeGame === "trivia"}
-          onClick={() => setActiveGame("trivia")}
-          icon={<Brain size={14} />}
-          label="Trivia"
-        />
-        <TabButton
-          active={activeGame === "wordle"}
-          onClick={() => setActiveGame("wordle")}
-          icon={<MessageSquareText size={14} />}
-          label="Wordle"
-        />
-        <TabButton
-          active={activeGame === "michi_online"}
-          onClick={() => setActiveGame("michi_online")}
-          icon={<Swords size={14} />}
-          label="Michi"
-        />
-        <TabButton
-          active={activeGame === "hunter-talents"}
-          onClick={() => setActiveGame("hunter-talents")}
-          icon={<Target size={14} />}
-          label="Talentos"
-        />
-        <TabButton
-          active={activeGame === "buscaminas"}
-          onClick={() => setActiveGame("buscaminas")}
-          icon={<Bomb size={14} />}
-          label="Busca minas"
-        />
+      {/* Contenedor de Tabs con Scroll Horizontal Invisible */}
+      <div className="relative mx-4 mt-4 group">
+        {/* Flecha Izquierda (Solo visible en Desktop al hacer hover) */}
+        <button
+          onClick={() =>
+            scrollRef.current.scrollBy({ left: -200, behavior: "smooth" })
+          }
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white/80 dark:bg-gray-800/80 p-1 rounded-full shadow-md opacity-0 group-hover:opacity-100 hidden md:block transition-opacity"
+        >
+          <ChevronLeft size={20} className="text-gray-600 dark:text-gray-300" />
+        </button>
+        {/* Gradientes laterales para dar efecto de profundidad y continuidad */}
+        <div className="absolute left-0 top-0 bottom-0 w-8 bg-linear-to-r from-white dark:from-gray-900 to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-white dark:from-gray-900 to-transparent z-10 pointer-events-none" />
+
+        <div
+          className="flex overflow-x-auto gap-2 py-2 no-scrollbar scroll-smooth snap-x"
+          ref={scrollRef}
+        >
+          {/* Contenedor interno con padding extra para que el scroll no choque con los bordes */}
+          <div className="flex gap-2 ">
+            <TabButton
+              active={activeGame === "memory"}
+              onClick={() => setActiveGame("memory")}
+              icon={<LayoutGrid size={16} />}
+              label="Memorama"
+            />
+            <TabButton
+              active={activeGame === "trivia"}
+              onClick={() => setActiveGame("trivia")}
+              icon={<Brain size={16} />}
+              label="Trivia"
+            />
+            <TabButton
+              active={activeGame === "wordle"}
+              onClick={() => setActiveGame("wordle")}
+              icon={<MessageSquareText size={16} />}
+              label="Wordle"
+            />
+            <TabButton
+              active={activeGame === "michi_online"}
+              onClick={() => setActiveGame("michi_online")}
+              icon={<Swords size={16} />}
+              label="Michi"
+            />
+            <TabButton
+              active={activeGame === "hunter-talents"}
+              onClick={() => setActiveGame("hunter-talents")}
+              icon={<Target size={16} />}
+              label="Talentos"
+            />
+            <TabButton
+              active={activeGame === "buscaminas"}
+              onClick={() => setActiveGame("buscaminas")}
+              icon={<Bomb size={16} />}
+              label="BuscaMinas"
+            />
+          </div>
+        </div>
+
+        {/* Flecha Derecha (Solo visible en Desktop al hacer hover) */}
+        <button
+          onClick={() =>
+            scrollRef.current.scrollBy({ left: 200, behavior: "smooth" })
+          }
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white/80 dark:bg-gray-800/80 p-1 rounded-full shadow-md opacity-0 group-hover:opacity-100 hidden md:block transition-opacity"
+        >
+          <ChevronRight
+            size={20}
+            className="text-gray-600 dark:text-gray-300"
+          />
+        </button>
       </div>
 
       <div className="p-4 pt-0 min-h-[450px]">
@@ -325,13 +378,18 @@ const LeaderItem = ({ entry, isMe, isMichi }) => {
 const TabButton = ({ active, onClick, icon, label }) => (
   <button
     onClick={onClick}
-    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all ${
-      active
-        ? "bg-white dark:bg-gray-700 shadow-sm text-emerald-600 dark:text-emerald-400"
-        : "text-gray-500"
-    }`}
+    className={`
+      flex-none snap-center flex items-center gap-2 px-5 py-2.5 rounded-2xl 
+      font-black text-[11px] uppercase tracking-tighter transition-all duration-300
+      ${
+        active
+          ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 scale-105"
+          : "bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700"
+      }
+    `}
   >
-    {icon} {label}
+    {icon}
+    <span className="whitespace-nowrap">{label}</span>
   </button>
 );
 const LoadingState = () => (

@@ -38,7 +38,6 @@
   animation: shimmer 1.4s infinite;
 }
 
-
 /* ✨ Efecto shimmer para skeletons */
 .skeleton {
   @apply relative overflow-hidden bg-gray-300 dark:bg-gray-700;
@@ -66,14 +65,21 @@
 
 /* Si quieres un brillo extra, añade esto a tu index.css */
 @keyframes tilt {
-  0%, 50%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(0.5deg); }
-  75% { transform: rotate(-0.5deg); }
+  0%,
+  50%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(0.5deg);
+  }
+  75% {
+    transform: rotate(-0.5deg);
+  }
 }
 .animate-tilt {
   animation: tilt 4s infinite linear;
 }
-
 
 @keyframes badge-in {
   from {
@@ -87,10 +93,19 @@
 }
 
 @keyframes badge-glow {
-  0%, 100% {
-    box-shadow: 0 0 0 rgba(0,0,0,0);
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
   }
   50% {
     box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
   }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

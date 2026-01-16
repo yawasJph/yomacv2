@@ -9,6 +9,7 @@ import {
   ArrowRight,
   Target,
   Bomb,
+  CombineIcon,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuthAction } from "../../hooks/useAuthAction";
@@ -50,7 +51,7 @@ const GAMES_LIST = [
     path: "/games/wordle",
     difficulty: "Difícil",
   },
-   {
+  {
     id: "caza-talentos",
     title: "Caza Talentos",
     description: "Muestra tu destreza con los reflejos.",
@@ -59,7 +60,7 @@ const GAMES_LIST = [
     path: "/games/caza-talentos",
     difficulty: "Facil",
   },
-   {
+  {
     id: "busca-minas",
     title: "Busca Minas",
     description: "Evita toparte con los examenes sorpresas.",
@@ -67,7 +68,16 @@ const GAMES_LIST = [
     color: "from-cyan-500/20 to-cyan-500/5",
     path: "/games/busca-minas",
     difficulty: "Facil",
-  }
+  },
+  {
+    id: "codigo-matricula",
+    title: "Codigo Matricula",
+    description: "Hackea el sistema de matrículas para conseguir el mejor horario",
+    icon: <CombineIcon className="text-fuchsia-500" size={32} />,
+    color: "from-fuchsia-500/20 to-fuchsia-500/5",
+    path: "/games/codigo-matricula",
+    difficulty: "Facil",
+  },
 ];
 
 const GameCenter = () => {

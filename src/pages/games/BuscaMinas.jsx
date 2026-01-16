@@ -177,7 +177,6 @@ const BuscaMinas = () => {
 
   const saveScore = async (isWin) => {
     const score = isWin ? Math.max(1000 - timer, 100) : 0;
-    console.log(score, timer);
     if (score > 0) {
       const { data, error } = await supabaseClient.rpc("submit_game_score", {
         p_game_id: "buscaminas",

@@ -21,12 +21,13 @@ import MemoryGame from "./components/games/MemoryGame";
 import YoMACStore from "./pages/games/YoMACStore";
 import { SearchProvider } from "./context/SearchContext";
 import TriviaGame from "./pages/games/TriviaGame";
-//import Leaderboard from "./pages/games/Leaderboard2";
 import MichiGame from "./pages/games/MichiGame";
 import Leaderboard from "./pages/games/Leaderboard3";
 import WordleGame from "./pages/games/WordleGame";
 import CazaTalentos from "./pages/games/CazaTalentos";
 import BuscaMinas from "./pages/games/BuscaMinas";
+import CodigoMatricula from "./pages/games/CodigoMatricula2";
+//import CodigoMatricula from "./pages/games/CodigoMatricula";
 
 function App() {
   if ("serviceWorker" in navigator) {
@@ -113,6 +114,7 @@ function App() {
             <Route path="games/wordle" element={<WordleGame />} />
             <Route path="games/caza-talentos" element={<CazaTalentos />} />
             <Route path="games/busca-minas" element={<BuscaMinas />} />
+             <Route path="games/codigo-matricula" element={<CodigoMatricula />} />
             <Route path="games/leaderboard" element={<Leaderboard />} />
             <Route path="games/store" element={<YoMACStore />} />
             <Route path="users" element={<DiscoverPage />} />
