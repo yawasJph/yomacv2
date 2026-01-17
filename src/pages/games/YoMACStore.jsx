@@ -7,10 +7,12 @@ import {
   Image as ImageIcon,
   Gift,
   Wallet,
+  ArrowLeft,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "../../context/AuthContext";
 import { useProfile } from "../../hooks/useProfile";
+import { useNavigate } from "react-router-dom";
 
 const YoMACStore = () => {
   const [items, setItems] = useState([]);
@@ -23,6 +25,7 @@ const YoMACStore = () => {
   const [sortBy, setSortBy] = useState("newest"); // 'newest', 'price-low', 'price-high'
   const { user: currentUser } = useAuth();
   const { data: userProfile } = useProfile(currentUser?.id);
+  const navigate = useNavigate()
 
   const categories = [
     { id: "badge", label: "Insignias", icon: <Sparkles size={18} /> },
@@ -106,8 +109,14 @@ const YoMACStore = () => {
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6 pb-24">
       {/* HEADER PREMIUM */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 ">
+        <div >
+          <button
+            onClick={() => navigate("/")}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-full transition-colors flex"
+          >
+            <ArrowLeft size={20} className="dark:text-white" />
+          </button>
           <h2 className="text-3xl font-black dark:text-white flex items-center gap-2">
             <ShoppingBag className="text-emerald-500" strokeWidth={3} />
             YoMAC Store
@@ -117,22 +126,20 @@ const YoMACStore = () => {
           </p>
         </div>
 
-        
-          <div className="bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-2xl flex items-center gap-3">
-            <div className="bg-emerald-500 p-1.5 rounded-lg text-white">
-              <Wallet size={20} />
-            </div>
-            <div>
-              <p className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 leading-none">
-                Tu Saldo
-              </p>
-              <p className="text-lg font-black dark:text-white">
-                {userCredits}{" "}
-                <span className="text-xs font-medium text-gray-500">CC</span>
-              </p>
-            </div>
+        <div className="bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-2xl flex items-center gap-3">
+          <div className="bg-emerald-500 p-1.5 rounded-lg text-white">
+            <Wallet size={20} />
           </div>
-        
+          <div>
+            <p className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 leading-none">
+              Tu Saldo
+            </p>
+            <p className="text-lg font-black dark:text-white">
+              {userCredits}{" "}
+              <span className="text-xs font-medium text-gray-500">CC</span>
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* TABS DE NAVEGACIÓN */}
@@ -283,10 +290,10 @@ const YoMACStore = () => {
                     isWrongCarrera
                       ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                       : isOwned
-                      ? "bg-gray-50 dark:bg-gray-800 text-gray-400 cursor-default"
-                      : canAfford
-                      ? "bg-gray-900 dark:bg-white text-white dark:text-black hover:scale-[1.02] active:scale-95 shadow-lg shadow-gray-200 dark:shadow-none"
-                      : "bg-red-50 dark:bg-red-500/10 text-red-400 border border-red-100 dark:border-red-500/20 cursor-not-allowed"
+                        ? "bg-gray-50 dark:bg-gray-800 text-gray-400 cursor-default"
+                        : canAfford
+                          ? "bg-gray-900 dark:bg-white text-white dark:text-black hover:scale-[1.02] active:scale-95 shadow-lg shadow-gray-200 dark:shadow-none"
+                          : "bg-red-50 dark:bg-red-500/10 text-red-400 border border-red-100 dark:border-red-500/20 cursor-not-allowed"
                   }`}
                 >
                   {isOwned ? (

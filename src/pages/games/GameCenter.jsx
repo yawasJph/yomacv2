@@ -90,7 +90,7 @@ const GameCenter = () => {
     executeAction(() => navigate(path), "para jugar");
   };
   return (
-    <div className="bg-white dark:bg-black p-4 pb-10">
+    <div className="bg-white dark:bg-black p-4 ">
       {/* min-h-screen */}
       {/* Header */}
 
@@ -103,22 +103,22 @@ const GameCenter = () => {
             <ArrowLeft size={20} className="dark:text-white" />
           </button>
           <div className="flex justify-between items-center mb-3 mt-2">
-        <div>
-          <h1 className="text-3xl font-black dark:text-white flex items-center gap-3">
-            Arcade <Gamepad2 className="text-emerald-500" />
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
-            Gana puntos y escala en el ranking de la comunidad.
-          </p>
-        </div>
-        <button
-          onClick={() => navigate("/games/leaderboard")}
-          className="p-3 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center gap-2 font-bold hover:scale-105 transition-transform border border-emerald-500/20"
-        >
-          <Trophy size={20} />
-          <span className="hidden sm:inline">Ranking Global</span>
-        </button>
-      </div>
+            <div>
+              <h1 className="text-3xl font-black dark:text-white flex items-center gap-3">
+                Arcade <Gamepad2 className="text-emerald-500" />
+              </h1>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
+                Gana puntos y escala en el ranking de la comunidad.
+              </p>
+            </div>
+            <button
+              onClick={() => navigate("/games/leaderboard")}
+              className="p-3 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center gap-2 font-bold hover:scale-105 transition-transform border border-emerald-500/20"
+            >
+              <Trophy size={20} />
+              <span className="hidden sm:inline">Ranking Global</span>
+            </button>
+          </div>
         </div>
       </div>
       {/* <div className="flex">

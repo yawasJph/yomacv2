@@ -15,9 +15,11 @@ import {
   ChevronRight,
   ChevronLeft,
   CombineIcon,
+  ArrowLeft,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Leaderboard = () => {
   const { user } = useAuth();
@@ -26,6 +28,7 @@ const Leaderboard = () => {
   const [userStats, setUserStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const scrollRef = useRef(null);
+  const navigate = useNavigate()
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -174,7 +177,13 @@ const Leaderboard = () => {
 
   return (
     <div className="max-w-md max-sm:max-w-sm mx-auto bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden mt-2">
-      <div className="bg-linear-to-r from-emerald-500 to-teal-600 p-6 text-white text-center">
+      <div className="bg-linear-to-r from-emerald-500 to-teal-600 p-6 text-white text-center flex gap-2">
+         <button
+            onClick={() => navigate(-1)}
+            className="p-2 hover:bg-gray-600 dark:hover:bg-gray-600 rounded-full transition-colors"
+          >
+            <ArrowLeft size={20} className="dark:text-white" />
+          </button>
         <h2 className="text-2xl font-black uppercase tracking-tighter italic flex items-center justify-center gap-2">
           <Trophy className="text-yellow-300" /> Ranking Campus
         </h2>
@@ -192,8 +201,8 @@ const Leaderboard = () => {
           <ChevronLeft size={20} className="text-gray-600 dark:text-gray-300" />
         </button>
         {/* Gradientes laterales para dar efecto de profundidad y continuidad */}
-        <div className="absolute left-0 top-0 bottom-0 w-8 bg-linear-to-r from-white dark:from-gray-900 to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-white dark:from-gray-900 to-transparent z-10 pointer-events-none" />
+        {/* <div className="absolute left-0 top-0 bottom-0 w-8 bg-linear-to-r from-white dark:from-gray-900 to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-white dark:from-gray-900 to-transparent z-10 pointer-events-none" /> */}
 
         <div
           className="flex overflow-x-auto gap-2 py-2 no-scrollbar scroll-smooth snap-x"
@@ -268,7 +277,7 @@ const Leaderboard = () => {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="space-y-3"
+              className="space-y-3 mt-3"
             >
               {leaders.length > 0 ? (
                 <>

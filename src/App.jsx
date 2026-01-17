@@ -27,7 +27,6 @@ import WordleGame from "./pages/games/WordleGame";
 import CazaTalentos from "./pages/games/CazaTalentos";
 import BuscaMinas from "./pages/games/BuscaMinas";
 import CodigoMatricula from "./pages/games/CodigoMatricula2";
-//import CodigoMatricula from "./pages/games/CodigoMatricula";
 
 function App() {
   if ("serviceWorker" in navigator) {
