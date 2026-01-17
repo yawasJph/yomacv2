@@ -68,6 +68,44 @@ const ConectorRedes = ({ onBack }) => {
     setPaths((prev) => ({ ...prev, [cell.colorId]: [[r, c]] }));
   };
 
+  //   const draw = useCallback(
+  //     (r, c) => {
+  //       if (!isDrawing || !currentColor) return;
+
+  //       setPaths((prev) => {
+  //         const currentPath = prev[currentColor];
+  //         const last = currentPath[currentPath.length - 1];
+
+  //         if (last[0] === r && last[1] === c) return prev;
+
+  //         const dist = Math.abs(last[0] - r) + Math.abs(last[1] - c);
+  //         if (dist !== 1) return prev;
+
+  //         const targetCell = grid[r][c];
+  //         if (
+  //           targetCell &&
+  //           targetCell.type === "node" &&
+  //           targetCell.colorId !== currentColor
+  //         )
+  //           return prev;
+
+  //         const existingIdx = currentPath.findIndex(
+  //           (p) => p[0] === r && p[1] === c
+  //         );
+  //         if (existingIdx !== -1) {
+  //           return {
+  //             ...prev,
+  //             [currentColor]: currentPath.slice(0, existingIdx + 1),
+  //           };
+  //         }
+
+  //         return { ...prev, [currentColor]: [...currentPath, [r, c]] };
+  //       });
+  //     },
+  //     [isDrawing, currentColor, grid]
+  //   );
+
+  // --- LÓGICA DE DIBUJO CORREGIDA ---
   const draw = useCallback(
     (r, c) => {
       if (!isDrawing || !currentColor) return;
@@ -75,19 +113,34 @@ const ConectorRedes = ({ onBack }) => {
       setPaths((prev) => {
         const currentPath = prev[currentColor];
         const last = currentPath[currentPath.length - 1];
+
+        // 1. Evitar repetir la misma celda
         if (last[0] === r && last[1] === c) return prev;
 
+        // 2. Solo permitir movimientos adyacentes (no diagonales)
         const dist = Math.abs(last[0] - r) + Math.abs(last[1] - c);
         if (dist !== 1) return prev;
 
+        // 3. VALIDACIÓN ANTI-TRAMPAS:
+        // ¿La celda está ocupada por OTRO color?
+        const isOccupiedByOther = Object.keys(prev).some(
+          (colorId) =>
+            colorId !== currentColor &&
+            prev[colorId].some((p) => p[0] === r && p[1] === c)
+        );
+        if (isOccupiedByOther) return prev; // Bloquea el cruce
+
+        // 4. Lógica de nodos
         const targetCell = grid[r][c];
         if (
           targetCell &&
           targetCell.type === "node" &&
           targetCell.colorId !== currentColor
-        )
-          return prev;
+        ) {
+          return prev; // Bloquea chocar con nodos de otro color
+        }
 
+        // 5. Auto-recorte (si vuelves sobre tu propio camino)
         const existingIdx = currentPath.findIndex(
           (p) => p[0] === r && p[1] === c
         );
@@ -104,6 +157,22 @@ const ConectorRedes = ({ onBack }) => {
     [isDrawing, currentColor, grid]
   );
 
+  // --- SOPORTE TÁCTIL (MOVIL) ---
+  const handleTouchMove = (e) => {
+    if (!isDrawing) return;
+
+    // Obtenemos las coordenadas del toque
+    const touch = e.touches[0];
+    // Buscamos el elemento bajo el dedo
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+    // Extraemos las coordenadas que guardamos en data-cell
+    const cellData = element?.closest("[data-cell]")?.getAttribute("data-cell");
+
+    if (cellData) {
+      const [r, c] = cellData.split("-").map(Number);
+      draw(r, c);
+    }
+  };
   const stopDrawing = () => {
     setIsDrawing(false);
     setCurrentColor(null);
@@ -231,9 +300,13 @@ const ConectorRedes = ({ onBack }) => {
       {/* Grid */}
       <div
         className="aspect-square w-full grid gap-1 bg-neutral-900 p-2 rounded-3xl border border-neutral-800 relative"
-        style={{ gridTemplateColumns: `repeat(${level.size}, 1fr)` }}
+        style={{
+          gridTemplateColumns: `repeat(${level.size}, 1fr)`,
+          touchAction: "none", // <--- EVITA QUE LA PANTALLA SE MUEVA AL DIBUJAR
+        }}
         onMouseUp={stopDrawing}
         onMouseLeave={stopDrawing}
+        onTouchMove={handleTouchMove} // <--- ACTIVA EL DIBUJO TÁCTIL
         onTouchEnd={stopDrawing}
       >
         {grid.map((row, r) =>
@@ -247,10 +320,13 @@ const ConectorRedes = ({ onBack }) => {
             return (
               <div
                 key={`${r}-${c}`}
-                data-cell={`${r}-${c}`} // <--- IMPORTANTE PARA TOUCH
+                data-cell={`${r}-${c}`} // <--- IDENTIFICADOR PARA document.elementFromPoint
                 onMouseDown={() => startDrawing(r, c, cell)}
                 onMouseEnter={() => draw(r, c)}
-                onTouchStart={() => startDrawing(r, c, cell)}
+                onTouchStart={(e) => {
+                  // Prevenir comportamientos extraños en móvil
+                  startDrawing(r, c, cell);
+                }}
                 className="relative w-full h-full bg-neutral-950 rounded-lg flex items-center justify-center pointer-events-auto"
               >
                 {activeColorId && (
@@ -294,19 +370,6 @@ const ConectorRedes = ({ onBack }) => {
       </div>
 
       {/* Footer Stats */}
-      {/* <div className="mt-8 grid grid-cols-2 gap-4">
-        <div className="bg-neutral-900 p-4 rounded-3xl border border-neutral-800">
-          <p className="text-[10px] text-neutral-500 uppercase font-black mb-1">Conexiones</p>
-          <div className="flex items-center gap-2">
-            <Zap size={14} className="text-blue-400" />
-            <p className="text-xl font-black">{closedColors.length} / {level.pairs.length}</p>
-          </div>
-        </div>
-        <div className="bg-neutral-900 p-4 rounded-3xl border border-neutral-800">
-          <p className="text-[10px] text-neutral-500 uppercase font-black mb-1">Ancho de Banda</p>
-          <p className={`text-xl font-black ${flowPercentage === 100 ? 'text-emerald-500' : 'text-white'}`}>{flowPercentage}%</p>
-        </div>
-      </div> */}
       <div className="mt-8 grid grid-cols-2 gap-4">
         <div className="bg-neutral-900/50 p-4 rounded-3xl border border-neutral-800 backdrop-blur-sm">
           <p className="text-[10px] text-neutral-500 uppercase font-black mb-1 tracking-tighter">
