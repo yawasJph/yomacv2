@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import { HelpCircle } from "lucide-react";
+import { ArrowLeft, HelpCircle } from "lucide-react";
 import { VALID_WORDS } from "../../components/games/utils/dictionary";
 import { useNavigate } from "react-router-dom";
 import confetti from "canvas-confetti";
@@ -281,8 +281,14 @@ const WordleGame = () => {
       {/**min-h-[80vh] */}
       {/* Header con Pista */}
       <div className="w-full flex justify-between items-center mb-8 max-sm:mb-3">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-3 text-black rounded-2xl dark:text-white hover:bg-gray-200 dark:hover:bg-gray-800"
+        >
+          <ArrowLeft size={20} />
+        </button>
         <h1 className="text-xl font-black italic uppercase dark:text-white tracking-tighter">
-          Palabra <span className="text-emerald-500">Día</span>
+          Palabra Del <span className="text-emerald-500">Día</span>
         </h1>
         <button
           onClick={() => setShowClue(true)}
