@@ -7,18 +7,40 @@ import { toast } from "sonner";
 
 const LEVELS = [
   {
-    id: 1,
-    name: "Sótano IT",
-    size: 5,
+    id: 1, name: "Sótano IT", size: 5,
     pairs: [
-      { id: "red", color: "#ef4444", start: [0, 0], end: [4, 2] }, // Rojo: Esquina superior izq a casi fondo
-      { id: "blue", color: "#3b82f6", start: [0, 1], end: [0, 4] }, // Azul: Arriba horizontal
-      { id: "green", color: "#10b981", start: [1, 2], end: [4, 4] }, // Verde: Zigzag central
-      { id: "yellow", color: "#f59e0b", start: [2, 0], end: [4, 0] }, // Amarillo: Lateral inferior
-      { id: "purple", color: "#a855f7", start: [1, 4], end: [3, 4] }, // Púrpura: Lateral derecho
+      { id: "red", color: "#ef4444", start: [0, 0], end: [4, 2] },
+      { id: "blue", color: "#3b82f6", start: [0, 1], end: [0, 4] },
+      { id: "green", color: "#10b981", start: [1, 2], end: [4, 4] },
+      { id: "yellow", color: "#f59e0b", start: [2, 0], end: [4, 0] },
+      { id: "purple", color: "#a855f7", start: [1, 4], end: [3, 4] },
+    ],
+  },
+  {
+    id: 2, name: "Data Center", size: 6,
+    pairs: [
+      { id: "red", color: "#ef4444", start: [0, 1], end: [4, 0] },
+      { id: "blue", color: "#3b82f6", start: [0, 0], end: [5, 5] },
+      { id: "green", color: "#10b981", start: [1, 1], end: [1, 4] },
+      { id: "yellow", color: "#f59e0b", start: [2, 2], end: [4, 4] },
+      { id: "purple", color: "#a855f7", start: [5, 0], end: [0, 5] },
+      { id: "cyan", color: "#06b6d4", start: [3, 1], end: [4, 5] },
+    ],
+  },
+  {
+    id: 3, name: "Mainframe Core", size: 7,
+    pairs: [
+      { id: "red", color: "#ef4444", start: [0, 6], end: [6, 0] },
+      { id: "blue", color: "#3b82f6", start: [0, 0], end: [1, 3] },
+      { id: "green", color: "#10b981", start: [2, 0], end: [6, 4] },
+      { id: "yellow", color: "#f59e0b", start: [0, 2], end: [3, 2] },
+      { id: "purple", color: "#a855f7", start: [5, 0], end: [4, 6] },
+      { id: "pink", color: "#ec4899", start: [0, 5], end: [2, 5] },
+      { id: "orange", color: "#f97316", start: [6, 6], end: [1, 1] },
     ],
   },
 ];
+
 const ConectorRedes = ({ onBack }) => {
   const { user } = useAuth();
   const [level, setLevel] = useState(LEVELS[0]);
@@ -417,7 +439,17 @@ const ConectorRedes = ({ onBack }) => {
                 Ancho de banda restaurado
               </p>
               <button
-                onClick={() => setLevel(LEVELS[0])}
+                onClick={() => {
+                  const currentIndex = LEVELS.findIndex(
+                    (l) => l.id === level.id
+                  );
+                  if (currentIndex < LEVELS.length - 1) {
+                    setLevel(LEVELS[currentIndex + 1]);
+                  } else {
+                    onBack(); // Si terminó todos, vuelve al menú
+                    toast.success("¡Has restablecido toda la red del Campus!");
+                  }
+                }}
                 className="w-full bg-emerald-500 text-black py-4 rounded-2xl font-black uppercase tracking-tighter active:scale-95 transition-transform"
               >
                 Siguiente Servidor
