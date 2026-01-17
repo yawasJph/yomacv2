@@ -29,6 +29,8 @@ const HomeLayout = () => {
     }
   }, []);
 
+  
+
   return (
     <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300">
       {/* Header fijo */}

@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
-  Bell,
   X,
   Bookmark,
   ShoppingBag,
@@ -60,14 +59,17 @@ const HeaderM = () => {
             </h1> */}
           <Logo />
 
-          <div className="flex items-center gap-2">
+          {user && onViewCredits && <UserCredits userId={user?.id} />}
+
+          {!onViewCredits && <div className="flex items-center gap-2">
             <button
               className="relative p-2 text-gray-600 dark:text-gray-400"
               onClick={() => navigate("search")}
             >
               <Search size={24} />
             </button>
-          </div>
+            
+          </div>}
 
           {/* DERECHA: Notificaciones y Avatar */}
           <div className="flex items-center gap-2">
@@ -91,7 +93,7 @@ const HeaderM = () => {
               >
                 <img
                   src={profile?.avatar || "/default-avatar.jpg"}
-                  className={`w-9 h-9 rounded-xl object-cover border-2 border-emerald-500/50 shadow-sm ${onViewCredits && "hidden"}`}
+                  className={`w-9 h-9 rounded-xl object-cover border-2 border-emerald-500/50 shadow-sm `}
                   alt="Menu"
                 />
               </button>
@@ -102,7 +104,7 @@ const HeaderM = () => {
               Login
             </button>)}
 
-            {user && onViewCredits && <UserCredits userId={user?.id} />}
+            
           </div>
         </div>
       </header>
