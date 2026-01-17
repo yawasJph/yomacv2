@@ -11,6 +11,7 @@ import {
   Bomb,
   CombineIcon,
   ArrowLeft,
+  Container,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuthAction } from "../../hooks/useAuthAction";
@@ -78,6 +79,16 @@ const GAMES_LIST = [
     icon: <CombineIcon className="text-fuchsia-500" size={32} />,
     color: "from-fuchsia-500/20 to-fuchsia-500/5",
     path: "/games/codigo-matricula",
+    difficulty: "Facil",
+  },
+   {
+    id: "red-connection",
+    title: "Coneccion de Redes",
+    description:
+      "Conecta las redes sin tocas las demas",
+    icon: <Container className="text-lime-500" size={32} />,
+    color: "from-lime-500/20 to-lime-500/5",
+    path: "/games/red-connection",
     difficulty: "Facil",
   },
 ];

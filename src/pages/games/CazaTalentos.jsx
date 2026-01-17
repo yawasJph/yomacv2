@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const GAME_DURATION = 30;
 
-const CazaTalentos = ({ onBack }) => {
+const CazaTalentos = () => {
   const { user } = useAuth();
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(GAME_DURATION);
@@ -200,7 +200,7 @@ const CazaTalentos = ({ onBack }) => {
                   Intentar de Nuevo
                 </button>
                 <button
-                  onClick={onBack}
+                  onClick={()=>navigate(-1)}
                   className="w-full bg-neutral-200 dark:bg-neutral-800 dark:text-white py-4 rounded-2xl font-black uppercase tracking-tighter"
                 >
                   Volver al Menú
