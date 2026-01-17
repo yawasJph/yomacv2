@@ -94,7 +94,7 @@ const GameCenter = () => {
       {/* min-h-screen */}
       {/* Header */}
 
-      <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-2 flex items-center gap-6 border-b border-transparent justify-between mb-4 pb-5">
+      <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-2 flex items-center gap-6 border-b border-transparent justify-between">
         <div className="flex-1 gap-2">
           <button
             onClick={() => navigate("/")}
@@ -102,24 +102,23 @@ const GameCenter = () => {
           >
             <ArrowLeft size={20} className="dark:text-white" />
           </button>
-          <div className="flex justify-between">
-            <div>
-              <h1 className="text-3xl font-black dark:text-white flex items-center gap-3">
-                Arcade <Gamepad2 className="text-emerald-500" />
-              </h1>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
-                Gana puntos y escala en el ranking de la comunidad.
-              </p>
-            </div>
-            {/* Botón de Ranking Global */}
-            <button
-              onClick={() => navigate("/games/leaderboard")}
-              className="p-3 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center gap-2 font-bold hover:scale-105 transition-transform border border-emerald-500/20"
-            >
-              <Trophy size={20} />
-              <span className="hidden sm:inline">Ranking Global</span>
-            </button>
-          </div>
+          <div className="flex justify-between items-center mb-3 mt-2">
+        <div>
+          <h1 className="text-3xl font-black dark:text-white flex items-center gap-3">
+            Arcade <Gamepad2 className="text-emerald-500" />
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
+            Gana puntos y escala en el ranking de la comunidad.
+          </p>
+        </div>
+        <button
+          onClick={() => navigate("/games/leaderboard")}
+          className="p-3 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center gap-2 font-bold hover:scale-105 transition-transform border border-emerald-500/20"
+        >
+          <Trophy size={20} />
+          <span className="hidden sm:inline">Ranking Global</span>
+        </button>
+      </div>
         </div>
       </div>
       {/* <div className="flex">
