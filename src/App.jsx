@@ -28,6 +28,7 @@ import CazaTalentos from "./pages/games/CazaTalentos";
 import BuscaMinas from "./pages/games/BuscaMinas";
 import CodigoMatricula from "./pages/games/CodigoMatricula2";
 import ConectorRedes from "./pages/games/ConectorRedes";
+import CampusAI from "./pages/chat/CampusAI";
 
 function App() {
   if ("serviceWorker" in navigator) {
@@ -107,6 +108,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="yawas" element={<CampusAI />} />
             <Route path="games" element={<GameCenter />} />
             <Route path="games/memory" element={<MemoryGame />} />
             <Route path="games/trivia" element={<TriviaGame />} />

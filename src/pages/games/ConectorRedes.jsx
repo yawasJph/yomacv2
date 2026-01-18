@@ -4,39 +4,83 @@ import { supabaseClient } from "../../supabase/supabaseClient";
 import { useAuth } from "../../context/AuthContext";
 import { ArrowLeft, RotateCcw, Zap, Clock, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
+//import { LEVELS } from "../../assets/data-game/c-lvl";
 
 const LEVELS = [
   {
-    id: 1, name: "Sótano IT", size: 5,
+    id: 1,
+    name: "Sótano IT",
+    size: 5,
     pairs: [
-      { id: "red", color: "#ef4444", start: [0, 0], end: [4, 2] },
-      { id: "blue", color: "#3b82f6", start: [0, 1], end: [0, 4] },
-      { id: "green", color: "#10b981", start: [1, 2], end: [4, 4] },
-      { id: "yellow", color: "#f59e0b", start: [2, 0], end: [4, 0] },
-      { id: "purple", color: "#a855f7", start: [1, 4], end: [3, 4] },
+      { id: "red", color: "#ef4444", start: [4, 0], end: [2, 3] },
+      { id: "blue", color: "#3b82f6", start: [2, 2], end: [0, 4] },
+      { id: "green", color: "#10b981", start: [1, 0], end: [3, 2] },
+      { id: "yellow", color: "#f59e0b", start: [0, 0], end: [2, 1] },
+      { id: "purple", color: "#a855f7", start: [1, 3], end: [4, 4] },
     ],
   },
+
   {
-    id: 2, name: "Data Center", size: 6,
+    id: 2,
+    name: "Rack Inicial",
+    size: 5,
     pairs: [
-      { id: "red", color: "#ef4444", start: [0, 1], end: [4, 0] },
-      { id: "blue", color: "#3b82f6", start: [0, 0], end: [5, 5] },
-      { id: "green", color: "#10b981", start: [1, 1], end: [1, 4] },
-      { id: "yellow", color: "#f59e0b", start: [2, 2], end: [4, 4] },
-      { id: "purple", color: "#a855f7", start: [5, 0], end: [0, 5] },
-      { id: "cyan", color: "#06b6d4", start: [3, 1], end: [4, 5] },
+      { id: "red", color: "#ef4444", start: [3, 1], end: [4, 4] },
+      { id: "blue", color: "#3b82f6", start: [3, 0], end: [1, 2] },
+      { id: "green", color: "#10b981", start: [4, 0], end: [4, 2] },
+      { id: "yellow", color: "#f59e0b", start: [1, 1], end: [0, 3] },
+      { id: "purple", color: "#a855f7", start: [0, 4], end: [3, 4] },
     ],
   },
+
+  // {
+  //   id: 3,
+  //   name: "Cableado Básico",
+  //   size: 6,
+  //   pairs: [
+  //     { id: "red", color: "#ef4444", start: [1, 0], end: [1, 3] },
+  //     { id: "blue", color: "#3b82f6", start: [4, 2], end: [3, 4] },
+  //     { id: "green", color: "#10b981", start: [0, 4], end: [3, 3] },
+  //     { id: "yellow", color: "#f59e0b", start: [1, 1], end: [3, 1] },
+  //     { id: "purple", color: "#a855f7", start: [2, 1], end: [4, 1] },
+  //   ],
+  // },
+
+  // {
+  //   id: 4,
+  //   name: "Red Local",
+  //   size: 6,
+  //   pairs: [
+  //     { id: "red", color: "#ef4444", start: [1, 2], end: [3, 4] },
+  //     { id: "blue", color: "#3b82f6", start: [0, 0], end: [2, 0] },
+  //     { id: "green", color: "#10b981", start: [3, 0], end: [3, 3] },
+  //     { id: "yellow", color: "#f59e0b", start: [0, 4], end: [2, 3] },
+  //     { id: "purple", color: "#a855f7", start: [4, 0], end: [4, 4] },
+  //   ],
+  // },
   {
-    id: 3, name: "Mainframe Core", size: 7,
+    id: 5,
+    name: "Data Center",
+    size: 7,
     pairs: [
-      { id: "red", color: "#ef4444", start: [0, 6], end: [6, 0] },
-      { id: "blue", color: "#3b82f6", start: [0, 0], end: [1, 3] },
-      { id: "green", color: "#10b981", start: [2, 0], end: [6, 4] },
-      { id: "yellow", color: "#f59e0b", start: [0, 2], end: [3, 2] },
-      { id: "purple", color: "#a855f7", start: [5, 0], end: [4, 6] },
-      { id: "pink", color: "#ec4899", start: [0, 5], end: [2, 5] },
-      { id: "orange", color: "#f97316", start: [6, 6], end: [1, 1] },
+      { id: "red", color: "#ef4444", start: [1, 2], end: [3, 4] },
+      { id: "blue", color: "#3b82f6", start: [0, 0], end: [2, 0] },
+      { id: "green", color: "#10b981", start: [3, 0], end: [3, 3] },
+      { id: "yellow", color: "#f59e0b", start: [0, 4], end: [2, 3] },
+      { id: "purple", color: "#a855f7", start: [4, 0], end: [4, 4] },
+    ],
+  },
+
+  {
+    id: 6,
+    name: "Switch Core",
+    size: 7,
+    pairs: [
+      { id: "red", color: "#ef4444", start: [1, 2], end: [3, 4] },
+      { id: "blue", color: "#3b82f6", start: [0, 0], end: [2, 0] },
+      { id: "green", color: "#10b981", start: [3, 0], end: [3, 3] },
+      { id: "yellow", color: "#f59e0b", start: [0, 4], end: [2, 3] },
+      { id: "purple", color: "#a855f7", start: [4, 0], end: [4, 4] },
     ],
   },
 ];
@@ -50,6 +94,8 @@ const ConectorRedes = ({ onBack }) => {
   const [paths, setPaths] = useState({});
   const [completed, setCompleted] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [totalScore, setTotalScore] = useState(0);
+  const [gameFinished, setGameFinished] = useState(false);
 
   // Inicializar tablero
   useEffect(() => {
@@ -85,47 +131,15 @@ const ConectorRedes = ({ onBack }) => {
 
   const startDrawing = (r, c, cell) => {
     if (!cell || cell.type !== "node") return;
+    // NUEVO: Si el nodo ya tenía un camino, lo limpiamos para empezar de nuevo ese color
+    setPaths((prev) => ({
+      ...prev,
+      [cell.colorId]: [[r, c]], // Resetea el camino a solo el punto inicial
+    }));
     setIsDrawing(true);
     setCurrentColor(cell.colorId);
-    setPaths((prev) => ({ ...prev, [cell.colorId]: [[r, c]] }));
+    // setPaths((prev) => ({ ...prev, [cell.colorId]: [[r, c]] }));
   };
-
-  //   const draw = useCallback(
-  //     (r, c) => {
-  //       if (!isDrawing || !currentColor) return;
-
-  //       setPaths((prev) => {
-  //         const currentPath = prev[currentColor];
-  //         const last = currentPath[currentPath.length - 1];
-
-  //         if (last[0] === r && last[1] === c) return prev;
-
-  //         const dist = Math.abs(last[0] - r) + Math.abs(last[1] - c);
-  //         if (dist !== 1) return prev;
-
-  //         const targetCell = grid[r][c];
-  //         if (
-  //           targetCell &&
-  //           targetCell.type === "node" &&
-  //           targetCell.colorId !== currentColor
-  //         )
-  //           return prev;
-
-  //         const existingIdx = currentPath.findIndex(
-  //           (p) => p[0] === r && p[1] === c
-  //         );
-  //         if (existingIdx !== -1) {
-  //           return {
-  //             ...prev,
-  //             [currentColor]: currentPath.slice(0, existingIdx + 1),
-  //           };
-  //         }
-
-  //         return { ...prev, [currentColor]: [...currentPath, [r, c]] };
-  //       });
-  //     },
-  //     [isDrawing, currentColor, grid]
-  //   );
 
   // --- LÓGICA DE DIBUJO CORREGIDA ---
   const draw = useCallback(
@@ -148,7 +162,7 @@ const ConectorRedes = ({ onBack }) => {
         const isOccupiedByOther = Object.keys(prev).some(
           (colorId) =>
             colorId !== currentColor &&
-            prev[colorId].some((p) => p[0] === r && p[1] === c)
+            prev[colorId].some((p) => p[0] === r && p[1] === c),
         );
         if (isOccupiedByOther) return prev; // Bloquea el cruce
 
@@ -164,7 +178,7 @@ const ConectorRedes = ({ onBack }) => {
 
         // 5. Auto-recorte (si vuelves sobre tu propio camino)
         const existingIdx = currentPath.findIndex(
-          (p) => p[0] === r && p[1] === c
+          (p) => p[0] === r && p[1] === c,
         );
         if (existingIdx !== -1) {
           return {
@@ -176,7 +190,7 @@ const ConectorRedes = ({ onBack }) => {
         return { ...prev, [currentColor]: [...currentPath, [r, c]] };
       });
     },
-    [isDrawing, currentColor, grid]
+    [isDrawing, currentColor, grid],
   );
 
   // --- SOPORTE TÁCTIL (MOVIL) ---
@@ -223,7 +237,7 @@ const ConectorRedes = ({ onBack }) => {
       if (allConnected) {
         const occupiedCells = new Set();
         Object.values(paths).forEach((path) =>
-          path.forEach((p) => occupiedCells.add(`${p[0]}-${p[1]}`))
+          path.forEach((p) => occupiedCells.add(`${p[0]}-${p[1]}`)),
         );
         if (occupiedCells.size === level.size * level.size && !completed) {
           setCompleted(true);
@@ -235,13 +249,25 @@ const ConectorRedes = ({ onBack }) => {
   }, [paths]);
 
   const saveScore = async () => {
-    const score = Math.max(2000 - timer * 5, 500);
-    await supabaseClient.from("leaderboards").insert({
-      user_id: user.id,
-      game_id: "redes_campus",
-      score: score,
-    });
-    toast.success("¡Red restablecida!");
+    // Cálculo: Base según tamaño del tablero - tiempo empleado
+    const basePoints = level.size * 200;
+    const timePenalty = timer * 2;
+    const levelScore = Math.max(basePoints - timePenalty, 100);
+
+    const newTotal = totalScore + levelScore;
+    setTotalScore(newTotal);
+
+    // Si es el último nivel, guardamos en la DB el total
+    const currentIndex = LEVELS.findIndex((l) => l.id === level.id);
+    if (currentIndex === LEVELS.length - 1) {
+      await supabaseClient.from("leaderboards").insert({
+        user_id: user.id,
+        game_id: "redes_campus",
+        score: newTotal,
+      });
+      toast.info(newTotal)
+      setGameFinished(true); // Activamos pantalla final
+    }
   };
 
   const isConnected = (colorId, r, c, tr, tc) => {
@@ -283,10 +309,10 @@ const ConectorRedes = ({ onBack }) => {
     (new Set(
       Object.values(paths)
         .flat()
-        .map((p) => `${p[0]}-${p[1]}`)
+        .map((p) => `${p[0]}-${p[1]}`),
     ).size /
       (level.size * level.size)) *
-      100
+      100,
   );
 
   return (
@@ -310,7 +336,7 @@ const ConectorRedes = ({ onBack }) => {
         <button
           onClick={() =>
             setPaths(
-              level.pairs.reduce((acc, p) => ({ ...acc, [p.id]: [] }), {})
+              level.pairs.reduce((acc, p) => ({ ...acc, [p.id]: [] }), {}),
             )
           }
           className="p-3 bg-neutral-900 rounded-2xl border border-neutral-800"
@@ -334,7 +360,7 @@ const ConectorRedes = ({ onBack }) => {
         {grid.map((row, r) =>
           row.map((cell, c) => {
             const activeColorId = Object.keys(paths).find((id) =>
-              paths[id].some((p) => p[0] === r && p[1] === c)
+              paths[id].some((p) => p[0] === r && p[1] === c),
             );
             const colorData = level.pairs.find((p) => p.id === activeColorId);
             const isClosed = closedColors.includes(activeColorId);
@@ -349,7 +375,9 @@ const ConectorRedes = ({ onBack }) => {
                   // Prevenir comportamientos extraños en móvil
                   startDrawing(r, c, cell);
                 }}
-                className="relative w-full h-full bg-neutral-950 rounded-lg flex items-center justify-center pointer-events-auto"
+                //className="relative w-full h-full bg-neutral-950 rounded-lg flex items-center justify-center pointer-events-auto"
+                className={`relative w-full h-full bg-neutral-950 rounded-lg flex items-center justify-center 
+                 ${!activeColorId ? 'after:content-[""] after:w-1 after:h-1 after:bg-neutral-800 after:rounded-full' : ""}`}
               >
                 {activeColorId && (
                   <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-0">
@@ -387,7 +415,7 @@ const ConectorRedes = ({ onBack }) => {
                 )}
               </div>
             );
-          })
+          }),
         )}
       </div>
 
@@ -418,42 +446,59 @@ const ConectorRedes = ({ onBack }) => {
       {/* Win Modal */}
       <AnimatePresence>
         {completed && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-6"
-          >
+          <motion.div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-6">
             <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              className="bg-neutral-900 border-2 border-emerald-500 p-8 rounded-[3rem] text-center w-full"
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              className="bg-neutral-900 border-2 border-blue-500 p-8 rounded-[3rem] text-center w-full shadow-[0_0_50px_rgba(59,130,246,0.3)]"
             >
-              <CheckCircle2
-                size={60}
-                className="text-emerald-500 mx-auto mb-4"
-              />
-              <h3 className="text-2xl font-black uppercase mb-2 text-white">
-                ¡Red Online!
-              </h3>
-              <p className="text-neutral-400 text-sm mb-6 uppercase tracking-widest font-bold">
-                Ancho de banda restaurado
-              </p>
-              <button
-                onClick={() => {
-                  const currentIndex = LEVELS.findIndex(
-                    (l) => l.id === level.id
-                  );
-                  if (currentIndex < LEVELS.length - 1) {
-                    setLevel(LEVELS[currentIndex + 1]);
-                  } else {
-                    onBack(); // Si terminó todos, vuelve al menú
-                    toast.success("¡Has restablecido toda la red del Campus!");
-                  }
-                }}
-                className="w-full bg-emerald-500 text-black py-4 rounded-2xl font-black uppercase tracking-tighter active:scale-95 transition-transform"
-              >
-                Siguiente Servidor
-              </button>
+              {!gameFinished ? (
+                <>
+                  <CheckCircle2
+                    size={60}
+                    className="text-emerald-500 mx-auto mb-4"
+                  />
+                  <h3 className="text-2xl font-black uppercase mb-2 text-white">
+                    ¡Servidor Online!
+                  </h3>
+                  <p className="text-blue-400 font-mono text-xl mb-6">
+                    +{Math.max(level.size * 200 - timer * 2, 100)} pts
+                  </p>
+                  <button
+                    onClick={() => {
+                      const currentIndex = LEVELS.findIndex(
+                        (l) => l.id === level.id,
+                      );
+                      setLevel(LEVELS[currentIndex + 1]);
+                    }}
+                    className="w-full bg-blue-500 text-white py-4 rounded-2xl font-black uppercase active:scale-95 transition-all"
+                  >
+                    Siguiente Nodo
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Zap
+                    size={60}
+                    className="text-yellow-400 mx-auto mb-4 fill-yellow-400"
+                  />
+                  <h3 className="text-3xl font-black uppercase mb-2 text-white">
+                    Master IT
+                  </h3>
+                  <p className="text-neutral-400 text-sm mb-1 uppercase">
+                    Puntaje Total de Red
+                  </p>
+                  <p className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-blue-500 mb-8">
+                    {totalScore}
+                  </p>
+                  <button
+                    onClick={onBack}
+                    className="w-full bg-white text-black py-4 rounded-2xl font-black uppercase active:scale-95 transition-all"
+                  >
+                    Finalizar Turno
+                  </button>
+                </>
+              )}
             </motion.div>
           </motion.div>
         )}

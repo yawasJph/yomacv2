@@ -1,6 +1,7 @@
 import {
   Bell,
   Bookmark,
+  Bot,
   Gamepad2,
   Home,
   Plus,
@@ -49,18 +50,12 @@ const NavigationD = () => {
       text: "Juegos",
       private: false,
     },
-    // {
-    //   to: "/games/store",
-    //   icon: <ShoppingBag size={24} />,
-    //   text: "Tienda Campus",
-    //   private: false,
-    // }, // Agregado
-    // {
-    //   to: "notifications",
-    //   icon: <Bell size={24} />,
-    //   text: "Notificaciones",
-    //   private: true,
-    // }, // Agregado
+     {
+      to: "/yawas",
+      icon: <Bot size={22} />,
+      text: "Yawas",
+      private: true,
+    },
   ];
 
   // Función genérica para mostrar el error y redirigir
