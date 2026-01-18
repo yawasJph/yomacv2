@@ -43,6 +43,7 @@ const HeaderM = () => {
     },
   ];
 
+  
   const onViewCredits = ["games"].some((route) =>
     location.pathname.includes(route)
   );
