@@ -108,7 +108,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="yawas" element={<CampusAI />} />
+            {/* <Route path="yawas" element={<CampusAI />} /> */}
             <Route path="games" element={<GameCenter />} />
             <Route path="games/memory" element={<MemoryGame />} />
             <Route path="games/trivia" element={<TriviaGame />} />
