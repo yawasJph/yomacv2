@@ -7,6 +7,7 @@ import {
   LogOut,
   ChevronRight,
   Search,
+  Bot,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -34,6 +35,11 @@ const HeaderM = () => {
       icon: <Settings size={20} />,
       text: "Configuración",
       path: "/editProfile",
+    },
+      {
+      icon: <Bot size={20} />,
+      text: "Yawas",
+      path: "/yawas",
     },
   ];
 
