@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { useState, useEffect, useRef } from "react";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import { useAuth } from "../../context/AuthContext";
-import { Send, Coffee, Zap } from "lucide-react";
+import { Send, Coffee, Zap, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism"; // Estilo oscuro pro
+import {
+  atomDark,
+  vscDarkPlus,
+} from "react-syntax-highlighter/dist/esm/styles/prism"; // Estilo oscuro pro
 import OpenAI from "openai";
 // Configuración del cliente (Asegúrate de tener VITE_OPENAI_API_KEY en tu .env)
 const openai = new OpenAI({
@@ -73,7 +75,7 @@ const CampusAI = () => {
   // Scroll automático
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, []);{/**[message] */}
 
   const fetchChatHistory = async () => {
     try {
@@ -312,6 +314,30 @@ const CampusAI = () => {
       setIsTyping(false);
     }
   };
+
+  // Componente interno para el botón de copiar
+  const CopyButton = ({ text }) => {
+    const [copied, setCopied] = React.useState(false);
+    const handleCopy = () => {
+      navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    };
+    return (
+      <button
+        onClick={handleCopy}
+        className="hover:text-white transition-colors flex items-center gap-1"
+      >
+        {copied ? (
+          <Check size={14} className="text-emerald-500" />
+        ) : (
+          <Copy size={14} />
+        )}
+        {copied ? "Copiado" : "Copiar"}
+      </button>
+    );
+  };
+
   return (
     <div className="flex flex-col max-w-5xl mt-2  p-4 max-sm:p-0 md:h-[calc(100vh-40px)] bg-neutral-950 mb-10">
       {/** h-[calc(100vh-40px)] */}
@@ -359,17 +385,6 @@ const CampusAI = () => {
             key={i}
             className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
           >
-            {/* <div
-              className={`relative max-w-[80%] p-5 rounded-[2.2rem] shadow-lg transition-all ${
-                m.role === "user"
-                  ? "bg-neutral-100 text-black rounded-tr-none font-medium"
-                  : "bg-neutral-900 border border-neutral-800 text-neutral-200 rounded-tl-none"
-              }`}
-            >
-              <p className="text-sm md:text-base whitespace-pre-wrap leading-relaxed">
-                {m.text}
-              </p>
-            </div> */}
             <div
               className={`relative max-w-[85%] p-5 rounded-4xl shadow-sm ${
                 m.role === "user"
@@ -407,7 +422,7 @@ const CampusAI = () => {
                         <SyntaxHighlighter
                           {...props}
                           children={String(children).replace(/\n$/, "")}
-                          style={atomDark}
+                          style={vscDarkPlus}
                           language={match[1]}
                           PreTag="div"
                           customStyle={{
