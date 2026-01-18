@@ -371,7 +371,7 @@ const CampusAI = () => {
               </p>
             </div> */}
             <div
-              className={`relative max-w-[85%] p-5 rounded-[2rem] shadow-sm ${
+              className={`relative max-w-[85%] p-5 rounded-4xl shadow-sm ${
                 m.role === "user"
                   ? "bg-blue-600 text-white rounded-tr-none"
                   : "bg-neutral-900 border border-neutral-800 text-neutral-300 rounded-tl-none"

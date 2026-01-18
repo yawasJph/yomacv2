@@ -58,14 +58,14 @@ const CampusChat = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[100] font-sans">
+    <div className="fixed bottom-6 right-6 z-100 font-sans">
       <AnimatePresence>
         {isOpen && (
           <motion.div 
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="bg-neutral-900 border border-neutral-800 w-[350px] h-[500px] rounded-[2rem] mb-4 flex flex-col shadow-2xl overflow-hidden"
+            className="bg-neutral-900 border border-neutral-800 w-[350px] h-[500px] rounded-4xl mb-4 flex flex-col shadow-2xl overflow-hidden"
           >
             {/* Header */}
             <div className="bg-blue-600 p-5 flex justify-between items-center text-white">

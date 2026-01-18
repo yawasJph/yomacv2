@@ -488,7 +488,7 @@ const ConectorRedes = ({ onBack }) => {
                   <p className="text-neutral-400 text-sm mb-1 uppercase">
                     Puntaje Total de Red
                   </p>
-                  <p className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-blue-500 mb-8">
+                  <p className="text-5xl font-black text-transparent bg-clip-text bg-linear-to-b from-white to-blue-500 mb-8">
                     {totalScore}
                   </p>
                   <button
