@@ -1,20 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import { useAuth } from "../../context/AuthContext";
-import { Send, Coffee, Zap, Copy, Check } from "lucide-react";
+import { Send, Coffee, Zap, Camera, X } from "lucide-react";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import {
-  atomDark,
-  vscDarkPlus,
-} from "react-syntax-highlighter/dist/esm/styles/prism"; // Estilo oscuro pro
-import OpenAI from "openai";
-// Configuración del cliente (Asegúrate de tener VITE_OPENAI_API_KEY en tu .env)
-const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true, // Necesario para correrlo directamente en el cliente (frontend)
-});
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism"; // Estilo oscuro pro
+import { uploadToCloudinary } from "../../cloudinary/upToCloudinary";
 
 const toastStyle = {
   style: {
@@ -37,262 +29,263 @@ const CampusAI = () => {
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef(null);
   const [userProfile, setUserProfile] = useState(null);
-
-  useEffect(() => {
-    if (user?.id) {
-      fetchChatHistory();
-      fetchUserProfile(); // Nueva función
-    }
-  }, [user]);
-
-  const fetchUserProfile = async () => {
-    const { data } = await supabaseClient
-      .from("profiles")
-      .select("full_name, carrera, ciclo")
-      .eq("id", user.id)
-      .single();
-    if (data) setUserProfile(data);
-  };
+  const [imageFile, setImageFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   const getDynamicInstruction = (profile) => {
     const name = profile?.full_name || "Colega";
-    const carrera = profile?.carrera || "tu carrera";
-    const ciclo = profile?.ciclo || "tu ciclo";
-    const notes = profile?.yawas_notes || "No hay notas aún.";
+    const carrera = profile?.carrera || "su carrera";
+    const ciclo = profile?.ciclo || "su ciclo";
+    const notes = profile?.yawas_notes
+      ? `CONTEXTO PREVIO DE TU AMIGO: ${profile.yawas_notes}`
+      : "Aún no conoces mucho de este amigo, ¡empieza a conocerlo!";
 
     return `Tu nombre es Yawas. Eres el mejor amigo de los estudiantes del instituto. 
-  Estás hablando con ${name}, que estudia ${carrera} y va en el ciclo ${ciclo}.
-  NOTAS DE TU AMIGO: ${notes}.
-  No eres formal. Usa esta info para saludarlo o darle consejos específicos de su carrera si te pregunta. 
-  Habla como un amigo: '¡Qué onda ${name}!', 'Oye, para ser de ${ciclo} ciclo vas súper bien', etc. 
-  Si no sabes algo, dilo con sinceridad.
-  REGLA DE MEMORIA: Si el alumno te cuenta algo importante (cumpleaños, exámenes, dificultades, gustos), 
-  al final de tu respuesta añade SIEMPRE el marcador: [[SAVE: dato importante]].
-  Ejemplo: "¡Mucha suerte en tu examen! [[SAVE: Tiene examen de redes mañana]]"
+  Estás hablando con ${name}, estudiante de ${carrera} (${ciclo} ciclo).
+  
+  ${notes}
+
+  PERSONALIDAD:
+  - No eres un asistente formal, eres un "causa", un "compa".
+  - Usa jerga juvenil peruana de forma natural pero moderada (ej: "habla", "causa", "chévere", "ya fuiste").
+  - Eres motivador y empático. Si tiene exámenes, dale ánimos.
+
+  REGLA DE MEMORIA (CRUCIAL):
+  - Si el usuario te cuenta algo nuevo e importante (fechas, gustos, planes), guarda el dato.
+  - Al final de tu respuesta, usa: [[SAVE: dato corto]].
+  - IMPORTANTE: Solo usa [[SAVE]] para información NUEVA que no esté en el 'CONTEXTO PREVIO'. No repitas info que ya guardaste.
+  
+  EJEMPLO DE RESPUESTA:
+  "¡Qué buena ${name}! Ya falta poco para terminar el ${ciclo} ciclo, tú puedes. [[SAVE: Le gusta programar en Python]]"
   `;
+  };
+
+  ////////////////////
+
+  // 1. CARGA INICIAL (Perfil e Historial)
+  useEffect(() => {
+    const initChat = async () => {
+      if (user?.id) {
+        const profile = await fetchUserProfile();
+        const history = await fetchChatHistory();
+
+        // Si no hay mensajes previos, Yawas saluda por iniciativa propia
+        if (history.length === 0 && profile) {
+          triggerWelcomeGreeting(profile);
+        }
+      }
+    };
+    initChat();
+  }, [user]);
+
+  // 2. FUNCIONES DE APOYO
+  const fetchUserProfile = async () => {
+    const { data } = await supabaseClient
+      .from("profiles")
+      .select("full_name, carrera, ciclo, yawas_notes")
+      .eq("id", user.id)
+      .single();
+    if (data) setUserProfile(data);
+    return data;
+  };
+
+  const fetchChatHistory = async () => {
+    const { data, error } = await supabaseClient
+      .from("chat_messages")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: true })
+      .order("id", { ascending: true }); // ORDEN DOBLE PARA EVITAR DESORDEN
+
+    if (data) {
+      setMessages(data);
+      return data;
+    }
+    return [];
+  };
+
+  // 3. LÓGICA DE SALUDO AUTOMÁTICO
+  const triggerWelcomeGreeting = async (profile) => {
+    setIsTyping(true);
+    const welcomePlaceholder = {
+      user_id: user.id,
+      text: "",
+      role: "assistant",
+    };
+    setMessages([welcomePlaceholder]);
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/yawas-chat`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${(await supabaseClient.auth.getSession()).data.session?.access_token}`,
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({
+            systemInstruction: `Eres Yawas. Tu amigo ${profile.full_name} acaba de entrar. Basado en sus notas: "${profile.yawas_notes || "No hay notas"}", dale un saludo corto (max 2 oraciones), muy informal y motivador. No uses [[SAVE]] aquí.`,
+            messages: [
+              { role: "user", content: "¡Hola Yawas! Acabo de entrar." },
+            ],
+          }),
+        },
+      );
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        fullText += decoder.decode(value, { stream: true });
+        setMessages([{ ...welcomePlaceholder, text: fullText }]);
+      }
+
+      await supabaseClient.from("chat_messages").insert({
+        user_id: user.id,
+        text: fullText,
+        role: "assistant",
+      });
+    } catch (err) {
+      console.error("Error en saludo:", err);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   // Scroll automático
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, []);{/**[message] */}
+  }, [messages]);
 
-  const fetchChatHistory = async () => {
-    try {
-      const { data, error } = await supabaseClient
-        .from("chat_messages")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: true });
-
-      if (error) throw error;
-      if (data) setMessages(data);
-    } catch (err) {
-      console.error("Error cargando historial:", err.message);
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
-  useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  //   const sendMessage = async (e) => {
-  //     e.preventDefault();
-  //     if (!input.trim() || isTyping || !user) return;
-
-  //     const userText = input;
-  //     setInput("");
-
-  //     // 1. Guardar mensaje del usuario
-  //     const userMsg = { user_id: user.id, text: userText, role: "user" };
-  //     setMessages((prev) => [...prev, userMsg]);
-  //     await supabaseClient.from("chat_messages").insert(userMsg);
-
-  //     setIsTyping(true);
-
-  //     // 2. Crear un mensaje vacío de Yawas para ir llenándolo
-  //     const placeholderBotMsg = { user_id: user.id, text: "", role: "assistant" };
-  //     setMessages((prev) => [...prev, placeholderBotMsg]);
-
-  //     try {
-  //       const stream = await openai.chat.completions.create({
-  //         model: "gpt-4o-mini",
-  //         messages: [
-  //           { role: "system", content: getDynamicInstruction(userProfile) },
-  //           ...messages.slice(-10).map((m) => ({
-  //             role: m.role === "assistant" ? "assistant" : "user",
-  //             content: m.text,
-  //           })),
-  //           { role: "user", content: userText },
-  //         ],
-  //         stream: true, // ¡ACTIVAMOS EL MODO FIRE! 🔥
-  //       });
-
-  //       let fullText = "";
-
-  //       // 3. Procesar el flujo de datos palabra por palabra
-  //       for await (const chunk of stream) {
-  //         const content = chunk.choices[0]?.delta?.content || "";
-  //         fullText += content;
-
-  //         // Actualizamos el último mensaje en la lista (el de Yawas)
-  //         setMessages((prev) => {
-  //           const newMessages = [...prev];
-  //           newMessages[newMessages.length - 1] = {
-  //             ...placeholderBotMsg,
-  //             text: fullText,
-  //           };
-  //           return newMessages;
-  //         });
-  //       }
-
-  //       // 1. Extraer notas si existen
-  //       const saveMatches = fullText.match(/\[\[SAVE:\s*(.*?)\s*\]\]/g);
-
-  //       // 2. Limpiar el texto de TODAS las ocurrencias de [[SAVE: ...]]
-  //       const cleanTextForDisplay = fullText
-  //         .replace(/\[\[SAVE:.*?\]\]/g, "")
-  //         .trim();
-
-  //       // 3. Actualizar la nota en el perfil (profiles) si hubo hallazgos
-  //       if (saveMatches) {
-  //         const newNotesFound = saveMatches.map((m) =>
-  //           m.replace("[[SAVE:", "").replace("]]", "").trim(),
-  //         );
-  //         const updatedNotes = userProfile.yawas_notes
-  //           ? `${userProfile.yawas_notes}. ${newNotesFound.join(". ")}`
-  //           : newNotesFound.join(". ");
-
-  //         await supabaseClient
-  //           .from("profiles")
-  //           .update({ yawas_notes: updatedNotes })
-  //           .eq("id", user.id);
-
-  //         setUserProfile((prev) => ({ ...prev, yawas_notes: updatedNotes }));
-  //       }
-
-  //       // 4. GUARDAR EN SUPABASE (chat_messages) EL TEXTO LIMPIO
-  //       // Así, al recargar, el marcador ya no existe en el historial.
-  //       await supabaseClient.from("chat_messages").insert({
-  //         user_id: user.id,
-  //         text: cleanTextForDisplay, // <--- Importante: Texto limpio
-  //         role: "assistant",
-  //       });
-
-  //       if (fullText.includes("[[SAVE:")) {
-  //         // 1. Extraer el dato entre los corchetes
-  //         const match = fullText.match(/\[\[SAVE:\s*(.*?)\s*\]\]/);
-  //         const newNote = match ? match[1] : null;
-
-  //         if (newNote) {
-  //           // 2. Limpiar el texto para que el alumno no vea el código técnico
-  //           const cleanText = fullText.replace(/\[\[SAVE:.*?\]\]/g, "").trim();
-
-  //           // 3. Actualizar la UI con el texto limpio
-  //           setMessages((prev) => {
-  //             const updated = [...prev];
-  //             updated[updated.length - 1].text = cleanText;
-  //             return updated;
-  //           });
-
-  //           // 4. Guardar en Supabase acumulando la nota
-  //           const updatedNotes = userProfile.yawas_notes
-  //             ? `${userProfile.yawas_notes}. ${newNote}`
-  //             : newNote;
-
-  //           await supabaseClient
-  //             .from("profiles")
-  //             .update({ yawas_notes: updatedNotes })
-  //             .eq("id", user.id);
-
-  //           // Actualizamos el estado local para que Yawas lo sepa en el siguiente mensaje
-  //           setUserProfile({ ...userProfile, yawas_notes: updatedNotes });
-  //         }
-  //       }
-  //     } catch (err) {
-  //       console.error("Error Streaming OpenAI:", err);
-  //       toast.error("Se cortó la conexión con Yawas 📡");
-  //     } finally {
-  //       setIsTyping(false);
-  //     }
-  //   };
-
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!input.trim() || isTyping || !user) return;
+    // Validación básica
+    // LOGICA DE VALIDACIÓN CORREGIDA:
+    const hasText = input.trim().length > 0;
+    const hasImage = imageFile !== null;
+
+    if (!hasText && !hasImage) return; // Si no hay nada, no hace nada
 
     const userText = input;
+    const currentImageFile = imageFile; // Referencia local antes de limpiar
     setInput("");
-
-    // 1. Guardar mensaje del usuario en UI y DB
-    const userMsg = { user_id: user.id, text: userText, role: "user" };
-    setMessages((prev) => [...prev, userMsg]);
-    await supabaseClient.from("chat_messages").insert(userMsg);
-
     setIsTyping(true);
 
-    // 2. Placeholder para la respuesta de Yawas
-    const placeholderBotMsg = { user_id: user.id, text: "", role: "assistant" };
-    setMessages((prev) => [...prev, placeholderBotMsg]);
+    // 1. Limpiar estados de selección de imagen inmediatamente para la UI
+    setImageFile(null);
+    setPreviewUrl(null);
 
     try {
-      const stream = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: getDynamicInstruction(userProfile) },
-          ...messages.slice(-10).map((m) => ({
-            role: m.role === "assistant" ? "assistant" : "user",
-            content: m.text,
-          })),
-          { role: "user", content: userText },
-        ],
-        stream: true,
-      });
+      let uploadedImageUrl = null;
 
+      // 2. Si hay imagen, subirla PRIMERO a Cloudinary
+      if (currentImageFile) {
+        const uploadData = await uploadToCloudinary(currentImageFile);
+        uploadedImageUrl = uploadData.secure_url;
+      }
+
+      // 3. Crear el objeto de mensaje final del usuario
+      const userMsg = {
+        user_id: user.id,
+        text: userText || "Envió una imagen",
+        role: "user",
+        image_url: uploadedImageUrl, // Aquí ya tenemos la URL, se verá de inmediato
+      };
+
+      // 4. Actualizar estado local y Base de Datos (UNA SOLA VEZ)
+      // Agregamos el mensaje del usuario y el placeholder de Yawas al mismo tiempo
+      const placeholderBotMsg = {
+        user_id: user.id,
+        text: "",
+        role: "assistant",
+      };
+      setMessages((prev) => [...prev, userMsg, placeholderBotMsg]);
+
+      await supabaseClient.from("chat_messages").insert(userMsg);
+
+      // 5. Llamada a la Edge Function
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/yawas-chat`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${(await supabaseClient.auth.getSession()).data.session?.access_token}`,
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({
+            systemInstruction: getDynamicInstruction(userProfile),
+            imageUrl: uploadedImageUrl,
+            messages: messages
+              .slice(-10)
+              .map((m) => ({
+                role: m.role === "assistant" ? "assistant" : "user",
+                content: m.text,
+              }))
+              .concat({ role: "user", content: userText }),
+          }),
+        },
+      );
+
+      if (!response.ok) throw new Error("Error en la función");
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
       let fullText = "";
 
-      // 3. Streaming interactivo
-      for await (const chunk of stream) {
-        const content = chunk.choices[0]?.delta?.content || "";
-        fullText += content;
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
 
+        const chunk = decoder.decode(value, { stream: true });
+        fullText += chunk;
+
+        // Actualizar el último mensaje (el placeholder) con el stream
         setMessages((prev) => {
-          const newMessages = [...prev];
-          newMessages[newMessages.length - 1] = {
+          const updated = [...prev];
+          updated[updated.length - 1] = {
             ...placeholderBotMsg,
             text: fullText,
           };
-          return newMessages;
+          return updated;
         });
       }
 
-      // --- PROCESAMIENTO POST-STREAMING ---
-
-      // 4. Extraer notas y limpiar texto
-      const saveMatches = fullText.match(/\[\[SAVE:\s*(.*?)\s*\]\]/g);
+      // 6. Lógica de limpieza y guardado de Yawas
       const cleanText = fullText.replace(/\[\[SAVE:.*?\]\]/g, "").trim();
+      const saveMatches = fullText.match(/\[\[SAVE:\s*(.*?)\s*\]\]/g);
 
-      // 5. Actualizar UI con el texto limpio (para eliminar los marcadores de la pantalla)
+      // Actualizar UI final de Yawas
       setMessages((prev) => {
         const updated = [...prev];
         updated[updated.length - 1].text = cleanText;
         return updated;
       });
 
-      // 6. Guardar la respuesta LIMPIA en el historial de chat de Supabase
       await supabaseClient.from("chat_messages").insert({
         user_id: user.id,
         text: cleanText,
         role: "assistant",
       });
 
-      // 7. Si hubo algo que guardar, actualizar yawas_notes en el perfil
-      if (saveMatches) {
+      // 7. Guardar notas si existen
+      if (saveMatches && userProfile) {
         const newNotesFound = saveMatches.map((m) =>
           m.replace("[[SAVE:", "").replace("]]", "").trim(),
         );
-
-        const updatedNotes = userProfile?.yawas_notes
+        const updatedNotes = userProfile.yawas_notes
           ? `${userProfile.yawas_notes}. ${newNotesFound.join(". ")}`
           : newNotesFound.join(". ");
 
@@ -301,211 +294,207 @@ const CampusAI = () => {
           .update({ yawas_notes: updatedNotes })
           .eq("id", user.id);
 
-        // Actualizar estado local para el próximo mensaje
         setUserProfile((prev) => ({ ...prev, yawas_notes: updatedNotes }));
-
-        // Opcional: un toast discreto o log
-        console.log("Yawas aprendió algo nuevo:", newNotesFound);
       }
     } catch (err) {
       console.error("Error con Yawas:", err);
-      toast.error("Se cortó la conexión con Yawas 📡");
+      toast.error("Yawas se distrajo un poco. ¡Intenta de nuevo!");
+      // Opcional: eliminar el placeholder si falló
+      setMessages((prev) => prev.slice(0, -1));
     } finally {
       setIsTyping(false);
     }
   };
 
-  // Componente interno para el botón de copiar
-  const CopyButton = ({ text }) => {
-    const [copied, setCopied] = React.useState(false);
-    const handleCopy = () => {
-      navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    };
-    return (
-      <button
-        onClick={handleCopy}
-        className="hover:text-white transition-colors flex items-center gap-1"
-      >
-        {copied ? (
-          <Check size={14} className="text-emerald-500" />
-        ) : (
-          <Copy size={14} />
-        )}
-        {copied ? "Copiado" : "Copiar"}
-      </button>
-    );
-  };
-
   return (
-    <div className="flex flex-col max-w-5xl mt-2  p-4 max-sm:p-0 md:h-[calc(100vh-40px)] bg-neutral-950 mb-10">
-      {/** h-[calc(100vh-40px)] */}
-      {/* Header Estilo Yawas */}
-      <header className="flex items-center justify-between mb-6 p-6 bg-neutral-900 border border-neutral-800 rounded-[2.5rem] shadow-xl">
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <div className="bg-linear-to-tr from-yellow-400 to-orange-500 p-3 rounded-2xl shadow-[0_0_20px_rgba(245,158,11,0.3)]">
-              <Zap size={28} className="text-black fill-black" />
+  <div className="flex flex-col w-full max-w-5xl mx-auto h-dvh text-white overflow-hidden shadow-2xl">
+    
+    {/* Header Estilo Premium */}
+    <header className="flex items-center justify-between p-4 md:p-6 bg-neutral-900/50 backdrop-blur-md border-b border-neutral-800/50 sticky top-0 z-10">
+      <div className="flex items-center gap-3">
+        <div className="relative">
+          <div className="bg-gradient-to-tr from-yellow-400 to-orange-500 p-2.5 rounded-2xl shadow-[0_0_15px_rgba(245,158,11,0.4)]">
+            <Zap size={24} className="text-black fill-black" />
+          </div>
+          <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-neutral-900 rounded-full animate-pulse"></span>
+        </div>
+        <div>
+          <h1 className="text-xl font-black tracking-tighter leading-none">YAWAS</h1>
+          <p className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest mt-1 flex items-center gap-1">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+            </span>
+            Online
+          </p>
+        </div>
+      </div>
+      
+      <div className="flex items-center gap-2">
+        <div className="hidden sm:flex flex-col items-end mr-2">
+          <span className="text-[10px] text-neutral-500 font-bold uppercase tracking-tighter">Ciclo actual</span>
+          <span className="text-xs font-mono text-yellow-500">{userProfile?.ciclo || '-'}</span>
+        </div>
+        <div className="h-10 w-10 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center overflow-hidden">
+           {/* Aquí puedes poner la foto del userProfile si la tienes */}
+           <span className="text-xs font-bold text-neutral-400">{userProfile?.full_name?.charAt(0)}</span>
+        </div>
+      </div>
+    </header>
+
+    {/* Chat Space - Con degradado de profundidad */}
+    <div className="flex-1 overflow-y-auto px-4 py-6 space-y-8 custom-scrollbar bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent">
+      
+      {messages.length === 0 && (
+        <div className="flex flex-col items-center justify-center h-full text-neutral-700 animate-in fade-in zoom-in duration-700">
+          <div className="bg-neutral-900/50 p-8 rounded-[3rem] border border-neutral-800/50 flex flex-col items-center">
+            <Coffee size={40} className="mb-4 opacity-10 text-yellow-500" />
+            <p className="text-lg font-medium italic text-neutral-400 text-center">
+              "¡Habla, causa! ¿En qué andamos?"
+            </p>
+            <div className="flex gap-2 mt-4">
+               <span className="px-3 py-1 bg-neutral-800 rounded-full text-[9px] text-neutral-500 font-bold">TAREAS</span>
+               <span className="px-3 py-1 bg-neutral-800 rounded-full text-[9px] text-neutral-500 font-bold">CÓDIGO</span>
+               <span className="px-3 py-1 bg-neutral-800 rounded-full text-[9px] text-neutral-500 font-bold">DUDAS</span>
             </div>
-            <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-neutral-900 rounded-full"></span>
-          </div>
-          <div>
-            <h1 className="text-2xl font-black text-white tracking-tighter">
-              YAWAS
-            </h1>
-            <p className="text-neutral-500 text-[10px] font-bold uppercase tracking-[0.2em] flex items-center gap-2">
-              <span className="text-emerald-500">●</span> En línea y listo
-            </p>
           </div>
         </div>
-        <div className="hidden sm:flex gap-2">
-          <span className="px-4 py-2 bg-neutral-800 rounded-full text-[10px] font-bold text-neutral-400 uppercase">
-            Colega Digital
-          </span>
-        </div>
-      </header>
+      )}
 
-      {/* Chat Space */}
-      <div className="flex-1 overflow-y-auto mb-4 space-y-6 px-2 custom-scrollbar">
-        {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-neutral-600">
-            <Coffee size={48} className="mb-4 opacity-20" />
-            <p className="text-lg font-medium italic">
-              "¡Habla, causa! ¿En qué te ayudo hoy?"
-            </p>
-            <p className="text-xs uppercase tracking-widest mt-2">
-              Yawas está escuchando...
-            </p>
-          </div>
-        )}
+      {messages.map((m, i) => (
+        <div
+          key={i}
+          className={`flex w-full animate-in slide-in-from-bottom-2 duration-300 ${
+            m.role === "user" ? "justify-end" : "justify-start"
+          }`}
+        >
+          <div className={`flex flex-col max-w-[85%] ${m.role === "user" ? "items-end" : "items-start"}`}>
+            
+            <div className={`relative p-4 md:p-5 rounded-4xl shadow-2xl transition-all ${
+              m.role === "user"
+                ? "bg-blue-600 text-white rounded-tr-none shadow-blue-900/20"
+                : "bg-neutral-900 border border-neutral-800/80 text-neutral-200 rounded-tl-none shadow-black/40"
+            }`}>
+              
+              {m.image_url && (
+                <div className="mb-3 rounded-2xl overflow-hidden border border-white/5 shadow-inner">
+                  <img src={m.image_url} alt="Adjunto" className="max-h-72 w-full object-cover" />
+                </div>
+              )}
 
-        {messages.map((m, i) => (
-          <div
-            key={i}
-            className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
-          >
-            <div
-              className={`relative max-w-[85%] p-5 rounded-4xl shadow-sm ${
-                m.role === "user"
-                  ? "bg-blue-600 text-white rounded-tr-none"
-                  : "bg-neutral-900 border border-neutral-800 text-neutral-300 rounded-tl-none"
-              }`}
-            >
-              {/* REEMPLAZO DEL TEXTO SIMPLE POR MARKDOWN */}
-              <ReactMarkdown
-                children={m.text}
-                components={{
-                  code({ node, inline, className, children, ...props }) {
-                    const match = /language-(\w+)/.exec(className || "");
-                    return !inline && match ? (
-                      <div className="relative my-4 rounded-xl overflow-hidden border border-neutral-700">
-                        {/* Cabecera de la card de código */}
-                        <div className="flex justify-between items-center bg-neutral-800 px-4 py-2 text-[10px] font-mono text-neutral-400 uppercase tracking-widest">
-                          <span>{match[1]}</span>
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(
-                                String(children).replace(/\n$/, ""),
-                              );
-                              toast.info("Copiado", {
-                                ...toastStyle,
-                                icon: "📚",
-                              });
-                            }}
-                            className="hover:text-white transition-colors"
-                          >
-                            Copiar
-                          </button>
+              <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/50">
+                <ReactMarkdown
+                  children={m.text}
+                  components={{
+                    code({ node, inline, className, children, ...props }) {
+                      const match = /language-(\w+)/.exec(className || "");
+                      return !inline && match ? (
+                        <div className="relative my-4 rounded-2xl overflow-hidden border border-neutral-800 group">
+                          <div className="flex justify-between items-center bg-neutral-800/80 px-4 py-2 text-[10px] font-mono text-neutral-400">
+                            <span className="font-bold text-yellow-500/80">{match[1]}</span>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(String(children).replace(/\n$/, ""));
+                                toast.success("Copiado al portapapeles", { ...toastStyle, icon: "🔥" });
+                              }}
+                              className="bg-neutral-700 px-2 py-1 rounded-md hover:bg-neutral-600"
+                            >
+                              Copiar
+                            </button>
+                          </div>
+                          <SyntaxHighlighter
+                            {...props}
+                            children={String(children).replace(/\n$/, "")}
+                            style={vscDarkPlus}
+                            language={match[1]}
+                            PreTag="div"
+                            customStyle={{ margin: 0, padding: "1.2rem", fontSize: "0.8rem", backgroundColor: "#050505" }}
+                          />
                         </div>
-                        {/* El resaltador de sintaxis */}
-                        <SyntaxHighlighter
-                          {...props}
-                          children={String(children).replace(/\n$/, "")}
-                          style={vscDarkPlus}
-                          language={match[1]}
-                          PreTag="div"
-                          customStyle={{
-                            margin: 0,
-                            padding: "1.5rem",
-                            fontSize: "0.85rem",
-                            backgroundColor: "#0a0a0a",
-                          }}
-                        />
-                      </div>
-                    ) : (
-                      <code
-                        className="bg-neutral-800 px-1.5 py-0.5 rounded text-yellow-500 font-mono text-sm"
-                        {...props}
-                      >
-                        {children}
-                      </code>
-                    );
-                  },
-                  // También podemos dar estilo a las listas y negritas
-                  ul: ({ children }) => (
-                    <ul className="list-disc ml-5 space-y-2 my-3">
-                      {children}
-                    </ul>
-                  ),
-                  ol: ({ children }) => (
-                    <ol className="list-decimal ml-5 space-y-2 my-3">
-                      {children}
-                    </ol>
-                  ),
-                  p: ({ children }) => (
-                    <p className="mb-3 last:mb-0 leading-relaxed">{children}</p>
-                  ),
-                  h3: ({ children }) => (
-                    <h3 className="text-lg font-bold text-white mt-4 mb-2">
-                      {children}
-                    </h3>
-                  ),
-                }}
-              />
-
-              <span className="text-[10px] opacity-40 mt-4 block font-mono">
-                {m.role === "user" ? "" : "Yawas"}
-              </span>
-            </div>
-          </div>
-        ))}
-
-        {isTyping && (
-          <div className="flex justify-start">
-            <div className="bg-neutral-900 border border-neutral-800 p-4 rounded-3xl rounded-tl-none">
-              <div className="flex gap-1">
-                <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-bounce"></div>
+                      ) : (
+                        <code className="bg-neutral-800 px-1.5 py-0.5 rounded text-yellow-500 font-mono text-xs" {...props}>
+                          {children}
+                        </code>
+                      );
+                    }
+                  }}
+                />
               </div>
             </div>
-          </div>
-        )}
-        <div ref={scrollRef} />
-      </div>
 
-      {/* Input de Yawas */}
+            {/* Etiqueta de nombre y tiempo */}
+            {/* <div className={`flex items-center gap-2 mt-2 px-2 text-[9px] font-black uppercase tracking-tighter opacity-30 ${
+              m.role === "user" ? "flex-row-reverse" : "flex-row"
+            }`}>
+              <span>{m.role === "user" ? "Tú" : "Yawas"}</span>
+              <span>•</span>
+              <span>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            </div> */}
+          </div>
+        </div>
+      ))}
+
+      {isTyping && (
+        <div className="flex justify-start animate-in fade-in duration-300">
+          <div className="bg-neutral-900/50 border border-neutral-800/50 p-4 rounded-3xl rounded-tl-none">
+            <div className="flex gap-1.5">
+              <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+              <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+              <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce"></div>
+            </div>
+          </div>
+        </div>
+      )}
+      <div ref={scrollRef} className="h-4" />
+    </div>
+
+    {/* Input Flotante con efecto Glassmorphism */}
+    <footer className="p-4 md:p-6 bg-linear-to-t ">
       <form
         onSubmit={sendMessage}
-        className="relative p-2 bg-neutral-900 rounded-[3rem] border border-neutral-800 shadow-2xl focus-within:border-yellow-500/50 transition-all "
+        className="relative flex items-center gap-2 p-2 bg-neutral-900/80 backdrop-blur-xl rounded-[2.5rem] border border-neutral-800 shadow-[0_10px_30px_rgba(0,0,0,0.5)] focus-within:border-yellow-500/40 transition-all duration-300"
       >
+        {previewUrl && (
+          <div className="absolute -top-28 left-4 p-2 bg-neutral-800 rounded-3xl border border-neutral-700 shadow-2xl animate-in slide-in-from-bottom-4">
+            <div className="relative group">
+              <img src={previewUrl} className="h-20 w-20 object-cover rounded-2xl border border-white/10" />
+              <button
+                type="button"
+                onClick={() => { setImageFile(null); setPreviewUrl(null); }}
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 shadow-xl hover:scale-110 transition-transform"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        <label className="flex items-center justify-center cursor-pointer hover:bg-neutral-800 text-neutral-500 hover:text-yellow-500 w-12 h-12 rounded-full transition-all shrink-0">
+          <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+          <Camera size={22} />
+        </label>
+
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Suelta lo que tengas en mente..."
-          className="w-full bg-transparent text-white rounded-full px-6 py-4 pr-16 focus:outline-none text-sm md:text-base"
+          placeholder="Habla, ¿qué andamos haciendo?"
+          className="flex-1 bg-transparent text-white py-3 px-2 focus:outline-none text-sm md:text-base placeholder:text-neutral-600 font-medium"
         />
+
         <button
           type="submit"
-          disabled={isTyping}
-          className="absolute right-3 top-1/2 -translate-y-1/2 bg-yellow-500 p-3 rounded-full text-black hover:scale-105 active:scale-95 transition-all disabled:opacity-30 disabled:grayscale"
+          disabled={isTyping || (!input.trim() && !imageFile)}
+          className="flex items-center justify-center bg-yellow-500 w-12 h-12 rounded-full text-black hover:scale-105 active:scale-95 transition-all disabled:opacity-10 disabled:grayscale shrink-0 shadow-lg shadow-yellow-500/20"
         >
-          <Send size={20} />
+          <Send size={20} className="ml-0.5" />
         </button>
       </form>
-    </div>
-  );
+      <p className="text-[8px] text-center text-neutral-700 mt-4 font-bold uppercase tracking-[0.3em]">
+        Yawas v4.0 • Inteligencia Estudiantil
+      </p>
+    </footer>
+  </div>
+);
 };
 
 export default CampusAI;

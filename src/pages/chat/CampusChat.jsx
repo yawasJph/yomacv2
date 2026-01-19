@@ -3,6 +3,7 @@ import { MessageCircle, X, Send, Bot, User } from "lucide-react";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import { useAuth } from "../../context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
+import { GoogleGenAI } from "@google/genai";
 
 const CampusChat = () => {
   const { user } = useAuth();
@@ -11,6 +12,21 @@ const CampusChat = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
+
+  const ai = new GoogleGenAI({apiKey: import.meta.env.VITE_GEMINI_API_KEY})
+
+  const apicall = async()=>{
+    const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents:"hola mundo"
+  })
+  console.log((response.text))
+  }
+
+  useEffect(()=>{
+    apicall()
+  },[])
+
 
   // 1. Cargar historial al abrir
   useEffect(() => {

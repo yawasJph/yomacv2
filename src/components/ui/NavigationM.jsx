@@ -1,4 +1,4 @@
-import { Bookmark, Gamepad2, Home, Plus, TriangleAlertIcon, UserPen, Users } from "lucide-react";
+import { Bookmark, Gamepad2, Home, Info, Plus, TriangleAlertIcon, UserPen, Users } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../../context/AuthContext";
@@ -79,9 +79,9 @@ const NavigationM = () => {
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-black/95 backdrop-blur-lg border-t-2 border-emerald-500/20 dark:border-emerald-500/30 z-50 lg:hidden">
       <div className="flex items-center justify-around h-16 px-2">
-        {mobileNavLinks.map((link) => (
+        {mobileNavLinks.map((link, index) => (
           <NavLink
-            key={link.text}
+            key={`${link}-${index}`}
             to={link.to}
             end={link.end}
             className={({ isActive }) =>
