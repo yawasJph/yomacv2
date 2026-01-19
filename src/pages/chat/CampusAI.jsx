@@ -343,7 +343,7 @@ const CampusAI = () => {
     </header>
 
     {/* Chat Space - Con degradado de profundidad */}
-    <div className="flex-1 overflow-y-auto px-4 py-6 space-y-8 custom-scrollbar bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent">
+    <div className="flex-1 overflow-y-auto px-4 py-6 space-y-8 no-scrollbar bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent">
       
       {messages.length === 0 && (
         <div className="flex flex-col items-center justify-center h-full text-neutral-700 animate-in fade-in zoom-in duration-700">
