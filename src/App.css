@@ -109,3 +109,70 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+
+@theme {
+  /* --- Animaciones base --- */
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-in: in 0.3s ease-out;
+  --animate-bounce: bounce 1s infinite;
+  --animate-ping: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  
+  /* --- Keyframes para el Chat --- */
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8,0,1,1); }
+    50% { transform: translateY(0); animation-timing-function: cubic-bezier(0,0,0.2,1); }
+  }
+
+  @keyframes ping {
+    75%, 100% { transform: scale(2); opacity: 0; }
+  }
+}
+
+/* --- Clases de Utilidad para el Chat --- */
+
+/* Animación de entrada para los mensajes */
+.animate-in {
+  animation: in 0.35s ease-out forwards;
+}
+
+/* Efecto de scroll suave y personalizado */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #262626; /* neutral-800 */
+  border-radius: 20px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #404040; /* neutral-700 */
+}
+
+/* Soporte para Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #262626 transparent;
+}

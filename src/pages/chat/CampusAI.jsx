@@ -1,12 +1,23 @@
 import { useState, useEffect, useRef } from "react";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import { useAuth } from "../../context/AuthContext";
-import { Send, Coffee, Zap, Camera, X } from "lucide-react";
+import {
+  Send,
+  Coffee,
+  Zap,
+  Camera,
+  X,
+  Home,
+  ArrowLeft,
+  Copy,
+} from "lucide-react";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism"; // Estilo oscuro pro
 import { uploadToCloudinary } from "../../cloudinary/upToCloudinary";
+import { useIsMobile } from "../../hooks/useIsMobile";
+import { useNavigate } from "react-router-dom";
 
 const toastStyle = {
   style: {
@@ -31,6 +42,8 @@ const CampusAI = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   const getDynamicInstruction = (profile) => {
     const name = profile?.full_name || "Colega";
@@ -59,8 +72,6 @@ const CampusAI = () => {
   "¡Qué buena ${name}! Ya falta poco para terminar el ${ciclo} ciclo, tú puedes. [[SAVE: Le gusta programar en Python]]"
   `;
   };
-
-  ////////////////////
 
   // 1. CARGA INICIAL (Perfil e Historial)
   useEffect(() => {
@@ -307,194 +318,268 @@ const CampusAI = () => {
   };
 
   return (
-  <div className="flex flex-col w-full max-w-5xl mx-auto h-dvh text-white overflow-hidden shadow-2xl">
-    
-    {/* Header Estilo Premium */}
-    <header className="flex items-center justify-between p-4 md:p-6 bg-neutral-900/50 backdrop-blur-md border-b border-neutral-800/50 sticky top-0 z-10">
-      <div className="flex items-center gap-3">
-        <div className="relative">
-          <div className="bg-gradient-to-tr from-yellow-400 to-orange-500 p-2.5 rounded-2xl shadow-[0_0_15px_rgba(245,158,11,0.4)]">
-            <Zap size={24} className="text-black fill-black" />
-          </div>
-          <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-neutral-900 rounded-full animate-pulse"></span>
-        </div>
-        <div>
-          <h1 className="text-xl font-black tracking-tighter leading-none">YAWAS</h1>
-          <p className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest mt-1 flex items-center gap-1">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-            </span>
-            Online
-          </p>
-        </div>
-      </div>
-      
-      <div className="flex items-center gap-2">
-        <div className="hidden sm:flex flex-col items-end mr-2">
-          <span className="text-[10px] text-neutral-500 font-bold uppercase tracking-tighter">Ciclo actual</span>
-          <span className="text-xs font-mono text-yellow-500">{userProfile?.ciclo || '-'}</span>
-        </div>
-        <div className="h-10 w-10 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center overflow-hidden">
-           {/* Aquí puedes poner la foto del userProfile si la tienes */}
-           <span className="text-xs font-bold text-neutral-400">{userProfile?.full_name?.charAt(0)}</span>
-        </div>
-      </div>
-    </header>
-
-    {/* Chat Space - Con degradado de profundidad */}
-    <div className="flex-1 overflow-y-auto px-4 py-6 space-y-8 no-scrollbar bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent">
-      
-      {messages.length === 0 && (
-        <div className="flex flex-col items-center justify-center h-full text-neutral-700 animate-in fade-in zoom-in duration-700">
-          <div className="bg-neutral-900/50 p-8 rounded-[3rem] border border-neutral-800/50 flex flex-col items-center">
-            <Coffee size={40} className="mb-4 opacity-10 text-yellow-500" />
-            <p className="text-lg font-medium italic text-neutral-400 text-center">
-              "¡Habla, causa! ¿En qué andamos?"
-            </p>
-            <div className="flex gap-2 mt-4">
-               <span className="px-3 py-1 bg-neutral-800 rounded-full text-[9px] text-neutral-500 font-bold">TAREAS</span>
-               <span className="px-3 py-1 bg-neutral-800 rounded-full text-[9px] text-neutral-500 font-bold">CÓDIGO</span>
-               <span className="px-3 py-1 bg-neutral-800 rounded-full text-[9px] text-neutral-500 font-bold">DUDAS</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {messages.map((m, i) => (
-        <div
-          key={i}
-          className={`flex w-full animate-in slide-in-from-bottom-2 duration-300 ${
-            m.role === "user" ? "justify-end" : "justify-start"
-          }`}
-        >
-          <div className={`flex flex-col max-w-[85%] ${m.role === "user" ? "items-end" : "items-start"}`}>
-            
-            <div className={`relative p-4 md:p-5 rounded-4xl shadow-2xl transition-all ${
-              m.role === "user"
-                ? "bg-blue-600 text-white rounded-tr-none shadow-blue-900/20"
-                : "bg-neutral-900 border border-neutral-800/80 text-neutral-200 rounded-tl-none shadow-black/40"
-            }`}>
-              
-              {m.image_url && (
-                <div className="mb-3 rounded-2xl overflow-hidden border border-white/5 shadow-inner">
-                  <img src={m.image_url} alt="Adjunto" className="max-h-72 w-full object-cover" />
-                </div>
-              )}
-
-              <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/50">
-                <ReactMarkdown
-                  children={m.text}
-                  components={{
-                    code({ node, inline, className, children, ...props }) {
-                      const match = /language-(\w+)/.exec(className || "");
-                      return !inline && match ? (
-                        <div className="relative my-4 rounded-2xl overflow-hidden border border-neutral-800 group">
-                          <div className="flex justify-between items-center bg-neutral-800/80 px-4 py-2 text-[10px] font-mono text-neutral-400">
-                            <span className="font-bold text-yellow-500/80">{match[1]}</span>
-                            <button
-                              onClick={() => {
-                                navigator.clipboard.writeText(String(children).replace(/\n$/, ""));
-                                toast.success("Copiado al portapapeles", { ...toastStyle, icon: "🔥" });
-                              }}
-                              className="bg-neutral-700 px-2 py-1 rounded-md hover:bg-neutral-600"
-                            >
-                              Copiar
-                            </button>
-                          </div>
-                          <SyntaxHighlighter
-                            {...props}
-                            children={String(children).replace(/\n$/, "")}
-                            style={vscDarkPlus}
-                            language={match[1]}
-                            PreTag="div"
-                            customStyle={{ margin: 0, padding: "1.2rem", fontSize: "0.8rem", backgroundColor: "#050505" }}
-                          />
-                        </div>
-                      ) : (
-                        <code className="bg-neutral-800 px-1.5 py-0.5 rounded text-yellow-500 font-mono text-xs" {...props}>
-                          {children}
-                        </code>
-                      );
-                    }
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Etiqueta de nombre y tiempo */}
-            {/* <div className={`flex items-center gap-2 mt-2 px-2 text-[9px] font-black uppercase tracking-tighter opacity-30 ${
-              m.role === "user" ? "flex-row-reverse" : "flex-row"
-            }`}>
-              <span>{m.role === "user" ? "Tú" : "Yawas"}</span>
-              <span>•</span>
-              <span>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-            </div> */}
-          </div>
-        </div>
-      ))}
-
-      {isTyping && (
-        <div className="flex justify-start animate-in fade-in duration-300">
-          <div className="bg-neutral-900/50 border border-neutral-800/50 p-4 rounded-3xl rounded-tl-none">
-            <div className="flex gap-1.5">
-              <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-              <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-              <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce"></div>
-            </div>
-          </div>
-        </div>
-      )}
-      <div ref={scrollRef} className="h-4" />
-    </div>
-
-    {/* Input Flotante con efecto Glassmorphism */}
-    <footer className="p-4 md:p-6 bg-linear-to-t ">
-      <form
-        onSubmit={sendMessage}
-        className="relative flex items-center gap-2 p-2 bg-neutral-900/80 backdrop-blur-xl rounded-[2.5rem] border border-neutral-800 shadow-[0_10px_30px_rgba(0,0,0,0.5)] focus-within:border-yellow-500/40 transition-all duration-300"
+    <div className="flex flex-col min-h-screen bg-white dark:bg-black  bg-linear-to-br from-white via-gray-50 to-white text-gray-900 dark:bg-linear-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 dark:text-white transition-colors duration-300 ">
+      {/* Header Estilo Premium */}
+      <header
+        className={`flex items-center gap-5 p-4 md:p-6 bg-neutral-900/50 backdrop-blur-md border-b border-neutral-800/50 ${isMobile && "sticky top-0 z-10 px-3"}
+      bg-white/90 dark:bg-black/90 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800/50 shadow-sm dark:shadow-gray-900/30 transition-all`}
       >
-        {previewUrl && (
-          <div className="absolute -top-28 left-4 p-2 bg-neutral-800 rounded-3xl border border-neutral-700 shadow-2xl animate-in slide-in-from-bottom-4">
-            <div className="relative group">
-              <img src={previewUrl} className="h-20 w-20 object-cover rounded-2xl border border-white/10" />
-              <button
-                type="button"
-                onClick={() => { setImageFile(null); setPreviewUrl(null); }}
-                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 shadow-xl hover:scale-110 transition-transform"
-              >
-                <X size={14} />
-              </button>
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center justify-center w-10 h-10 rounded-2xl  hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all active:scale-95"
+        >
+          <ArrowLeft size={20} />
+        </button>
+
+        <div className="flex items-center gap-3 flex-1">
+          <div className="relative">
+            <div className="p-2.5 rounded-2xl bg-linear-to-br from-yellow-400 to-orange-500 dark:from-yellow-400 dark:to-orange-500 shadow-lg shadow-emerald-500/20 dark:shadow-emerald-500/30 animate-pulse-subtle">
+              <Zap size={22} className="text-black fill-black" />
+            </div>
+            <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 dark:bg-emerald-400 border-2 border-white dark:border-gray-900 rounded-full animate-pulse"></span>
+          </div>
+
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-black tracking-tight bg-linear-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                YAWAS
+              </h1>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Chat Space - Con degradado de profundidad */}
+      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-8 custom-scrollbar bg-[radial-gradient(circle_at_top,var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent  md:px-4  md:py-6  bg-linear-to-b  dark:from-gray-900/50 dark:via-black/50 dark:to-gray-900/50 custom-scrollbar">
+        {/**from-white via-gray-50/50 to-white */}
+
+        {messages.length === 0 && (
+          <div className="flex flex-col items-center justify-center min-h-[60vh] text-gray-500 dark:text-gray-400 animate-in fade-in duration-700">
+            <div className="max-w-md w-full p-6 md:p-8 text-center">
+              <div className="mb-6 p-4 rounded-3xl bg-linear-to-br from-emerald-50 to-white dark:from-emerald-950/20 dark:to-gray-900/30 border border-emerald-100 dark:border-emerald-900/30 inline-block">
+                <div className="p-4 rounded-2xl bg-linear-to-br from-white to-emerald-50 dark:from-gray-900 dark:to-emerald-950/20 shadow-inner">
+                  <Zap
+                    size={32}
+                    className="text-emerald-500 dark:text-emerald-400 mx-auto"
+                  />
+                </div>
+              </div>
+
+              <h2 className="text-2xl md:text-3xl font-bold bg-linear-to-r from-gray-800 to-gray-600 dark:from-emerald-400 dark:to-emerald-300 bg-clip-text text-transparent mb-3">
+                ¡Hola, estudiante!
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base mb-6 leading-relaxed">
+                Soy tu asistente académico inteligente. ¿En qué puedo ayudarte
+                hoy?
+              </p>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-w-sm mx-auto">
+                {[
+                  "📚 Tareas",
+                  "💻 Código",
+                  "🤔 Dudas",
+                  "🔬 Proyectos",
+                  "📝 Ensayos",
+                  "🧮 Cálculos",
+                ].map((item) => (
+                  <button
+                    key={item}
+                    onClick={() =>
+                      setInput(item.split(" ")[1]?.toLowerCase() + " ")
+                    }
+                    className="px-3 py-2.5 text-xs font-medium rounded-xl bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700/50 text-gray-700 dark:text-gray-300 hover:border-emerald-300 dark:hover:border-emerald-600 hover:text-emerald-600 dark:hover:text-emerald-400 hover:shadow-md hover:shadow-emerald-100 dark:hover:shadow-emerald-900/20 transition-all active:scale-95"
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+
+              <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-8 font-medium">
+                Pulsa para comenzar
+              </p>
             </div>
           </div>
         )}
 
-        <label className="flex items-center justify-center cursor-pointer hover:bg-neutral-800 text-neutral-500 hover:text-yellow-500 w-12 h-12 rounded-full transition-all shrink-0">
-          <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
-          <Camera size={22} />
-        </label>
+        {messages.map((m, i) => (
+          <div
+            key={i}
+            className={`flex w-full animate-in slide-in-from-bottom-2 duration-300 ${
+              m.role === "user" ? "justify-end" : "justify-start"
+            }`}
+          >
+            <div
+              className={`flex flex-col max-w-[85%] ${m.role === "user" ? "items-end" : "items-start"}`}
+            >
+              {/* Avatar para mensajes del bot */}
+              {m.role === "assistant" && (
+                <div className="flex items-center gap-2 mb-1.5 ml-2">
+                  <div className="w-6 h-6 rounded-full bg-linear-to-br from-yellow-500 to-orange-600 flex items-center justify-center">
+                    <Zap size={12} className="text-black fill-black" />
+                  </div>
+                  <span className="text-xs font-medium text-black dark:text-white">
+                    YAWAS
+                  </span>
+                </div>
+              )}
+              <div
+                className={`relative p-4 md:p-5 rounded-4xl shadow-2xl transition-all  duration-300  ${
+                  m.role === "user"
+                    ? " bg-linear-to-br from-emerald-500 to-emerald-600 text-white rounded-br-none shadow-emerald-500/20"
+                    : "bg-neutral-900 border border-neutral-800/80 text-neutral-200 rounded-tl-none shadow-black/40 dark:border-gray-700/50 dark:text-gray-200 rounded-bl-none  dark:shadow-gray-900/30"
+                }`}
+              >
+                {/* {m.image_url && (
+                  <div className="mb-3 rounded-2xl overflow-hidden border border-white/5 shadow-inner">
+                    <img
+                      src={m.image_url}
+                      alt="Adjunto"
+                      className="max-h-72 w-full object-cover"
+                    />
+                  </div>
+                )} */}
 
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Habla, ¿qué andamos haciendo?"
-          className="flex-1 bg-transparent text-white py-3 px-2 focus:outline-none text-sm md:text-base placeholder:text-neutral-600 font-medium"
-        />
+                {m.image_url && (
+                  <div className="mb-4 rounded-2xl overflow-hidden border border-white/10 dark:border-gray-700 shadow-inner group">
+                    <img
+                      src={m.image_url}
+                      alt="Adjunto"
+                      className="max-h-64 md:max-h-72 w-full object-cover transition-transform group-hover:scale-[1.02] duration-500"
+                    />
+                  </div>
+                )}
 
-        <button
-          type="submit"
-          disabled={isTyping || (!input.trim() && !imageFile)}
-          className="flex items-center justify-center bg-yellow-500 w-12 h-12 rounded-full text-black hover:scale-105 active:scale-95 transition-all disabled:opacity-10 disabled:grayscale shrink-0 shadow-lg shadow-yellow-500/20"
+                <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/50 prose prose-sm prose-p:leading-relaxed prose-p:my-2 prose-headings:font-bold prose-code:before:content-none prose-code:after:content-none">
+                  <ReactMarkdown
+                    children={m.text}
+                    components={{
+                      code({ node, inline, className, children, ...props }) {
+                        const match = /language-(\w+)/.exec(className || "");
+                        return !inline && match ? (
+                          <div className="relative my-4 rounded-2xl overflow-hidden border border-neutral-800 group  dark:border-gray-700 group bg-gray-900">
+                            <div className="flex justify-between items-center  px-4 py-2 text-[10px] font-mono text-neutral-400 bg-neutral-800/80  dark:bg-gray-800 text-xs dark:text-gray-400 ">
+                              <span className="font-bold text-yellow-500/70 dark:text-yellow-500/90">
+                                {match[1]}
+                              </span>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(
+                                    String(children).replace(/\n$/, ""),
+                                  );
+                                  toast.success("Copiado al portapapeles", {
+                                    ...toastStyle,
+                                    icon: "🔥",
+                                  });
+                                }}
+                                className="  bg-neutral-700 px-2 py-1 rounded-md hover:bg-neutral-600  transition-all duration-300    text-xs font-medium  dark:hover:bg-gray-600 text-gray-200 dark:text-gray-300 border border-gray-600 dark:border-gray-600 shadow-sm"
+                              >
+                                <Copy size={16} />
+                              </button>
+                            </div>
+                            <SyntaxHighlighter
+                              {...props}
+                              children={String(children).replace(/\n$/, "")}
+                              style={vscDarkPlus}
+                              language={match[1]}
+                              PreTag="div"
+                              customStyle={{
+                                margin: 0,
+                                padding: "1.2rem",
+                                fontSize: "0.8rem",
+                                backgroundColor: "#050505",
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <code
+                            className="bg-neutral-800 px-1.5 py-0.5 rounded text-yellow-500 font-mono text-xs dark:bg-gray-800 "
+                            {...props}
+                          >
+                            {children}
+                          </code>
+                        );
+                      },
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {isTyping && (
+          <div className="flex justify-start animate-in fade-in duration-300">
+            <div className="bg-neutral-900/50 border border-neutral-800/50 p-4 rounded-3xl rounded-tl-none flex items-center gap-3 shadow-sm">
+              <div className="flex gap-1.5">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce"></div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div ref={scrollRef} className="h-2 md:h-4" />
+      </div>
+
+      {/* Input Flotante con efecto Glassmorphism */}
+      <footer className="p-4 md:p-6 bg-linear-to-t sticky bottom-0 z-40 from-white via-white to-transparent dark:from-black dark:via-black dark:to-transparent shadow-[0_-10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_-10px_30px_rgba(0,0,0,0.3)]">
+        <form
+          onSubmit={sendMessage}
+          className="relative flex items-center gap-2 p-2 bg-neutral-900/80 border-neutral-800  backdrop-blur-xl rounded-[2.5rem] border shadow-[0_10px_30px_rgba(0,0,0,0.5)]  transition-all duration-300   dark:bg-gray-800/80 focus-within:border-yellow-400  dark:border-gray-700/50  shadow-gray-200/50 dark:shadow-gray-900/30 dark:focus-within:border-yellow-500 focus-within:shadow-yellow-100 dark:focus-within:shadow-yellow-900/20 "
         >
-          <Send size={20} className="ml-0.5" />
-        </button>
-      </form>
-      <p className="text-[8px] text-center text-neutral-700 mt-4 font-bold uppercase tracking-[0.3em]">
-        Yawas v4.0 • Inteligencia Estudiantil
-      </p>
-    </footer>
-  </div>
-);
+          {previewUrl && (
+            <div className="absolute -top-28 left-4 p-2  rounded-3xl border bg-neutral-800 border-neutral-700 shadow-2xl animate-in slide-in-from-bottom-4  md:-top-32 dark:bg-gray-800 dark:border-gray-700  animate-in slide-in-from-bottom-4 z-50">
+              <div className="relative group">
+                <img
+                  src={previewUrl}
+                  className="h-20 w-20 object-cover rounded-2xl border border-white/10  md:h-24 md:w-24  dark:border-gray-600"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImageFile(null);
+                    setPreviewUrl(null);
+                  }}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 shadow-xl hover:scale-110 transition-transform"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          <label className="flex items-center justify-center cursor-pointer hover:bg-neutral-800 text-neutral-500 hover:text-yellow-500      w-10 h-10 md:w-12 md:h-12 rounded-full transition-all shrink-0 ml-2">
+            <input
+              type="file"
+              className="hidden"
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+            <Camera size={22} />
+          </label>
+
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Habla, ¿qué andamos haciendo?"
+            className="flex-1 bg-transparent text-white py-3 px-2 focus:outline-none text-sm md:text-base font-medium    placeholder:text-gray-400 dark:placeholder:text-gray-500 "
+          />
+
+          <button
+            type="submit"
+            disabled={isTyping || (!input.trim() && !imageFile)}
+            className="flex items-center justify-center  rounded-full text-white hover:scale-105 active:scale-95 transition-all disabled:opacity-60 disabled:grayscale shrink-0 shadow-lg shadow-yellow-500/20  bg-linear-to-r from-yellow-500 to-yellow-600 dark:from-yellow-400 dark:to-yellow-500 w-10 h-10 md:w-12 md:h-12  disabled:cursor-not-allowed dark:shadow-yellow-500/40"
+          >
+            <Send size={20} className="ml-0.5" />
+          </button>
+        </form>
+        <p className="text-[8px] text-center text-neutral-700 mt-4 font-bold uppercase tracking-[0.3em] ">
+          Yawas v4.0 • Inteligencia Estudiantil
+        </p>
+      </footer>
+    </div>
+  );
 };
 
 export default CampusAI;

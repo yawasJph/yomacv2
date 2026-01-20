@@ -32,7 +32,7 @@ const NavigationM = () => {
     }
   };
 
-  const onViewCredits = ["games"].some((route) =>
+  const onViewCredits = ["games", "yawas"].some((route) =>
     location.pathname.includes(route)
   );
 
