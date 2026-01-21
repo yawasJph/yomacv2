@@ -1,16 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import { useAuth } from "../../context/AuthContext";
-import {
-  Send,
-  Coffee,
-  Zap,
-  Camera,
-  X,
-  Home,
-  ArrowLeft,
-  Copy,
-} from "lucide-react";
+import { Send, Zap, Camera, X, ArrowLeft, Copy } from "lucide-react";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -18,20 +9,21 @@ import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism"; //
 import { uploadToCloudinary } from "../../cloudinary/upToCloudinary";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { useNavigate } from "react-router-dom";
+import { TOAST_STYLE } from "../../utils/yawas/constants";
 
-const toastStyle = {
-  style: {
-    borderRadius: "1.2rem",
-    background: "#171717", // Neutral 900
-    color: "#fff",
-    border: "2px solid #10b981", // Emerald 500
-    fontSize: "12px",
-    fontWeight: "900",
-    textTransform: "uppercase",
-    letterSpacing: "1px",
-    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.5)",
-  },
-};
+// const toastStyle = {
+//   style: {
+//     borderRadius: "1.2rem",
+//     background: "#171717", // Neutral 900
+//     color: "#fff",
+//     border: "2px solid #10b981", // Emerald 500
+//     fontSize: "12px",
+//     fontWeight: "900",
+//     textTransform: "uppercase",
+//     letterSpacing: "1px",
+//     boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.5)",
+//   },
+// };
 
 const CampusAI = () => {
   const { user } = useAuth();
@@ -180,6 +172,33 @@ const CampusAI = () => {
     }
   };
 
+  const callYawasAPI = async (currentProvider , uploadedImageUrl, userText) => {
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/yawas-chat-v2`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${(await supabaseClient.auth.getSession()).data.session?.access_token}`,
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({
+          provider: currentProvider, // Pasamos el proveedor elegido
+          systemInstruction: getDynamicInstruction(userProfile),
+          imageUrl: uploadedImageUrl,
+          messages: messages
+            .slice(-8)//-10
+            .map((m) => ({
+              role: m.role === "assistant" ? "assistant" : "user",
+              content: m.text,
+            }))
+            .concat({ role: "user", content: userText }),
+        }),
+      },
+    );
+    return response;
+  };
+
   const sendMessage = async (e) => {
     e.preventDefault();
     // Validación básica
@@ -226,29 +245,16 @@ const CampusAI = () => {
 
       await supabaseClient.from("chat_messages").insert(userMsg);
 
-      // 5. Llamada a la Edge Function
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/yawas-chat`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${(await supabaseClient.auth.getSession()).data.session?.access_token}`,
-            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-          },
-          body: JSON.stringify({
-            systemInstruction: getDynamicInstruction(userProfile),
-            imageUrl: uploadedImageUrl,
-            messages: messages
-              .slice(-10)
-              .map((m) => ({
-                role: m.role === "assistant" ? "assistant" : "user",
-                content: m.text,
-              }))
-              .concat({ role: "user", content: userText }),
-          }),
-        },
-      );
+      let response = await callYawasAPI("groq", uploadedImageUrl, userText); // Intento 1: Groq
+
+      if (!response.ok) {
+        console.warn("Groq saturado, intentando con Mistral...");
+        response = await callYawasAPI("mistral", uploadedImageUrl, userText); // Intento 2: Mistral
+      }
+
+      if (!response.ok) {
+        response = await callYawasAPI("openai", uploadedImageUrl, userText); // Intento 3: OpenAI
+      }
 
       if (!response.ok) throw new Error("Error en la función");
 
@@ -309,6 +315,7 @@ const CampusAI = () => {
       }
     } catch (err) {
       console.error("Error con Yawas:", err);
+     // toast.error("Todos los proveedores están ocupados.");
       toast.error("Yawas se distrajo un poco. ¡Intenta de nuevo!");
       // Opcional: eliminar el placeholder si falló
       setMessages((prev) => prev.slice(0, -1));
@@ -429,22 +436,12 @@ const CampusAI = () => {
                     : "bg-neutral-900 border border-neutral-800/80 text-neutral-200 rounded-tl-none shadow-black/40 dark:border-gray-700/50 dark:text-gray-200 rounded-bl-none  dark:shadow-gray-900/30"
                 }`}
               >
-                {/* {m.image_url && (
-                  <div className="mb-3 rounded-2xl overflow-hidden border border-white/5 shadow-inner">
-                    <img
-                      src={m.image_url}
-                      alt="Adjunto"
-                      className="max-h-72 w-full object-cover"
-                    />
-                  </div>
-                )} */}
-
                 {m.image_url && (
                   <div className="mb-4 rounded-2xl overflow-hidden border border-white/10 dark:border-gray-700 shadow-inner group">
                     <img
                       src={m.image_url}
                       alt="Adjunto"
-                      className="max-h-64 md:max-h-72 w-full object-cover transition-transform group-hover:scale-[1.02] duration-500"
+                      className="max-h-64 md:max-h-72 w-full object-container transition-transform group-hover:scale-[1.02] duration-500"
                     />
                   </div>
                 )}
@@ -467,7 +464,7 @@ const CampusAI = () => {
                                     String(children).replace(/\n$/, ""),
                                   );
                                   toast.success("Copiado al portapapeles", {
-                                    ...toastStyle,
+                                    ...TOAST_STYLE,
                                     icon: "🔥",
                                   });
                                 }}
@@ -529,7 +526,7 @@ const CampusAI = () => {
           className="relative flex items-center gap-2 p-2 bg-neutral-900/80 border-neutral-800  backdrop-blur-xl rounded-[2.5rem] border shadow-[0_10px_30px_rgba(0,0,0,0.5)]  transition-all duration-300   dark:bg-gray-800/80 focus-within:border-yellow-400  dark:border-gray-700/50  shadow-gray-200/50 dark:shadow-gray-900/30 dark:focus-within:border-yellow-500 focus-within:shadow-yellow-100 dark:focus-within:shadow-yellow-900/20 "
         >
           {previewUrl && (
-            <div className="absolute -top-28 left-4 p-2  rounded-3xl border bg-neutral-800 border-neutral-700 shadow-2xl animate-in slide-in-from-bottom-4  md:-top-32 dark:bg-gray-800 dark:border-gray-700  animate-in slide-in-from-bottom-4 z-50">
+            <div className="absolute -top-28 left-4 p-2  rounded-3xl border bg-neutral-800 border-neutral-700 shadow-2xl slide-in-from-bottom-4  md:-top-32 dark:bg-gray-800 dark:border-gray-700  animate-in slide-in-from-bottom-4 z-50">
               <div className="relative group">
                 <img
                   src={previewUrl}
