@@ -7,8 +7,8 @@ export const ChatHeader = memo(({ isMobile }) => {
 
   return (
     <header
-      className={`flex items-center gap-5 p-4 md:p-6 bg-neutral-900/50 backdrop-blur-md border-b border-neutral-800/50 ${
-        isMobile && "sticky top-0 z-10 px-3"
+      className={`flex items-center gap-5 p-4 md:p-6 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl z-40 border-b border-gray-100 dark:border-neutral-900 ${
+        isMobile && "sticky top-16 z-10 px-3"
       } bg-white/90 dark:bg-black/90 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800/50 shadow-sm dark:shadow-gray-900/30 transition-all`}
     >
       <button

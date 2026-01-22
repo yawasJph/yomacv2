@@ -55,7 +55,7 @@ const HeaderM = () => {
   return (
     <>
       <header className={`fixed top-0 left-0 right-0 h-16 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl z-40 border-b border-gray-100 dark:border-neutral-900 lg:hidden
-        ${hideHeader && "hidden"}`}>
+        `}>
         <div className="flex items-center justify-between h-full px-4">
           {/* IZQUIERDA: Logo y Nombre */}
 
