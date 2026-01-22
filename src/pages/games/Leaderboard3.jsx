@@ -176,7 +176,7 @@ const Leaderboard = () => {
   }, [activeGame]);
 
   return (
-    <div className="max-w-md max-sm:max-w-sm mx-auto bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden mt-2">
+    <div className="max-w-md max-sm:max-w-sm mx-auto bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
       <div className="bg-linear-to-r from-emerald-500 to-teal-600 p-6 text-white text-center flex gap-2">
          <button
             onClick={() => navigate(-1)}

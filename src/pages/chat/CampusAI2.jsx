@@ -7,7 +7,7 @@ import { MessageItem } from "../../components/yawas/MessageItem";
 import { EmptyState } from "../../components/yawas/EmptyState ";
 import { ChatHeader } from "../../components/yawas/ChatHeader";
 import  {ChatInput}  from "../../components/yawas/ChatInput";
-import ChatInputMobile from "../../components/yawas/InputPro";
+import {ChatInput2} from "../../components/yawas/InputPro";
 
 const CampusAI = () => {
   const { user } = useAuth();
@@ -79,7 +79,7 @@ const CampusAI = () => {
   }, [messages.length, handleQuickAction]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-black bg-linear-to-br from-white via-gray-50 to-white text-gray-900 dark:bg-linear-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 dark:text-white transition-colors duration-300">
+    <div className={`flex flex-col min-h-screen bg-white dark:bg-black bg-linear-to-br from-white via-gray-50 to-white text-gray-900 dark:bg-linear-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 dark:text-white transition-colors duration-300 ${!isMobile && "pt-10"}`}>
       <ChatHeader isMobile={isMobile} />
 
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-8 custom-scrollbar bg-[radial-gradient(circle_at_top,var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent md:px-4 md:py-6 bg-linear-to-b dark:from-gray-900/50 dark:via-black/50 dark:to-gray-900/50 custom-scrollbar">
@@ -99,7 +99,7 @@ const CampusAI = () => {
         onRemoveImage={handleRemoveImage}
         onSubmit={handleSendMessage}
       /> */}
-      <ChatInputMobile 
+      <ChatInput2 
        input={input}
         setInput={setInput}
         imageFile={imageFile}

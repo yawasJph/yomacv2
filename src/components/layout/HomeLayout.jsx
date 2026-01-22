@@ -41,7 +41,7 @@ const HomeLayout = () => {
       {/* <Header /> */}
      
       {/* Layout Principal */}
-      <div className={`${hideHeader && isMobile ? "pt-0":"pt-16"} flex max-w-7xl mx-auto min-h-[calc(100vh-64px)]`}>{/**pt-16 */}
+      <div className={`${hideHeader ? "pt-0":"pt-16"} flex max-w-7xl mx-auto min-h-[calc(100vh-64px)]`}>{/**pt-16 */}
         {/* Sidebar Izquierdo - Desktop */}
         <LeftSidebar />
 
