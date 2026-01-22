@@ -135,7 +135,7 @@ const YoMACStore = () => {
               Tu Saldo
             </p>
             <p className="text-lg font-black dark:text-white">
-              {userCredits}{" "}
+              {userCredits.toLocaleString()}{" "}
               <span className="text-xs font-medium text-gray-500">CC</span>
             </p>
           </div>

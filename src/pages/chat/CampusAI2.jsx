@@ -6,8 +6,8 @@ import { TypingIndicator } from "../../components/yawas/TypingIndicator ";
 import { MessageItem } from "../../components/yawas/MessageItem";
 import { EmptyState } from "../../components/yawas/EmptyState ";
 import { ChatHeader } from "../../components/yawas/ChatHeader";
-import  {ChatInput}  from "../../components/yawas/ChatInput";
 import {ChatInput2} from "../../components/yawas/InputPro";
+//import { useYawasChat } from "../../hooks/yawas/useYawasChat2";
 
 const CampusAI = () => {
   const { user } = useAuth();
@@ -79,7 +79,7 @@ const CampusAI = () => {
   }, [messages.length, handleQuickAction]);
 
   return (
-    <div className={`flex flex-col min-h-screen bg-white dark:bg-black bg-linear-to-br from-white via-gray-50 to-white text-gray-900 dark:bg-linear-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 dark:text-white transition-colors duration-300 ${!isMobile && "pt-10"}`}>
+    <div className={`flex flex-col min-h-screen bg-white dark:bg-black bg-linear-to-br from-white via-gray-50 to-white text-gray-900 dark:bg-linear-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 dark:text-white transition-colors duration-300 `}>
       <ChatHeader isMobile={isMobile} />
 
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-8 custom-scrollbar bg-[radial-gradient(circle_at_top,var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent md:px-4 md:py-6 bg-linear-to-b dark:from-gray-900/50 dark:via-black/50 dark:to-gray-900/50 custom-scrollbar">
@@ -88,17 +88,6 @@ const CampusAI = () => {
         {isTyping && <TypingIndicator />}
         <div ref={scrollRef} className="h-2 md:h-4" />
       </div>
-
-      {/* <ChatInput
-        input={input}
-        setInput={setInput}
-        imageFile={imageFile}
-        previewUrl={previewUrl}
-        isTyping={isTyping}
-        onFileChange={handleFileChange}
-        onRemoveImage={handleRemoveImage}
-        onSubmit={handleSendMessage}
-      /> */}
       <ChatInput2 
        input={input}
         setInput={setInput}

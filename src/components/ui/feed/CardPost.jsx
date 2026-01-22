@@ -126,7 +126,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab , query = ""}) => {
   return (
     <article
       onClick={goToPost}
-      className={`px-4 py-4 sm:px-6 transition-colors border-b border-gray-100 dark:border-gray-800 
+      className={`px-4 py-4 sm:px-6 transition-colors border-b border-gray-100 dark:border-gray-800
         ${
           !isDetailedView
             ? "hover:bg-gray-200/50 dark:hover:bg-gray-700/20 cursor-pointer"
