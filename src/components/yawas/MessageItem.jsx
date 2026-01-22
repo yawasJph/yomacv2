@@ -27,7 +27,7 @@ export const MessageItem = memo(({ message, index }) => {
           message.role === "user" ? "items-end" : "items-start"
         }`}
       >
-        {message.role === "assistant" && (
+        {/* {message.role === "assistant" && (
           <div className="flex items-center gap-2 mb-1.5 ml-2">
             <div className="w-6 h-6 rounded-full bg-linear-to-br from-yellow-500 to-orange-600 flex items-center justify-center">
               <Zap size={12} className="text-black fill-black" />
@@ -36,7 +36,7 @@ export const MessageItem = memo(({ message, index }) => {
               YAWAS
             </span>
           </div>
-        )}
+        )} */}
         <div
           className={`relative p-4 md:p-5 rounded-4xl shadow-2xl transition-all duration-300 ${
             message.role === "user"

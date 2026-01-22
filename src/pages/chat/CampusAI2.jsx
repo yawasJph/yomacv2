@@ -6,7 +6,8 @@ import { TypingIndicator } from "../../components/yawas/TypingIndicator ";
 import { MessageItem } from "../../components/yawas/MessageItem";
 import { EmptyState } from "../../components/yawas/EmptyState ";
 import { ChatHeader } from "../../components/yawas/ChatHeader";
-import { ChatInput } from "../../components/yawas/ChatInput";
+import  {ChatInput}  from "../../components/yawas/ChatInput";
+import ChatInputMobile from "../../components/yawas/InputPro";
 
 const CampusAI = () => {
   const { user } = useAuth();
@@ -88,7 +89,7 @@ const CampusAI = () => {
         <div ref={scrollRef} className="h-2 md:h-4" />
       </div>
 
-      <ChatInput
+      {/* <ChatInput
         input={input}
         setInput={setInput}
         imageFile={imageFile}
@@ -97,7 +98,16 @@ const CampusAI = () => {
         onFileChange={handleFileChange}
         onRemoveImage={handleRemoveImage}
         onSubmit={handleSendMessage}
-      />
+      /> */}
+      <ChatInputMobile 
+       input={input}
+        setInput={setInput}
+        imageFile={imageFile}
+        previewUrl={previewUrl}
+        isTyping={isTyping}
+        onFileChange={handleFileChange}
+        onRemoveImage={handleRemoveImage}
+        onSubmit={handleSendMessage}/>
     </div>
   );
 };
