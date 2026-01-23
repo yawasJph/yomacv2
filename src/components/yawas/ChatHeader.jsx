@@ -19,7 +19,7 @@ export const ChatHeader = memo(({ isMobile }) => {
       </button>
       <div className="flex items-center gap-3 flex-1">
         <div className="relative">
-          <div className="p-2.5 rounded-2xl bg-linear-to-br from-yellow-400 to-orange-500 dark:from-yellow-400 dark:to-orange-500 shadow-lg shadow-emerald-500/20 dark:shadow-emerald-500/30 animate-pulse-subtle">
+          <div className="p-2.5 rounded-2xl bg-linear-to-br from-yellow-400 to-orange-500 dark:from-yellow-400 dark:to-orange-500 shadow-lg shadow-yellow-500/20 dark:shadow-emerald-500/30 animate-pulse-subtle">
             <Zap size={22} className="text-black fill-black" />
           </div>
           <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 dark:bg-emerald-400 border-2 border-white dark:border-gray-900 rounded-full animate-pulse"></span>

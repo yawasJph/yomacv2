@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useIsMobile } from "../../hooks/useIsMobile";
-import { useYawasChat } from "../../hooks/yawas/useYawasChat";
+//import { useYawasChat } from "../../hooks/yawas/useYawasChat";
 import { TypingIndicator } from "../../components/yawas/TypingIndicator ";
 import { MessageItem } from "../../components/yawas/MessageItem";
 import { EmptyState } from "../../components/yawas/EmptyState ";
 import { ChatHeader } from "../../components/yawas/ChatHeader";
 import {ChatInput2} from "../../components/yawas/InputPro";
-//import { useYawasChat } from "../../hooks/yawas/useYawasChat2";
+import { useYawasChat } from "../../hooks/yawas/useYawasChat2";
 
 const CampusAI = () => {
   const { user } = useAuth();
