@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
+import { memo } from "react";
 
-const MemoryCard = ({ card, isFlipped, isMatched, onClick, isDisabled, cardType }) => {
+const MemoryCard = memo(({ card, isFlipped, isMatched, onClick, isDisabled, cardType }) => {
   return (
     <div
       className={`relative h-25 sm:h-32 w-full ${ //h-28
@@ -51,7 +52,7 @@ const MemoryCard = ({ card, isFlipped, isMatched, onClick, isDisabled, cardType 
             transform: "rotateY(180deg)",
           }}
         >
-          {cardType === "icon" ? (<span className="relative z-10">{card.icon}</span>) : (<img src={card.icon}  className="w-full h-full rounded-2xl object-cover shadow-lg "/>)}
+          {cardType === "icon" ? (<span className="relative z-10">{card.icon}</span>) : (<img src={card.icon}  className="w-full h-full rounded-2xl object-cover shadow-lg " />)}
           
           {isMatched && (
             <motion.div
@@ -64,6 +65,6 @@ const MemoryCard = ({ card, isFlipped, isMatched, onClick, isDisabled, cardType 
       </motion.div>
     </div>
   );
-};
+});
 
 export default MemoryCard;

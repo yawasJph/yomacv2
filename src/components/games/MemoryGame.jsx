@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import MemoryCard from "./MemoryCard";
 import VictoryModal from "./VictoryModal";
 import confetti from "canvas-confetti";
@@ -25,10 +25,9 @@ const MemoryGame = () => {
     return barajas[randomIndex].baraja;
   };
 
-  const resetGame = () => {
-    // Generar IDs únicos reales para cada carta duplicada
-    const selectedBaraja = getRandomBaraja(); // 🎲 baraja aleatoria
-    const duplicatedCards = [...selectedBaraja, ...selectedBaraja]
+  const resetGame = useCallback(() => {
+    const barajaData = getRandomBaraja(); // Asumiendo que getRandomBaraja no depende de estado
+    const duplicatedCards = [...barajaData, ...barajaData]
       .sort(() => Math.random() - 0.5)
       .map((card, index) => ({
         ...card,
@@ -43,12 +42,12 @@ const MemoryGame = () => {
     setIsActive(false);
     setShowVictory(false);
     setIsSaving(false);
-  };
+  }, []);
 
   useEffect(() => {
     resetGame();
   }, []);
-
+  
   // Función para guardar en Supabase (RPC)
   const saveGameResult = async (score, steps, time) => {
     if (isSaving) return;
@@ -71,13 +70,13 @@ const MemoryGame = () => {
 
   useEffect(() => {
     let interval = null;
-    if (isActive && matched.length < cards.length) {
+    if (isActive) {
       interval = setInterval(() => setSeconds((s) => s + 1), 1000);
-    } else {
-      clearInterval(interval);
     }
-    return () => clearInterval(interval);
-  }, [isActive, matched, cards.length]);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isActive]);
 
   const handleFlip = (index) => {
     if (
@@ -103,28 +102,26 @@ const MemoryGame = () => {
         setTimeout(() => setFlippedCards([]), 1000); // Un segundo para memorizar
       }
     }
-  };
-
+  }; 
+  
   // Efecto de Victoria
   useEffect(() => {
     if (matched.length === cards.length && cards.length > 0) {
       setIsActive(false); // Detener cronómetro
-
       // Disparar Confeti
+
       confetti({
         particleCount: 150,
         spread: 70,
         origin: { y: 0.6 },
         colors: ["#10b981", "#3b82f6", "#f59e0b"],
-      });
+      }); // Calcular score final para el modal
 
-      // Calcular score final para el modal
       const score = Math.max(0, 1000 - moves * 10 - seconds * 2);
       setFinalScore(score);
 
-      saveGameResult(score, moves, seconds);
+      saveGameResult(score, moves, seconds); // Mostrar modal con un pequeño delay
 
-      // Mostrar modal con un pequeño delay
       setTimeout(() => setShowVictory(true), 1000);
     }
   }, [matched, cards.length]);
@@ -132,10 +129,10 @@ const MemoryGame = () => {
   return (
     <div className="max-w-2xl mx-auto p-4 select-none">
       {/* HUD de Juego */}
-      <HudSection moves={moves} seconds={seconds}/>
-
+      <HudSection moves={moves} seconds={seconds} />
       {/* Grid 4x4 */}
       <div className="grid grid-cols-4 gap-2 sm:gap-4">
+        {" "}
         {cards.map((card, index) => (
           <MemoryCard
             key={card.id}
@@ -149,7 +146,7 @@ const MemoryGame = () => {
         ))}
       </div>
 
-      <ActionButtons resetGame={resetGame}/>
+      <ActionButtons resetGame={resetGame} />
 
       <VictoryModal
         isOpen={showVictory}
@@ -158,8 +155,6 @@ const MemoryGame = () => {
         moves={moves}
         onReset={resetGame}
       />
-
-      
     </div>
   );
 };
