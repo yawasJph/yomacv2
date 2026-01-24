@@ -27,7 +27,7 @@ const MemoryCard = memo(({ card, isFlipped, isMatched, onClick, isDisabled, card
       >
         {/* LADO TRASERO (Visible al inicio) */}
         <div
-          className="absolute inset-0 bg-linear-to-br from-emerald-500 to-emerald-600 rounded-2xl shadow-lg border-2 border-white/20 flex items-center justify-center"
+          className="absolute inset-0 bg-linear-to-br from-gray-500 to-gray-600 rounded-2xl shadow-lg border-2 border-white/20 flex items-center justify-center"
           style={{ backfaceVisibility: "hidden", zIndex: 2 }}
         >
           <div className="size-10 sm:size-15 bg-linear-to-r from-emerald-500 to-teal-400 rounded-xl flex items-center justify-center overflow-hidden cursor-pointer">
@@ -44,7 +44,7 @@ const MemoryCard = memo(({ card, isFlipped, isMatched, onClick, isDisabled, card
           className={`absolute inset-0 rounded-2xl flex items-center justify-center text-4xl shadow-xl border-2 
             ${
               isMatched
-                ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500 shadow-emerald-500/20"
+                ? "bg-emerald-50 dark:bg-emerald-500/10 border-indigo-500 shadow-indigo-500/20"
                 : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800"
             }`}
           style={{
