@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { supabaseClient } from "../../supabase/supabaseClient";
+import {useUserData} from "./useUserData"
 import { getDynamicInstruction } from "./useYawasChat2";
-import { uploadToCloudinary } from "../../cloudinary/upToCloudinary";
 
 export const useYawasApi = (userId, setIsTyping)=>{
 
