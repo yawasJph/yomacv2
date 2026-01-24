@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MemoryCard from "./MemoryCard";
 import { ArrowLeft, Hash, RefreshCcw, Star, Timer } from "lucide-react";
-//import VictoryModal from "./VictoryModal";
+import VictoryModal from "./VictoryModal";
 import confetti from "canvas-confetti";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import bajara1 from "../../assets/data-game/baraja1.json";
@@ -11,9 +11,9 @@ import bajara4 from "../../assets/data-game/baraja4.json";
 import bajara5 from "../../assets/data-game/baraja5.json";
 import bajara6 from "../../assets/data-game/baraja6.json";
 import { useNavigate } from "react-router-dom";
-import { useIsMobile } from "../../hooks/useIsMobile"
+import { useIsMobile } from "../../hooks/useIsMobile";
 //import VictoryModal from "./memory-game/VictoryModalv3";
-import VictoryModal from "./memory-game/VictoryModalv2";
+//import VictoryModal from "./memory-game/VictoryModalv2";
 
 const MemoryGame = () => {
   const [cards, setCards] = useState([]);
@@ -25,15 +25,15 @@ const MemoryGame = () => {
   const [showVictory, setShowVictory] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
-  const [selectedBaraja, setSelectedBaraja] = useState(null)
-  const navigate = useNavigate()
-  const isMobile = useIsMobile()
+  const [selectedBaraja, setSelectedBaraja] = useState(null);
+  const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const barajas = [bajara1, bajara4, bajara2, bajara3, bajara5, bajara6];
 
   const getRandomBaraja = () => {
     const randomIndex = Math.floor(Math.random() * barajas.length);
-    setSelectedBaraja(barajas[randomIndex])
+    setSelectedBaraja(barajas[randomIndex]);
     return barajas[randomIndex].baraja;
   };
 
@@ -189,6 +189,14 @@ const MemoryGame = () => {
         ))}
       </div>
 
+      <VictoryModal
+        isOpen={showVictory}
+        score={finalScore}
+        time={seconds}
+        moves={moves}
+        onReset={resetGame}
+      />
+
       <div className="mt-6 gap-3 flex justify-center sm:mt-8">
         <button
           onClick={() => navigate(-1)}
@@ -200,17 +208,9 @@ const MemoryGame = () => {
           onClick={resetGame}
           className="flex items-center gap-2 px-8 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl font-bold text-gray-600 dark:text-gray-300 hover:border-emerald-500 hover:text-emerald-500 transition-all active:scale-95 shadow-sm"
         >
-          <RefreshCcw size={18} /> Reiniciar  {!isMobile && "Desafío"}
+          <RefreshCcw size={18} /> Reiniciar {!isMobile && "Desafío"}
         </button>
       </div>
-
-      <VictoryModal
-        isOpen={showVictory}
-        score={finalScore}
-        time={seconds}
-        moves={moves}
-        onReset={resetGame}
-      />
     </div>
   );
 };

@@ -18,7 +18,7 @@ const VictoryModal = ({ isOpen, score, time, moves, onReset, onGoToArcade }) => 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-black/70 backdrop-blur-md"
+          className="absolute inset-0 bg-linear-to-br from-black/70 via-black/60 to-black/70 backdrop-blur-md"
         />
         
         {/* Partículas de celebración */}
@@ -63,13 +63,13 @@ const VictoryModal = ({ isOpen, score, time, moves, onReset, onGoToArcade }) => 
           className="relative w-full max-w-md"
         >
           {/* Glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-blue-500/20 blur-3xl rounded-full" />
+          <div className="absolute inset-0 bg-linear-to-br from-emerald-500/20 to-blue-500/20 blur-3xl rounded-full" />
           
           {/* Card principal */}
-          <div className="relative bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 rounded-3xl overflow-hidden shadow-2xl border border-white/20 dark:border-gray-700/50">
+          <div className="relative bg-linear-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 rounded-3xl overflow-hidden shadow-2xl border border-white/20 dark:border-gray-700/50">
             
             {/* Header con gradiente y trofeo */}
-            <div className="relative bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 p-10 overflow-hidden">
+            <div className="relative bg-linear-to-br from-emerald-500 via-emerald-600 to-teal-600 p-10 overflow-hidden">
               {/* Patrón de fondo */}
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-0 left-0 w-full h-full" 
@@ -166,7 +166,7 @@ const VictoryModal = ({ isOpen, score, time, moves, onReset, onGoToArcade }) => 
                 transition={{ delay: 0.2 }}
                 className="text-center mb-6"
               >
-                <h2 className="text-3xl font-black bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent mb-2">
+                <h2 className="text-3xl font-black bg-linear-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent mb-2">
                   ¡Victoria Épica!
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">
@@ -183,9 +183,9 @@ const VictoryModal = ({ isOpen, score, time, moves, onReset, onGoToArcade }) => 
               >
                 <motion.div 
                   whileHover={{ scale: 1.05, y: -5 }}
-                  className="group relative bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 p-5 rounded-2xl border border-blue-100 dark:border-blue-800/30 transition-all"
+                  className="group relative bg-linear-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 p-5 rounded-2xl border border-blue-100 dark:border-blue-800/30 transition-all"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-cyan-400/0 group-hover:from-blue-400/10 group-hover:to-cyan-400/10 rounded-2xl transition-all" />
+                  <div className="absolute inset-0 bg-linear-to-br from-blue-400/0 to-cyan-400/0 group-hover:from-blue-400/10 group-hover:to-cyan-400/10 rounded-2xl transition-all" />
                   <div className="relative">
                     <div className="bg-blue-500/10 w-10 h-10 rounded-xl flex items-center justify-center mb-2 mx-auto">
                       <Clock className="text-blue-600 dark:text-blue-400" size={20} />
@@ -197,9 +197,9 @@ const VictoryModal = ({ isOpen, score, time, moves, onReset, onGoToArcade }) => 
 
                 <motion.div 
                   whileHover={{ scale: 1.05, y: -5 }}
-                  className="group relative bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-5 rounded-2xl border border-purple-100 dark:border-purple-800/30 transition-all"
+                  className="group relative bg-linear-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-5 rounded-2xl border border-purple-100 dark:border-purple-800/30 transition-all"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-400/0 to-pink-400/0 group-hover:from-purple-400/10 group-hover:to-pink-400/10 rounded-2xl transition-all" />
+                  <div className="absolute inset-0 bg-linear-to-br from-purple-400/0 to-pink-400/0 group-hover:from-purple-400/10 group-hover:to-pink-400/10 rounded-2xl transition-all" />
                   <div className="relative">
                     <div className="bg-purple-500/10 w-10 h-10 rounded-xl flex items-center justify-center mb-2 mx-auto">
                       <Hash className="text-purple-600 dark:text-purple-400" size={20} />
@@ -211,19 +211,19 @@ const VictoryModal = ({ isOpen, score, time, moves, onReset, onGoToArcade }) => 
 
                 <motion.div 
                   whileHover={{ scale: 1.05, y: -5 }}
-                  className="group relative col-span-2 bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50 dark:from-yellow-900/20 dark:via-amber-900/20 dark:to-orange-900/20 p-6 rounded-2xl border-2 border-yellow-200 dark:border-yellow-700/30 transition-all"
+                  className="group relative col-span-2 bg-linear-to-br from-yellow-50 via-amber-50 to-orange-50 dark:from-yellow-900/20 dark:via-amber-900/20 dark:to-orange-900/20 p-6 rounded-2xl border-2 border-yellow-200 dark:border-yellow-700/30 transition-all"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/0 to-orange-400/0 group-hover:from-yellow-400/10 group-hover:to-orange-400/10 rounded-2xl transition-all" />
+                  <div className="absolute inset-0 bg-linear-to-br from-yellow-400/0 to-orange-400/0 group-hover:from-yellow-400/10 group-hover:to-orange-400/10 rounded-2xl transition-all" />
                   <div className="relative">
                     <motion.div
                       animate={{ rotate: [0, 5, -5, 0] }}
                       transition={{ duration: 2, repeat: Infinity }}
-                      className="bg-gradient-to-br from-yellow-400 to-amber-500 w-12 h-12 rounded-xl flex items-center justify-center mb-2 mx-auto shadow-lg shadow-yellow-500/50"
+                      className="bg-linear-to-br from-yellow-400 to-amber-500 w-12 h-12 rounded-xl flex items-center justify-center mb-2 mx-auto shadow-lg shadow-yellow-500/50"
                     >
                       <Star className="text-white fill-white" size={24} />
                     </motion.div>
                     <span className="block text-[10px] uppercase font-bold text-amber-600 dark:text-amber-400 tracking-wider mb-1">Puntuación Final</span>
-                    <span className="text-4xl font-black bg-gradient-to-r from-yellow-600 to-orange-600 dark:from-yellow-400 dark:to-orange-400 bg-clip-text text-transparent">
+                    <span className="text-4xl font-black bg-linear-to-r from-yellow-600 to-orange-600 dark:from-yellow-400 dark:to-orange-400 bg-clip-text text-transparent">
                       {score.toLocaleString()} pts
                     </span>
                   </div>
