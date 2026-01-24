@@ -12,7 +12,8 @@ import bajara5 from "../../assets/data-game/baraja5.json";
 import bajara6 from "../../assets/data-game/baraja6.json";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "../../hooks/useIsMobile"
-import VictoryModal from "./memory-game/VictoryModalv3";
+//import VictoryModal from "./memory-game/VictoryModalv3";
+import VictoryModal from "./memory-game/VictoryModalv2";
 
 const MemoryGame = () => {
   const [cards, setCards] = useState([]);
