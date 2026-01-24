@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
 import { useAuthAction } from "../../hooks/useAuthAction";
-import GameInfoModal from "../../components/games/game-center/GameInfoModal";
 import { GAMES_LIST } from "../../components/games/utils/GAMES_LIST";
 import GameCard from "../../components/games/game-center/GameCard";
 import GameCenterHeader from "../../components/games/game-center/GameCenterHeader";
@@ -10,11 +8,11 @@ import GameCenterHeader from "../../components/games/game-center/GameCenterHeade
 const GameCenter = () => {
   const navigate = useNavigate();
   const { executeAction } = useAuthAction();
-  const [infoGame, setInfoGame] = useState(null);
 
   const handleGameNavigate = (path) => {
     executeAction(() => navigate(path), "para jugar");
   };
+  
   return (
     <div className="bg-white dark:bg-black p-4 ">
       {/* min-h-screen */}
@@ -25,7 +23,7 @@ const GameCenter = () => {
       {/* grid game cards*/}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {GAMES_LIST.map((game, index) => (
-          <GameCard game={game} index={index} onPath={handleGameNavigate} onInfoGame={setInfoGame} />
+          <GameCard game={game} index={index} onPath={handleGameNavigate}  />
         ))}
       </div>
 
@@ -36,12 +34,6 @@ const GameCenter = () => {
         </p>
       </div>
 
-      <AnimatePresence>
-        {infoGame && (
-          <GameInfoModal game={infoGame} onClose={() => setInfoGame(null)} onPlay={() => handleGameNavigate(infoGame.path)} />
-        )}
-
-      </AnimatePresence>
     </div>
   );
 };

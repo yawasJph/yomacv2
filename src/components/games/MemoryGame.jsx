@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MemoryCard from "./MemoryCard";
 import { ArrowLeft, Hash, RefreshCcw, Star, Timer } from "lucide-react";
-import VictoryModal from "./VictoryModal";
+//import VictoryModal from "./VictoryModal";
 import confetti from "canvas-confetti";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import bajara1 from "../../assets/data-game/baraja1.json";
@@ -11,6 +11,8 @@ import bajara4 from "../../assets/data-game/baraja4.json";
 import bajara5 from "../../assets/data-game/baraja5.json";
 import bajara6 from "../../assets/data-game/baraja6.json";
 import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "../../hooks/useIsMobile"
+import VictoryModal from "./memory-game/VictoryModalv3";
 
 const MemoryGame = () => {
   const [cards, setCards] = useState([]);
@@ -24,9 +26,10 @@ const MemoryGame = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [selectedBaraja, setSelectedBaraja] = useState(null)
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
 
   const barajas = [bajara1, bajara4, bajara2, bajara3, bajara5, bajara6];
-  
+
   const getRandomBaraja = () => {
     const randomIndex = Math.floor(Math.random() * barajas.length);
     setSelectedBaraja(barajas[randomIndex])
@@ -137,44 +140,41 @@ const MemoryGame = () => {
     }
   }, [matched, cards.length]);
 
-  console.log(selectedBaraja)
   return (
-    
     <div className="max-w-2xl mx-auto p-4 select-none">
-     
       {/* HUD de Juego */}
       <div className="grid grid-cols-3 gap-4 mb-3 sm:mb-8">
-        <div className="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col items-center shadow-2xl">
-          <Timer className="text-emerald-500 mb-1" size={18} />
-          <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+        <div className="bg-gray-50 dark:bg-gray-900/50 p-2 sm:p-3 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 flex flex-col items-center">
+          <Timer className="text-emerald-500 mb-0.5 sm:mb-1" size={18} />
+          <span className="text-[9px] sm:text-[10px] text-gray-500 font-bold uppercase tracking-wider">
             Tiempo
           </span>
-          <span className="text-lg font-black dark:text-white tabular-nums">
+          <span className="text-base sm:text-lg font-black dark:text-white tabular-nums">
             {seconds}s
           </span>
         </div>
-        <div className="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col items-center shadow-2xl">
-          <Hash className="text-blue-500 mb-1" size={18} />
-          <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+        <div className="bg-gray-50 dark:bg-gray-900/50 p-2 sm:p-3 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 flex flex-col items-center">
+          <Hash className="text-blue-500 mb-0.5 sm:mb-1" size={18} />
+          <span className="text-[9px] sm:text-[10px] text-gray-500 font-bold uppercase tracking-wider">
             Pasos
           </span>
-          <span className="text-lg font-black dark:text-white tabular-nums">
+          <span className="text-base sm:text-lg font-black dark:text-white tabular-nums">
             {moves}
           </span>
         </div>
-        <div className="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col items-center shadow-2xl">
-          <Star className="text-yellow-500 mb-1" size={18} />
-          <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+        <div className="bg-gray-50 dark:bg-gray-900/50 p-2 sm:p-3 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 flex flex-col items-center">
+          <Star className="text-yellow-500 mb-0.5 sm:mb-1" size={18} />
+          <span className="text-[9px] sm:text-[10px] text-gray-500 font-bold uppercase tracking-wider">
             Puntos
           </span>
-          <span className="text-lg font-black dark:text-white tabular-nums">
+          <span className="text-base sm:text-lg font-black dark:text-white tabular-nums">
             {Math.max(0, 1000 - moves * 10 - seconds * 2)}
           </span>
         </div>
       </div>
 
       {/* Grid 4x4 */}
-      <div className="grid grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-4 gap-2 sm:gap-4">
         {cards.map((card, index) => (
           <MemoryCard
             key={card.id}
@@ -188,23 +188,19 @@ const MemoryGame = () => {
         ))}
       </div>
 
-      <div className="mt-6 flex justify-center sm:mt-8">
-        <button
-          onClick={resetGame}
-          className="flex items-center gap-2 px-8 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl font-bold text-gray-600 dark:text-gray-300 hover:border-emerald-500 hover:text-emerald-500 transition-all active:scale-95 shadow-sm"
-        >
-          <RefreshCcw size={18} /> Reiniciar Desafío
-        </button>
-        
-      </div>
-      <div className="mt-6 flex justify-center sm:mt-8">
+      <div className="mt-6 gap-3 flex justify-center sm:mt-8">
         <button
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 px-8 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl font-bold text-gray-600 dark:text-gray-300 hover:border-emerald-500 hover:text-emerald-500 transition-all active:scale-95 shadow-sm"
         >
-          <ArrowLeft size={18} /> Volver al Arcade
+          <ArrowLeft size={18} /> Volver {!isMobile && "Al Arcade"}
         </button>
-        
+        <button
+          onClick={resetGame}
+          className="flex items-center gap-2 px-8 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl font-bold text-gray-600 dark:text-gray-300 hover:border-emerald-500 hover:text-emerald-500 transition-all active:scale-95 shadow-sm"
+        >
+          <RefreshCcw size={18} /> Reiniciar  {!isMobile && "Desafío"}
+        </button>
       </div>
 
       <VictoryModal

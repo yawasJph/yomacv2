@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 const VictoryModal = ({ isOpen, score, time, moves, onReset }) => {
   const navigate = useNavigate();
-
+  
   if (!isOpen) return null;
 
   return (
