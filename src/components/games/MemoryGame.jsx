@@ -1,19 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import MemoryCard from "./MemoryCard";
-import { ArrowLeft, Hash, RefreshCcw, Star, Timer } from "lucide-react";
 import VictoryModal from "./VictoryModal";
 import confetti from "canvas-confetti";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import bajara1 from "../../assets/data-game/baraja1.json";
-import bajara2 from "../../assets/data-game/baraja2.json";
-import bajara3 from "../../assets/data-game/baraja3.json";
-import bajara4 from "../../assets/data-game/baraja4.json";
-import bajara5 from "../../assets/data-game/baraja5.json";
-import bajara6 from "../../assets/data-game/baraja6.json";
-import { useNavigate } from "react-router-dom";
-import { useIsMobile } from "../../hooks/useIsMobile";
-//import VictoryModal from "./memory-game/VictoryModalv3";
-//import VictoryModal from "./memory-game/VictoryModalv2";
+import HudSection from "./memory-game/HudSection";
+import ActionButtons from "./memory-game/ActionButtons";
+import barajas from "../../assets/data-game/barajas.json";
 
 const MemoryGame = () => {
   const [cards, setCards] = useState([]);
@@ -26,10 +18,6 @@ const MemoryGame = () => {
   const [finalScore, setFinalScore] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedBaraja, setSelectedBaraja] = useState(null);
-  const navigate = useNavigate();
-  const isMobile = useIsMobile();
-
-  const barajas = [bajara1, bajara4, bajara2, bajara3, bajara5, bajara6];
 
   const getRandomBaraja = () => {
     const randomIndex = Math.floor(Math.random() * barajas.length);
@@ -144,36 +132,7 @@ const MemoryGame = () => {
   return (
     <div className="max-w-2xl mx-auto p-4 select-none">
       {/* HUD de Juego */}
-      <div className="grid grid-cols-3 gap-4 mb-3 sm:mb-8">
-        <div className="bg-linear-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 p-3 rounded-2xl border border-blue-100 dark:border-blue-800/30 
-                transition-all flex flex-col items-center">
-          <Timer className="text-blue-500 dark:text-blue-400  mb-0.5 sm:mb-1" size={18} />
-          <span className="block text-[10px] uppercase font-bold text-blue-600 dark:text-blue-400 tracking-wider mb-1">
-            Tiempo
-          </span>
-          <span className="text-xl sm:text-2xl font-black dark:text-white tabular-nums">
-            {seconds}s
-          </span>
-        </div>
-        <div className="bg-linear-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-5 rounded-2xl border border-purple-100 dark:border-purple-800/30 transition-all flex flex-col items-center">
-          <Hash className="text-purple-600 dark:text-purple-400 mb-0.5 sm:mb-1" size={18} />
-          <span className="block text-[10px] uppercase font-bold text-purple-600 dark:text-purple-400 tracking-wider ">
-            Pasos
-          </span>
-          <span className="text-xl sm:text-2xl font-black dark:text-white tabular-nums">
-            {moves}
-          </span>
-        </div>
-        <div className="bg-linear-to-br from-yellow-50 via-amber-50 to-orange-50 dark:from-yellow-900/20 dark:via-amber-900/20 dark:to-orange-900/20 p-5 rounded-2xl border-2 border-yellow-200 dark:border-yellow-700/30 transition-all flex flex-col items-center">
-          <Star className="block text-[10px] uppercase font-bold text-amber-600 dark:text-amber-400 tracking-wider " size={18} />
-          <span className="block text-[10px] uppercase font-bold text-amber-600 dark:text-amber-400 tracking-wider mb-1">
-            Puntos
-          </span>
-          <span className="text-base sm:text-lg font-black dark:text-white tabular-nums">
-            {Math.max(0, 1000 - moves * 10 - seconds * 2)}
-          </span>
-        </div>
-      </div>
+      <HudSection moves={moves} seconds={seconds}/>
 
       {/* Grid 4x4 */}
       <div className="grid grid-cols-4 gap-2 sm:gap-4">
@@ -190,6 +149,8 @@ const MemoryGame = () => {
         ))}
       </div>
 
+      <ActionButtons resetGame={resetGame}/>
+
       <VictoryModal
         isOpen={showVictory}
         score={finalScore}
@@ -198,20 +159,7 @@ const MemoryGame = () => {
         onReset={resetGame}
       />
 
-      <div className="mt-6 gap-3 flex justify-center sm:mt-8">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 px-8 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl font-bold text-gray-600 dark:text-gray-300 hover:border-emerald-500 hover:text-emerald-500 transition-all active:scale-95 shadow-sm"
-        >
-          <ArrowLeft size={18} /> Volver {!isMobile && "Al Arcade"}
-        </button>
-        <button
-          onClick={resetGame}
-          className="flex items-center gap-2 px-8 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl font-bold text-gray-600 dark:text-gray-300 hover:border-emerald-500 hover:text-emerald-500 transition-all active:scale-95 shadow-sm"
-        >
-          <RefreshCcw size={18} /> Reiniciar {!isMobile && "Desafío"}
-        </button>
-      </div>
+      
     </div>
   );
 };

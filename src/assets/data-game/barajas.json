@@ -1,0 +1,80 @@
+[
+  {
+    "type": "icon",
+    "baraja": [
+      { "type": "a", "icon": "🎈" },
+      { "type": "b", "icon": "🎇" },
+      { "type": "c", "icon": "🧨" },
+      { "type": "d", "icon": "✨" },
+      { "type": "e", "icon": "🎉" },
+      { "type": "f", "icon": "🎊" },
+      { "type": "g", "icon": "🎄" },
+      { "type": "h", "icon": "🎁" }
+    ]
+  },
+  {
+    "type": "icon",
+    "baraja": [
+      { "type": "a", "icon": "👺" },
+      { "type": "b", "icon": "💀" },
+      { "type": "c", "icon": "👻" },
+      { "type": "d", "icon": "👽" },
+      { "type": "e", "icon": "🤡" },
+      { "type": "f", "icon": "🤖" },
+      { "type": "g", "icon": "😈" },
+      { "type": "h", "icon": "🥸" }
+    ]
+  },
+  {
+    "type": "icon",
+    "baraja": [
+      { "type": "a", "icon": "😼" },
+      { "type": "b", "icon": "🙉" },
+      { "type": "c", "icon": "🐶" },
+      { "type": "d", "icon": "🐺" },
+      { "type": "e", "icon": "🦁" },
+      { "type": "f", "icon": "🐯" },
+      { "type": "g", "icon": "🦒" },
+      { "type": "h", "icon": "🦊" }
+    ]
+  },
+  {
+    "type": "img",
+    "baraja": [
+      { "type": "a", "icon": "/img/dsi/caroengeles.jpg" },
+      { "type": "b", "icon": "/img/dsi/floreselvin.jpg" },
+      { "type": "c", "icon": "/img/dsi/jflores.jpg" },
+      { "type": "d", "icon": "/img/dsi/lino.jpg" },
+      { "type": "e", "icon": "/img/dsi/saavedradaniel.jpg" },
+      { "type": "f", "icon": "/img/dsi/torres.png" },
+      { "type": "g", "icon": "/img/dsi/mirandarosa.jpg" },
+      { "type": "h", "icon": "/img/dsi/virhuezdamian.jpg" }
+    ]
+  },
+  {
+    "type": "img",
+    "baraja": [
+      { "type": "a", "icon": "/img/iab/acuñagladys.jpg" },
+      { "type": "b", "icon": "/img/iab/floresaguilarErick.jpg" },
+      { "type": "c", "icon": "/img/iab/juarez.png" },
+      { "type": "d", "icon": "/img/iab/lopezrosalesolivia.jpg" },
+      { "type": "e", "icon": "/img/iab/millonesnelida.jpg" },
+      { "type": "f", "icon": "/img/iab/morenomario.jpg" },
+      { "type": "g", "icon": "/img/iab/paucarana.jpg" },
+      { "type": "h", "icon": "/img/iab/zumarandante.jpg" }
+    ]
+  },
+  {
+    "type": "img",
+    "baraja": [
+      { "type": "a", "icon": "/img/et/berrospiaguilar.jpg" },
+      { "type": "b", "icon": "/img/et/durand.jpg" },
+      { "type": "c", "icon": "/img/et/huamanjuan.jpg" },
+      { "type": "d", "icon": "/img/et/icocheaisabel.jpg" },
+      { "type": "e", "icon": "/img/et/lozanoc.png" },
+      { "type": "f", "icon": "/img/et/montoya.jpg" },
+      { "type": "g", "icon": "/img/et/ortega.jpg" },
+      { "type": "h", "icon": "/img/et/varamilagros.jpg" }
+    ]
+  }
+]
