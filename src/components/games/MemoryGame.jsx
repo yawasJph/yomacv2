@@ -168,7 +168,7 @@ const MemoryGame = () => {
         ))}
       </div>
 
-      <ActionButtons resetGame={resetGame} />
+      <ActionButtons resetGame={resetGame} isMuted={isMuted} setIsMuted={setIsMuted} />
 
       <VictoryModal
         isOpen={showVictory}
@@ -179,7 +179,7 @@ const MemoryGame = () => {
       />
 
       {/* <SquareRoundCorner className="dark:text-white absolute bottom-0 right-5"/> */}
-      <button
+      {/* <button
         onClick={() => setIsMuted(!isMuted)}
         className={`p-2 rounded-xl transition-colors absolute right-6 bottom-6 ${
           isMuted
@@ -188,7 +188,7 @@ const MemoryGame = () => {
         }`}
       >
         {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-      </button>
+      </button> */}
     </div>
   );
 };
