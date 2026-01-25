@@ -6,6 +6,8 @@ import { supabaseClient } from "../../supabase/supabaseClient";
 import HudSection from "./memory-game/HudSection";
 import ActionButtons from "./memory-game/ActionButtons";
 import barajas from "../../assets/data-game/barajas.json";
+import useSound from "use-sound"; // 1. Importar la librería
+import { SquareRoundCorner, Volume2, VolumeX } from "lucide-react";
 
 const MemoryGame = () => {
   const [cards, setCards] = useState([]);
@@ -18,11 +20,22 @@ const MemoryGame = () => {
   const [finalScore, setFinalScore] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedBaraja, setSelectedBaraja] = useState(null);
+  const [isMuted, setIsMuted] = useState(false); // Estado del Mute
+
+  const [playFip] = useSound("/sounds/click.mp3", { volume: 0.5 });
+  const [playMatched] = useSound("/sounds/matched.mp3", { volume: 0.5 });
+  const [playError] = useSound("/sounds/lose.mp3", { volume: 0.3 });
+  const [playWin] = useSound("/sounds/win.mp3", { volume: 0.5 });
 
   const getRandomBaraja = () => {
     const randomIndex = Math.floor(Math.random() * barajas.length);
     setSelectedBaraja(barajas[randomIndex]);
     return barajas[randomIndex].baraja;
+  };
+
+  // Funciones wrapper para respetar el Mute
+  const handlePlay = (soundFn) => {
+    if (!isMuted) soundFn();
   };
 
   const resetGame = useCallback(() => {
@@ -47,7 +60,7 @@ const MemoryGame = () => {
   useEffect(() => {
     resetGame();
   }, []);
-  
+
   // Función para guardar en Supabase (RPC)
   const saveGameResult = async (score, steps, time) => {
     if (isSaving) return;
@@ -86,6 +99,8 @@ const MemoryGame = () => {
     )
       return;
 
+    handlePlay(playFip);
+
     if (!isActive) setIsActive(true);
 
     const newFlipped = [...flippedCards, index];
@@ -97,18 +112,25 @@ const MemoryGame = () => {
 
       if (cards[first].type === cards[second].type) {
         setMatched((prev) => [...prev, first, second]);
+        setTimeout(() => handlePlay(playMatched), 200);
         setFlippedCards([]);
       } else {
-        setTimeout(() => setFlippedCards([]), 1000); // Un segundo para memorizar
+        // ✅ Sonido de error
+        setTimeout(() => {
+          handlePlay(playError);
+          setFlippedCards([]);
+        }, 1000); // Un segundo para memorizar
       }
     }
-  }; 
-  
+  };
+
   // Efecto de Victoria
   useEffect(() => {
     if (matched.length === cards.length && cards.length > 0) {
       setIsActive(false); // Detener cronómetro
       // Disparar Confeti
+
+      handlePlay(playWin);
 
       confetti({
         particleCount: 150,
@@ -127,7 +149,7 @@ const MemoryGame = () => {
   }, [matched, cards.length]);
 
   return (
-    <div className="max-w-2xl mx-auto p-4 select-none">
+    <div className="relative max-w-2xl mx-auto p-4 select-none">
       {/* HUD de Juego */}
       <HudSection moves={moves} seconds={seconds} />
       {/* Grid 4x4 */}
@@ -155,6 +177,18 @@ const MemoryGame = () => {
         moves={moves}
         onReset={resetGame}
       />
+
+      {/* <SquareRoundCorner className="dark:text-white absolute bottom-0 right-5"/> */}
+      <button
+        onClick={() => setIsMuted(!isMuted)}
+        className={`p-2 rounded-xl transition-colors absolute right-6 bottom-6 ${
+          isMuted
+            ? "text-red-500 bg-red-50 dark:bg-red-500/10"
+            : "text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10"
+        }`}
+      >
+        {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+      </button>
     </div>
   );
 };

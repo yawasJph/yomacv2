@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import { useAuth } from "../../context/AuthContext";
 import useSound from "use-sound"; // 1. Importar la librería
 import {
   ArrowLeft,
@@ -19,7 +18,6 @@ const GRID_SIZE = 8;
 const MINES_COUNT = 10;
 
 const BuscaMinas = () => {
-  const { user } = useAuth();
   const [board, setBoard] = useState([]);
   const [gameState, setGameState] = useState("playing"); // playing, won, lost
   const [timer, setTimer] = useState(0);

@@ -44,7 +44,7 @@ const MemoryCard = memo(({ card, isFlipped, isMatched, onClick, isDisabled, card
           className={`absolute inset-0 rounded-2xl flex items-center justify-center text-4xl shadow-xl border-2 
             ${
               isMatched
-                ? "bg-emerald-50 dark:bg-emerald-500/10 border-indigo-500 shadow-indigo-500/20"
+                ? "bg-indigo-50 dark:bg-indigo-500/10 border-indigo-500 shadow-indigo-500/20"
                 : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800"
             }`}
           style={{
