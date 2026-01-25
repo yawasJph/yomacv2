@@ -1,5 +1,4 @@
 import { ArrowLeft, RefreshCcw, Volume2, VolumeX } from "lucide-react";
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 

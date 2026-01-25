@@ -17,7 +17,7 @@ import NotificationsPage from "./components/pages/NotificationsPage";
 import { useEffect } from "react";
 import UserConnections from "./components/pages/UserConnections2";
 import GameCenter from "./pages/games/GameCenter";
-import MemoryGame from "./components/games/MemoryGame";
+//import MemoryGame from "./components/games/MemoryGame";
 import YoMACStore from "./pages/games/YoMACStore";
 import { SearchProvider } from "./context/SearchContext";
 import TriviaGame from "./pages/games/TriviaGame";
@@ -29,6 +29,7 @@ import BuscaMinas from "./pages/games/BuscaMinas";
 import CodigoMatricula from "./pages/games/CodigoMatricula2";
 import ConectorRedes from "./pages/games/ConectorRedes";
 import CampusAI from "./pages/chat/CampusAI2";
+import MemoryGame from "./components/games/MemoryGamev2";
 
 function App() {
   if ("serviceWorker" in navigator) {

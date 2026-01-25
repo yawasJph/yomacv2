@@ -7,7 +7,6 @@ import HudSection from "./memory-game/HudSection";
 import ActionButtons from "./memory-game/ActionButtons";
 import barajas from "../../assets/data-game/barajas.json";
 import useSound from "use-sound"; // 1. Importar la librería
-import { SquareRoundCorner, Volume2, VolumeX } from "lucide-react";
 
 const MemoryGame = () => {
   const [cards, setCards] = useState([]);
@@ -150,11 +149,12 @@ const MemoryGame = () => {
 
   return (
     <div className="relative max-w-2xl mx-auto p-4 select-none">
+      
       {/* HUD de Juego */}
       <HudSection moves={moves} seconds={seconds} />
+
       {/* Grid 4x4 */}
       <div className="grid grid-cols-4 gap-2 sm:gap-4">
-        {" "}
         {cards.map((card, index) => (
           <MemoryCard
             key={card.id}
@@ -177,18 +177,6 @@ const MemoryGame = () => {
         moves={moves}
         onReset={resetGame}
       />
-
-      {/* <SquareRoundCorner className="dark:text-white absolute bottom-0 right-5"/> */}
-      {/* <button
-        onClick={() => setIsMuted(!isMuted)}
-        className={`p-2 rounded-xl transition-colors absolute right-6 bottom-6 ${
-          isMuted
-            ? "text-red-500 bg-red-50 dark:bg-red-500/10"
-            : "text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10"
-        }`}
-      >
-        {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-      </button> */}
     </div>
   );
 };
