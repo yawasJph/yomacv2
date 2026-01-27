@@ -1,4 +1,4 @@
-import { Bomb, Brain, CombineIcon, Container, Gamepad2, Grid3X3, Target, Type } from "lucide-react";
+import { Bomb, Brain, CombineIcon, Container, Gamepad2, Grid3X3, Hash, Target, Type } from "lucide-react";
 
 export const GAMES_LIST = [
     {
@@ -36,7 +36,7 @@ export const GAMES_LIST = [
       id: "michi",
       title: "Michi (Tic-Tac-Toe)",
       description: "Reta a la IA o a un amigo en el clásico duelo.",
-      icon: <Gamepad2 className="text-purple-500" size={32} />,
+      icon: <Hash className="text-purple-500" size={32} />,
       color: "from-purple-500/20 to-purple-500/5",
       path: "/games/michi",
       difficulty: "Fácil",

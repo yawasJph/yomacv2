@@ -101,10 +101,10 @@ const ResultsView = ({
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="relative">
               <div
-                className={`absolute -inset-4 rounded-full blur-3xl bg-gradient-to-br ${rank.glow}`}
+                className={`absolute -inset-4 rounded-full blur-3xl bg-linear-to-br ${rank.glow}`}
               />
               <div
-                className={`relative p-6 rounded-[2rem] bg-gradient-to-br ${rank.gradient} shadow-2xl`}
+                className={`relative p-6 rounded-4xl bg-linear-to-br ${rank.gradient} shadow-2xl`}
               >
                 <Trophy className="w-12 h-12 text-white" />
               </div>

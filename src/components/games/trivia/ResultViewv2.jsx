@@ -70,7 +70,7 @@ const ResultsView = ({ points, accuracy, totalQuestions, earnedCredits, onReset 
   return (
     <div className="relative flex flex-col items-center justify-center min-h-[600px] p-6 overflow-hidden">
       {/* Fondo animado */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900" />
+      <div className="absolute inset-0 bg-linear-to-br from-gray-900 via-purple-900 to-violet-900" />
       
       {/* Partículas de fondo */}
       <div className="absolute inset-0 overflow-hidden">
@@ -133,7 +133,7 @@ const ResultsView = ({ points, accuracy, totalQuestions, earnedCredits, onReset 
           transition={{ delay: 0.2 }}
           className="text-center mb-8"
         >
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold bg-linear-to-r from-white to-emerald-200 bg-clip-text text-transparent">
             ¡Resultados Finales!
           </h1>
           <p className="text-gray-300 mt-2">Desempeño en la trivia</p>
@@ -158,10 +158,10 @@ const ResultsView = ({ points, accuracy, totalQuestions, earnedCredits, onReset 
               <motion.div 
                 animate={{ rotate: 360 }}
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-0 bg-gradient-to-r from-emerald-500/30 via-teal-400/30 to-cyan-500/30 blur-2xl rounded-full"
+                className="absolute inset-0 bg-linear-to-r from-emerald-500/30 via-teal-400/30 to-cyan-500/30 blur-2xl rounded-full"
               />
               
-              <div className="relative bg-gradient-to-br from-emerald-500 via-teal-400 to-cyan-400 p-8 rounded-3xl shadow-2xl shadow-emerald-500/30">
+              <div className="relative bg-linear-to-br from-emerald-500 via-teal-400 to-cyan-400 p-8 rounded-3xl shadow-2xl shadow-emerald-500/30">
                 <Trophy className="text-white w-16 h-16" strokeWidth={1.5} />
                 
                 {/* Destellos alrededor del trofeo */}
@@ -185,7 +185,7 @@ const ResultsView = ({ points, accuracy, totalQuestions, earnedCredits, onReset 
                 className={`absolute -bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full ${rank.bg} backdrop-blur-lg border border-white/10 shadow-2xl flex items-center gap-2`}
               >
                 {rank.icon}
-                <span className={`text-sm font-black tracking-wider bg-gradient-to-r ${rank.gradient} bg-clip-text text-transparent`}>
+                <span className={`text-sm font-black tracking-wider bg-linear-to-r ${rank.gradient} bg-clip-text text-transparent`}>
                   {rank.label}
                 </span>
               </motion.div>
@@ -198,9 +198,9 @@ const ResultsView = ({ points, accuracy, totalQuestions, earnedCredits, onReset 
               transition={{ delay: 0.5 }}
               className="text-center"
             >
-              <div className="inline-block p-1 rounded-2xl bg-gradient-to-r from-gray-800 to-gray-900 border border-gray-700/50">
+              <div className="inline-block p-1 rounded-2xl bg-linear-to-r from-gray-800 to-gray-900 border border-gray-700/50">
                 <motion.h2 
-                  className="text-7xl font-black tracking-tight bg-gradient-to-r from-white to-emerald-100 bg-clip-text text-transparent p-2"
+                  className="text-7xl font-black tracking-tight bg-linear-to-r from-white to-emerald-100 bg-clip-text text-transparent p-2"
                   animate={{ scale: [1, 1.02, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
@@ -248,7 +248,7 @@ const ResultsView = ({ points, accuracy, totalQuestions, earnedCredits, onReset 
                     initial={{ width: 0 }}
                     animate={{ width: `${accuracyPercentage}%` }}
                     transition={{ delay: 1, duration: 1.5, ease: "easeOut" }}
-                    className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full"
+                    className="h-full bg-linear-to-r from-emerald-500 to-teal-400 rounded-full"
                   />
                 </div>
               </motion.div>
@@ -260,9 +260,9 @@ const ResultsView = ({ points, accuracy, totalQuestions, earnedCredits, onReset 
                 whileHover={{ scale: 1.03, boxShadow: "0 10px 30px rgba(16, 185, 129, 0.4)" }}
                 whileTap={{ scale: 0.98 }}
                 onClick={onReset}
-                className="relative py-4 bg-gradient-to-r from-emerald-600 to-teal-500 text-white rounded-2xl font-bold uppercase tracking-wider shadow-xl flex items-center justify-center gap-3 overflow-hidden group"
+                className="relative py-4 bg-linear-to-r from-emerald-600 to-teal-500 text-white rounded-2xl font-bold uppercase tracking-wider shadow-xl flex items-center justify-center gap-3 overflow-hidden group"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-linear-to-r from-emerald-500 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <Zap size={20} className="relative z-10" />
                 <span className="relative z-10">Jugar Otra Vez</span>
                 <RefreshCw size={16} className="relative z-10 ml-auto" />
@@ -272,7 +272,7 @@ const ResultsView = ({ points, accuracy, totalQuestions, earnedCredits, onReset 
                 whileHover={{ scale: 1.03, boxShadow: "0 10px 30px rgba(75, 85, 99, 0.3)" }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => navigate('/games')}
-                className="py-4 bg-gradient-to-r from-gray-800 to-gray-900 border border-gray-700 text-gray-200 rounded-2xl font-bold uppercase tracking-wider flex items-center justify-center gap-3 hover:border-gray-600 transition-colors"
+                className="py-4 bg-linear-to-r from-gray-800 to-gray-900 border border-gray-700 text-gray-200 rounded-2xl font-bold uppercase tracking-wider flex items-center justify-center gap-3 hover:border-gray-600 transition-colors"
               >
                 <Home size={20} />
                 <span>Volver al Menú</span>
@@ -285,7 +285,7 @@ const ResultsView = ({ points, accuracy, totalQuestions, earnedCredits, onReset 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.2 }}
-              className="mt-8 p-4 bg-gradient-to-r from-gray-800/40 to-gray-900/40 backdrop-blur-sm rounded-2xl border border-gray-700/30"
+              className="mt-8 p-4 bg-linear-to-r from-gray-800/40 to-gray-900/40 backdrop-blur-sm rounded-2xl border border-gray-700/30"
             >
               <p className="text-center text-gray-300 text-sm">
                 {points > 3000 
@@ -311,9 +311,9 @@ const StatCard = ({ icon, label, value, subValue, delay, gradient }) => (
     animate={{ x: 0, opacity: 1 }}
     transition={{ delay }}
     whileHover={{ y: -5, transition: { duration: 0.2 } }}
-    className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-sm p-5 rounded-2xl border border-gray-700/50 shadow-lg flex items-center gap-4 hover:border-gray-600/50 transition-all"
+    className="bg-linear-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-sm p-5 rounded-2xl border border-gray-700/50 shadow-lg flex items-center gap-4 hover:border-gray-600/50 transition-all"
   >
-    <div className={`p-3 rounded-xl bg-gradient-to-r ${gradient} bg-opacity-10 border border-gray-700/30`}>
+    <div className={`p-3 rounded-xl bg-linear-to-r ${gradient} bg-opacity-10 border border-gray-700/30`}>
       {icon}
     </div>
     <div className="flex-1">
