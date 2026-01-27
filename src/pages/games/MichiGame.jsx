@@ -42,7 +42,7 @@ const MichiGame = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       onClick={() => setIsMuted(!isMuted)}
-      className={`absolute ${isMobile ? "bottom-0": "top-10"} right-13 z-50 p-3 rounded-2xl transition-all shadow-lg ${
+      className={`absolute ${isMobile ? "bottom-2": "top-10"} right-13 z-50 p-3 rounded-2xl transition-all shadow-lg ${
         isMuted 
           ? "bg-red-500 text-white" 
           : "bg-white dark:bg-neutral-900 text-purple-500 border border-purple-500/20"
