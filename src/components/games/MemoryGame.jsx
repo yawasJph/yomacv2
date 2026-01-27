@@ -136,8 +136,9 @@ const MemoryGame = () => {
         spread: 70,
         origin: { y: 0.6 },
         colors: ["#10b981", "#3b82f6", "#f59e0b"],
-      }); // Calcular score final para el modal
-
+      }); 
+      
+      // Calcular score final para el modal
       const score = Math.max(0, 1000 - moves * 10 - seconds * 2);
       setFinalScore(score);
 

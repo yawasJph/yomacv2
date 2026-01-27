@@ -17,7 +17,6 @@ import NotificationsPage from "./components/pages/NotificationsPage";
 import { useEffect } from "react";
 import UserConnections from "./components/pages/UserConnections2";
 import GameCenter from "./pages/games/GameCenter";
-//import MemoryGame from "./components/games/MemoryGame";
 import YoMACStore from "./pages/games/YoMACStore";
 import { SearchProvider } from "./context/SearchContext";
 import TriviaGame from "./pages/games/TriviaGame";

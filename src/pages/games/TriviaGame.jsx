@@ -1,11 +1,21 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
-import { Timer as TimerIcon, Zap, AlertCircle } from "lucide-react";
+import {
+  Timer as TimerIcon,
+  Zap,
+  AlertCircle,
+  VolumeX,
+  Volume2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import ResultsView from "../../components/games/ResultsView";
+//import ResultsView from "../../components/games/ResultsView";
 import { useProfile } from "../../hooks/useProfile";
+import useSound from "use-sound"; // 1. Importar la librería
+import confetti from "canvas-confetti";
+import ResultsView from "../../components/games/trivia/ResultViewv3";
+//import ResultsView from "../../components/games/trivia/ResultViewv2";
 
 const TriviaGame = () => {
   const { user } = useAuth();
@@ -26,6 +36,23 @@ const TriviaGame = () => {
   const [showBoost, setShowBoost] = useState(false); // Estado para feedback visual del boost
   const [activeCategory, setActiveCategory] = useState(null);
   const [countdown, setCountdown] = useState(3);
+  const [isMuted, setIsMuted] = useState(false);
+
+  // Configuramos los sonidos
+  const [playCorrect] = useSound("/sounds/correct.mp3", { volume: 0.5 });
+  const [playWrong] = useSound("/sounds/wrong.mp3", { volume: 0.5 });
+  const [playTickv3, { stop: stopTick }] = useSound("/sounds/tickv3.mp3", {
+    volume: 0.5,
+  });
+  const [playLose] = useSound("/sounds/losev2.mp3", { volume: 0.3 });
+  const [playWin] = useSound("/sounds/win.mp3", { volume: 0.5 });
+  const [playBeep] = useSound("/sounds/beep.mp3", { volume: 0.5 });
+  const [playStart] = useSound("/sounds/start.mp3", { volume: 0.5 });
+
+  // Funciones wrapper para respetar el Mute
+  const handlePlay = (soundFn) => {
+    if (!isMuted) soundFn();
+  };
 
   // CONFIGURACIÓN DE DIFICULTAD
   const DIFFICULTY_SETTINGS = {
@@ -59,7 +86,7 @@ const TriviaGame = () => {
           {
             p_category_id: randomCat.id,
             p_limit: 10,
-          }
+          },
         );
 
         if (error) throw error;
@@ -105,10 +132,12 @@ const TriviaGame = () => {
   useEffect(() => {
     if (gameState === "starting") {
       if (countdown > 0) {
+        handlePlay(playBeep);
         const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
         return () => clearTimeout(timer);
       } else {
         setGameState("playing");
+        handlePlay(playStart);
       }
     }
   }, [gameState, countdown]);
@@ -117,9 +146,10 @@ const TriviaGame = () => {
   useEffect(() => {
     if (gameState === "playing" && selectedOption === null) {
       if (timeLeft > 0) {
+        if (timeLeft <= 4) handlePlay(playTickv3);
         timerRef.current = setTimeout(
           () => setTimeLeft((prev) => prev - 1),
-          1000
+          1000,
         );
       } else {
         // Se acabó el tiempo
@@ -153,13 +183,14 @@ const TriviaGame = () => {
     let timeUsedInThisRound = 0;
 
     if (correct) {
+      handlePlay(playCorrect);
       setIsCorrect(true);
 
       // 1. Cálculo Base con Dificultad
       const timeBonus = timeLeft * 20 * diffSetting.multiplier;
       const currentStreakBonus = Math.min(streak * 20, 100);
       roundPoints = Math.floor(
-        diffSetting.basePoints + timeBonus + currentStreakBonus
+        diffSetting.basePoints + timeBonus + currentStreakBonus,
       );
 
       // 2. APLICACIÓN DEL BOOST DE CARRERA (Bonus del 20%)
@@ -180,6 +211,7 @@ const TriviaGame = () => {
       setStreak((prev) => prev + 1);
       setLastPointsEarned(roundPoints);
     } else {
+      handlePlay(playWrong);
       setIsCorrect(false);
       setStreak(0);
       setLastPointsEarned(0);
@@ -201,10 +233,22 @@ const TriviaGame = () => {
         setTimeLeft(nextDiff.time);
       } else {
         setGameState("finished");
+        // Si hizo más de 7 aciertos, sonido de victoria, si no, de derrota
+        if (score >= 7) {
+          confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ["#10b981", "#3b82f6", "#f59e0b"],
+          });
+          handlePlay(playWin);
+        } else {
+          handlePlay(playLose);
+        }
         saveResults(
           points + roundPoints,
           score + (correct ? 1 : 0),
-          totalTimeUsed + timeUsedInThisRound
+          totalTimeUsed + timeUsedInThisRound,
         );
       }
     }, 1500);
@@ -231,13 +275,12 @@ const TriviaGame = () => {
   };
 
   const saveResults = async (finalPoints, finalScore, finalTime) => {
-    const { data, error } = await supabaseClient.rpc("submit_trivia_score", {
+    const { error } = await supabaseClient.rpc("submit_trivia_score", {
       p_points: finalPoints, // El estado 'points' con el Time-Bonus
       p_accuracy: finalScore, // El estado 'score' con los aciertos (0-10)
       p_time_seconds: finalTime, // Opcional: tiempo total
     });
 
-    console.log("supabase", finalPoints,finalScore, finalTime)
     if (error) console.error(error);
   };
 
@@ -260,7 +303,7 @@ const TriviaGame = () => {
   // 2. Pantalla de Cuenta Regresiva (3, 2, 1)
   if (gameState === "starting") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-black overflow-hidden">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-black overflow-hidden relative">
         <motion.div
           key={countdown}
           initial={{ scale: 0.5, opacity: 0 }}
@@ -280,6 +323,17 @@ const TriviaGame = () => {
             Prepárate
           </motion.p>
         </motion.div>
+
+        <button
+          onClick={() => setIsMuted(!isMuted)}
+          className={`p-3 sm:p-4 rounded-xl transition-colors absolute top-1/4 right-1/5 ${
+            isMuted
+              ? "text-red-500 bg-red-50 dark:bg-red-500/10"
+              : "text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10"
+          }`}
+        >
+          {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+        </button>
 
         {/* Círculos decorativos de fondo */}
         <div className="absolute inset-0 z-[-1] flex items-center justify-center">
@@ -309,8 +363,6 @@ const TriviaGame = () => {
 
   return (
     <div className="max-w-2xl mx-auto p-4 md:pt-10 pt-2">
-      {/* md:pt-10 */}
-      {/* HUD Superior: Barra de tiempo y progreso */}
       {/* HUD Superior: Categoría y Dificultad */}
       <div className="flex justify-between items-center mb-2 md:mb-6 ">
         {/**mb-6  -(md:mb-6)*/}
@@ -322,6 +374,23 @@ const TriviaGame = () => {
           </span>
         </div>
 
+        <button
+          onClick={() => {
+            (setIsMuted(!isMuted), stopTick());
+          }}
+          className={`p-3 sm:p-4 rounded-xl transition-colors${
+            isMuted
+              ? "text-red-500 bg-red-50 dark:bg-red-500/10"
+              : "text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10"
+          }`}
+        >
+          {isMuted ? (
+            <VolumeX size={20} className="text-red-500" />
+          ) : (
+            <Volume2 size={20} className="text-emerald-500" />
+          )}
+        </button>
+
         {/* Chip de Dificultad */}
         <div
           className={`text-[10px] font-black uppercase px-3 py-1 rounded-full border-2 
@@ -329,8 +398,8 @@ const TriviaGame = () => {
           currentQ.difficulty === "Fácil"
             ? "bg-emerald-50 border-emerald-200 text-emerald-600"
             : currentQ.difficulty === "Medio"
-            ? "bg-amber-50 border-amber-200 text-amber-600"
-            : "bg-red-50 border-red-200 text-red-600 animate-pulse"
+              ? "bg-amber-50 border-amber-200 text-amber-600"
+              : "bg-red-50 border-red-200 text-red-600 animate-pulse"
         }`}
         >
           Nivel {currentQ.difficulty}
@@ -460,48 +529,6 @@ const TriviaGame = () => {
               {currentQ.question_text}
             </h3>
           </div>
-
-          {/* Opciones */}
-          {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-3 dark:text-white">
-            {currentQ.options.map((option, idx) => {
-              const isSelected = selectedOption === idx;
-              const isCorrect = idx === currentQ.correct_option_index;
-              const showResult = selectedOption !== null;
-
-              return (
-                <button
-                  key={idx}
-                  disabled={showResult}
-                  onClick={() => handleAnswer(idx)}
-                  className={`p-3 md:p-5 rounded-2xl border-2 font-bold text-sm transition-all duration-200 flex items-center justify-between
-                    ${
-                      !showResult
-                        ? "bg-white dark:bg-neutral-900 border-gray-100 dark:border-neutral-800 hover:border-emerald-500 active:scale-95"
-                        : ""
-                    }
-                    ${
-                      showResult && isCorrect
-                        ? "bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/30"
-                        : ""
-                    }
-                    ${
-                      showResult && isSelected && !isCorrect
-                        ? "bg-red-500 border-red-500 text-white"
-                        : ""
-                    }
-                    ${
-                      showResult && !isCorrect && !isSelected
-                        ? "opacity-40 border-gray-100 dark:border-neutral-800 dark:text-gray-500"
-                        : ""
-                    }
-                  `}
-                >
-                  {option}
-                  {showResult && isCorrect && <Zap size={16} fill="white" />}
-                </button>
-              );
-            })}
-          </div> */}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 dark:text-white">
             {currentQ.options.map((option, idx) => {
