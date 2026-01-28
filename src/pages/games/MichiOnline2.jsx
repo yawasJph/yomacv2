@@ -29,7 +29,7 @@ const MichiOnline = ({ user, onBack }) => {
       try {
         // CASO A: VICTORIA (Solo el que ganó registra)
         if (winner !== "draw" && winner === user.id) {
-          playWithCheck(playClick)
+          playWithCheck(playWin)
           confetti({
             particleCount: 150,
             spread: 70,
