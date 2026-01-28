@@ -16,7 +16,7 @@ const MichiGame = () => {
   const [gameMode, setGameMode] = useState(null); // null, 'ia', 'pvp'
   const { user } = useAuth();
   //const [isMuted, setIsMuted] = useState(false);
-  const isMobile = useIsMobile()
+  const isMobile = useIsMobile();
   const { isMuted, setIsMuted } = useAudio();
 
   const trackPath = `/sounds/bgv5.mp3`;
@@ -28,9 +28,9 @@ const MichiGame = () => {
   });
   // EFECTO: Control de música solo para el MENÚ
   useEffect(() => {
-    // Si NO hay un modo de juego seleccionado (estamos en el menú) 
+    // Si NO hay un modo de juego seleccionado (estamos en el menú)
     // y NO está muteado, dale play.
-    if (gameMode !== "ia" && gameMode !== "pvp" && !isMuted ) {
+    if (gameMode !== "ia" && gameMode !== "pvp" && !isMuted) {
       play();
     } else {
       // Si entramos a un juego O si muteamos, se detiene.
@@ -46,17 +46,21 @@ const MichiGame = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       onClick={() => setIsMuted(!isMuted)}
-      className={`absolute ${isMobile ? "bottom-2": "top-10"} right-13 z-50 p-3 rounded-2xl transition-all shadow-lg ${
-        isMuted 
-          ? "bg-red-500 text-white" 
+      className={`absolute ${isMobile ? "bottom-2" : "top-10"} right-13 z-50 p-3 rounded-2xl transition-all shadow-lg ${
+        isMuted
+          ? "bg-red-500 text-white"
           : "bg-white dark:bg-neutral-900 text-purple-500 border border-purple-500/20"
       }`}
     >
-      {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} className="animate-pulse" />}
+      {isMuted ? (
+        <VolumeX size={24} />
+      ) : (
+        <Volume2 size={24} className="animate-pulse" />
+      )}
     </motion.button>
-  );  
+  );
 
-   // Funciones wrapper para respetar el Mute
+  // Funciones wrapper para respetar el Mute
   const handlePlay = (soundFn) => {
     if (!isMuted) soundFn();
   };
@@ -78,12 +82,11 @@ const MichiGame = () => {
             Selecciona tu desafío
           </p>
         </motion.div>
-
         <div className="grid grid-cols-1 gap-4 w-full max-w-xs ">
           <MenuButton
             onClick={() => {
-              stop()
-              setGameMode("ia")
+              stop();
+              setGameMode("ia");
             }}
             icon={<Cpu className="text-purple-500" />}
             title="Contra la IA"
@@ -91,8 +94,8 @@ const MichiGame = () => {
           />
           <MenuButton
             onClick={() => {
-              stop()
-              setGameMode("pvp")
+              stop();
+              setGameMode("pvp");
             }}
             icon={<Users className="text-blue-500" />}
             title="Duelo Local"
@@ -100,8 +103,8 @@ const MichiGame = () => {
           />
           <MenuButton
             onClick={() => {
-              stop()
-              setGameMode("online")
+              stop();
+              setGameMode("online");
             }}
             icon={<Users className="text-indigo-500" />}
             title="Duelo Online"
@@ -121,21 +124,41 @@ const MichiGame = () => {
   // Aquí iría el Tablero (que desarrollaremos a continuación)
   return (
     <div className="flex flex-col items-center justify-center relative">
-      {SoundToggle} {/* <-- BOTÓN AQUÍ */}
+      {gameMode !== "online" ? (
+        SoundToggle
+      ) : (
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          onClick={() => setIsMuted(!isMuted)}
+          className={`absolute ${isMobile ? "-bottom-4" : "top-10"} right-13 z-50 p-3 rounded-2xl transition-all shadow-lg ${
+            isMuted
+              ? "bg-red-500 text-white"
+              : "bg-white dark:bg-neutral-900 text-purple-500 border border-purple-500/20"
+          }`}
+        >
+          {isMuted ? (
+            <VolumeX size={24} />
+          ) : (
+            <Volume2 size={24} className="animate-pulse" />
+          )}
+        </motion.button>
+      )}{" "}
+      {/* <-- BOTÓN AQUÍ */}
       {/* Tablero de Michi... */}
-      {gameMode === "ia" && <MichiBoard onBack={() => setGameMode(null)}/>}
+      {gameMode === "ia" && <MichiBoard onBack={() => setGameMode(null)} />}
       {gameMode === "pvp" && <MichiPVP onBack={() => setGameMode(null)} />}
       {gameMode === "online" && (
         <MichiOnline user={user} onBack={() => setGameMode(null)} stop={stop} />
       )}
-      <p className="dark:text-white font-bold">
+      <p className={`dark:text-white font-bold ${gameMode === "online" && "pt-3"}`}>
         Modo: {gameMode.toUpperCase()}
       </p>
       {gameMode != "online" && (
         <button
           onClick={() => {
-            handlePlay(play)
-            setGameMode(null)
+            handlePlay(play);
+            setGameMode(null);
           }}
           className="text-emerald-500 mt-4 underline"
         >
