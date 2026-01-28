@@ -1,53 +1,35 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import {
-  Zap,
-  Flame,
-  Swords,
-  ArrowLeft,
-  Loader2,
-  AlertCircle,
-  Sword,
-} from "lucide-react";
+import { Zap, Flame, AlertCircle } from "lucide-react";
 import MichiVersus from "./MichiVersus";
 import confetti from "canvas-confetti";
 import SearchingScreen from "../../components/games/SearchingScreen ";
+import useSound from "use-sound";
+import { useAudio } from "../../context/AudioContext";
 
 const MichiOnline = ({ user, onBack }) => {
   const [gameState, setGameState] = useState("searching");
   const [roomData, setRoomData] = useState(null);
   const [winner, setWinner] = useState(null);
   const [opponentLeft, setOpponentLeft] = useState(false);
+  const { playWithCheck } = useAudio();
 
-  // --- 1. REGISTRO DE VICTORIA ---
-  // useEffect(() => {
-  //   if (winner && winner !== "draw" && winner === user.id) {
-  //     const saveWin = async () => {
-  //       try {
-  //         await supabaseClient.rpc("submit_game_score", {
-  //           p_game_id: "michi_online",
-  //           p_moves: 0,
-  //           p_score: 300,
-  //           p_time_seconds: 0,
-  //         });
-  //         console.log("DEBUG: Victoria guardada en DB exitosamente.");
-  //       } catch (error) {
-  //         console.error("DEBUG: Error al guardar victoria:", error);
-  //       }
-  //     };
-  //     saveWin();
-  //   }
-  // }, [winner, user.id]);
+  const [playClick] = useSound("/sounds/click.mp3", { volume: 0.5 });
+  const [playWin] = useSound("/sounds/win.mp3", { volume: 0.6 });
+  const [playLose] = useSound("/sounds/lose.mp3", { volume: 0.4 });
+  const [playDraw] = useSound("/sounds/draw.mp3", { volume: 0.4 }); // Usamos matched para empate
+  const [playReset] = useSound("/sounds/reset.mp3", { volume: 0.4 }); // Usamos matched para empate
 
   // --- 1. REGISTRO DE RESULTADOS ---
   useEffect(() => {
     if (!winner) return;
-
+    
     const saveResult = async () => {
       try {
         // CASO A: VICTORIA (Solo el que ganó registra)
         if (winner !== "draw" && winner === user.id) {
+          playWithCheck(playClick)
           confetti({
             particleCount: 150,
             spread: 70,
@@ -65,6 +47,7 @@ const MichiOnline = ({ user, onBack }) => {
 
         // CASO B: EMPATE (Ambos registran)
         else if (winner === "draw") {
+          playWithCheck(playDraw)
           await supabaseClient.rpc("submit_game_score", {
             p_game_id: "michi_online",
             p_moves: 0,
@@ -153,7 +136,7 @@ const MichiOnline = ({ user, onBack }) => {
           if (payload.new.status === "finished") {
             setWinner(payload.new.winner || "draw");
           }
-        }
+        },
       )
       .on("presence", { event: "leave" }, ({ key }) => {
         // Obtenemos el oponente desde el ESTADO ACTUALIZADO de roomData
@@ -170,7 +153,7 @@ const MichiOnline = ({ user, onBack }) => {
           setRoomData((currentRoom) => {
             if (currentRoom?.status === "finished" || currentRoom?.winner) {
               console.log(
-                "DEBUG: El rival salió, pero la partida ya había terminado. No hay penalización."
+                "DEBUG: El rival salió, pero la partida ya había terminado. No hay penalización.",
               );
               return currentRoom;
             }
@@ -325,7 +308,10 @@ const MichiOnline = ({ user, onBack }) => {
         {roomData.board.map((cell, i) => (
           <button
             key={i}
-            onClick={() => handleMove(i)}
+            onClick={() => {
+              playWithCheck(playClick)
+              handleMove(i)
+            }}
             disabled={roomData.turn !== user.id || !!cell || !!winner}
             className={`w-20 h-20 md:w-24 md:h-24 rounded-3xl flex items-center justify-center text-3xl transition-all
               ${!cell ? "bg-white dark:bg-neutral-900 shadow-inner" : ""}
@@ -357,8 +343,8 @@ const MichiOnline = ({ user, onBack }) => {
             {winner === user.id
               ? "🏆 VICTORIA"
               : winner === "draw"
-              ? "🤝 EMPATE"
-              : "💀 DERROTA"}
+                ? "🤝 EMPATE"
+                : "💀 DERROTA"}
           </h2>
 
           <button
@@ -395,7 +381,7 @@ const MichiOnline = ({ user, onBack }) => {
 //     <div className="relative flex items-center justify-center mb-6">
 //       {/* Círculo de fondo con gradiente */}
 //       <div className="absolute w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 blur-sm" />
-      
+
 //       {/* Contenedor principal para espadas y borde */}
 //       <div className="relative w-20 h-20 flex items-center justify-center">
 //         {/* Borde circular animado (loader) */}
@@ -415,7 +401,7 @@ const MichiOnline = ({ user, onBack }) => {
 //             ease: "linear"
 //           }}
 //         />
-        
+
 //         {/* Espadas cruzadas en el centro */}
 //         <motion.div
 //           animate={{
@@ -428,12 +414,12 @@ const MichiOnline = ({ user, onBack }) => {
 //             ease: "easeInOut"
 //           }}
 //         >
-//           <Swords 
-//             size={32} 
+//           <Swords
+//             size={32}
 //             className="text-emerald-400 drop-shadow-lg"
 //           />
 //         </motion.div>
-        
+
 //         {/* Puntos decorativos en el borde */}
 //         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
 //         <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-2 h-2 rounded-full bg-emerald-400 animate-pulse delay-150" />
@@ -484,11 +470,11 @@ const MichiOnline = ({ user, onBack }) => {
 //     >
 //       {/* Efecto de brillo en hover */}
 //       <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-emerald-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-      
+
 //       <div className="relative flex items-center justify-center gap-3">
-//         <ArrowLeft 
-//           size={16} 
-//           className="text-gray-400 group-hover:text-emerald-400 transition-colors duration-300" 
+//         <ArrowLeft
+//           size={16}
+//           className="text-gray-400 group-hover:text-emerald-400 transition-colors duration-300"
 //         />
 //         <span className="text-gray-300 group-hover:text-white font-semibold text-sm uppercase tracking-wider transition-colors duration-300">
 //           Cancelar Búsqueda

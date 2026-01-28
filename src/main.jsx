@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { FollowProvider } from "./context/FollowContext.jsx";
 import { AuthModalProvider } from "./context/AuthModalContext.jsx";
 import AuthModal from "./components/ui/AuthModal .jsx";
+import { AudioProvider } from "./context/AudioContext.jsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,18 +20,16 @@ const queryClient = new QueryClient({
 });
 
 createRoot(document.getElementById("root")).render(
-  
-    <AuthModalProvider>
-      <AuthContextProvider>
-        
-          <FollowProvider>
-            <QueryClientProvider client={queryClient}>
-              <AuthModal />
-              <App />
-            </QueryClientProvider>
-          </FollowProvider>
-        
-      </AuthContextProvider>
-    </AuthModalProvider>
-  
+  <AuthModalProvider>
+    <AuthContextProvider>
+      <FollowProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthModal />
+          <AudioProvider>
+            <App />
+          </AudioProvider>
+        </QueryClientProvider>
+      </FollowProvider>
+    </AuthContextProvider>
+  </AuthModalProvider>,
 );

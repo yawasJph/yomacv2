@@ -9,13 +9,15 @@ import { useAuth } from "../../context/AuthContext";
 import MichiOnline from "./MichiOnline2";
 import useSound from "use-sound";
 import { useIsMobile } from "../../hooks/useIsMobile";
+import { useAudio } from "../../context/AudioContext";
 
 const MichiGame = () => {
   const navigate = useNavigate();
   const [gameMode, setGameMode] = useState(null); // null, 'ia', 'pvp'
   const { user } = useAuth();
-  const [isMuted, setIsMuted] = useState(false);
+  //const [isMuted, setIsMuted] = useState(false);
   const isMobile = useIsMobile()
+  const { isMuted, setIsMuted } = useAudio();
 
   const trackPath = `/sounds/bgv5.mp3`;
   // 2. Configuramos useSound para música de fondo
@@ -24,17 +26,19 @@ const MichiGame = () => {
     interrupt: true, // Interrumpe otros sonidos si fuera necesario
     loop: true, // ¡Importante! Para que la música no se corte
   });
-  // 3. Control maestro de la música (Play/Stop/Mute)
+  // EFECTO: Control de música solo para el MENÚ
   useEffect(() => {
-    if (!isMuted) {
+    // Si NO hay un modo de juego seleccionado (estamos en el menú) 
+    // y NO está muteado, dale play.
+    if (!gameMode && !isMuted) {
       play();
     } else {
+      // Si entramos a un juego O si muteamos, se detiene.
       stop();
     }
 
-    // Cleanup: Detener la música cuando el usuario salga del GameCenter
     return () => stop();
-  }, [isMuted, play, stop]);
+  }, [gameMode, isMuted, play, stop]);
 
   // Botón de sonido reutilizable
   const SoundToggle = (
@@ -51,6 +55,11 @@ const MichiGame = () => {
       {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} className="animate-pulse" />}
     </motion.button>
   );  
+
+   // Funciones wrapper para respetar el Mute
+  const handlePlay = (soundFn) => {
+    if (!isMuted) soundFn();
+  };
 
   // Pantalla de Selección Inicial
   if (!gameMode) {
@@ -72,19 +81,28 @@ const MichiGame = () => {
 
         <div className="grid grid-cols-1 gap-4 w-full max-w-xs ">
           <MenuButton
-            onClick={() => setGameMode("ia")}
+            onClick={() => {
+              stop()
+              setGameMode("ia")
+            }}
             icon={<Cpu className="text-purple-500" />}
             title="Contra la IA"
             subtitle="Modo Experto"
           />
           <MenuButton
-            onClick={() => setGameMode("pvp")}
+            onClick={() => {
+              stop()
+              setGameMode("pvp")
+            }}
             icon={<Users className="text-blue-500" />}
             title="Duelo Local"
             subtitle="2 Jugadores"
           />
           <MenuButton
-            onClick={() => setGameMode("online")}
+            onClick={() => {
+              stop()
+              setGameMode("online")
+            }}
             icon={<Users className="text-indigo-500" />}
             title="Duelo Online"
             subtitle="2 Jugadores"
@@ -102,10 +120,10 @@ const MichiGame = () => {
 
   // Aquí iría el Tablero (que desarrollaremos a continuación)
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center relative">
       {SoundToggle} {/* <-- BOTÓN AQUÍ */}
       {/* Tablero de Michi... */}
-      {gameMode === "ia" && <MichiBoard onBack={() => setGameMode(null)} />}
+      {gameMode === "ia" && <MichiBoard onBack={() => setGameMode(null)}/>}
       {gameMode === "pvp" && <MichiPVP onBack={() => setGameMode(null)} />}
       {gameMode === "online" && (
         <MichiOnline user={user} onBack={() => setGameMode(null)} />
@@ -115,7 +133,10 @@ const MichiGame = () => {
       </p>
       {gameMode != "online" && (
         <button
-          onClick={() => setGameMode(null)}
+          onClick={() => {
+            handlePlay(play)
+            setGameMode(null)
+          }}
           className="text-emerald-500 mt-4 underline"
         >
           Cambiar modo
