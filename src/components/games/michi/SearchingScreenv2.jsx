@@ -29,8 +29,8 @@ const SearchingScreen = ({ onBack }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex flex-col items-center justify-center min-h-[60vh] p-6 relative overflow-hidden"
-    >
+      className="flex flex-col items-center justify-center pt-20  relative overflow-hidden"
+    >{/* */}
       {/* --- EFECTO RADAR/SONAR --- */}
       <div className="absolute flex items-center justify-center">
         {[1, 2, 3].map((ring) => (
@@ -97,7 +97,7 @@ const SearchingScreen = ({ onBack }) => {
         </motion.button>
 
         {/* Pequeños tips que cambian */}
-        <p className="mt-10 text-[10px] text-gray-400 uppercase font-bold tracking-tighter opacity-50">
+        <p className="mt-10 text-[10px] text-gray-400 uppercase font-bold tracking-tighter opacity-50 mb-5">
           Tip: El primero en alinear 3 símbolos gana la partida.
         </p>
       </div>
