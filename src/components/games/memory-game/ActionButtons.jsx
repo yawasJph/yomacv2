@@ -1,10 +1,14 @@
 import { ArrowLeft, RefreshCcw, Volume2, VolumeX } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "../../../hooks/useIsMobile";
+import { useAudio } from "../../../context/AudioContext";
 
-const ActionButtons = ({resetGame, isMuted, setIsMuted}) => {
+const ActionButtons = ({resetGame}) => {
     const navigate = useNavigate()
     const isMobile = useIsMobile()
+    const {isMuted, setIsMuted} = useAudio()
+
+    console.log(isMuted)
   return (
     <div className="mt-6 gap-3 flex justify-between sm:mt-8">
       

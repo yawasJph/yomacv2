@@ -57,7 +57,7 @@ const GameCenterHeader = ({ isMuted, setIsMuted }) => {
           onClick={() => setIsMuted(!isMuted)}
           className={`p-2 rounded-xl transition-colors relative ${
             isMuted
-              ? "text-red-500 bg-red-50 dark:bg-red-500/10"
+              ? "text-gray-500 bg-gray-50 dark:bg-gray-500/10"
               : "text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10"
           }`}
         >

@@ -3,6 +3,7 @@ import confetti from "canvas-confetti";
 import useSound from "use-sound";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import { prepararTablero } from "../../components/games/utils/memoryHelpers";
+import { useAudio } from "../../context/AudioContext";
 
 export const useMemoryGame = () => {
   const [cards, setCards] = useState([]);
@@ -14,7 +15,8 @@ export const useMemoryGame = () => {
   const [showVictory, setShowVictory] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [selectedBaraja, setSelectedBaraja] = useState(null);
-  const [isMuted, setIsMuted] = useState(false);
+  //const [isMuted, setIsMuted] = useState(false);
+  const { isMuted, setIsMuted, playWithCheck } = useAudio();
 
   // Sonidos
   const [playFip] = useSound("/sounds/click.mp3", { volume: 0.5 });
@@ -22,12 +24,7 @@ export const useMemoryGame = () => {
   const [playError] = useSound("/sounds/lose.mp3", { volume: 0.3 });
   const [playWin] = useSound("/sounds/win.mp3", { volume: 0.5 });
 
-  const handlePlay = useCallback((soundFn) => {
-    if (!isMuted) soundFn();
-  }, [isMuted]);
-
   const resetGame = useCallback(() => {
-    
     const { cartasListas, barajaElegida } = prepararTablero();
 
     setSelectedBaraja(barajaElegida);
@@ -62,37 +59,56 @@ export const useMemoryGame = () => {
     return () => clearInterval(interval);
   }, [isActive, matched.length, cards.length]);
 
-  const handleFlip = useCallback((index) => {
-    if (flippedCards.length === 2 || flippedCards.includes(index) || matched.includes(index)) return;
+  const handleFlip = useCallback(
+    (index) => {
+      if (
+        flippedCards.length === 2 ||
+        flippedCards.includes(index) ||
+        matched.includes(index)
+      )
+        return;
 
-    handlePlay(playFip);
-    if (!isActive) setIsActive(true);
+      playWithCheck(playFip);
+      if (!isActive) setIsActive(true);
 
-    const newFlipped = [...flippedCards, index];
-    setFlippedCards(newFlipped);
+      const newFlipped = [...flippedCards, index];
+      setFlippedCards(newFlipped);
 
-    if (newFlipped.length === 2) {
-      setMoves((m) => m + 1);
-      const [first, second] = newFlipped;
+      if (newFlipped.length === 2) {
+        setMoves((m) => m + 1);
+        const [first, second] = newFlipped;
 
-      if (cards[first].type === cards[second].type) {
-        setMatched((prev) => [...prev, first, second]);
-        setTimeout(() => handlePlay(playMatched), 200);
-        setFlippedCards([]);
-      } else {
-        setTimeout(() => {
-          handlePlay(playError);
+        if (cards[first].type === cards[second].type) {
+          setMatched((prev) => [...prev, first, second]);
+          setTimeout(() => playWithCheck(playMatched), 200);
           setFlippedCards([]);
-        }, 1000);
+        } else {
+          setTimeout(() => {
+            playWithCheck(playError);
+          }, 500);
+          setTimeout(() => {
+            setFlippedCards([]);
+          }, 1000);
+        }
       }
-    }
-  }, [flippedCards, matched, cards, isActive, handlePlay, playFip, playMatched, playError]);
+    },
+    [
+      flippedCards,
+      matched,
+      cards,
+      isActive,
+      playWithCheck,
+      playFip,
+      playMatched,
+      playError,
+    ],
+  );
 
   // Efecto de Victoria
   useEffect(() => {
     if (cards.length > 0 && matched.length === cards.length) {
       setIsActive(false);
-      handlePlay(playWin);
+      playWithCheck(playWin);
       confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
 
       const score = Math.max(0, 1000 - moves * 10 - seconds * 2);
@@ -100,11 +116,20 @@ export const useMemoryGame = () => {
       saveGameResult(score, moves, seconds);
       setTimeout(() => setShowVictory(true), 1000);
     }
-  }, [matched.length, cards.length, handlePlay, playWin, moves, seconds]);
+  }, [matched.length, cards.length, playWithCheck, playWin, moves, seconds]);
 
   return {
-    cards, flippedCards, matched, moves, seconds, showVictory, 
-    finalScore, selectedBaraja, isMuted, setIsMuted, 
-    handleFlip, resetGame
+    cards,
+    flippedCards,
+    matched,
+    moves,
+    seconds,
+    showVictory,
+    finalScore,
+    selectedBaraja,
+    isMuted,
+    setIsMuted,
+    handleFlip,
+    resetGame,
   };
 };

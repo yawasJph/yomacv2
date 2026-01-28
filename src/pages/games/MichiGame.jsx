@@ -17,7 +17,7 @@ const MichiGame = () => {
   const { user } = useAuth();
   //const [isMuted, setIsMuted] = useState(false);
   const isMobile = useIsMobile();
-  const { isMuted, setIsMuted } = useAudio();
+  const { isMuted, setIsMuted , playWithCheck} = useAudio();
 
   const trackPath = `/sounds/bgv5.mp3`;
   // 2. Configuramos useSound para música de fondo
@@ -59,11 +59,6 @@ const MichiGame = () => {
       )}
     </motion.button>
   );
-
-  // Funciones wrapper para respetar el Mute
-  const handlePlay = (soundFn) => {
-    if (!isMuted) soundFn();
-  };
 
   // Pantalla de Selección Inicial
   if (!gameMode) {
@@ -157,7 +152,7 @@ const MichiGame = () => {
       {gameMode != "online" && (
         <button
           onClick={() => {
-            handlePlay(play);
+            playWithCheck(play);
             setGameMode(null);
           }}
           className="text-emerald-500 mt-4 underline"

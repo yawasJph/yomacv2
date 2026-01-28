@@ -15,6 +15,7 @@ import { useProfile } from "../../hooks/useProfile";
 import useSound from "use-sound"; // 1. Importar la librería
 import confetti from "canvas-confetti";
 import ResultsView from "../../components/games/trivia/ResultViewv3";
+import { useAudio } from "../../context/AudioContext";
 //import ResultsView from "../../components/games/trivia/ResultViewv2";
 
 const TriviaGame = () => {
@@ -36,7 +37,8 @@ const TriviaGame = () => {
   const [showBoost, setShowBoost] = useState(false); // Estado para feedback visual del boost
   const [activeCategory, setActiveCategory] = useState(null);
   const [countdown, setCountdown] = useState(3);
-  const [isMuted, setIsMuted] = useState(false);
+  //const [isMuted, setIsMuted] = useState(false);
+  const {isMuted , setIsMuted, playWithCheck} = useAudio()
 
   // Configuramos los sonidos
   const [playCorrect] = useSound("/sounds/correct.mp3", { volume: 0.5 });
@@ -45,14 +47,11 @@ const TriviaGame = () => {
     volume: 0.5,
   });
   const [playLose] = useSound("/sounds/losev2.mp3", { volume: 0.3 });
+  const [playLose3] = useSound("/sounds/losev3.mp3", { volume: 0.3 });
+  const [playLose4] = useSound("/sounds/losev4.mp3", { volume: 0.3 });
   const [playWin] = useSound("/sounds/win.mp3", { volume: 0.5 });
   const [playBeep] = useSound("/sounds/beep.mp3", { volume: 0.5 });
   const [playStart] = useSound("/sounds/start.mp3", { volume: 0.5 });
-
-  // Funciones wrapper para respetar el Mute
-  const handlePlay = (soundFn) => {
-    if (!isMuted) soundFn();
-  };
 
   // CONFIGURACIÓN DE DIFICULTAD
   const DIFFICULTY_SETTINGS = {
@@ -132,12 +131,12 @@ const TriviaGame = () => {
   useEffect(() => {
     if (gameState === "starting") {
       if (countdown > 0) {
-        handlePlay(playBeep);
+        playWithCheck(playBeep);
         const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
         return () => clearTimeout(timer);
       } else {
         setGameState("playing");
-        handlePlay(playStart);
+        playWithCheck(playStart);
       }
     }
   }, [gameState, countdown]);
@@ -146,7 +145,7 @@ const TriviaGame = () => {
   useEffect(() => {
     if (gameState === "playing" && selectedOption === null) {
       if (timeLeft > 0) {
-        if (timeLeft <= 4) handlePlay(playTickv3);
+        if (timeLeft <= 4) playWithCheck(playTickv3);
         timerRef.current = setTimeout(
           () => setTimeLeft((prev) => prev - 1),
           1000,
@@ -183,7 +182,7 @@ const TriviaGame = () => {
     let timeUsedInThisRound = 0;
 
     if (correct) {
-      handlePlay(playCorrect);
+      playWithCheck(playCorrect);
       setIsCorrect(true);
 
       // 1. Cálculo Base con Dificultad
@@ -211,7 +210,7 @@ const TriviaGame = () => {
       setStreak((prev) => prev + 1);
       setLastPointsEarned(roundPoints);
     } else {
-      handlePlay(playWrong);
+      playWithCheck(playWrong);
       setIsCorrect(false);
       setStreak(0);
       setLastPointsEarned(0);
@@ -241,9 +240,9 @@ const TriviaGame = () => {
             origin: { y: 0.6 },
             colors: ["#10b981", "#3b82f6", "#f59e0b"],
           });
-          handlePlay(playWin);
+          playWithCheck(playWin);
         } else {
-          handlePlay(playLose);
+          playWithCheck(playLose);
         }
         saveResults(
           points + roundPoints,
@@ -324,7 +323,7 @@ const TriviaGame = () => {
           </motion.p>
         </motion.div>
 
-        <button
+        {/* <button
           onClick={() => setIsMuted(!isMuted)}
           className={`p-3 sm:p-4 rounded-xl transition-colors absolute top-1/4 right-1/5 ${
             isMuted
@@ -333,6 +332,23 @@ const TriviaGame = () => {
           }`}
         >
           {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+        </button> */}
+
+         <button
+          onClick={() => {
+            (setIsMuted(!isMuted), stopTick());
+          }}
+          className={`p-3 sm:p-4 rounded-xl transition-colors absolute top-1/4 right-1/5 ${
+            isMuted
+              ? "text-gray-500 bg-gray-50 dark:bg-gray-500/10"
+              : "text-blue-500 bg-blue-50 dark:bg-blue-500/10"
+          }`}
+        >
+          {isMuted ? (
+            <VolumeX size={20} className="text-gray-500" />
+          ) : (
+            <Volume2 size={20} className="text-blue-500" />
+          )}
         </button>
 
         {/* Círculos decorativos de fondo */}
@@ -380,14 +396,14 @@ const TriviaGame = () => {
           }}
           className={`p-3 sm:p-4 rounded-xl transition-colors${
             isMuted
-              ? "text-red-500 bg-red-50 dark:bg-red-500/10"
-              : "text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10"
+              ? "text-gray-500 bg-gray-50 dark:bg-gray-500/10"
+              : "text-blue-500 bg-blue-50 dark:bg-blue-500/10"
           }`}
         >
           {isMuted ? (
-            <VolumeX size={20} className="text-red-500" />
+            <VolumeX size={20} className="text-gray-500" />
           ) : (
-            <Volume2 size={20} className="text-emerald-500" />
+            <Volume2 size={20} className="text-blue-500" />
           )}
         </button>
 

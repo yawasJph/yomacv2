@@ -9,6 +9,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "../../../hooks/useIsMobile";
 
 const ResultsView = ({
   points,
@@ -18,6 +19,7 @@ const ResultsView = ({
   onReset,
 }) => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile()
 
   /* ===== Animación de puntos ===== */
   const springPoints = useSpring(0, { stiffness: 50, damping: 18 });
@@ -89,7 +91,7 @@ const ResultsView = ({
   const rank = getRank();
 
   return (
-    <div className="flex items-center justify-center pt-20 px-4">
+    <div className={`flex items-center justify-center ${isMobile ? "pt-0 px-0" : "pt-20 px-4"} `}>
       <div className="w-full max-w-4xl">
         {/* ===== CONTENEDOR PRINCIPAL ===== */}
         <motion.div

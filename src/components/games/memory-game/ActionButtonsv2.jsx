@@ -2,6 +2,7 @@ import { ArrowLeft, RefreshCcw, Volume2, VolumeX } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 import { memo } from "react";
+import { motion } from "framer-motion";
 
 // 1. Centralizamos los estilos repetidos
 const BUTTON_BASE = "flex items-center gap-2 px-6 sm:px-8 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl font-bold text-gray-600 dark:text-gray-300 hover:border-emerald-500 hover:text-emerald-500 transition-all active:scale-95 shadow-sm";
@@ -9,6 +10,26 @@ const BUTTON_BASE = "flex items-center gap-2 px-6 sm:px-8 py-3 bg-white dark:bg-
 const ActionButtons = memo(({ resetGame, isMuted, setIsMuted }) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+
+  // Botón de sonido reutilizable
+  const SoundToggle = (
+    <motion.button
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      onClick={() => setIsMuted(!isMuted)}
+      className={`p-3 rounded-2xl transition-all shadow-lg ${
+        isMuted
+          ? "bg-gray-500/50 text-white"
+          : "bg-white dark:bg-neutral-900 text-emerald-500 border border-emerald-500/20"
+      }`}
+    >
+      {isMuted ? (
+        <VolumeX size={24} />
+      ) : (
+        <Volume2 size={24} className="animate-pulse" />
+      )}
+    </motion.button>
+  );
 
   return (
     <div className="mt-6 gap-3 flex justify-between sm:mt-8">
@@ -23,7 +44,7 @@ const ActionButtons = memo(({ resetGame, isMuted, setIsMuted }) => {
       </button>
 
       {/* Botón Mute - Estilo dinámico extraído para legibilidad */}
-      <button
+      {/* <button
         onClick={() => setIsMuted(!isMuted)}
         className={`p-3 sm:p-4 rounded-xl transition-colors ${
           isMuted
@@ -32,7 +53,10 @@ const ActionButtons = memo(({ resetGame, isMuted, setIsMuted }) => {
         }`}
       >
         {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-      </button>
+      </button> */}
+
+      {SoundToggle}
+      
 
       {/* Botón Reiniciar */}
       <button 

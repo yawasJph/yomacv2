@@ -5,11 +5,13 @@ import GameCard from "../../components/games/game-center/GameCard";
 import GameCenterHeader from "../../components/games/game-center/GameCenterHeader";
 import useSound from "use-sound"; // 1. Importar la librería
 import { useEffect, useMemo, useState } from "react";
+import { useAudio } from "../../context/AudioContext";
 
 const GameCenter = () => {
   const navigate = useNavigate();
   const { executeAction } = useAuthAction();
-  const [isMuted, setIsMuted] = useState(false);
+  //const [isMuted, setIsMuted] = useState(false);
+  const {isMuted, setIsMuted} = useAudio()
 
   // 1. Elegimos una canción al azar al cargar el componente
   // Usamos useMemo para que el número no cambie cada vez que el componente se re-renderice

@@ -7,6 +7,7 @@ import HudSection from "./memory-game/HudSection";
 import ActionButtons from "./memory-game/ActionButtons";
 import barajas from "../../assets/data-game/barajas.json";
 import useSound from "use-sound"; // 1. Importar la librería
+import { useAudio } from "../../context/AudioContext";
 
 const MemoryGame = () => {
   const [cards, setCards] = useState([]);
@@ -19,7 +20,8 @@ const MemoryGame = () => {
   const [finalScore, setFinalScore] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedBaraja, setSelectedBaraja] = useState(null);
-  const [isMuted, setIsMuted] = useState(false); // Estado del Mute
+  //const [isMuted, setIsMuted] = useState(false); // Estado del Mute
+  const { playWithCheck} = useAudio()
 
   const [playFip] = useSound("/sounds/click.mp3", { volume: 0.5 });
   const [playMatched] = useSound("/sounds/matched.mp3", { volume: 0.5 });
@@ -32,10 +34,6 @@ const MemoryGame = () => {
     return barajas[randomIndex].baraja;
   };
 
-  // Funciones wrapper para respetar el Mute
-  const handlePlay = (soundFn) => {
-    if (!isMuted) soundFn();
-  };
 
   const resetGame = useCallback(() => {
     const barajaData = getRandomBaraja(); // Asumiendo que getRandomBaraja no depende de estado
@@ -98,7 +96,7 @@ const MemoryGame = () => {
     )
       return;
 
-    handlePlay(playFip);
+    playWithCheck(playFip);
 
     if (!isActive) setIsActive(true);
 
@@ -111,12 +109,12 @@ const MemoryGame = () => {
 
       if (cards[first].type === cards[second].type) {
         setMatched((prev) => [...prev, first, second]);
-        setTimeout(() => handlePlay(playMatched), 200);
+        setTimeout(() => playWithCheck(playMatched), 200);
         setFlippedCards([]);
       } else {
         // ✅ Sonido de error
         setTimeout(() => {
-          handlePlay(playError);
+          playWithCheck(playError);
           setFlippedCards([]);
         }, 1000); // Un segundo para memorizar
       }
@@ -129,7 +127,7 @@ const MemoryGame = () => {
       setIsActive(false); // Detener cronómetro
       // Disparar Confeti
 
-      handlePlay(playWin);
+      playWithCheck(playWin);
 
       confetti({
         particleCount: 150,
@@ -169,7 +167,7 @@ const MemoryGame = () => {
         ))}
       </div>
 
-      <ActionButtons resetGame={resetGame} isMuted={isMuted} setIsMuted={setIsMuted} />
+      <ActionButtons resetGame={resetGame}  />
 
       <VictoryModal
         isOpen={showVictory}
