@@ -91,7 +91,7 @@ const ResultsView = ({
   const rank = getRank();
 
   return (
-    <div className={`flex items-center justify-center ${isMobile ? "pt-0 px-0" : "pt-20 px-4"} `}>
+    <div className={`flex items-center justify-center ${isMobile ? "pt-3 px-0" : "pt-20 px-4"} `}>
       <div className="w-full max-w-4xl">
         {/* ===== CONTENEDOR PRINCIPAL ===== */}
         <motion.div

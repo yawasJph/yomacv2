@@ -242,7 +242,7 @@ const TriviaGame = () => {
           });
           playWithCheck(playWin);
         } else {
-          playWithCheck(playLose);
+          playWithCheck(playLose4);
         }
         saveResults(
           points + roundPoints,
