@@ -17,19 +17,19 @@ const MichiOnline = ({ user, onBack }) => {
 
   const [playClick] = useSound("/sounds/click.mp3", { volume: 0.5 });
   const [playWin] = useSound("/sounds/win.mp3", { volume: 0.6 });
+  const [playReady] = useSound("/sounds/ready-fight.mp3", { volume: 0.6 });
   const [playLose] = useSound("/sounds/lose.mp3", { volume: 0.4 });
   const [playDraw] = useSound("/sounds/draw.mp3", { volume: 0.4 }); // Usamos matched para empate
-  const [playReset] = useSound("/sounds/reset.mp3", { volume: 0.4 }); // Usamos matched para empate
 
   // --- 1. REGISTRO DE RESULTADOS ---
   useEffect(() => {
     if (!winner) return;
-    
+
     const saveResult = async () => {
       try {
         // CASO A: VICTORIA (Solo el que ganó registra)
         if (winner !== "draw" && winner === user.id) {
-          playWithCheck(playWin)
+          playWithCheck(playWin);
           confetti({
             particleCount: 150,
             spread: 70,
@@ -47,7 +47,7 @@ const MichiOnline = ({ user, onBack }) => {
 
         // CASO B: EMPATE (Ambos registran)
         else if (winner === "draw") {
-          playWithCheck(playDraw)
+          playWithCheck(playDraw);
           await supabaseClient.rpc("submit_game_score", {
             p_game_id: "michi_online",
             p_moves: 0,
@@ -55,6 +55,10 @@ const MichiOnline = ({ user, onBack }) => {
             p_time_seconds: 0,
           });
           console.log("DEBUG: Empate guardado (+100 pts)");
+        }
+        // DERROTA (Faltaba esto)
+        else if (winner !== "draw" && winner !== user.id) {
+          playWithCheck(playLose);
         }
       } catch (error) {
         console.error("DEBUG: Error al registrar puntos:", error);
@@ -125,10 +129,26 @@ const MichiOnline = ({ user, onBack }) => {
           filter: `id=eq.${currentRoomId}`,
         },
         (payload) => {
+          const oldBoard = roomData?.board || [];
+          const newBoard = payload.new.board;
+
+          // SI el tablero cambió (alguien movió)
+          if (JSON.stringify(oldBoard) !== JSON.stringify(newBoard)) {
+            // Solo disparamos el sonido si NO es nuestro turno
+            // (porque nuestro sonido ya sonó en el onClick local)
+            if (payload.new.turn === user.id) {
+              playWithCheck(playClick);
+            }
+          }
+
           setRoomData(payload.new);
           // Cambiar a versus solo si no estamos ya jugando o terminando
           setGameState((prev) => {
-            if (payload.new.player_2 && prev === "searching") return "versus";
+            // Cuando encuentras sala o alguien se une a la tuya
+            if (payload.new.player_2 && prev === "searching") {
+              playWithCheck(playReady); // O un sonido tipo "Ready" si tienes uno
+              return "versus";
+            }
             if (payload.new.status === "finished") return "playing"; // Mantener tablero
             return prev;
           });
@@ -144,12 +164,6 @@ const MichiOnline = ({ user, onBack }) => {
         if (key !== user.id && !winner) {
           console.log("DEBUG: El rival salió. Validando estado...");
           // Solo ganamos si el juego estaba en curso (playing)
-          // setGameState(current => {
-          //     if (current === "playing") {
-          //         handleOpponentLeft(currentRoomId);
-          //     }
-          //     return current;
-          // });
           setRoomData((currentRoom) => {
             if (currentRoom?.status === "finished" || currentRoom?.winner) {
               console.log(
@@ -188,6 +202,7 @@ const MichiOnline = ({ user, onBack }) => {
   const handleOpponentLeft = async () => {
     setOpponentLeft(true);
     setWinner(user.id);
+    playWithCheck(playWin)
     await supabaseClient
       .from("michi_rooms")
       .update({ status: "finished", winner: user.id })
@@ -309,8 +324,8 @@ const MichiOnline = ({ user, onBack }) => {
           <button
             key={i}
             onClick={() => {
-              playWithCheck(playClick)
-              handleMove(i)
+              playWithCheck(playClick);
+              handleMove(i);
             }}
             disabled={roomData.turn !== user.id || !!cell || !!winner}
             className={`w-20 h-20 md:w-24 md:h-24 rounded-3xl flex items-center justify-center text-3xl transition-all
@@ -355,8 +370,17 @@ const MichiOnline = ({ user, onBack }) => {
           </button>
         </motion.div>
       )}
+      {winner && (
+        <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mt-2">
+          {winner === "draw"
+            ? "+100 Puntos (Empate)"
+            : winner === user.id
+              ? "+300 Puntos (Victoria)"
+              : "+0 Puntos"}
+        </p>
+      )}
 
-      {winner === "draw" && (
+      {/* {winner === "draw" && (
         <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mt-2">
           +1 Credito
         </p>
@@ -366,132 +390,9 @@ const MichiOnline = ({ user, onBack }) => {
         <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mt-2">
           +3 Creditos
         </p>
-      )}
+      )} */}
     </div>
   );
 };
-
-// const SearchingScreen = ({ onBack }) => (
-//   <motion.div
-//     initial={{ opacity: 0, scale: 0.9 }}
-//     animate={{ opacity: 1, scale: 1 }}
-//     exit={{ opacity: 0, scale: 0.9 }}
-//     className="flex flex-col items-center justify-center min-h-[50vh] p-6"
-//   >
-//     <div className="relative flex items-center justify-center mb-6">
-//       {/* Círculo de fondo con gradiente */}
-//       <div className="absolute w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 blur-sm" />
-
-//       {/* Contenedor principal para espadas y borde */}
-//       <div className="relative w-20 h-20 flex items-center justify-center">
-//         {/* Borde circular animado (loader) */}
-//         <motion.div
-//           className="absolute inset-0 rounded-full border-4 border-transparent"
-//           style={{
-//             borderTopColor: '#10b981',
-//             borderRightColor: '#34d399',
-//             borderBottomColor: '#10b981',
-//             borderLeftColor: '#34d399',
-//             borderWidth: '3px'
-//           }}
-//           animate={{ rotate: 360 }}
-//           transition={{
-//             duration: 1.5,
-//             repeat: Infinity,
-//             ease: "linear"
-//           }}
-//         />
-
-//         {/* Espadas cruzadas en el centro */}
-//         <motion.div
-//           animate={{
-//             rotate: [0, 5, -5, 0],
-//             scale: [1, 1.05, 1, 1.05, 1],
-//           }}
-//           transition={{
-//             duration: 2,
-//             repeat: Infinity,
-//             ease: "easeInOut"
-//           }}
-//         >
-//           <Swords
-//             size={32}
-//             className="text-emerald-400 drop-shadow-lg"
-//           />
-//         </motion.div>
-
-//         {/* Puntos decorativos en el borde */}
-//         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-//         <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-2 h-2 rounded-full bg-emerald-400 animate-pulse delay-150" />
-//         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 rounded-full bg-emerald-400 animate-pulse delay-300" />
-//         <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-emerald-400 animate-pulse delay-450" />
-//       </div>
-//     </div>
-
-//     {/* Texto con animación */}
-//     <motion.div
-//       initial={{ y: 10, opacity: 0 }}
-//       animate={{ y: 0, opacity: 1 }}
-//       transition={{ delay: 0.2 }}
-//       className="text-center mb-8"
-//     >
-//       <h2 className="text-lg font-bold uppercase tracking-widest dark:text-white mb-2">
-//         Buscando Oponente
-//       </h2>
-//       <motion.div
-//         className="flex justify-center gap-1"
-//         initial={{ opacity: 0 }}
-//         animate={{ opacity: 1 }}
-//         transition={{ delay: 0.4 }}
-//       >
-//         {[...Array(3)].map((_, i) => (
-//           <motion.span
-//             key={i}
-//             className="text-emerald-500 text-2xl"
-//             animate={{ y: [0, -5, 0] }}
-//             transition={{
-//               duration: 1,
-//               repeat: Infinity,
-//               delay: i * 0.2,
-//             }}
-//           >
-//             .
-//           </motion.span>
-//         ))}
-//       </motion.div>
-//     </motion.div>
-
-//     {/* Botón con mejor diseño */}
-//     <motion.button
-//       onClick={onBack}
-//       whileHover={{ scale: 1.05 }}
-//       whileTap={{ scale: 0.95 }}
-//       className="group relative px-6 py-3 overflow-hidden rounded-lg bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-900 dark:to-gray-950 border border-gray-700 dark:border-gray-800"
-//     >
-//       {/* Efecto de brillo en hover */}
-//       <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-emerald-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-
-//       <div className="relative flex items-center justify-center gap-3">
-//         <ArrowLeft
-//           size={16}
-//           className="text-gray-400 group-hover:text-emerald-400 transition-colors duration-300"
-//         />
-//         <span className="text-gray-300 group-hover:text-white font-semibold text-sm uppercase tracking-wider transition-colors duration-300">
-//           Cancelar Búsqueda
-//         </span>
-//       </div>
-//     </motion.button>
-
-//     {/* Indicador de estado */}
-//     <motion.p
-//       initial={{ opacity: 0 }}
-//       animate={{ opacity: 1 }}
-//       transition={{ delay: 0.6 }}
-//       className="mt-6 text-xs text-gray-500 dark:text-gray-400 text-center max-w-xs"
-//     >
-//       Esta operación puede tardar unos segundos
-//     </motion.p>
-//   </motion.div>
-// );
 
 export default MichiOnline;
