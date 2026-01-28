@@ -4,10 +4,9 @@ import { supabaseClient } from "../../supabase/supabaseClient";
 import { Zap, Flame, AlertCircle } from "lucide-react";
 import MichiVersus from "./MichiVersus";
 import confetti from "canvas-confetti";
-//import SearchingScreen from "../../components/games/SearchingScreen ";
 import useSound from "use-sound";
 import { useAudio } from "../../context/AudioContext";
-import SearchingScreen from "../../components/games/michi/SearchingScreenv2";
+import SearchingScreen from "../../components/games/michi/SearchingScreenv3";
 
 const MichiOnline = ({ user, onBack , stop}) => {
   const [gameState, setGameState] = useState("searching");
@@ -19,7 +18,7 @@ const MichiOnline = ({ user, onBack , stop}) => {
   const [playClick] = useSound("/sounds/click.mp3", { volume: 0.5 });
   const [playWin] = useSound("/sounds/win.mp3", { volume: 0.6 });
   const [playReady] = useSound("/sounds/ready-fight.mp3", { volume: 0.6 });
-  const [playLose] = useSound("/sounds/lose.mp3", { volume: 0.4 });
+  const [playLose4] = useSound("/sounds/losev4.mp3", { volume: 0.4 });
   const [playDraw] = useSound("/sounds/draw.mp3", { volume: 0.4 }); // Usamos matched para empate
 
   // --- 1. REGISTRO DE RESULTADOS ---
@@ -59,7 +58,7 @@ const MichiOnline = ({ user, onBack , stop}) => {
         }
         // DERROTA (Faltaba esto)
         else if (winner !== "draw" && winner !== user.id) {
-          playWithCheck(playLose);
+          playWithCheck(playLose4);
         }
       } catch (error) {
         console.error("DEBUG: Error al registrar puntos:", error);

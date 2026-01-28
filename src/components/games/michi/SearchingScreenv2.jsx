@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import useSound from 'use-sound';
 import { useAudio } from '../../../context/AudioContext';
 
-
 const SearchingScreen = ({ onBack }) => {
   const [seconds, setSeconds] = useState(0);
   const { playWithCheck } = useAudio();

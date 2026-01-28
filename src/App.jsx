@@ -20,7 +20,7 @@ import GameCenter from "./pages/games/GameCenter";
 import YoMACStore from "./pages/games/YoMACStore";
 import { SearchProvider } from "./context/SearchContext";
 import TriviaGame from "./pages/games/TriviaGame";
-import MichiGame from "./pages/games/MichiGame";
+//import MichiGame from "./pages/games/MichiGame";
 import Leaderboard from "./pages/games/Leaderboard3";
 import WordleGame from "./pages/games/WordleGame";
 import CazaTalentos from "./pages/games/CazaTalentos";
@@ -29,6 +29,7 @@ import CodigoMatricula from "./pages/games/CodigoMatricula2";
 import ConectorRedes from "./pages/games/ConectorRedes";
 import CampusAI from "./pages/chat/CampusAI2";
 import MemoryGame from "./components/games/MemoryGamev2";
+import MichiGame from "./pages/games/MichiGamev2";
 
 function App() {
   if ("serviceWorker" in navigator) {

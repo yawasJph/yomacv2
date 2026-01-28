@@ -46,9 +46,7 @@ const TriviaGame = () => {
   const [playTickv3, { stop: stopTick }] = useSound("/sounds/tickv3.mp3", {
     volume: 0.5,
   });
-  const [playLose] = useSound("/sounds/losev2.mp3", { volume: 0.3 });
-  const [playLose3] = useSound("/sounds/losev3.mp3", { volume: 0.3 });
-  const [playLose4] = useSound("/sounds/losev4.mp3", { volume: 0.3 });
+  const [playLose4] = useSound("/sounds/losev4.mp3", { volume: 0.4 });
   const [playWin] = useSound("/sounds/win.mp3", { volume: 0.5 });
   const [playBeep] = useSound("/sounds/beep.mp3", { volume: 0.5 });
   const [playStart] = useSound("/sounds/start.mp3", { volume: 0.5 });

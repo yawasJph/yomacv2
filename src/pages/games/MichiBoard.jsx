@@ -16,7 +16,7 @@ const MichiBoard = ({ onBack, isMuted }) => {
 
   const [playClick] = useSound("/sounds/click.mp3", { volume: 0.5 });
   const [playWin] = useSound("/sounds/win.mp3", { volume: 0.6 });
-  const [playLose] = useSound("/sounds/lose.mp3", { volume: 0.4 });
+  const [playLose4] = useSound("/sounds/losev4.mp3", { volume: 0.4 });
   const [playDraw] = useSound("/sounds/draw.mp3", { volume: 0.4 }); // Usamos matched para empate
   const [playReset] = useSound("/sounds/reset.mp3", { volume: 0.4 }); // Usamos matched para empate
 
@@ -72,7 +72,7 @@ const MichiBoard = ({ onBack, isMuted }) => {
         setWinningLine(line);
         // --- SONIDOS FINALES ---
         if (win === "X") playWithCheck(playWin);
-        else playWithCheck(playLose);
+        else playWithCheck(playLose4);
         // -----------------------
         saveScore(win);
         return;

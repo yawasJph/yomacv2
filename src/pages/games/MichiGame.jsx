@@ -15,14 +15,13 @@ const MichiGame = () => {
   const navigate = useNavigate();
   const [gameMode, setGameMode] = useState(null); // null, 'ia', 'pvp'
   const { user } = useAuth();
-  //const [isMuted, setIsMuted] = useState(false);
   const isMobile = useIsMobile();
   const { isMuted, setIsMuted , playWithCheck} = useAudio();
 
   const trackPath = `/sounds/bgv5.mp3`;
   // 2. Configuramos useSound para música de fondo
   const [play, { stop, sound }] = useSound(trackPath, {
-    volume: 0.5, // Volumen bajo para que no aturda
+    volume: 0.7, // Volumen bajo para que no aturda
     interrupt: true, // Interrumpe otros sonidos si fuera necesario
     loop: true, // ¡Importante! Para que la música no se corte
   });
