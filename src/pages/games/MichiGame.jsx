@@ -30,7 +30,7 @@ const MichiGame = () => {
   useEffect(() => {
     // Si NO hay un modo de juego seleccionado (estamos en el menú) 
     // y NO está muteado, dale play.
-    if (!gameMode && !isMuted) {
+    if (gameMode !== "ia" && gameMode !== "pvp" && !isMuted ) {
       play();
     } else {
       // Si entramos a un juego O si muteamos, se detiene.
@@ -126,7 +126,7 @@ const MichiGame = () => {
       {gameMode === "ia" && <MichiBoard onBack={() => setGameMode(null)}/>}
       {gameMode === "pvp" && <MichiPVP onBack={() => setGameMode(null)} />}
       {gameMode === "online" && (
-        <MichiOnline user={user} onBack={() => setGameMode(null)} />
+        <MichiOnline user={user} onBack={() => setGameMode(null)} stop={stop} />
       )}
       <p className="dark:text-white font-bold">
         Modo: {gameMode.toUpperCase()}

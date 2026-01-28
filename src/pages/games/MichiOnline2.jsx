@@ -4,11 +4,12 @@ import { supabaseClient } from "../../supabase/supabaseClient";
 import { Zap, Flame, AlertCircle } from "lucide-react";
 import MichiVersus from "./MichiVersus";
 import confetti from "canvas-confetti";
-import SearchingScreen from "../../components/games/SearchingScreen ";
+//import SearchingScreen from "../../components/games/SearchingScreen ";
 import useSound from "use-sound";
 import { useAudio } from "../../context/AudioContext";
+import SearchingScreen from "../../components/games/michi/SearchingScreenv2";
 
-const MichiOnline = ({ user, onBack }) => {
+const MichiOnline = ({ user, onBack , stop}) => {
   const [gameState, setGameState] = useState("searching");
   const [roomData, setRoomData] = useState(null);
   const [winner, setWinner] = useState(null);
@@ -146,6 +147,7 @@ const MichiOnline = ({ user, onBack }) => {
           setGameState((prev) => {
             // Cuando encuentras sala o alguien se une a la tuya
             if (payload.new.player_2 && prev === "searching") {
+              stop()
               playWithCheck(playReady); // O un sonido tipo "Ready" si tienes uno
               return "versus";
             }
