@@ -327,7 +327,6 @@ const WordleGame = () => {
     }, 100);
   }, [currentGuess, currentRow, gameState, targetWord, usedLetters, user]);
 
-
   // 2. TECLADO FÍSICO OPTIMIZADO
   useEffect(() => {
     const onKeyDown = (e) => {
@@ -411,54 +410,53 @@ const WordleGame = () => {
   );
 
   return (
-    <div className="flex flex-col h-dvh max-w-md mx-auto p-3 overflow-hidden">
-    
-    {/* 1. Header: Altura fija mínima */}
-    <header className="flex-none flex justify-between items-center py-2 mb-2">
-      <button onClick={() => navigate(-1)} className="p-2 dark:text-white">
-        <ArrowLeft size={20} />
-      </button>
-      
-      <div className="flex flex-col items-center">
+    <div className="flex flex-col  max-w-md p-3 overflow-hidden mx-auto">
+      {/* 1. Header: Altura fija mínima */}
+      <header className="flex-none flex justify-between items-center sm:py-2 sm:mb-2">
+        <button onClick={() => navigate(-1)} className="p-2 dark:text-white">
+          <ArrowLeft size={20} />
+        </button>
+
+        {/* Versión mini del toggle de sonido para ahorrar espacio */}
+        {SoundToggle}
+
         <h1 className="text-lg font-black italic uppercase dark:text-white leading-none">
           Palabra Del <span className="text-amber-500">Día</span>
         </h1>
-        <div className="flex gap-2 items-center mt-1">
-           {/* Versión mini del toggle de sonido para ahorrar espacio */}
-           {SoundToggle} 
+
+        <button onClick={() => setShowClue(true)} className="p-2 text-gray-400">
+          <HelpCircle size={20} />
+        </button>
+      </header>
+
+      {/* 2. Grid del Juego: flex-grow para que ocupe el espacio central */}
+      <main className="grow flex items-center justify-center overflow-hidden mt-3">
+        <div className="grid grid-rows-6 gap-1.5 md:gap-2">
+          {guesses.map((guess, i) => (
+            <motion.div
+              key={i}
+              animate={i === currentRow && isInvalid ? shakeAnimation : {}}
+            >
+              <Row
+                guess={i === currentRow ? currentGuess : guess}
+                isCurrent={i === currentRow}
+                isSubmitted={i < currentRow}
+                targetWord={targetWord}
+              />
+            </motion.div>
+          ))}
         </div>
-      </div>
+      </main>
 
-      <button onClick={() => setShowClue(true)} className="p-2 text-gray-400">
-        <HelpCircle size={20} />
-      </button>
-    </header>
-
-    {/* 2. Grid del Juego: flex-grow para que ocupe el espacio central */}
-    <main className="grow flex items-center justify-center overflow-hidden py-2">
-      <div className="grid grid-rows-6 gap-1.5 md:gap-2">
-        {guesses.map((guess, i) => (
-          <motion.div key={i} animate={i === currentRow && isInvalid ? shakeAnimation : {}}>
-            <Row
-              guess={i === currentRow ? currentGuess : guess}
-              isCurrent={i === currentRow}
-              isSubmitted={i < currentRow}
-              targetWord={targetWord}
-            />
-          </motion.div>
-        ))}
-      </div>
-    </main>
-
-    {/* 3. Teclado: Altura fija abajo */}
-    <footer className="flex-none w-full pb-4 mt-auto">
-      <Keyboard
-        onChar={handleChar}
-        onDelete={handleDelete}
-        onEnter={handleEnter}
-        usedLetters={usedLetters}
-      />
-    </footer>
+      {/* 3. Teclado: Altura fija abajo */}
+      <footer className="flex-none w-full mt-3">
+        <Keyboard
+          onChar={handleChar}
+          onDelete={handleDelete}
+          onEnter={handleEnter}
+          usedLetters={usedLetters}
+        />
+      </footer>
 
       {/* MODALES (Pista y Victoria/Derrota) */}
       <AnimatePresence>
