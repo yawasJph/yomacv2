@@ -20,7 +20,6 @@ const MemoryGame = () => {
   const [finalScore, setFinalScore] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedBaraja, setSelectedBaraja] = useState(null);
-  //const [isMuted, setIsMuted] = useState(false); // Estado del Mute
   const { playWithCheck} = useAudio()
 
   const [playFip] = useSound("/sounds/click.mp3", { volume: 0.5 });
@@ -33,7 +32,6 @@ const MemoryGame = () => {
     setSelectedBaraja(barajas[randomIndex]);
     return barajas[randomIndex].baraja;
   };
-
 
   const resetGame = useCallback(() => {
     const barajaData = getRandomBaraja(); // Asumiendo que getRandomBaraja no depende de estado

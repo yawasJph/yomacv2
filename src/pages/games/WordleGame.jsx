@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import { ArrowLeft, HelpCircle } from "lucide-react";
-import { VALID_WORDS } from "../../components/games/utils/dictionary";
+import { ArrowLeft, HelpCircle, Volume2, VolumeX } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
 import filteredWords from "../../../scripts/filtered_words.json";
+import { useAudio } from "../../context/AudioContext";
+import useSound from "use-sound";
 
 // Configuración de colores
 const COLORS = {
@@ -34,6 +35,11 @@ const toastStyle = {
   },
 };
 
+const shakeAnimation = {
+  x: [-10, 10, -10, 10, -5, 5, 0], // Movimiento lateral
+  transition: { duration: 0.4 }, // Velocidad de la sacudida
+};
+
 const WordleGame = () => {
   const { user } = useAuth();
   const [targetWord, setTargetWord] = useState("");
@@ -46,107 +52,236 @@ const WordleGame = () => {
   const [isInvalid, setIsInvalid] = useState(false);
   const [showClue, setShowClue] = useState(false);
   const navigate = useNavigate();
+  const { isMuted, setIsMuted, playWithCheck } = useAudio();
 
-  const shakeAnimation = {
-    x: [-10, 10, -10, 10, -5, 5, 0], // Movimiento lateral
-    transition: { duration: 0.4 }, // Velocidad de la sacudida
-  };
+  const [playClick] = useSound("/sounds/click.mp3", { volume: 0.5 });
+  const [playDelete] = useSound("/sounds/delete.mp3", { volume: 0.5 });
+  const [playMatched] = useSound("/sounds/matched.mp3", { volume: 0.5 });
+  const [playError] = useSound("/sounds/lose.mp3", { volume: 0.3 });
+  const [playWin] = useSound("/sounds/win.mp3", { volume: 0.5 });
+  const [playLose] = useSound("/sounds/losev4.mp3", { volume: 0.4 });
 
   useEffect(() => {
-    const loadDailyGame = async () => {
+    const initGame = async () => {
+      if (!user) return;
+
       const today = new Date().toISOString().split("T")[0];
 
-      // 1. Obtener la palabra del día
-      const { data: wordData } = await supabaseClient
-        .from("daily_words")
-        .select("*")
-        .eq("scheduled_for", today)
-        .maybeSingle();
+      // 1. Ejecutamos ambas consultas en paralelo para ganar velocidad
+      const [wordRes, attemptRes] = await Promise.all([
+        supabaseClient
+          .from("daily_words")
+          .select("*")
+          .eq("scheduled_for", today)
+          .maybeSingle(),
+        supabaseClient
+          .from("wordle_attempts")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("game_date", today)
+          .maybeSingle(),
+      ]);
 
-      if (!wordData) return;
-      const target = wordData.word.toUpperCase();
-      setTargetWord(target);
-      setClue(wordData.clue);
+      // 2. Configurar la palabra del día
+      if (wordRes.data) {
+        const target = wordRes.data.word.toUpperCase();
+        setTargetWord(target);
+        setClue(wordRes.data.clue);
 
-      // 2. Cargar progreso del usuario
-      const { data: attemptData } = await supabaseClient
-        .from("wordle_attempts")
-        .select("*")
-        .eq("user_id", user.id)
-        .eq("game_date", today)
-        .maybeSingle();
+        // 3. Si hay progreso previo, procesarlo
+        if (attemptRes.data) {
+          const savedGuesses = attemptRes.data.guesses_json || [];
 
-      if (attemptData) {
-        const savedGuesses = attemptData.guesses_json || [];
-        // Rellenamos el array de guesses para mantener el tamaño 6
-        setGuesses(
-          savedGuesses.concat(Array(6 - savedGuesses.length).fill(""))
-        );
-        setCurrentRow(savedGuesses.length);
-        setGameState(attemptData.status);
-        if (attemptData.status === "won") {
-          triggerConfetti(); // <-- Opcional: celebrar cada vez que abra el juego si ya ganó
+          // Rellenar tablero
+          setGuesses(
+            savedGuesses.concat(Array(6 - savedGuesses.length).fill("")),
+          );
+          setCurrentRow(savedGuesses.length);
+          setGameState(attemptRes.data.status);
+
+          // Reconstruir teclado (Usamos un reducer para que sea más limpio)
+          const used = savedGuesses.reduce((acc, guess) => {
+            guess.split("").forEach((char, i) => {
+              if (char === target[i]) acc[char] = "correct";
+              else if (target.includes(char) && acc[char] !== "correct")
+                acc[char] = "present";
+              else if (!target.includes(char)) acc[char] = "absent";
+            });
+            return acc;
+          }, {});
+
+          setUsedLetters(used);
+
+          if (attemptRes.data.status === "won") triggerConfetti();
         }
-
-        // 3. RECONSTRUIR COLORES DEL TECLADO
-        const used = {};
-        savedGuesses.forEach((guess) => {
-          guess.split("").forEach((char, i) => {
-            if (char === target[i]) used[char] = "correct";
-            else if (target.includes(char) && used[char] !== "correct")
-              used[char] = "present";
-            else if (!target.includes(char)) used[char] = "absent";
-          });
-        });
-        setUsedLetters(used);
       }
     };
 
-    if (user) loadDailyGame();
-  }, [user]);
+    initGame();
+  }, [user]); // Quitamos dependencias innecesarias para evitar loops
 
-  const handleChar = (char) => {
-    if (currentGuess.length < 5 && gameState === "playing") {
-      setCurrentGuess((prev) => prev + char);
-    }
-  };
+  // const handleChar = (char) => {
+  //   if (currentGuess.length < 5 && gameState === "playing") {
+  //     playWithCheck(playClick);
+  //     setCurrentGuess((prev) => prev + char);
+  //   }
+  // };
 
-  const handleDelete = () => {
+  // 1. MEMORIZAR FUNCIONES PARA NO ROMPER EL MEMO DEL TECLADO
+
+  const handleChar = useCallback(
+    (char) => {
+      if (gameState === "playing") {
+        // Quitamos dependencia de currentGuess.length para el callback
+        setCurrentGuess((prev) => (prev.length < 5 ? prev + char : prev));
+        playWithCheck(playClick);
+      }
+    },
+    [gameState, playClick, playWithCheck],
+  );
+
+  const handleDelete = useCallback(() => {
     setCurrentGuess((prev) => prev.slice(0, -1));
-  };
+    playWithCheck(playDelete);
+  }, [playDelete, playWithCheck]);
 
   // Actualiza también handleEnter para que refresque el teclado en tiempo real
-  const handleEnter = async () => {
-    //if (currentGuess.length !== 5 || gameState !== "playing") return;
+  // const handleEnter = async () => {
+  //   //if (currentGuess.length !== 5 || gameState !== "playing") return;
+  //   if (gameState !== "playing") return;
+
+  //   // 1. VALIDACIÓN DE LONGITUD (Menos de 5 letras)
+  //   if (currentGuess.length < 5) {
+  //     setIsInvalid(true);
+  //     playWithCheck(playError);
+  //     toast.error("Faltan letras", {
+  //       ...toastStyle,
+  //       icon: "⌨️",
+  //       style: { ...toastStyle.style, border: "2px solid #f59e0b" }, // Borde ámbar para advertencia
+  //     });
+  //     setTimeout(() => setIsInvalid(false), 400);
+  //     return;
+  //   }
+
+  //   const wordToValidate = currentGuess.toUpperCase();
+
+  //   if (
+  //     !filteredWords.includes(wordToValidate) &&
+  //     wordToValidate !== targetWord
+  //   ) {
+  //     setIsInvalid(true);
+  //     playWithCheck(playError);
+  //     toast.info("No está en el diccionario", {
+  //       ...toastStyle,
+  //       icon: "📚",
+  //     });
+  //     setTimeout(() => setIsInvalid(false), 400);
+  //     return;
+  //   }
+
+  //   // 1. Calcular colores para el teclado inmediatamente
+  //   const newUsedLetters = { ...usedLetters };
+  //   wordToValidate.split("").forEach((char, i) => {
+  //     if (char === targetWord[i]) newUsedLetters[char] = "correct";
+  //     else if (targetWord.includes(char) && newUsedLetters[char] !== "correct")
+  //       newUsedLetters[char] = "present";
+  //     else if (!targetWord.includes(char)) newUsedLetters[char] = "absent";
+  //   });
+
+  //   const newGuesses = [...guesses];
+  //   newGuesses[currentRow] = wordToValidate;
+  //   const currentGuessesToSave = newGuesses.filter((g) => g !== "");
+
+  //   const newStatus =
+  //     wordToValidate === targetWord
+  //       ? "won"
+  //       : currentRow === 5
+  //         ? "lost"
+  //         : "playing";
+
+  //   // Sonido según resultado
+  //   if (newStatus === "won") {
+  //     playWithCheck(playWin);
+  //   } else if (newStatus === "lost") {
+  //     playWithCheck(playLose);
+  //   } else {
+  //     setTimeout(() => {
+  //       playWithCheck(playMatched);
+  //     }, 500); // Sonido de "palabra aceptada"
+  //   }
+
+  //   const { error } = await supabaseClient.from("wordle_attempts").upsert(
+  //     {
+  //       user_id: user.id,
+  //       game_date: new Date().toISOString().split("T")[0],
+  //       guesses_json: currentGuessesToSave,
+  //       attempts: currentGuessesToSave.length,
+  //       status: newStatus,
+  //       score:
+  //         newStatus === "won" ? (7 - currentGuessesToSave.length) * 100 : 0,
+  //     },
+  //     { onConflict: "user_id, game_date" },
+  //   );
+
+  //   if (!error) {
+  //     setGuesses(newGuesses);
+  //     setUsedLetters(newUsedLetters); // Actualizamos el teclado visual
+  //     if (newStatus !== "playing") {
+  //       setGameState(newStatus);
+  //       if (newStatus === "won") {
+  //         triggerConfetti();
+  //         await supabaseClient.rpc("submit_game_score", {
+  //           p_game_id: "wordle_diario",
+  //           p_moves: currentGuessesToSave.length,
+  //           p_score: (7 - currentGuessesToSave.length) * 100,
+  //           p_time_seconds: 0,
+  //         });
+  //       }
+  //     } else {
+  //       setCurrentRow((prev) => prev + 1);
+  //       setCurrentGuess("");
+  //     }
+  //   }
+  // };
+
+  // handleEnter requiere más dependencias, pero es vital para el flujo
+  const handleEnter = useCallback(async () => {
     if (gameState !== "playing") return;
 
-    // 1. VALIDACIÓN DE LONGITUD (Menos de 5 letras)
     if (currentGuess.length < 5) {
       setIsInvalid(true);
-      toast.error("Faltan letras", {
-        ...toastStyle,
-        icon: "⌨️",
-        style: { ...toastStyle.style, border: "2px solid #f59e0b" }, // Borde ámbar para advertencia
-      });
+      playWithCheck(playError);
+      toast.error("Faltan letras", { ...toastStyle, icon: "⌨️" });
       setTimeout(() => setIsInvalid(false), 400);
       return;
     }
 
     const wordToValidate = currentGuess.toUpperCase();
+
+    // Validación de diccionario...
     if (
       !filteredWords.includes(wordToValidate) &&
       wordToValidate !== targetWord
     ) {
       setIsInvalid(true);
-      toast.info("No está en el diccionario", {
-        ...toastStyle,
-        icon: "📚",
-      });
+      playWithCheck(playError);
+      toast.info("No está en el diccionario", { ...toastStyle, icon: "📚" });
       setTimeout(() => setIsInvalid(false), 400);
       return;
     }
 
-    // 1. Calcular colores para el teclado inmediatamente
+    const newStatus =
+      wordToValidate === targetWord
+        ? "won"
+        : currentRow === 5
+          ? "lost"
+          : "playing";
+
+    // Sonidos inmediatos
+    if (newStatus === "won") playWithCheck(playWin);
+    else if (newStatus === "lost") playWithCheck(playLose);
+
+    // Cálculos de teclado
     const newUsedLetters = { ...usedLetters };
     wordToValidate.split("").forEach((char, i) => {
       if (char === targetWord[i]) newUsedLetters[char] = "correct";
@@ -155,49 +290,45 @@ const WordleGame = () => {
       else if (!targetWord.includes(char)) newUsedLetters[char] = "absent";
     });
 
-    const newGuesses = [...guesses];
-    newGuesses[currentRow] = wordToValidate;
-    const currentGuessesToSave = newGuesses.filter((g) => g !== "");
+    // RETRASO TÁCTICO: Para que la UI no se bloquee mientras Supabase responde
+    setTimeout(async () => {
+      if (newStatus === "playing") playWithCheck(playMatched);
 
-    let newStatus = "playing";
-    if (wordToValidate === targetWord) newStatus = "won";
-    else if (currentRow === 5) newStatus = "lost";
+      const newGuesses = [...guesses];
+      newGuesses[currentRow] = wordToValidate;
+      const currentGuessesToSave = newGuesses.filter((g) => g !== "");
 
-    const { error } = await supabaseClient.from("wordle_attempts").upsert(
-      {
-        user_id: user.id,
-        game_date: new Date().toISOString().split("T")[0],
-        guesses_json: currentGuessesToSave,
-        attempts: currentGuessesToSave.length,
-        status: newStatus,
-        score:
-          newStatus === "won" ? (7 - currentGuessesToSave.length) * 100 : 0,
-      },
-      { onConflict: "user_id, game_date" }
-    );
+      // Actualización de DB
+      const { error } = await supabaseClient.from("wordle_attempts").upsert(
+        {
+          user_id: user.id,
+          game_date: new Date().toISOString().split("T")[0],
+          guesses_json: currentGuessesToSave,
+          attempts: currentGuessesToSave.length,
+          status: newStatus,
+          score:
+            newStatus === "won" ? (7 - currentGuessesToSave.length) * 100 : 0,
+        },
+        { onConflict: "user_id, game_date" },
+      );
 
-    if (!error) {
-      setGuesses(newGuesses);
-      setUsedLetters(newUsedLetters); // Actualizamos el teclado visual
-      if (newStatus !== "playing") {
-        setGameState(newStatus);
-        if (newStatus === "won") {
-          triggerConfetti();
-          await supabaseClient.rpc("submit_game_score", {
-            p_game_id: "wordle_diario",
-            p_moves: currentGuessesToSave.length,
-            p_score: (7 - currentGuessesToSave.length) * 100,
-            p_time_seconds: 0,
-          });
+      if (!error) {
+        setGuesses(newGuesses);
+        setUsedLetters(newUsedLetters); // El teclado se actualiza aquí
+
+        if (newStatus !== "playing") {
+          setGameState(newStatus);
+          if (newStatus === "won") triggerConfetti();
+        } else {
+          setCurrentRow((prev) => prev + 1);
+          setCurrentGuess("");
         }
-      } else {
-        setCurrentRow((prev) => prev + 1);
-        setCurrentGuess("");
       }
-    }
-  };
+    }, 100);
+  }, [currentGuess, currentRow, gameState, targetWord, usedLetters, user]);
 
-  // Escuchar teclado físico también
+
+  // 2. TECLADO FÍSICO OPTIMIZADO
   useEffect(() => {
     const onKeyDown = (e) => {
       if (e.key === "Enter") handleEnter();
@@ -206,24 +337,7 @@ const WordleGame = () => {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [currentGuess, currentRow, gameState]);
-
-  // 1. Cargar palabra del día
-  useEffect(() => {
-    const fetchTodayWord = async () => {
-      const { data } = await supabaseClient
-        .from("daily_words")
-        .select("*")
-        .eq("scheduled_for", new Date().toISOString().split("T")[0])
-        .maybeSingle();
-
-      if (data) {
-        setTargetWord(data.word.toUpperCase());
-        setClue(data.clue);
-      }
-    };
-    fetchTodayWord();
-  }, []);
+  }, [handleEnter, handleDelete, handleChar]);
 
   const shareResults = () => {
     const emojiGrid = guesses
@@ -276,35 +390,55 @@ const WordleGame = () => {
     }, 250);
   };
 
+  // Botón de sonido reutilizable
+  const SoundToggle = (
+    <motion.button
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      onClick={() => setIsMuted(!isMuted)}
+      className={`p-2 rounded-2xl transition-all shadow-lg ${
+        isMuted
+          ? "bg-gray-500 text-white"
+          : "bg-white dark:bg-neutral-900 text-amber-500 border border-amber-500/20"
+      }`}
+    >
+      {isMuted ? (
+        <VolumeX size={24} />
+      ) : (
+        <Volume2 size={24} className="animate-pulse" />
+      )}
+    </motion.button>
+  );
+
   return (
-    <div className="flex flex-col items-center max-w-md mx-auto p-4 justify-center">
-      {/**min-h-[80vh] */}
-      {/* Header con Pista */}
-      <div className="w-full flex justify-between items-center mb-8 max-sm:mb-3">
-        <button
-          onClick={() => navigate(-1)}
-          className="p-3 text-black rounded-2xl dark:text-white hover:bg-gray-200 dark:hover:bg-gray-800"
-        >
-          <ArrowLeft size={20} />
-        </button>
-        <h1 className="text-xl font-black italic uppercase dark:text-white tracking-tighter">
-          Palabra Del <span className="text-emerald-500">Día</span>
+    <div className="flex flex-col h-dvh max-w-md mx-auto p-3 overflow-hidden">
+    
+    {/* 1. Header: Altura fija mínima */}
+    <header className="flex-none flex justify-between items-center py-2 mb-2">
+      <button onClick={() => navigate(-1)} className="p-2 dark:text-white">
+        <ArrowLeft size={20} />
+      </button>
+      
+      <div className="flex flex-col items-center">
+        <h1 className="text-lg font-black italic uppercase dark:text-white leading-none">
+          Palabra Del <span className="text-amber-500">Día</span>
         </h1>
-        <button
-          onClick={() => setShowClue(true)}
-          className="p-2 bg-gray-100 dark:bg-neutral-800 rounded-full text-gray-400 hover:text-amber-500 transition-colors"
-        >
-          <HelpCircle size={20} />
-        </button>
+        <div className="flex gap-2 items-center mt-1">
+           {/* Versión mini del toggle de sonido para ahorrar espacio */}
+           {SoundToggle} 
+        </div>
       </div>
 
-      {/* Grid del Juego */}
-      <div className="grid grid-rows-6 gap-2 mb-8 max-sm:mb-0">
+      <button onClick={() => setShowClue(true)} className="p-2 text-gray-400">
+        <HelpCircle size={20} />
+      </button>
+    </header>
+
+    {/* 2. Grid del Juego: flex-grow para que ocupe el espacio central */}
+    <main className="grow flex items-center justify-center overflow-hidden py-2">
+      <div className="grid grid-rows-6 gap-1.5 md:gap-2">
         {guesses.map((guess, i) => (
-          <motion.div
-            key={i}
-            animate={i === currentRow && isInvalid ? shakeAnimation : {}}
-          >
+          <motion.div key={i} animate={i === currentRow && isInvalid ? shakeAnimation : {}}>
             <Row
               guess={i === currentRow ? currentGuess : guess}
               isCurrent={i === currentRow}
@@ -314,16 +448,17 @@ const WordleGame = () => {
           </motion.div>
         ))}
       </div>
+    </main>
 
-      {/* Teclado */}
-      <div className="w-full">
-        <Keyboard
-          onChar={handleChar}
-          onDelete={handleDelete}
-          onEnter={handleEnter}
-          usedLetters={usedLetters}
-        />
-      </div>
+    {/* 3. Teclado: Altura fija abajo */}
+    <footer className="flex-none w-full pb-4 mt-auto">
+      <Keyboard
+        onChar={handleChar}
+        onDelete={handleDelete}
+        onEnter={handleEnter}
+        usedLetters={usedLetters}
+      />
+    </footer>
 
       {/* MODALES (Pista y Victoria/Derrota) */}
       <AnimatePresence>
@@ -353,7 +488,7 @@ const WordleGame = () => {
                 Pista del día
               </h3>
               <div className="mt-4 p-4 bg-gray-50 dark:bg-neutral-800 rounded-2xl border-2 border-dashed border-gray-200 dark:border-neutral-700">
-                <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400 italic">
+                <span className="text-lg font-bold text-indigo-600 dark:text-indigo-400 italic">
                   "{clue || "No hay pistas para hoy"}"
                 </span>
               </div>
@@ -442,11 +577,11 @@ const WordleGame = () => {
   );
 };
 
-const Row = ({ guess, isCurrent, isSubmitted, targetWord }) => {
+const Row = memo(({ guess, isCurrent, isSubmitted, targetWord }) => {
   const letters = guess.padEnd(5, " ").split("");
 
   return (
-    <div className="grid grid-cols-5 gap-2">
+    <div className="grid grid-cols-5 gap-2" style={{ perspective: "1000px" }}>
       {letters.map((char, i) => {
         let statusClass = COLORS.empty;
 
@@ -479,9 +614,9 @@ const Row = ({ guess, isCurrent, isSubmitted, targetWord }) => {
       })}
     </div>
   );
-};
+});
 
-const Keyboard = ({ onChar, onDelete, onEnter, usedLetters }) => {
+const Keyboard = memo(({ onChar, onDelete, onEnter, usedLetters }) => {
   const rows = [
     ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
     ["A", "S", "D", "F", "G", "H", "J", "K", "L", "Ñ"],
@@ -521,6 +656,6 @@ const Keyboard = ({ onChar, onDelete, onEnter, usedLetters }) => {
       ))}
     </div>
   );
-};
+});
 
 export default WordleGame;

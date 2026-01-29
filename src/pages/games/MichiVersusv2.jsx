@@ -123,7 +123,7 @@ const PlayerCard = memo(({ player, icon, color, side }) => {
       className={`flex items-center ${isLeft ? 'flex-row' : 'flex-row-reverse'} gap-4 ${isLeft ? 'self-start' : 'self-end'} 
         bg-white dark:bg-neutral-900 p-4 rounded-4xl shadow-2xl border-2 ${isLeft ? 'border-emerald-500' : 'border-rose-500'} w-[85%]`}
     >
-      <div className="relative flex-shrink-0">
+      <div className="relative shrink-0">
         <img 
           src={player.avatar || "/default-avatar.png"} 
           className="w-16 h-16 rounded-2xl object-cover border-2 border-gray-100 dark:border-neutral-800" 

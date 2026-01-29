@@ -56,10 +56,10 @@ export const GAMES_LIST = [
       path: "/games/wordle",
       difficulty: "Difícil",
       howToPlay: [
-        "Adivina una palabra de 5 letras relacionada a la vida estudiantil.",
+        "Adivina una palabra de 5 letras del dia.",
         "Tienes 6 intentos. Los colores te darán pistas sobre las letras.",
         "Verde: Letra correcta en el lugar correcto.",
-        "Amarillo: La letra está en la palabra, pero en otra posición.",
+        "Naranja: La letra está en la palabra, pero en otra posición.",
         "Gris: La letra no forma parte de la palabra."
       ]
     },
