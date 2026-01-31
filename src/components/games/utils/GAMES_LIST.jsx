@@ -67,8 +67,8 @@ export const GAMES_LIST = [
       id: "caza-talentos",
       title: "Caza Talentos",
       description: "Muestra tu destreza con los reflejos.",
-      icon: <Target className="text-amber-500" size={32} />,
-      color: "from-amber-500/20 to-amber-500/5",
+      icon: <Target className="text-red-500" size={32} />,
+      color: "from-red-500/20 to-red-500/5",
       path: "/games/caza-talentos",
       difficulty: "Fácil",
       howToPlay: [

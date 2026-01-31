@@ -4,7 +4,6 @@ import HudSection from "./memory-game/HudSectionv2";
 import MemoryCard from "./memory-game/MemoryCardv2";
 import ActionButtons from "./memory-game/ActionButtonsv2";
 import VictoryModal from "./memory-game/VictoryModalv4";
-import { useAudio } from "../../context/AudioContext";
 
 // Definimos los estilos fuera del componente para que no estorben
 const STYLES = {

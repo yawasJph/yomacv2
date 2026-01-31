@@ -4,7 +4,7 @@ import { GAMES_LIST } from "../../components/games/utils/GAMES_LIST";
 import GameCard from "../../components/games/game-center/GameCard";
 import GameCenterHeader from "../../components/games/game-center/GameCenterHeader";
 import useSound from "use-sound"; // 1. Importar la librería
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import { useAudio } from "../../context/AudioContext";
 
 const GameCenter = () => {

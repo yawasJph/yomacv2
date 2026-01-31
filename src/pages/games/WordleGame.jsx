@@ -120,15 +120,6 @@ const WordleGame = () => {
     initGame();
   }, [user]); // Quitamos dependencias innecesarias para evitar loops
 
-  // const handleChar = (char) => {
-  //   if (currentGuess.length < 5 && gameState === "playing") {
-  //     playWithCheck(playClick);
-  //     setCurrentGuess((prev) => prev + char);
-  //   }
-  // };
-
-  // 1. MEMORIZAR FUNCIONES PARA NO ROMPER EL MEMO DEL TECLADO
-
   const handleChar = useCallback(
     (char) => {
       if (gameState === "playing") {
@@ -144,105 +135,6 @@ const WordleGame = () => {
     setCurrentGuess((prev) => prev.slice(0, -1));
     playWithCheck(playDelete);
   }, [playDelete, playWithCheck]);
-
-  // Actualiza también handleEnter para que refresque el teclado en tiempo real
-  // const handleEnter = async () => {
-  //   //if (currentGuess.length !== 5 || gameState !== "playing") return;
-  //   if (gameState !== "playing") return;
-
-  //   // 1. VALIDACIÓN DE LONGITUD (Menos de 5 letras)
-  //   if (currentGuess.length < 5) {
-  //     setIsInvalid(true);
-  //     playWithCheck(playError);
-  //     toast.error("Faltan letras", {
-  //       ...toastStyle,
-  //       icon: "⌨️",
-  //       style: { ...toastStyle.style, border: "2px solid #f59e0b" }, // Borde ámbar para advertencia
-  //     });
-  //     setTimeout(() => setIsInvalid(false), 400);
-  //     return;
-  //   }
-
-  //   const wordToValidate = currentGuess.toUpperCase();
-
-  //   if (
-  //     !filteredWords.includes(wordToValidate) &&
-  //     wordToValidate !== targetWord
-  //   ) {
-  //     setIsInvalid(true);
-  //     playWithCheck(playError);
-  //     toast.info("No está en el diccionario", {
-  //       ...toastStyle,
-  //       icon: "📚",
-  //     });
-  //     setTimeout(() => setIsInvalid(false), 400);
-  //     return;
-  //   }
-
-  //   // 1. Calcular colores para el teclado inmediatamente
-  //   const newUsedLetters = { ...usedLetters };
-  //   wordToValidate.split("").forEach((char, i) => {
-  //     if (char === targetWord[i]) newUsedLetters[char] = "correct";
-  //     else if (targetWord.includes(char) && newUsedLetters[char] !== "correct")
-  //       newUsedLetters[char] = "present";
-  //     else if (!targetWord.includes(char)) newUsedLetters[char] = "absent";
-  //   });
-
-  //   const newGuesses = [...guesses];
-  //   newGuesses[currentRow] = wordToValidate;
-  //   const currentGuessesToSave = newGuesses.filter((g) => g !== "");
-
-  //   const newStatus =
-  //     wordToValidate === targetWord
-  //       ? "won"
-  //       : currentRow === 5
-  //         ? "lost"
-  //         : "playing";
-
-  //   // Sonido según resultado
-  //   if (newStatus === "won") {
-  //     playWithCheck(playWin);
-  //   } else if (newStatus === "lost") {
-  //     playWithCheck(playLose);
-  //   } else {
-  //     setTimeout(() => {
-  //       playWithCheck(playMatched);
-  //     }, 500); // Sonido de "palabra aceptada"
-  //   }
-
-  //   const { error } = await supabaseClient.from("wordle_attempts").upsert(
-  //     {
-  //       user_id: user.id,
-  //       game_date: new Date().toISOString().split("T")[0],
-  //       guesses_json: currentGuessesToSave,
-  //       attempts: currentGuessesToSave.length,
-  //       status: newStatus,
-  //       score:
-  //         newStatus === "won" ? (7 - currentGuessesToSave.length) * 100 : 0,
-  //     },
-  //     { onConflict: "user_id, game_date" },
-  //   );
-
-  //   if (!error) {
-  //     setGuesses(newGuesses);
-  //     setUsedLetters(newUsedLetters); // Actualizamos el teclado visual
-  //     if (newStatus !== "playing") {
-  //       setGameState(newStatus);
-  //       if (newStatus === "won") {
-  //         triggerConfetti();
-  //         await supabaseClient.rpc("submit_game_score", {
-  //           p_game_id: "wordle_diario",
-  //           p_moves: currentGuessesToSave.length,
-  //           p_score: (7 - currentGuessesToSave.length) * 100,
-  //           p_time_seconds: 0,
-  //         });
-  //       }
-  //     } else {
-  //       setCurrentRow((prev) => prev + 1);
-  //       setCurrentGuess("");
-  //     }
-  //   }
-  // };
 
   // handleEnter requiere más dependencias, pero es vital para el flujo
   const handleEnter = useCallback(async () => {
@@ -410,7 +302,7 @@ const WordleGame = () => {
   );
 
   return (
-    <div className="flex flex-col  max-w-md p-3 overflow-hidden mx-auto">
+    <div className="flex flex-col  max-w-md p-3 overflow-hidden mx-auto pt-3">
       {/* 1. Header: Altura fija mínima */}
       <header className="flex-none flex justify-between items-center sm:py-2 sm:mb-2">
         <button onClick={() => navigate(-1)} className="p-2 dark:text-white">
@@ -604,7 +496,14 @@ const Row = memo(({ guess, isCurrent, isSubmitted, targetWord }) => {
               isSubmitted ? { rotateX: 0 } : { scale: char !== " " ? 1.05 : 1 }
             }
             transition={{ delay: i * 0.1, duration: 0.4 }}
-            className={`w-14 h-14 md:w-16 md:h-16 border-2 rounded-2xl flex items-center justify-center text-2xl font-black transition-colors ${statusClass}`}
+            //className={`w-14 h-14 md:w-16 md:h-16 border-2 rounded-2xl flex items-center justify-center text-2xl font-black transition-colors ${statusClass}`}
+            className={`
+  w-[12vw] h-[12vw] max-w-14 max-h-14 
+  md:w-14 md:h-14 
+  border-2 rounded-xl flex items-center justify-center 
+  text-xl md:text-2xl font-black transition-colors 
+  ${statusClass}
+`}
           >
             {char.toUpperCase()}
           </motion.div>
