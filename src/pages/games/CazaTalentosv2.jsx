@@ -63,21 +63,6 @@ const GameTarget = memo(({ t, onHit }) => (
       <span className="text-xs font-black text-amber-600">+5s</span>
     )}
 
-    {/* Animación de puntos flotantes */}
-    <AnimatePresence>
-      {t.clicked && t.type === "time" && (
-        <div className="absolute right-1/2 top-1/2 z-50 flex flex-col items-end">
-          <motion.div
-            initial={{ opacity: 0, y: 0 }}
-            animate={{ opacity: 1, y: -50 }}
-            exit={{ opacity: 0 }}
-            className="text-amber-500 font-bold text-3xl"
-          >
-            +5s
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
 
     {t.type === "talent" && t.deckType === "img" ? (
       <img
@@ -270,7 +255,7 @@ const CazaTalentos = () => {
   };
 
   return (
-    <div className="relative w-full max-w-md mx-auto h-[700px] max-h-[750px] bg-neutral-50 dark:bg-neutral-950 overflow-hidden flex flex-col sm:rounded-[3rem] sm:mt-5 border-4 border-white dark:border-neutral-900 shadow-2xl touch-none ">
+    <div className="relative w-full max-w-md mx-auto h-[650px] max-h-[750px] bg-neutral-50 dark:bg-neutral-950 overflow-hidden flex flex-col sm:rounded-[3rem] sm:mt-5 border-4 border-white dark:border-neutral-900 shadow-2xl touch-none ">
       
       {/* 1. HEADER & PROGRESS BAR */}
       <div className="relative pt-6 px-6 pb-2 z-20">
