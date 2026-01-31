@@ -270,9 +270,10 @@ const CazaTalentos = () => {
   };
 
   return (
-    <div className="relative w-full max-w-md mx-auto h-[600px] bg-neutral-50 dark:bg-neutral-950 rounded-[3rem] overflow-hidden border-4 border-white dark:border-neutral-900 shadow-2xl flex flex-col pt-3">
+    <div className="relative w-full max-w-md mx-auto h-[600px] max-h-[750px] bg-neutral-50 dark:bg-neutral-950 overflow-hidden flex flex-col sm:rounded-[3rem] sm:mt-5 mt-10 border-4 border-white dark:border-neutral-900 shadow-2xl touch-none ">
+      
       {/* 1. HEADER & PROGRESS BAR */}
-      <div className="relative pt-6 px-6 pb-2 z-50">
+      <div className="relative pt-6 px-6 pb-2 z-20">
         <div className="flex justify-between items-center mb-4">
           <button
             onClick={() => navigate(-1)}
