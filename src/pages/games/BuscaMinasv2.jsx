@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useAudio } from "../../context/AudioContext";
 
 // --- Constantes y Utilidades Externas ---
 const GRID_SIZE = 8;
@@ -28,7 +29,6 @@ const DIRECTIONS = [
   [1, 0],
   [1, 1],
 ];
-
 
 // Generación del tablero inicial vacío
 const createEmptyBoard = () =>
@@ -102,8 +102,9 @@ const BuscaMinas = () => {
   const [gameState, setGameState] = useState("playing");
   const [timer, setTimer] = useState(0);
   const [flagsCount, setFlagsCount] = useState(0);
-  const [isMuted, setIsMuted] = useState(false);
+  //const [isMuted, setIsMuted] = useState(false);
   const [firstClick, setFirstClick] = useState(true);
+  const {isMuted, setIsMuted, playWithCheck} = useAudio()
 
   const navigate = useNavigate();
 
@@ -175,7 +176,7 @@ const BuscaMinas = () => {
 
       if (newBoard[r][c].isMine) {
         setGameState("lost");
-        handlePlay(playLose);
+        playWithCheck(playLose);
         // Revelar todas
         newBoard.forEach((row) =>
           row.forEach((cell) => {
@@ -186,7 +187,7 @@ const BuscaMinas = () => {
         return;
       }
 
-      handlePlay(playClick);
+      playWithCheck(playClick);
 
       const floodFill = (row, col) => {
         if (row < 0 || row >= GRID_SIZE || col < 0 || col >= GRID_SIZE) return;
@@ -212,11 +213,11 @@ const BuscaMinas = () => {
       );
       if (hasWon) {
         setGameState("won");
-        handlePlay(playWin);
+        playWithCheck(playWin);
         saveScore(true);
       }
     },
-    [board, gameState, firstClick, handlePlay, playClick, playLose, playWin],
+    [board, gameState, firstClick, playClick, playLose, playWin, playWithCheck],
   );
 
   const toggleFlag = useCallback(
@@ -229,14 +230,14 @@ const BuscaMinas = () => {
         return;
       }
 
-      handlePlay(playFlag);
+      playWithCheck(playFlag);
       const newBoard = [...board];
       newBoard[r][c] = { ...newBoard[r][c], flagged: !newBoard[r][c].flagged };
       setFlagsCount((prev) => (newBoard[r][c].flagged ? prev + 1 : prev - 1));
       setBoard(newBoard);
       if (navigator.vibrate) navigator.vibrate(50);
     },
-    [board, gameState, flagsCount, handlePlay, playFlag],
+    [board, gameState, flagsCount, playWithCheck, playFlag],
   );
 
   // Timer Effect
@@ -259,6 +260,25 @@ const BuscaMinas = () => {
     if (!error) toast.success("¡Ranking actualizado!");
   };
 
+  const SoundToggle = (
+    <motion.button
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      onClick={() => setIsMuted(!isMuted)}
+      className={`p-2 rounded-2xl transition-all shadow-lg ${
+        isMuted
+          ? "bg-gray-500 text-white"
+          : "bg-white dark:bg-neutral-900 text-amber-500 border border-amber-500/20"
+      }`}
+    >
+      {isMuted ? (
+        <VolumeX size={24} />
+      ) : (
+        <Volume2 size={24} className="animate-pulse" />
+      )}
+    </motion.button>
+  );
+
   return (
     <div className="max-w-md mx-auto p-4 flex flex-col h-full bg-gray-50 dark:bg-neutral-950 rounded-[2.5rem] md:mt-15">
       {/* UI de Header (igual a la tuya, pero usando initGame) */}
@@ -269,13 +289,8 @@ const BuscaMinas = () => {
         >
           <ArrowLeft size={20} className="dark:text-white" />
         </button>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setIsMuted(!isMuted)}
-            className={`p-2 rounded-xl ${isMuted ? "text-red-500" : "text-emerald-500"}`}
-          >
-            {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-          </button>
+        <div className="flex gap-3">
+          {SoundToggle}
           <div className="bg-white dark:bg-neutral-800 px-3 py-2 rounded-2xl border-2 border-amber-500/20 flex items-center gap-2">
             <span className="text-sm">🚩</span>
             <span className="font-black dark:text-white text-xs">

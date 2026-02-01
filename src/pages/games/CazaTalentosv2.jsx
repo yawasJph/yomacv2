@@ -345,7 +345,7 @@ const CazaTalentos = () => {
       
         <div className="relative pt-6 px-6 pb-2 z-20">
           <div className="flex justify-between items-center mb-4">
-            <div className="flex gap-3">
+            <div className="flex gap-10">
               <button
                 onClick={() => navigate(-1)}
                 className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-full active:scale-90 transition-transform"

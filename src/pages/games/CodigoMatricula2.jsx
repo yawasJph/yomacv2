@@ -57,7 +57,7 @@ const GAME_THEMES = [
 const MAX_ATTEMPTS = 10;
 const CODE_LENGTH = 4;
 
-const CodigoMatricula = ({ onBack }) => {
+const CodigoMatricula = () => {
   const { user } = useAuth();
   const [currentTheme, setCurrentTheme] = useState(GAME_THEMES[0]); // Estado para el tema
   const [secretCode, setSecretCode] = useState([]);
