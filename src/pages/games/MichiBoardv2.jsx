@@ -104,7 +104,7 @@ const MichiBoard = ({ onBack }) => {
   }, [board, winner, isPlayerNext, playClick, playWithCheck]);
 
   return (
-    <div className="flex flex-col items-center justify-center p-4">
+    <div className="flex flex-col items-center justify-center p-4 md:pt-10">
       <Header HUD onBack={onBack} onReset={() => { playWithCheck(playReset); setBoard(Array(9).fill(null)); setWinner(null); setWinningLine([]); }} />
       
       <StatusIndicator isPlayerNext={isPlayerNext} winner={winner} />

@@ -69,7 +69,7 @@ const MichiPVP = ({ onBack }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-4">
+    <div className="flex flex-col items-center justify-center p-4 md:pt-10">
       {/* HUD de Jugadores */}
       <div className="w-full max-w-[340px] flex justify-between items-center mb-8 gap-4">
         <button onClick={onBack} className="p-2 text-gray-400">

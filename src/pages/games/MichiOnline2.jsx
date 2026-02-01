@@ -289,7 +289,7 @@ const MichiOnline = ({ user, onBack , stop}) => {
     );
 
   return (
-    <div className="flex flex-col items-center p-4 max-sm:p-2">
+    <div className="flex flex-col items-center p-4 max-sm:p-2 md:pt-10">
       {/* Alerta Visual de Abandono */}
       <AnimatePresence>
         {opponentLeft && (

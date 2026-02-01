@@ -189,7 +189,7 @@ const BuscaMinas = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 flex flex-col h-full bg-gray-50 dark:bg-neutral-950 rounded-[2.5rem]">
+    <div className="max-w-md mx-auto p-4 flex flex-col h-full bg-gray-50 dark:bg-neutral-950 rounded-[2.5rem] md:mt-15">
       {/* Header */}
       <div className="flex justify-between items-center mb-6 px-2">
         <button

@@ -302,7 +302,7 @@ const WordleGame = () => {
   );
 
   return (
-    <div className="flex flex-col  max-w-md p-3 overflow-hidden mx-auto pt-3">
+    <div className="flex flex-col  max-w-md p-3 overflow-hidden mx-auto pt-3 md:pt-10">
       {/* 1. Header: Altura fija mínima */}
       <header className="flex-none flex justify-between items-center sm:py-2 sm:mb-2">
         <button onClick={() => navigate(-1)} className="p-2 dark:text-white">
