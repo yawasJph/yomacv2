@@ -44,7 +44,6 @@ const TriviaGamev3 = memo(() => {
     activeCategory,
     countdown,
     currentDifficulty,
-    gameProgress,
     handleAnswer,
     handleReset,
   } = useTriviaGame(profile);

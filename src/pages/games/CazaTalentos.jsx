@@ -113,7 +113,6 @@ const CazaTalentos = () => {
   const endGame = async () => {
     setGameState("ended");
     setTargets([]);
-
     const { error } = await supabaseClient.rpc("submit_game_score", {
       p_game_id: "hunter-talents",
       p_score: score,
