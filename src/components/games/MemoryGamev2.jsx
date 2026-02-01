@@ -32,7 +32,7 @@ const MemoryGame = () => {
   if (!selectedBaraja) return null;
 
   return (
-    <div className={STYLES.container}>
+    <div className={STYLES2.container}>
       <HudSection moves={moves} seconds={seconds} score={Math.max(0, 1000 - moves * 10 - seconds * 2)} />
 
       <div className={STYLES.grid}>
