@@ -341,7 +341,7 @@ const CazaTalentos = () => {
   return (
     <div className="relative w-full max-w-md mx-auto h-[700px] max-h-[750px] bg-neutral-50 dark:bg-neutral-950 overflow-hidden flex flex-col sm:rounded-[3rem] sm:mt-5 border-4 border-white dark:border-neutral-900 shadow-2xl touch-none ">
       {/* 1. HEADER & PROGRESS BAR */}
-      {gameState === "playing" && (
+      
         <div className="relative pt-6 px-6 pb-2 z-20">
           <div className="flex justify-between items-center mb-4">
             <div className="flex gap-3">
@@ -385,7 +385,7 @@ const CazaTalentos = () => {
             />
           </div>
         </div>
-      )}
+      
 
       <div className="flex-1 relative overflow-hidden">
         {/* Fondo con patrón de puntos (Grid) */}
