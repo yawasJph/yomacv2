@@ -419,6 +419,7 @@ const LoadingState = () => (
     </p>
   </motion.div>
 );
+
 const EmptyState = () => (
   <div className="text-center py-20 text-gray-400 text-sm font-medium">
     Aún no hay récords.
