@@ -339,7 +339,7 @@ const CazaTalentos = () => {
   );
 
   return (
-    <div className="relative w-full max-w-md mx-auto h-[700px] max-h-[750px] bg-neutral-50 dark:bg-neutral-950 overflow-hidden flex flex-col sm:rounded-[3rem] sm:mt-5 border-4 border-white dark:border-neutral-900 shadow-2xl touch-none mt-5">
+    <div className="relative w-full max-w-md mx-auto h-[600px] bg-neutral-50 dark:bg-neutral-950 rounded-[3rem] overflow-hidden border-4 border-white dark:border-neutral-900 shadow-2xl flex flex-col pt-3">
       
       {/* 1. HEADER & PROGRESS BAR */}
       
