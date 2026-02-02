@@ -17,10 +17,8 @@ import NotificationsPage from "./components/pages/NotificationsPage";
 import { useEffect } from "react";
 import UserConnections from "./components/pages/UserConnections2";
 import GameCenter from "./pages/games/GameCenter";
-import YoMACStore from "./pages/games/YoMACStore";
 import { SearchProvider } from "./context/SearchContext";
 import TriviaGame from "./pages/games/TriviaGame";
-//import Leaderboard from "./pages/games/Leaderboard3";
 import WordleGame from "./pages/games/WordleGame";
 import ConectorRedes from "./pages/games/ConectorRedes";
 import CampusAI from "./pages/chat/CampusAI2";
@@ -30,18 +28,19 @@ import CazaTalentos from "./pages/games/CazaTalentosv2";
 import BuscaMinas from "./pages/games/BuscaMinasv2";
 import CodigoMatricula from "./pages/games/CodigoMatricula3";
 import Leaderboard from "./pages/games/LeaderBoard4";
+import YoMACStore from "./pages/games/YOMACStorev2";
 
 function App() {
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker
-        .register("/sw.js")
-        .then()
-        .catch((err) =>
-          console.error("Error al registrar el Service Worker", err),
-        );
-    });
-  }
+  // if ("serviceWorker" in navigator) {
+  //   window.addEventListener("load", () => {
+  //     navigator.serviceWorker
+  //       .register("/sw.js")
+  //       .then()
+  //       .catch((err) =>
+  //         console.error("Error al registrar el Service Worker", err),
+  //       );
+  //   });
+  // }
   // Opcional: En tu App.jsx
   useEffect(() => {
     const unlockAudio = () => {
@@ -109,19 +108,19 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="yawas" element={<CampusAI />} />
+            <Route path="yawas" element={<ProtectedRoute><CampusAI /></ProtectedRoute>} />
             <Route path="games" element={<GameCenter />} />
-            <Route path="games/memory" element={<MemoryGame />} />
-            <Route path="games/trivia" element={<TriviaGame />} />
-            <Route path="games/michi" element={<MichiGame />} />
-            <Route path="games/wordle" element={<WordleGame />} />
-            <Route path="games/caza-talentos" element={<CazaTalentos />} />
-            <Route path="games/busca-minas" element={<BuscaMinas />} />
+            <Route path="games/memory" element={<ProtectedRoute><MemoryGame /></ProtectedRoute>} />
+            <Route path="games/trivia" element={<ProtectedRoute><TriviaGame /></ProtectedRoute>} />
+            <Route path="games/michi" element={<ProtectedRoute><MichiGame /></ProtectedRoute>} />
+            <Route path="games/wordle" element={<ProtectedRoute><WordleGame /></ProtectedRoute>} />
+            <Route path="games/caza-talentos" element={<ProtectedRoute><CazaTalentos /></ProtectedRoute>} />
+            <Route path="games/busca-minas" element={<ProtectedRoute><BuscaMinas /></ProtectedRoute>} />
             <Route
               path="games/codigo-matricula"
-              element={<CodigoMatricula />}
+              element={<ProtectedRoute><CodigoMatricula /></ProtectedRoute>}
             />
-            <Route path="games/red-connection" element={<ConectorRedes />} />
+            <Route path="games/red-connection" element={<ProtectedRoute><ConectorRedes /></ProtectedRoute>} />
             <Route path="games/leaderboard" element={<Leaderboard />} />
             <Route path="games/store" element={<YoMACStore />} />
             <Route path="users" element={<DiscoverPage />} />

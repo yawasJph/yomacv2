@@ -63,12 +63,6 @@ const GameCenter = () => {
           Nuevos desafíos cada semana. ¡Mantente atento!
         </p>
       </div>
-
-      <div className="mt-8 p-6 bg-gray-50 dark:bg-gray-900/50 rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 text-center">
-        <p className="text-gray-500 text-sm italic">
-          Estás escuchando: Track {/** */} {isMuted && "(Silenciado)"}
-        </p>
-      </div>
     </div>
   );
 };

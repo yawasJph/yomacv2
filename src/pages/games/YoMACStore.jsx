@@ -20,7 +20,6 @@ const YoMACStore = () => {
   const [activeTab, setActiveTab] = useState("badge"); // 'badge', 'sticker', 'gif'
   const [loading, setLoading] = useState(true);
   const [userCredits, setUserCredits] = useState(0);
-  // Añade estos estados a tu componente CampusStore
   const [filter, setFilter] = useState("all"); // 'all', 'carrera', 'affordable'
   const [sortBy, setSortBy] = useState("newest"); // 'newest', 'price-low', 'price-high'
   const { user: currentUser } = useAuth();
