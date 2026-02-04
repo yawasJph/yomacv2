@@ -1,9 +1,12 @@
 {
-  "rewrites": [
+  "redirects": [
     {
       "source": "/share/:id",
-      "destination": "https://vrbfinqvtyclfmvhheub.supabase.co/functions/v1/share-post?id=:id"
-    },
+      "destination": "https://vrbfinqvtyclfmvhheub.supabase.co/functions/v1/share-post?id=:id",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
     {
       "source": "/(.*)",
       "destination": "/"
