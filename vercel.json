@@ -1,5 +1,12 @@
 {
-    "rewrites":[
-        {"source": "/(.*)", "destination": "/"}
-    ]
+  "rewrites": [
+    {
+      "source": "/share/:id",
+      "destination": "https://vrbfinqvtyclfmvhheub.supabase.co/functions/v1/share-post?id=:id"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
 }
