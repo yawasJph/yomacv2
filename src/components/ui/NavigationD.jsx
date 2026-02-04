@@ -1,9 +1,11 @@
 import {
   Bookmark,
   Bot,
+  Coins,
   Gamepad2,
   Home,
   Plus,
+  ShoppingBag,
   TriangleAlertIcon,
   UserPen,
   Users,
@@ -54,6 +56,12 @@ const NavigationD = () => {
       icon: <Bot size={22} />,
       text: "Yawas",
       private: true,
+    },
+     {
+      to: "/shop",
+      icon: <Coins size={22} />,
+      text: "YoMACcoins",
+      private: false,
     },
   ];
 

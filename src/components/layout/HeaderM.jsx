@@ -8,6 +8,7 @@ import {
   ChevronRight,
   Search,
   Bot,
+  Coins,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -40,6 +41,11 @@ const HeaderM = () => {
       icon: <Bot size={20} />,
       text: "Yawas",
       path: "/yawas",
+    },
+     {
+      icon: <Coins size={20} />,
+      text: "YoMACcoins",
+      path: "/shop",
     },
   ];
 

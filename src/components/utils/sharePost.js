@@ -5,7 +5,8 @@ export  const handleShare = async (post) => {
   const shareData = {
     title: `Post de ${post.profiles.full_name} en YoMAC`,
     text: post.content?.substring(0, 100) + "...",
-    url: `${window.location.origin}/post/${post.id}`,
+    //url: `${window.location.origin}/post/${post.id}`,
+    url: `https://vrbfinqvtyclfmvhheub.supabase.co/functions/v1/share-post?id=${post.id}`
   };
 
   try {
