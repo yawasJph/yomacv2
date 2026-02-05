@@ -2,6 +2,10 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@import './styles/_variables.scss';
+@import './styles/_keyframe-animations.scss';
+
+
 @theme {
   --animate-fade-in: fade-in 0.25s ease-out;
 
@@ -204,3 +208,8 @@
     50% { opacity: 0.5; }
   }
 }
+
+.blog-editor-container{
+  @apply bg-white dark:bg-black p-4 
+}
+

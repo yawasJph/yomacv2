@@ -54,7 +54,7 @@ const NavigationM = () => {
     }
   };
 
-  const onViewCredits = ["games", "yawas"].some((route) =>
+  const onViewCredits = ["games", "yawas", "blog"].some((route) =>
     location.pathname.includes(route),
   );
 

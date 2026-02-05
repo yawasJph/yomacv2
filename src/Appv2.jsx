@@ -12,6 +12,8 @@ import ProtectedRoute from "./components/utils/ProtectedRoute";
 import Feed from "./components/pages/Feed";
 import Login from "./components/pages/Login";
 import BuyCoins from "./pages/store/BuyCoins";
+import BlogEditor from "./pages/blog/BlogEditor";
+import CreateBlog from "./pages/blog/CreateBlog2";
 
 // --- IMPORTS DINÁMICOS (Lazy Loading) ---
 const CreatePost = lazy(() => import("./components/pages/CreatePost"));
@@ -105,7 +107,7 @@ function App() {
               <Route path="profile/:userId" element={<UserProfile />} />
               <Route path="users" element={<DiscoverPage />} />
               <Route path="post/:postId" element={<PostPage />} />
-              <Route path="shop" element={<BuyCoins />} />
+              <Route path="blog" element={<CreateBlog />} />
             </Route>
           </Routes>
         </Suspense>

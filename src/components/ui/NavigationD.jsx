@@ -1,4 +1,5 @@
 import {
+  BlocksIcon,
   Bookmark,
   Bot,
   Coins,
@@ -58,9 +59,9 @@ const NavigationD = () => {
       private: true,
     },
      {
-      to: "/shop",
-      icon: <Coins size={22} />,
-      text: "YoMACcoins",
+      to: "/blog",
+      icon: <BlocksIcon size={22} />,
+      text: "Blog Editor",
       private: false,
     },
   ];
