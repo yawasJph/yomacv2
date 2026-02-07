@@ -8,7 +8,7 @@ import { useComposedRef } from "@/hooks/use-composed-ref"
 // --- CONSTANTES DE ESTILO TAILWIND ---
 const TOOLBAR_STYLES = {
   base: "flex items-center gap-1 p-1 transition-all ",
-  fixed: "sticky top-0 z-30 w-full bg-white dark:bg-black border-b border-gray-200 flex-wrap", // flex-wrap arregla lo de los iconos ocultos
+  fixed: "sticky -top-1 z-30 w-full bg-white dark:bg-black border-b border-gray-200 flex-wrap", // flex-wrap arregla lo de los iconos ocultos
   floating: "rounded-lg border border-gray-200 bg-white shadow-lg p-2"
 };
 

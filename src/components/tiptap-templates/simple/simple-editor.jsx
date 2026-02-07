@@ -26,7 +26,7 @@ import sql from "highlight.js/lib/languages/sql";
 
 // --- UI Primitives ---
 import { Button } from "@/components/tiptap-ui-primitive/button";
-import { Spacer } from "@/components/tiptap-ui-primitive/spacer";
+//import { Spacer } from "@/components/tiptap-ui-primitive/spacer";
 // import {
 //   Toolbar,
 //   ToolbarGroup,
@@ -95,7 +95,7 @@ import CodeBlockNode from "@/pages/blog/CodeBlockNode";
 const MainToolbarContent = ({ onHighlighterClick, onLinkClick, isMobile }) => {
   return (
     <>
-      <Spacer />
+      {/* <Spacer /> */}
       <ToolbarGroup>
         <UndoRedoButton action="undo" />
         <UndoRedoButton action="redo" />
@@ -140,11 +140,11 @@ const MainToolbarContent = ({ onHighlighterClick, onLinkClick, isMobile }) => {
       <ToolbarGroup>
         <ImageUploadButton text="Add" />
       </ToolbarGroup>
-      <Spacer />
-      {isMobile && <ToolbarSeparator />}
+      {/* <Spacer /> */}
+      {/* {isMobile && <ToolbarSeparator />}
       <ToolbarGroup>
         <ThemeToggle />
-      </ToolbarGroup>
+      </ToolbarGroup> */}
     </>
   );
 };
@@ -258,7 +258,7 @@ export function SimpleEditor({ onEditorReady }) {
   }, [editor, onEditorReady]);
 
   return (
-    <div className="simple-editor-wrapper no-scrollbar ">
+    <div className="simple-editor-wrapper no-scrollbar">
       <EditorContext.Provider value={{ editor }}>
         <Toolbar
           ref={toolbarRef}
