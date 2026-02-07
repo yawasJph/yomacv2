@@ -79,7 +79,7 @@ useEffect(() => {
       </header>
 
       {/* CONTENIDO RENDERIZADO */}
-      <div className="max-w-3xl mx-auto px-6 mt-12 overflow-hidden w-full">
+      <div className="max-w-3xl mx-auto px-4 md:px-6 mt-12 overflow-hidden w-full">
         
        <div className="prose lg:prose-xl dark:prose-invert max-w-none w-full">
         <div dangerouslySetInnerHTML={{ __html: post.content }} />
