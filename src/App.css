@@ -22,7 +22,7 @@
   
   /* ESTO ARREGLA EL LAYOUT EN MÓVIL */
   width: 100%;
-  max-width: 100%; 
+  /* max-width: 100%;  */
   overflow-x: auto; /* Permite scroll horizontal */
   white-space: pre; /* Mantiene el formato del código */
   word-spacing: normal;
@@ -48,6 +48,18 @@
   background: transparent;
 }
 
+/* Ajuste para las listas de tareas en móvil */
+ul[data-type="taskList"] {
+  @apply pl-0 my-6;
+}
+
+ul[data-type="taskList"] li {
+  @apply flex items-start mb-2 gap-3;
+}
+
+ul[data-type="taskList"] input[type="checkbox"] {
+  @apply mt-1.5 shrink-0; /* Evita que el checkbox se aplaste */
+}
 
 
 
