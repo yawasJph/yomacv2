@@ -4,9 +4,7 @@ import {
   Gamepad2,
   Users,
   User,
-  Menu,
   TriangleAlertIcon,
-  BlocksIcon,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -37,12 +35,7 @@ const NavigationM = () => {
       text: "Perfil",
       private: true,
     },
-    {
-      to: "/blog",
-      icon: <BlocksIcon size={22} />,
-      text: "Blog",
-      private: false,
-    },
+    
   ];
 
   const requireAuth = (actionText = "realizar esta acción") => {

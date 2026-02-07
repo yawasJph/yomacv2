@@ -64,7 +64,7 @@ const CreateBlog2 = () => {
   };
 
   return (
-    <div className="  bg-white dark:bg-zinc-950 p-6">
+    <div className="max-w-5xl mx-auto min-h-screen bg-white dark:bg-zinc-950 p-6">
       {/* Header con Inputs */}
       <div className="flex flex-col gap-6 mb-8">
         <div className="flex justify-between items-center">
@@ -83,7 +83,7 @@ const CreateBlog2 = () => {
           placeholder="Título del blog..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="text-4xl md:text-5xl font-black bg-transparent border-none outline-none focus:ring-0 dark:text-white placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
+          className="text-4xl md:text-5xl font-black bg-transparent border-none outline-none focus:ring-0 dark:text-white placeholder:text-zinc-300 dark:placeholder:text-zinc-700 max-w-90 md:max-w-full"
         />
 
         <input

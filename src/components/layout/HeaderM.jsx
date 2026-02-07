@@ -8,7 +8,7 @@ import {
   ChevronRight,
   Search,
   Bot,
-  Coins,
+  BlocksIcon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -37,31 +37,32 @@ const HeaderM = () => {
       text: "Configuración",
       path: "/editProfile",
     },
-      {
+    {
       icon: <Bot size={20} />,
       text: "Yawas",
       path: "/yawas",
     },
-     {
-      icon: <Coins size={20} />,
-      text: "YoMACcoins",
-      path: "/shop",
+    {
+      icon: <BlocksIcon size={22} />,
+      text: "Blog",
+      path: "/blog",
     },
   ];
 
   const onViewCredits = ["games"].some((route) =>
-    location.pathname.includes(route)
+    location.pathname.includes(route),
   );
 
   const hideHeader = ["yawas"].some((route) =>
-    location.pathname.includes(route)
+    location.pathname.includes(route),
   );
-
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 h-16 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl z-40 border-b border-gray-100 dark:border-neutral-900 lg:hidden
-        `}>
+      <header
+        className={`fixed top-0 left-0 right-0 h-16 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl z-40 border-b border-gray-100 dark:border-neutral-900 lg:hidden
+        `}
+      >
         <div className="flex items-center justify-between h-full px-4">
           {/* IZQUIERDA: Logo y Nombre */}
 
@@ -79,15 +80,16 @@ const HeaderM = () => {
 
           {user && onViewCredits && <UserCredits userId={user?.id} />}
 
-          {!onViewCredits && <div className="flex items-center gap-2">
-            <button
-              className="relative p-2 text-gray-600 dark:text-gray-400"
-              onClick={() => navigate("search")}
-            >
-              <Search size={24} />
-            </button>
-            
-          </div>}
+          {!onViewCredits && (
+            <div className="flex items-center gap-2">
+              <button
+                className="relative p-2 text-gray-600 dark:text-gray-400"
+                onClick={() => navigate("search")}
+              >
+                <Search size={24} />
+              </button>
+            </div>
+          )}
 
           {/* DERECHA: Notificaciones y Avatar */}
           <div className="flex items-center gap-2">
@@ -103,7 +105,6 @@ const HeaderM = () => {
             </button> */}
             {user && <NotificationIcon />}
 
-            
             {user ? (
               <button
                 onClick={() => setIsDrawerOpen(true)}
@@ -115,14 +116,14 @@ const HeaderM = () => {
                   alt="Menu"
                 />
               </button>
-            ):(<button
-              className="px-4 py-2 bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700 transition-colors"
-              onClick={() => navigate("login")}
-            >
-              Login
-            </button>)}
-
-            
+            ) : (
+              <button
+                className="px-4 py-2 bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700 transition-colors"
+                onClick={() => navigate("login")}
+              >
+                Login
+              </button>
+            )}
           </div>
         </div>
       </header>
