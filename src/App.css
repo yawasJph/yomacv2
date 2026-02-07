@@ -61,6 +61,25 @@ ul[data-type="taskList"] input[type="checkbox"] {
   @apply mt-1.5 shrink-0; /* Evita que el checkbox se aplaste */
 }
 
+/* Contenedor del pre + botón */
+.code-wrapper {
+  margin: 1.5rem 0;
+  width: 100%;
+}
+
+/* Asegurar que el botón no haga scroll con el código */
+.code-wrapper pre {
+  margin: 0 !important; /* El margen ahora lo lleva el wrapper */
+  padding-top: 3rem !important; /* Espacio para que el botón no tape el código */
+}
+
+/* Mostrar botón siempre en móviles (ya que no hay hover) */
+@media (max-width: 768px) {
+  .code-wrapper button {
+    opacity: 1;
+    background-color: rgba(39, 39, 42, 0.9);
+  }
+}
 
 
 
