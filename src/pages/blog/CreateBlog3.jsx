@@ -83,7 +83,7 @@ const CreateBlog2 = () => {
           placeholder="Título del blog..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="text-4xl md:text-5xl font-black bg-transparent border-none outline-none focus:ring-0 dark:text-white placeholder:text-zinc-300 dark:placeholder:text-zinc-700 max-w-80 md:max-w-full"
+          className="text-4xl md:text-5xl font-black bg-transparent border-none outline-none focus:ring-0 dark:text-white placeholder:text-zinc-300 dark:placeholder:text-zinc-700 max-w-85 md:max-w-full"
         />
 
         <input
