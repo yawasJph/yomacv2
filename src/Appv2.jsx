@@ -3,7 +3,19 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import "./App.css";
 
+// Opción oscura (estilo GitHub Dark)
+//import 'highlight.js/styles/atom-one-dark.css'; 
+// O prueba esta si la anterior falla:
+// import 'highlight.js/styles/base16/dracula.css';
+
+// Opción clara (si tu blog es mayormente blanco)
+// import 'highlight.js/styles/github.css';
+
+// Opción colorida (Monokai)
+// import 'highlight.js/styles/monokai-sublime.css';
+
 // Contextos y Layouts (Importación directa para carga inmediata)
+
 import { SearchProvider } from "./context/SearchContext";
 import HomeLayout from "./components/layout/HomeLayout";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
@@ -11,9 +23,9 @@ import ProtectedRoute from "./components/utils/ProtectedRoute";
 // Páginas Principales (Carga inmediata para mejor LCP)
 import Feed from "./components/pages/Feed";
 import Login from "./components/pages/Login";
-import BuyCoins from "./pages/store/BuyCoins";
-import BlogEditor from "./pages/blog/BlogEditor";
+import BlogFeed from "./pages/blog/BlogFeed";
 import CreateBlog from "./pages/blog/CreateBlog2";
+import BlogDetail from "./pages/blog/BlogDetail";
 
 // --- IMPORTS DINÁMICOS (Lazy Loading) ---
 const CreatePost = lazy(() => import("./components/pages/CreatePost"));
@@ -107,7 +119,9 @@ function App() {
               <Route path="profile/:userId" element={<UserProfile />} />
               <Route path="users" element={<DiscoverPage />} />
               <Route path="post/:postId" element={<PostPage />} />
-              <Route path="blog" element={<CreateBlog />} />
+              <Route path="blog" element={<BlogFeed />} />
+              <Route path="blog/create" element={<CreateBlog />} />
+              <Route path="blog/:slug" element={<BlogDetail />} />
             </Route>
           </Routes>
         </Suspense>

@@ -446,7 +446,7 @@ const CampusAI = () => {
                   </div>
                 )}
 
-                <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/50 prose prose-sm prose-p:leading-relaxed prose-p:my-2 prose-headings:font-bold prose-code:before:content-none prose-code:after:content-none">
+                <div className="prose-invert max-w-none prose-pre:bg-black/50 prose prose-sm prose-p:leading-relaxed prose-p:my-2 prose-headings:font-bold prose-code:before:content-none prose-code:after:content-none">
                   <ReactMarkdown
                     children={m.text}
                     components={{
