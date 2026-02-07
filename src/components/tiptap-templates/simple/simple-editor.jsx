@@ -180,7 +180,7 @@ export function SimpleEditor({ onEditorReady }) {
 
   const lowlight = createLowlight(common);
  
-   lowlight.register("pgsql", pgsql);
+   lowlight.register("plsql", pgsql);
    lowlight.register("sql", sql);
   // lowlight.register("js", js);
   // lowlight.register("ts", ts);
@@ -217,7 +217,7 @@ export function SimpleEditor({ onEditorReady }) {
         },
       }).configure({
         lowlight,
-        defaultLanguage: 'javascript',
+       // defaultLanguage: 'javascript',
       }),
       HorizontalRule,
       TextAlign.configure({ types: ["heading", "paragraph"] }),

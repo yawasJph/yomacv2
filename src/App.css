@@ -62,27 +62,74 @@ ul[data-type="taskList"] input[type="checkbox"] {
 }
 
 /* Contenedor del pre + botón */
-.code-wrapper {
+/* .code-wrapper {
   margin: 1.5rem 0;
   width: 100%;
-}
+} */
 
-/* Asegurar que el botón no haga scroll con el código */
 .code-wrapper pre {
-  margin: 0 !important; /* El margen ahora lo lleva el wrapper */
-  padding-top: 3rem !important; /* Espacio para que el botón no tape el código */
+  margin: 0 !important;
+  /* Espacio superior para acomodar el badge y el botón */
+  padding: 3.5rem 1.5rem 1.5rem !important; 
+  border: none !important;
+  background-color: transparent !important; /* El fondo lo da el wrapper */
 }
 
-/* Mostrar botón siempre en móviles (ya que no hay hover) */
-@media (max-width: 768px) {
+/* Efecto de "funda" superior para que los botones siempre resalten */
+.code-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3rem;
+  background: linear-gradient(to bottom, rgba(29, 31, 33, 1), rgba(29, 31, 33, 0));
+  pointer-events: none;
+  z-index: 20;
+}
+
+@media (max-width: 640px) {
   .code-wrapper button {
-    opacity: 1;
-    background-color: rgba(39, 39, 42, 0.9);
+    opacity: 1; /* Siempre visible en móvil */
   }
 }
 
+/* Ajustes para números de línea */
+.prose pre.line-numbers {
+  position: relative;
+  padding-left: 3.8rem !important; /* Espacio para los números */
+  counter-reset: linenumber;
+}
 
+.line-numbers .line-numbers-rows {
+  position: absolute;
+  pointer-events: none;
+  /* top: 3.5rem !important;  */
+  /* left: 0 !important; */
+  /* width: 3rem !important;  */
+  letter-spacing: -1px;
+  border-right: 1px solid #3e4451; 
+  user-select: none;
+}
 
+.line-numbers-rows span::before {
+  display: block;
+  content: counter(linenumber);
+  /* counter-increment: linenumber; */
+  text-align: right;
+  padding-right: 0.8rem;
+  color: #5c6370; /* Color gris suave para los números */
+}
+
+/* Evitar que los números se rompan en móvil */
+@media (max-width: 640px) {
+  .prose pre.line-numbers {
+    padding-left: 4rem !important;
+  }
+  .line-numbers .line-numbers-rows {
+    width: 2.2rem !important;
+  }
+}
 
 
 
