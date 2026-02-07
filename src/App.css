@@ -6,6 +6,52 @@
 @import './styles/_variables.scss';
 @import './styles/_keyframe-animations.scss';
 
+/* .prose pre {
+  background-color: #1d1f21 !important;
+  border: 1px solid #3e4451;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  @apply max-sm:max-w-90 
+} */
+
+/* Estilo para los bloques de código */
+.prose pre {
+  background-color: #1d1f21 !important;
+  border: 1px solid #3e4451;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  
+  /* ESTO ARREGLA EL LAYOUT EN MÓVIL */
+  width: 100%;
+  max-width: 100%; 
+  overflow-x: auto; /* Permite scroll horizontal */
+  white-space: pre; /* Mantiene el formato del código */
+  word-spacing: normal;
+  word-break: normal;
+  
+  /* Mejora visual */
+  padding: 1.25rem !important;
+  border-radius: 0.75rem;
+}
+
+/* Personalizar la barra de scroll para que no se vea fea en móviles */
+.prose pre::-webkit-scrollbar {
+  height: 6px;
+}
+
+.prose pre::-webkit-scrollbar-thumb {
+  background: #3e4451;
+  border-radius: 10px;
+}
+
+.prose pre::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+
+
+
+
+
 
 @theme {
   --animate-fade-in: fade-in 0.25s ease-out;
