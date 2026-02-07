@@ -24,7 +24,7 @@ import ProtectedRoute from "./components/utils/ProtectedRoute";
 import Feed from "./components/pages/Feed";
 import Login from "./components/pages/Login";
 import BlogFeed from "./pages/blog/BlogFeed";
-import CreateBlog from "./pages/blog/CreateBlog2";
+import CreateBlog from "./pages/blog/CreateBlog3";
 import BlogDetail from "./pages/blog/BlogDetail";
 
 // --- IMPORTS DINÁMICOS (Lazy Loading) ---

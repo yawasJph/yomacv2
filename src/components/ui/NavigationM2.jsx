@@ -6,6 +6,7 @@ import {
   User,
   Menu,
   TriangleAlertIcon,
+  BlocksIcon,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -35,6 +36,12 @@ const NavigationM = () => {
       icon: <User size={24} />,
       text: "Perfil",
       private: true,
+    },
+    {
+      to: "/blog",
+      icon: <BlocksIcon size={22} />,
+      text: "Blog",
+      private: false,
     },
   ];
 

@@ -61,7 +61,7 @@ const NavigationD = () => {
      {
       to: "/blog",
       icon: <BlocksIcon size={22} />,
-      text: "Blog Editor",
+      text: "Blog",
       private: false,
     },
   ];
