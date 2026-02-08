@@ -15,8 +15,6 @@ export default ({
         contentEditable={false}
         defaultValue={defaultLanguage}
         onChange={event => updateAttributes({ language: event.target.value })}
-        // 'size' es el truco para limitar la altura en algunos navegadores, 
-        // pero lo mejor es usar clases de Tailwind para el diseño base
         className={`
           bg-zinc-800/80 backdrop-blur-md
           text-zinc-300 text-[10px] uppercase font-bold

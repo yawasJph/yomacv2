@@ -4,15 +4,15 @@ import { Toaster } from "sonner";
 import "./App.css";
 
 // Opción oscura (estilo GitHub Dark)
-//import 'highlight.js/styles/atom-one-dark.css'; 
+import 'highlight.js/styles/atom-one-dark.css'; 
 // O prueba esta si la anterior falla:
-// import 'highlight.js/styles/base16/dracula.css';
+//import 'highlight.js/styles/base16/dracula.css';
 
 // Opción clara (si tu blog es mayormente blanco)
 // import 'highlight.js/styles/github.css';
 
 // Opción colorida (Monokai)
-// import 'highlight.js/styles/monokai-sublime.css';
+//import 'highlight.js/styles/monokai-sublime.css';
 
 // Contextos y Layouts (Importación directa para carga inmediata)
 
@@ -25,7 +25,7 @@ import Feed from "./components/pages/Feed";
 import Login from "./components/pages/Login";
 import BlogFeed from "./pages/blog/BlogFeed";
 import CreateBlog from "./pages/blog/CreateBlog3";
-import BlogDetail from "./pages/blog/BlogDetail";
+import BlogDetail from "./pages/blog/BlogDetailv3";
 
 // --- IMPORTS DINÁMICOS (Lazy Loading) ---
 const CreatePost = lazy(() => import("./components/pages/CreatePost"));

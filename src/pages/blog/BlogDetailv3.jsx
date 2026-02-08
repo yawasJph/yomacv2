@@ -1,0 +1,66 @@
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { supabaseClient } from "@/supabase/supabaseClient";
+import Prism from "prismjs";
+
+import { toast } from "sonner";
+import ReadOnlyEditor from "@/components/tiptap-templates/simple/ReadOnlyEditor";
+
+const BlogDetail = () => {
+  const { slug } = useParams();
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const { data, error } = await supabaseClient
+          .from("blogs")
+          .select("*")
+          .eq("slug", slug)
+          .single();
+
+        if (error) throw error;
+        setPost(data);
+      } catch (err) {
+        console.error("Error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPost();
+  }, [slug]);
+
+  if (loading) return <div className="py-20 text-center">Cargando...</div>;
+  if (!post) return <div className="py-20 text-center">Post no encontrado</div>;
+
+  return (
+    <article className="bg-white dark:bg-zinc-950 pb-20">
+      {/* Header del Blog */}
+      <header className="max-w-4xl mx-auto pt-16 px-6 text-center">
+        <h1 className="text-4xl md:text-6xl font-black text-zinc-900 dark:text-white mb-6">
+          {post.title}
+        </h1>
+        <div className="flex items-center justify-center gap-4 text-zinc-500 mb-10">
+          <span>{new Date(post.created_at).toLocaleDateString()}</span>
+          <span>•</span>
+          <span>{post.reading_time} min lectura</span>
+        </div>
+        <img
+          src={post.banner_url}
+          className="w-full aspect-video object-cover rounded-2xl shadow-2xl"
+          alt={post.title}
+        />
+      </header>
+
+      {/* CONTENIDO RENDERIZADO */}
+      <div className="max-w-3xl mx-auto px-4 md:px-6 mt-12 overflow-hidden w-full">
+        <ReadOnlyEditor content={post.content}/>
+      </div>
+      
+    </article>
+  );
+};
+
+export default BlogDetail;

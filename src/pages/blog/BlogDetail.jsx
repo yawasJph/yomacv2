@@ -16,7 +16,7 @@ import "prismjs/components/prism-icon"; // Para HTML
 import "prismjs/components/prism-json"; // Para HTML
 import "prismjs/components/prism-jsx"; // Para HTML
 import "prismjs/components/prism-plsql"; // Para HTML
-import "highlight.js/styles/github-dark.css";
+//import "highlight.js/styles/github-dark.css";
 import "prismjs/plugins/line-numbers/prism-line-numbers.css";
 // Si quieres el JS del plugin (opcional, pero ayuda)
 import "prismjs/plugins/line-numbers/prism-line-numbers.js";

@@ -33,7 +33,7 @@ const BlogFeed = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-indigo-600"></div>
       </div>
     );
   }
@@ -57,7 +57,7 @@ const BlogFeed = () => {
           <p className="text-gray-500 text-lg">No hay posts publicados todavía.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5 md:gap-3 ">
           {posts.map((post) => (
             <BlogCard key={post.id} post={post} />
           ))}
