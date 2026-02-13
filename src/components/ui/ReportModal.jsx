@@ -3,7 +3,6 @@ import { X, AlertTriangle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "../../context/AuthContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import { useAuthAction } from "../../hooks/useAuthAction";
 
 const REPORT_REASONS = [
   "Contenido inapropiado",
@@ -24,7 +23,6 @@ const ReportModal = ({ isOpen, onClose, postId, commentId }) => {
 
   if (!isOpen) return null;
 
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!reason) return toast.error("Por favor selecciona una razón");
@@ -56,7 +54,7 @@ const ReportModal = ({ isOpen, onClose, postId, commentId }) => {
     } catch (error) {
       console.error("Error al reportar:", error);
       toast.error(
-        "Hubo un problema al enviar el reporte. Inténtalo más tarde."
+        "Hubo un problema al enviar el reporte. Inténtalo más tarde.",
       );
     } finally {
       setIsSubmitting(false);
@@ -103,6 +101,7 @@ const ReportModal = ({ isOpen, onClose, postId, commentId }) => {
                   className="hidden"
                   checked={reason === r}
                   onChange={() => setReason(r)}
+                  id={`reason-${r}`}
                 />
                 <span
                   className={`text-sm font-medium ${
@@ -122,6 +121,8 @@ const ReportModal = ({ isOpen, onClose, postId, commentId }) => {
             value={details}
             onChange={(e) => setDetails(e.target.value)}
             maxLength={MAX_CHARS}
+            id="report-details"
+            name="details"
           />
 
           <div className="flex gap-3 mt-6">

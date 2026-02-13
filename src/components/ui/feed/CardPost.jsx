@@ -32,9 +32,6 @@ import RenderTextWithLinks from "../../utils/RenderTextWithLinks";
 import RepostButton from "../RepostButton";
 import UserHoverCard from "./UserHoverCard3";
 
-import BadgeIcon from "../BadgeIcon";
-import BadgeMedia from "../BadgeMedia";
-
 const CardPost = ({ post, media, isDetailedView = false, tab , query = ""}) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -122,7 +119,6 @@ const CardPost = ({ post, media, isDetailedView = false, tab , query = ""}) => {
     navigate(`/post/${post.id}`);
   };
 
-  //console.log(post.comment_count);
   return (
     <article
       onClick={goToPost}

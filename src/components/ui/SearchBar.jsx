@@ -27,6 +27,7 @@ const SearchBar = () => {
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Buscar hilos o hashtags..."
         className="w-full bg-gray-100 dark:bg-gray-900 border border-transparent focus:border-emerald-500/50 focus:bg-white dark:focus:bg-black py-2.5 pl-10 pr-10 rounded-full text-sm outline-none transition-all placeholder:text-gray-500 dark:placeholder:text-white dark:text-white"
+        name="seacrh-bar"
       />
       {query && (
         <button

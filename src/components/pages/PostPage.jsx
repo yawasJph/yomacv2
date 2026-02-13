@@ -139,6 +139,7 @@ const PostPage = () => {
                   placeholder="Postea tu respuesta"
                   className="w-full bg-transparent dark:text-white resize-none outline-none text-lg"
                   rows={3}
+                  name="input-comment"
                 />
 
                 {/* Previsualización del GIF seleccionado */}
