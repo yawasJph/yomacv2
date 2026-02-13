@@ -20,6 +20,7 @@ import { Link, useNavigate } from "react-router-dom";
 import ReportModal from "./ReportModal";
 import RenderTextWithLinks from "../utils/RenderTextWithLinks";
 import { useAuthAction } from "../../hooks/useAuthAction";
+import { set } from "date-fns";
 
 const CommentItem = ({ comment, postId, isDetailedView = false }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -100,8 +101,14 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
     if (hash) {
       const element = document.querySelector(hash);
       if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-        element.classList.add("bg-indigo-100", "dark:bg-indigo-900/20"); // Resaltado temporal
+         element.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+        element.classList.add("bg-indigo-100", "dark:bg-indigo-900/20");
+        setTimeout(() => {
+          element.classList.remove("bg-indigo-100", "dark:bg-indigo-900/20");
+        }, 3000);
       }
     }
   }, [comment]);
