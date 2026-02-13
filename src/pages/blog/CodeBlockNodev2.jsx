@@ -93,7 +93,7 @@ export default ({
       </button>
 
       {/* El Bloque de Código predeterminado de Tiptap */}
-      <pre className="!m-0 !pt-14 !pb-6 !px-6 bg-transparent">
+      <pre className="m-0 pt-14 pb-6 px-6 bg-transparent">
         <NodeViewContent
           as="code"
           className={`language-${defaultLanguage || "javascript"}`}

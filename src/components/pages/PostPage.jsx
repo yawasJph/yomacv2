@@ -106,7 +106,13 @@ const PostPage = () => {
       {/* HEADER */}
       <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 flex items-center gap-6 border-b border-gray-100 dark:border-gray-800">
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => {
+            if (window.history.state && window.history.state.idx > 0) {
+              navigate(-1);
+            } else {
+              navigate("/");
+            }
+          }}
           className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-full"
         >
           <ArrowLeft size={20} className="dark:text-white" />
