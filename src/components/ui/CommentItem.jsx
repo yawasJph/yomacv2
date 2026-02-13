@@ -144,43 +144,6 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
                         <span>{comment.profiles.full_name}</span>
                       )}
                     </h3>
-                    {/* RENDERIZADO DE INSIGNIAS EN EL FEED (LIMITADO A 3) */}
-                    <span className="flex items-center gap-0.5 ml-1 shrink-0">
-                      {comment.profiles.equipped_badges
-                        ?.slice(0, 3)
-                        .map((item) => (
-                          <BadgeIcon
-                            key={item.badges.id}
-                            icon={item.badges.icon}
-                            name={item.badges.name}
-                            rare
-                          />
-                        ))}
-                      {comment.profiles.equipped_badges?.length > 3 && (
-                        <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 ml-0.5">
-                          +{comment.profiles.equipped_badges.length - 3}
-                        </span>
-                      )}
-                    </span>
-                    {/* <div className="flex flex-wrap items-center gap-1 max-w-full mb-2">
-                      {comment.profiles?.equipped_badges?.map((item) => (
-                        <div key={item.badges.id} className="shrink-0">
-                          {item.badges.category === "badge" ? (
-                            <BadgeIcon
-                              icon={item.badges.icon}
-                              name={item.badges.name}
-                              rare
-                            />
-                          ) : (
-                            <BadgeMedia
-                              src={item.badges.resource_url}
-                              name={item.badges.name}
-                              rare
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div> */}
                   </div>
 
                   {/* Columna 2: Tiempo del post - se mueve según el largo del nombre */}

@@ -26,8 +26,6 @@ const PostPage = () => {
   const [selectedGif, setSelectedGif] = useState(null);
   const { data } = useProfile(user?.id);
   const MAX_CHARS = 500;
-  //const [openAuthModal, setOpenAuthModal] = useState(false)
- // const {open, openAuthModal, closeAuthModal} = useAuthModal()
  const { openAuthModal } = useAuthModal();
  const {executeAction} = useAuthAction()
  const queryClient = useQueryClient();

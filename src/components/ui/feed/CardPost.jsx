@@ -190,25 +190,6 @@ const CardPost = ({ post, media, isDetailedView = false, tab , query = ""}) => {
                       ) : (
                         <span>{post.profiles.full_name}</span>
                       )}
-                      {/* RENDERIZADO DE INSIGNIAS EN EL FEED (LIMITADO A 3) */}
-                      {/* <span className="flex items-center gap-0.5 ml-1 shrink-0">
-                        {post.profiles.equipped_badges
-                          ?.slice(0, 3)
-                          .map((item, idx) => (
-                            <span
-                              key={idx}
-                              className="text-[14px] sm:text-[16px] select-none"
-                              title={item.badges?.name || item.name}
-                            >
-                              {item.badges?.icon || item.icon}
-                            </span>
-                          ))}
-                        {post.profiles.equipped_badges?.length > 3 && (
-                          <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 ml-0.5">
-                            +{post.profiles.equipped_badges.length - 3}
-                          </span>
-                        )}
-                      </span> */}
                     </h3>
                     {/* RENDERIZADO DE INSIGNIAS */}
                     {/* <div className="flex flex-wrap items-center gap-1 max-w-full mb-2">
