@@ -16,11 +16,9 @@ import { toast } from "sonner";
 import ConfirmModal from "./ConfirmModal";
 import { useDeleteComment } from "../../hooks/useDeleteComment";
 import LikeButtonComment from "./LikeButtonComment";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ReportModal from "./ReportModal";
 import RenderTextWithLinks from "../utils/RenderTextWithLinks";
-import BadgeIcon from "./BadgeIcon";
-import BadgeMedia from "./BadgeMedia";
 import { useAuthAction } from "../../hooks/useAuthAction";
 
 const CommentItem = ({ comment, postId, isDetailedView = false }) => {
@@ -30,7 +28,7 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
   const [selectedImg, setSelectedImg] = useState(null);
   const { user } = useAuth();
   const [showOptions, setShowOptions] = useState(false);
-  const {executeAction} = useAuthAction()
+  const { executeAction } = useAuthAction();
   const text = comment.content;
   const isLong = text.length > LIMIT;
   const displayedText = isExpanded ? text : text.slice(0, LIMIT);
@@ -76,10 +74,10 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
     setIsReportModalOpen(true);
   };
 
-  const handleReportAction = () =>{
+  const handleReportAction = () => {
     setShowOptions(false);
-    executeAction(handleReport, "para reportar")
-  }
+    executeAction(handleReport, "para reportar");
+  };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(comment.content);
@@ -91,9 +89,9 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
     navigate(`/comment/${comment.id}`);
   };
 
-  const handleReplyAction = () =>{
-    executeAction(handleReplyNavigation,"para dar reply")
-  }
+  const handleReplyAction = () => {
+    executeAction(handleReplyNavigation, "para dar reply");
+  };
 
   // En el componente que lista los comentarios
   useEffect(() => {
@@ -108,7 +106,6 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
     }
   }, [comment]);
 
-
   return (
     <>
       <div
@@ -119,10 +116,20 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
         {comment.parent_id && (
           <div className="absolute left-9 top-0 bottom-0 w-0.5 bg-gray-100 dark:bg-gray-800 -z-10" />
         )}
-        <img
-          src={comment.profiles.avatar}
-          className="w-10 h-10 rounded-full object-cover shrink-0 z-10"
-        />
+        {isMe ? (
+          <img
+            src={comment.profiles.avatar}
+            className="w-10 h-10 rounded-full object-cover shrink-0 z-10"
+          />
+        ) : (
+          <Link to={`/profile/${comment.profiles.id}`}>
+            <img
+              src={comment.profiles.avatar}
+              className="w-10 h-10 rounded-full object-cover shrink-0 z-10"
+            />
+          </Link>
+        )}
+
         <div className="flex-1">
           <div className="flex flex-col mb-2">
             <div className="flex justify-between items-start">
@@ -199,7 +206,7 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
                         className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                       >
                         <Trash2 size={16} />
-                        <span className="font-medium">Eliminar comentario</span>
+                        <span className="font-medium">Eliminar</span>
                       </button>
                     ) : (
                       <button
