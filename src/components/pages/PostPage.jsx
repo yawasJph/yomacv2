@@ -30,6 +30,7 @@ const PostPage = () => {
  // const {open, openAuthModal, closeAuthModal} = useAuthModal()
  const { openAuthModal } = useAuthModal();
  const {executeAction} = useAuthAction()
+ const queryClient = useQueryClient();
 
   // 1. Cargar el post principal
   const { data: post, isLoading: postLoading } = useQuery({
@@ -84,7 +85,7 @@ const PostPage = () => {
       gifUrl: selectedGif,
       postId: postId,
     });
-    queryClient.invalidateQueries({ queryKey: ["post", postId] });
+    //queryClient.invalidateQueries({ queryKey: ["post", postId] });
     setNewComment("");
     setSelectedGif(null);
     setShowEmoji(false);

@@ -211,7 +211,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab , query = ""}) => {
                       </span> */}
                     </h3>
                     {/* RENDERIZADO DE INSIGNIAS */}
-                    <div className="flex flex-wrap items-center gap-1 max-w-full mb-2">
+                    {/* <div className="flex flex-wrap items-center gap-1 max-w-full mb-2">
                       {post.profiles?.equipped_badges?.map((item) => (
                         <div key={item.badges.id} className="shrink-0">
                           {item.badges.category === "badge" ? (
@@ -229,7 +229,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab , query = ""}) => {
                           )}
                         </div>
                       ))}
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* Columna 2: Tiempo del post - se mueve según el largo del nombre */}
