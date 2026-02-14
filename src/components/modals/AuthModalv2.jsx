@@ -2,7 +2,7 @@ import { useAuth } from "@/context/AuthContext";
 import BaseModal from "./BaseModal";
 import { X } from "lucide-react";
 
-export default function ReportModal({ close }) {
+export default function AuthModal({ close }) {
   const { signinWithGoogle, loading } = useAuth();
   return (
     <BaseModal close={close}>

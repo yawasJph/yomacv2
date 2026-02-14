@@ -25,13 +25,16 @@ import LikeButton from "./LikeButton";
 import BookmarkButton from "./BookmarkButton";
 import { useDeletePost } from "../../../hooks/useDeletePost";
 import { toast } from "sonner";
-import ConfirmModal from "../ConfirmModal";
+import ConfirmModal from "@/components/modals/ConfirmModalv2";
 import ReportModal from "../ReportModalv6";
 import { handleShare } from "../../utils/sharePost";
 import RenderTextWithLinks from "../../utils/RenderTextWithLinks";
 import RepostButton from "../RepostButton";
 import UserHoverCard from "./UserHoverCard3";
 import useLiveTimeAgo from "@/hooks/useLiveTimeAgo";
+import { useModal } from "@/context/ModalContextv2";
+import DeletePostModal from "@/components/modals/DeletePostModal";
+import { se } from "date-fns/locale";
 
 const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -49,8 +52,11 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
   const optionsRef = useRef(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [DeleteModalId, setDeleteModalId] = useState(null);
 
   const time = useLiveTimeAgo(post.created_at, isMobile);
+
+  const { openModal , closeModal} = useModal();
 
   // Cerrar menú al hacer click fuera
   useEffect(() => {
@@ -73,11 +79,23 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
     executeAction(handleReport, "para reportar");
   };
 
+  const onDeletModalConfirm = () => {
+    const idModal = openModal(DeletePostModal, {
+      onConfirm: confirmDelete,
+      title: "¿Eliminar publicación?",
+      message:
+        "Esta acción no se puede deshacer. Se borrará de tu perfil, de la cronología de cualquier cuenta que te siga y de los resultados de búsqueda.",
+      isLoading: isDeleting,
+    });
+    setDeleteModalId(idModal);
+  };
+
   // Función que se ejecuta al confirmar en el modal
   const confirmDelete = () => {
     deletePost(post.id, {
       onSuccess: () => {
         setIsDeleteModalOpen(false); // Cerramos el modal al terminar
+       // if(!isDeleting)closeModal(DeleteModalId); // Cerramos el modal usando su ID
         if (isDetailedView) {
           navigate("/");
         }
@@ -91,12 +109,12 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
     setIsTruncated(el.scrollHeight > el.clientHeight);
   }, [post.content]);
 
-  const openModal = (index) => {
-    setSelectedIndex(index);
-    setIsModalOpen(true);
-  };
+  // const openModal = (index) => {
+  //   setSelectedIndex(index);
+  //   setIsModalOpen(true);
+  // };
 
-  const closeModal = () => setIsModalOpen(false);
+  //const closeModal = () => setIsModalOpen(false);
 
   const handleComment = () => {
     if (isDetailedView) return;
@@ -247,6 +265,8 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                         onClick={() => {
                           setIsDeleteModalOpen(true); // Abrimos el modal en vez de usar confirm()
                           setShowOptions(false);
+                          
+                          //onDeletModalConfirm();
                         }}
                         className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                       >
@@ -370,7 +390,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={confirmDelete}
         title="¿Eliminar publicación?"
-        message="Esta acción no se puede deshacer. Se borrará de tu perfil, de la cronología de cualquier cuenta que te siga y de los resultados de búsqueda."
+        message="Esta acción no se puede deshacer. Se borrará de tu perfil, de la cronología del feed y de los resultados de búsqueda."
         isLoading={isDeleting}
       />
 

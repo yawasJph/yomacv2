@@ -5,13 +5,12 @@ import { toast } from "sonner";
 import { TriangleAlertIcon } from "lucide-react";
 import { useAuthModal } from "../context/AuthModalContext";
 import { useModal } from "@/context/ModalContextv2";
-import ReportModal from "@/components/modals/AuthModalv2";
-
+import AuthModal from "@/components/modals/AuthModalv2";
 
 export const useAuthAction = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const {openAuthModal} = useAuthModal()
+  const { openAuthModal } = useAuthModal();
   const { openModal } = useModal();
 
   const executeAction = (callback, actionText = "realizar esta acción") => {
@@ -20,15 +19,15 @@ export const useAuthAction = () => {
       callback();
     } else {
       //Si no hay usuario, redirigimos y avisamos
-     // navigate("/login");
+      // navigate("/login");
       // toast.error(`Debes iniciar sesión para ${actionText}`, {
       //   className: "shadow-lg border-l-4 border-red-600",
       //   icon: <TriangleAlertIcon className="w-5 h-5 text-red-500" />,
       // });
       //openAuthModal()
-      openModal(ReportModal, {
-    postId: 123,
-  });
+      openModal(AuthModal, {
+        postId: 123,
+      });
     }
   };
 

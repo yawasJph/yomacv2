@@ -1,43 +1,18 @@
-import useScrollLock from "@/hooks/useScrollLock";
-import { useEffect } from "react";
-import { createPortal } from "react-dom";
+import React from 'react'
+import BaseModal from './BaseModal'
+import { useModal } from '@/context/ModalContextv2';
 
-const ConfirmModal = ({
-  isOpen,
-  onClose,
-  onConfirm,
-  title,
-  message,
-  isLoading,
-}) => {
-  /* =========================
-       SCROLL LOCK PROFESIONAL
-    ========================= */
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const scrollBarWidth =
-      window.innerWidth - document.documentElement.clientWidth;
-
-    document.body.style.overflow = "hidden";
-    document.body.style.paddingRight = `${scrollBarWidth}px`;
-
-    return () => {
-      document.body.style.overflow = "";
-      document.body.style.paddingRight = "";
-    };
-  }, [isOpen]);
-
-  if (!isOpen) return null;
-
-  return createPortal(
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+const DeletePostModal = ({ close, onConfirm, title, message, isLoading }) => {
+    const {closeModal} = useModal();
+  return (
+    <BaseModal close={close}> 
+     <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
       {/* Overlay con desenfoque */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
-        onClick={onClose}
+      <div 
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" 
+        onClick={close} 
       />
-
+      
       {/* Contenido del Modal */}
       <div className="relative bg-white dark:bg-neutral-900 w-full max-w-sm rounded-2xl p-6 shadow-2xl animate-in zoom-in-95 duration-200">
         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
@@ -46,13 +21,14 @@ const ConfirmModal = ({
         <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm leading-relaxed">
           {message}
         </p>
-
-        <div
-          className="flex flex-col gap-2"
-          onClick={(e) => e.stopPropagation()}
-        >
+        
+        <div className="flex flex-col gap-2" 
+        onClick={e => e.stopPropagation()}>
           <button
-            onClick={onConfirm}
+            onClick={() => {
+              onConfirm();
+              close();
+            }}
             disabled={isLoading}
             className="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-colors disabled:opacity-50 flex justify-center items-center"
           >
@@ -62,9 +38,9 @@ const ConfirmModal = ({
               "Eliminar definitivamente"
             )}
           </button>
-
+          
           <button
-            onClick={onClose}
+            onClick={close}
             disabled={isLoading}
             className="w-full py-3 bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
           >
@@ -72,9 +48,9 @@ const ConfirmModal = ({
           </button>
         </div>
       </div>
-    </div>,
-    document.body,
-  );
-};
+    </div>
+    </BaseModal>
+  )
+}
 
-export default ConfirmModal;
+export default DeletePostModal
