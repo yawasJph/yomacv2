@@ -26,7 +26,7 @@ import Login from "./components/pages/Login";
 import BlogFeed from "./pages/blog/BlogFeed";
 import CreateBlog from "./pages/blog/CreateBlog3";
 import BlogDetail from "./pages/blog/BlogDetailv3";
-import { ModalProvider } from "./context/ModalContext";
+import { ModalProvider } from "./context/ModalContextv2";
 import ModalRoot from "./components/modals/ModalRoot";
 
 // --- IMPORTS DINÁMICOS (Lazy Loading) ---
@@ -150,7 +150,6 @@ function App() {
               </Route>
             </Routes>
           </Suspense>
-          <ModalRoot />
         </ModalProvider>
       </SearchProvider>
     </BrowserRouter>

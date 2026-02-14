@@ -2,9 +2,10 @@ import { Heart } from "lucide-react";
 import { useLike } from "../../../hooks/useLike";
 import { useAuthAction } from "../../../hooks/useAuthAction";
 
-const LikeButton = ({ postId, initialCount = 0 , query = ""}) => {
-  const { isLiked, toggleLike, isLoading } = useLike(postId,query);
+const LikeButton = ({ postId, initialCount = 0, query = "" }) => {
+  const { isLiked, toggleLike, isLoading } = useLike(postId, query);
   const { executeAction } = useAuthAction();
+  
 
   return (
     <>

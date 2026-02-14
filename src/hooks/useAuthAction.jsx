@@ -4,11 +4,15 @@ import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
 import { TriangleAlertIcon } from "lucide-react";
 import { useAuthModal } from "../context/AuthModalContext";
+import { useModal } from "@/context/ModalContextv2";
+import ReportModal from "@/components/modals/AuthModalv2";
+
 
 export const useAuthAction = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const {openAuthModal} = useAuthModal()
+  const { openModal } = useModal();
 
   const executeAction = (callback, actionText = "realizar esta acción") => {
     if (user) {
@@ -21,7 +25,10 @@ export const useAuthAction = () => {
       //   className: "shadow-lg border-l-4 border-red-600",
       //   icon: <TriangleAlertIcon className="w-5 h-5 text-red-500" />,
       // });
-      openAuthModal()
+      //openAuthModal()
+      openModal(ReportModal, {
+    postId: 123,
+  });
     }
   };
 

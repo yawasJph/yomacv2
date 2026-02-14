@@ -11,8 +11,8 @@ import {
   Repeat2,
 } from "lucide-react";
 import FullscreenModal from "./FullscreenModal";
-import { timeAgoTiny } from "../../utils/timeagoTiny";
-import { timeAgoLong } from "../../utils/timeAgoLong";
+import { timeAgoTiny } from "../../utils/timeAgoTinyv2";
+import { timeAgoLong } from "../../utils/timeAgoLongv2";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 import OpenGraphCard from "../openGraph/OpenGraphCard2";
 import PostMedia from "./PostMedia";
@@ -31,8 +31,9 @@ import { handleShare } from "../../utils/sharePost";
 import RenderTextWithLinks from "../../utils/RenderTextWithLinks";
 import RepostButton from "../RepostButton";
 import UserHoverCard from "./UserHoverCard3";
+import useLiveTimeAgo from "@/hooks/useLiveTimeAgo";
 
-const CardPost = ({ post, media, isDetailedView = false, tab , query = ""}) => {
+const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const textRef = useRef(null);
@@ -49,6 +50,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab , query = ""}) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
+  const time = useLiveTimeAgo(post.created_at, isMobile);
 
   // Cerrar menú al hacer click fuera
   useEffect(() => {
@@ -66,10 +68,10 @@ const CardPost = ({ post, media, isDetailedView = false, tab , query = ""}) => {
     setIsReportModalOpen(true);
   };
 
-  const handleReportAction = () =>{
-    setShowOptions(false)
-    executeAction(handleReport,"para reportar")
-  }
+  const handleReportAction = () => {
+    setShowOptions(false);
+    executeAction(handleReport, "para reportar");
+  };
 
   // Función que se ejecuta al confirmar en el modal
   const confirmDelete = () => {
@@ -97,7 +99,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab , query = ""}) => {
   const closeModal = () => setIsModalOpen(false);
 
   const handleComment = () => {
-    if(isDetailedView) return
+    if (isDetailedView) return;
     executeAction(() => {
       navigate(`/post/${post.id}`);
     }, "escribir un comentario");
@@ -187,36 +189,22 @@ const CardPost = ({ post, media, isDetailedView = false, tab , query = ""}) => {
                         <span>{post.profiles.full_name}</span>
                       )}
                     </h3>
-                    {/* RENDERIZADO DE INSIGNIAS */}
-                    {/* <div className="flex flex-wrap items-center gap-1 max-w-full mb-2">
-                      {post.profiles?.equipped_badges?.map((item) => (
-                        <div key={item.badges.id} className="shrink-0">
-                          {item.badges.category === "badge" ? (
-                            <BadgeIcon
-                              icon={item.badges.icon}
-                              name={item.badges.name}
-                              rare
-                            />
-                          ) : (
-                            <BadgeMedia
-                              src={item.badges.resource_url}
-                              name={item.badges.name}
-                              rare
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div> */}
                   </div>
 
                   {/* Columna 2: Tiempo del post - se mueve según el largo del nombre */}
-                  <span
+                  {/* <span
                     className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-500 font-medium whitespace-nowrap p-1.5 shrink-0 "
                     title={new Date(post.created_at).toLocaleString("es-PE")}
                   >
                     {isMobile
                       ? timeAgoTiny(post.created_at)
                       : timeAgoLong(post.created_at)}
+                  </span> */}
+                  <span
+                    className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap p-1.5 shrink-0"
+                    title={new Date(post.created_at).toLocaleString("es-PE")}
+                  >
+                    {time}
                   </span>
                 </div>
 
@@ -279,7 +267,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab , query = ""}) => {
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(
-                          `${window.location.origin}/post/${post.id}`
+                          `${window.location.origin}/post/${post.id}`,
                         );
                         toast.success("Enlace copiado");
                         setShowOptions(false);
@@ -332,7 +320,11 @@ const CardPost = ({ post, media, isDetailedView = false, tab , query = ""}) => {
             onClick={(e) => e.stopPropagation()}
             className="flex items-center gap-6 text-gray-500 dark:text-gray-400 mt-3"
           >
-            <LikeButton postId={post.id} initialCount={post.like_count} query={query}/>
+            <LikeButton
+              postId={post.id}
+              initialCount={post.like_count}
+              query={query}
+            />
 
             <button
               className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"

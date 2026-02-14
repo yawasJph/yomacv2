@@ -1,28 +1,19 @@
+import { useAuth } from "@/context/AuthContext";
+import BaseModal from "./BaseModal";
 import { X } from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
-import { useAuthModal } from "../../context/AuthModalContext";
-import useScrollLock from "@/hooks/useScrollLock";
 
-const AuthModal = () => {
-  const { open, closeAuthModal } = useAuthModal();
+export default function ReportModal({ close }) {
   const { signinWithGoogle, loading } = useAuth();
-
-  useScrollLock(open);//scroll look profesional
-
-  if (!open) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <BaseModal close={close}>
       <div className="relative w-full max-w-md bg-white dark:bg-black rounded-3xl p-8 border border-emerald-500/30 shadow-xl animate-in fade-in zoom-in">
-        {/* Cerrar */}
         <button
-          onClick={closeAuthModal}
+          onClick={close}
           className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition"
         >
           <X />
         </button>
 
-        {/* Header */}
         <h3 className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100">
           Inicia sesión
         </h3>
@@ -30,7 +21,6 @@ const AuthModal = () => {
           Necesitas autenticarte para continuar
         </p>
 
-        {/* Google Button */}
         <button
           onClick={signinWithGoogle}
           disabled={loading}
@@ -40,7 +30,6 @@ const AuthModal = () => {
             <div className="w-5 h-5 border-2 border-emerald-600 dark:border-emerald-400 border-t-transparent rounded-full animate-spin" />
           ) : (
             <>
-              {/* Icono de Google */}
               <svg
                 className="w-5 h-5"
                 viewBox="0 0 24 24"
@@ -73,8 +62,6 @@ const AuthModal = () => {
           Solo correos institucionales
         </p>
       </div>
-    </div>
+    </BaseModal>
   );
-};
-
-export default AuthModal;
+}
