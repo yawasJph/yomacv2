@@ -1,4 +1,4 @@
-import useScrollLock from "@/hooks/useScrollLock";
+
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
@@ -13,21 +13,21 @@ const ConfirmModal = ({
   /* =========================
        SCROLL LOCK PROFESIONAL
     ========================= */
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const scrollBarWidth =
-      window.innerWidth - document.documentElement.clientWidth;
-
-    document.body.style.overflow = "hidden";
-    document.body.style.paddingRight = `${scrollBarWidth}px`;
-
-    return () => {
-      document.body.style.overflow = "";
-      document.body.style.paddingRight = "";
-    };
-  }, [isOpen]);
-
+    useEffect(() => {
+      if (!isOpen) return;
+  
+      const scrollBarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
+  
+      document.body.style.overflow = "hidden";
+      document.body.style.paddingRight = `${scrollBarWidth}px`;
+  
+      return () => {
+        document.body.style.overflow = "";
+        document.body.style.paddingRight = "";
+      };
+    }, [isOpen]);
+  
   if (!isOpen) return null;
 
   return createPortal(

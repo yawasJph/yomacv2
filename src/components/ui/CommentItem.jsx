@@ -13,7 +13,7 @@ import ImageModal from "./userProfile/ImageModal";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "sonner";
-import ConfirmModal from "./ConfirmModal";
+import ConfirmModal from "@/components/modals/ConfirmModalv2";
 import { useDeleteComment } from "../../hooks/useDeleteComment";
 import LikeButtonComment from "./LikeButtonComment";
 import { Link, useNavigate } from "react-router-dom";
@@ -120,7 +120,7 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
         className="p-4 flex gap-3 animate-in fade-in slide-in-from-bottom-2 relative  "
         id={`comment-${comment.id}`}
       >
-        {comment.parent_id && (
+        {comment.parent_id && isMe && (
           <div className="absolute left-9 top-0 bottom-0 w-0.5 bg-gray-100 dark:bg-gray-800 -z-10" />
         )}
         {isMe ? (

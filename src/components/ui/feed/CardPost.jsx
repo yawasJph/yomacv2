@@ -11,8 +11,6 @@ import {
   Repeat2,
 } from "lucide-react";
 import FullscreenModal from "./FullscreenModal";
-import { timeAgoTiny } from "../../utils/timeAgoTinyv2";
-import { timeAgoLong } from "../../utils/timeAgoLongv2";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 import OpenGraphCard from "../openGraph/OpenGraphCard2";
 import PostMedia from "./PostMedia";
@@ -79,23 +77,12 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
     executeAction(handleReport, "para reportar");
   };
 
-  const onDeletModalConfirm = () => {
-    const idModal = openModal(DeletePostModal, {
-      onConfirm: confirmDelete,
-      title: "¿Eliminar publicación?",
-      message:
-        "Esta acción no se puede deshacer. Se borrará de tu perfil, de la cronología de cualquier cuenta que te siga y de los resultados de búsqueda.",
-      isLoading: isDeleting,
-    });
-    setDeleteModalId(idModal);
-  };
 
   // Función que se ejecuta al confirmar en el modal
   const confirmDelete = () => {
     deletePost(post.id, {
       onSuccess: () => {
         setIsDeleteModalOpen(false); // Cerramos el modal al terminar
-       // if(!isDeleting)closeModal(DeleteModalId); // Cerramos el modal usando su ID
         if (isDetailedView) {
           navigate("/");
         }
@@ -109,12 +96,12 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
     setIsTruncated(el.scrollHeight > el.clientHeight);
   }, [post.content]);
 
-  // const openModal = (index) => {
-  //   setSelectedIndex(index);
-  //   setIsModalOpen(true);
-  // };
+  const openVideoModal = (index) => {
+    setSelectedIndex(index);
+    setIsModalOpen(true);
+  };
 
-  //const closeModal = () => setIsModalOpen(false);
+  const closeVideoModal = () => setIsModalOpen(false);
 
   const handleComment = () => {
     if (isDetailedView) return;
@@ -332,7 +319,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
             {/* LINK PREVIEW CARD */}
             {post.og_data && <OpenGraphCard og_data={post.og_data} />}
 
-            <PostMedia media={media} onOpen={openModal} />
+            <PostMedia media={media} onOpen={openVideoModal} />
           </div>
 
           {/* Acciones */}
@@ -375,11 +362,11 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
       </div>
 
       {/* MODAL FULLSCREEN (Fuera del flujo visual del post, pero dentro del componente) */}
-      <FullscreenModal isOpen={isModalOpen} onClose={closeModal}>
+      <FullscreenModal isOpen={isModalOpen} onClose={closeVideoModal}>
         {isModalOpen && (
           <MediaModal
             media={media}
-            closeModal={closeModal}
+            closeModal={closeVideoModal}
             initialIndex={selectedIndex}
           /> //media
         )}
