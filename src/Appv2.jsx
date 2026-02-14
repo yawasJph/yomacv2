@@ -94,6 +94,7 @@ function App() {
             richColors
             position="top-center"
             toastOptions={{ duration: 2000 }}
+            
           />
 
           {/* Suspense atrapa las rutas cargadas perezosamente */}

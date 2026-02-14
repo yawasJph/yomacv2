@@ -12,6 +12,8 @@ import PostMediaGrid from "../ui/createPost/PostMediaGrid"; // 👈 Nuevo Compon
 import { toast } from "sonner";
 import { usePostCreation } from "../../hooks/usePostCreation2";
 import { useProfile } from "../../hooks/useProfile";
+import { notify } from "@/utils/toast/notify";
+
 
 const CreatePost = () => {
   const { user } = useAuth();
@@ -102,7 +104,8 @@ const CreatePost = () => {
 
     // Validación rápida de tamaño (ej. 100MB)
     if (file.size > 100 * 1024 * 1024) {
-      toast.error("El video es muy pesado (Max 100MB)");
+      //toast.error("El video es muy pesado (Max 100MB)");
+      notify.error("El video es muy pesado (Max 100MB)");
       e.target.value = "";
       return;
     }
