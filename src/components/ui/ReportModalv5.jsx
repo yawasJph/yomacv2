@@ -23,29 +23,30 @@ export default function ReportModal({
   commentId = null,
 }) {
   const { user } = useAuth();
-  const modalRef = useRef(null);
+
   const textareaRef = useRef(null);
+  const closeBtnRef = useRef(null);
 
   const [reason, setReason] = useState("");
   const [details, setDetails] = useState("");
   const [loading, setLoading] = useState(false);
 
   /* ==============================
-     BLOQUEAR SCROLL BODY
+     LOCK SCROLL + ESC KEY
   ============================== */
   useEffect(() => {
-    if (isOpen) document.body.style.overflow = "hidden";
-    return () => (document.body.style.overflow = "auto");
-  }, [isOpen]);
+    if (!isOpen) return;
 
-  /* ==============================
-     CERRAR CON ESC
-  ============================== */
-  useEffect(() => {
-    const esc = (e) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", esc);
-    return () => window.removeEventListener("keydown", esc);
-  }, [onClose]);
+    const handleEsc = (e) => e.key === "Escape" && onClose();
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleEsc);
+
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleEsc);
+    };
+  }, [isOpen, onClose]);
 
   /* ==============================
      AUTO FOCUS
@@ -53,8 +54,7 @@ export default function ReportModal({
   useEffect(() => {
     if (!isOpen) return;
 
-    const first = modalRef.current.querySelector("button");
-    first?.focus();
+    closeBtnRef.current?.focus();
   }, [isOpen]);
 
   /* ==============================
@@ -62,9 +62,20 @@ export default function ReportModal({
   ============================== */
   useEffect(() => {
     if (reason === "Otro") {
-      setTimeout(() => textareaRef.current?.focus(), 150);
+      requestAnimationFrame(() => textareaRef.current?.focus());
     }
   }, [reason]);
+
+  /* ==============================
+     RESET STATE AL CERRAR
+  ============================== */
+  useEffect(() => {
+    if (!isOpen) {
+      setReason("");
+      setDetails("");
+      setLoading(false);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -96,9 +107,6 @@ export default function ReportModal({
       }
 
       toast.success("Reporte enviado correctamente");
-
-      setReason("");
-      setDetails("");
       onClose();
     } catch {
       toast.error("Error al enviar el reporte");
@@ -109,14 +117,13 @@ export default function ReportModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-1000 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={onClose}
-      aria-modal="true"
       role="dialog"
+      aria-modal="true"
     >
       {/* PANEL */}
       <div
-        ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         className="w-full sm:max-w-md bg-white dark:bg-neutral-900 rounded-t-2xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in duration-300"
       >
@@ -128,6 +135,7 @@ export default function ReportModal({
           </h3>
 
           <button
+            ref={closeBtnRef}
             onClick={onClose}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"
           >
@@ -146,7 +154,7 @@ export default function ReportModal({
             {REPORT_REASONS.map((r) => (
               <label
                 key={r}
-                className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition ${
                   reason === r
                     ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10"
                     : "border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -169,8 +177,6 @@ export default function ReportModal({
           <div>
             <textarea
               ref={textareaRef}
-              id="report-details"
-              name="details"
               rows="3"
               maxLength={MAX_CHARS}
               value={details}

@@ -26,7 +26,7 @@ import BookmarkButton from "./BookmarkButton";
 import { useDeletePost } from "../../../hooks/useDeletePost";
 import { toast } from "sonner";
 import ConfirmModal from "../ConfirmModal";
-import ReportModal from "../ReportModal";
+import ReportModal from "../ReportModalv6";
 import { handleShare } from "../../utils/sharePost";
 import RenderTextWithLinks from "../../utils/RenderTextWithLinks";
 import RepostButton from "../RepostButton";

@@ -4,7 +4,7 @@ import { Toaster } from "sonner";
 import "./App.css";
 
 // Opción oscura (estilo GitHub Dark)
-import 'highlight.js/styles/atom-one-dark.css'; 
+import "highlight.js/styles/atom-one-dark.css";
 // O prueba esta si la anterior falla:
 //import 'highlight.js/styles/base16/dracula.css';
 
@@ -26,6 +26,8 @@ import Login from "./components/pages/Login";
 import BlogFeed from "./pages/blog/BlogFeed";
 import CreateBlog from "./pages/blog/CreateBlog3";
 import BlogDetail from "./pages/blog/BlogDetailv3";
+import { ModalProvider } from "./context/ModalContext";
+import ModalRoot from "./components/modals/ModalRoot";
 
 // --- IMPORTS DINÁMICOS (Lazy Loading) ---
 const CreatePost = lazy(() => import("./components/pages/CreatePost"));
@@ -35,9 +37,15 @@ const EditProfile = lazy(() => import("./components/pages/EditProfile"));
 const SavedPage = lazy(() => import("./components/pages/SavedPage"));
 const DiscoverPage = lazy(() => import("./components/pages/DiscoverPage"));
 const PostPage = lazy(() => import("./components/pages/PostPage"));
-const CommentThreadPage = lazy(() => import("./components/pages/CommentThreadPage"));
-const NotificationsPage = lazy(() => import("./components/pages/NotificationsPage"));
-const UserConnections = lazy(() => import("./components/pages/UserConnections2"));
+const CommentThreadPage = lazy(
+  () => import("./components/pages/CommentThreadPage"),
+);
+const NotificationsPage = lazy(
+  () => import("./components/pages/NotificationsPage"),
+);
+const UserConnections = lazy(
+  () => import("./components/pages/UserConnections2"),
+);
 const CampusAI = lazy(() => import("./pages/chat/CampusAI2"));
 
 // Juegos (Separarlos es vital porque suelen tener mucha lógica)
@@ -65,10 +73,13 @@ function App() {
   useEffect(() => {
     const unlockAudio = () => {
       const audio = new Audio("/sounds/notification.mp3");
-      audio.play().then(() => {
-        audio.pause();
-        audio.currentTime = 0;
-      }).catch(() => {});
+      audio
+        .play()
+        .then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+        })
+        .catch(() => {});
       document.removeEventListener("click", unlockAudio);
     };
     document.addEventListener("click", unlockAudio);
@@ -78,53 +89,69 @@ function App() {
   return (
     <BrowserRouter>
       <SearchProvider>
-        <Toaster richColors position="top-center" toastOptions={{ duration: 2000 }} />
-        
-        {/* Suspense atrapa las rutas cargadas perezosamente */}
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-            <Route path="login" element={<Login />} />
-            
-            <Route path="/" element={<HomeLayout />}>
-              <Route index element={<Feed />} />
-              
-              {/* Rutas Protegidas */}
-              <Route element={<ProtectedRoute />}>
-                <Route path="create-post" element={<CreatePost />} />
-                <Route path="user/:userId/connections" element={<UserConnections />} />
-                <Route path="editProfile" element={<EditProfile />} />
-                <Route path="savedPost" element={<SavedPage />} />
-                <Route path="yawas" element={<CampusAI />} />
-                <Route path="notifications" element={<NotificationsPage />} />
-                <Route path="comment/:commentId" element={<CommentThreadPage />} />
-                
-                {/* Sub-Rutas de Juegos */}
-                <Route path="games">
-                  <Route index element={<GameCenter />} />
-                  <Route path="memory" element={<MemoryGame />} />
-                  <Route path="trivia" element={<TriviaGame />} />
-                  <Route path="michi" element={<MichiGame />} />
-                  <Route path="wordle" element={<WordleGame />} />
-                  <Route path="caza-talentos" element={<CazaTalentos />} />
-                  <Route path="busca-minas" element={<BuscaMinas />} />
-                  <Route path="codigo-matricula" element={<CodigoMatricula />} />
-                  <Route path="red-connection" element={<ConectorRedes />} />
-                  <Route path="leaderboard" element={<Leaderboard />} />
-                  <Route path="store" element={<YoMACStore />} />
-                </Route>
-              </Route>
+        <ModalProvider>
+          <Toaster
+            richColors
+            position="top-center"
+            toastOptions={{ duration: 2000 }}
+          />
 
-              {/* Rutas Públicas dentro del Layout */}
-              <Route path="search" element={<SearchPage />} />
-              <Route path="profile/:userId" element={<UserProfile />} />
-              <Route path="users" element={<DiscoverPage />} />
-              <Route path="post/:postId" element={<PostPage />} />
-              <Route path="blog" element={<BlogFeed />} />
-              <Route path="blog/create" element={<CreateBlog />} />
-              <Route path="blog/:slug" element={<BlogDetail />} />
-            </Route>
-          </Routes>
-        </Suspense>
+          {/* Suspense atrapa las rutas cargadas perezosamente */}
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="login" element={<Login />} />
+
+              <Route path="/" element={<HomeLayout />}>
+                <Route index element={<Feed />} />
+
+                {/* Rutas Protegidas */}
+                <Route element={<ProtectedRoute />}>
+                  <Route path="create-post" element={<CreatePost />} />
+                  <Route
+                    path="user/:userId/connections"
+                    element={<UserConnections />}
+                  />
+                  <Route path="editProfile" element={<EditProfile />} />
+                  <Route path="savedPost" element={<SavedPage />} />
+                  <Route path="yawas" element={<CampusAI />} />
+                  <Route path="notifications" element={<NotificationsPage />} />
+                  <Route
+                    path="comment/:commentId"
+                    element={<CommentThreadPage />}
+                  />
+
+                  {/* Sub-Rutas de Juegos */}
+                  <Route path="games">
+                    <Route index element={<GameCenter />} />
+                    <Route path="memory" element={<MemoryGame />} />
+                    <Route path="trivia" element={<TriviaGame />} />
+                    <Route path="michi" element={<MichiGame />} />
+                    <Route path="wordle" element={<WordleGame />} />
+                    <Route path="caza-talentos" element={<CazaTalentos />} />
+                    <Route path="busca-minas" element={<BuscaMinas />} />
+                    <Route
+                      path="codigo-matricula"
+                      element={<CodigoMatricula />}
+                    />
+                    <Route path="red-connection" element={<ConectorRedes />} />
+                    <Route path="leaderboard" element={<Leaderboard />} />
+                    <Route path="store" element={<YoMACStore />} />
+                  </Route>
+                </Route>
+
+                {/* Rutas Públicas dentro del Layout */}
+                <Route path="search" element={<SearchPage />} />
+                <Route path="profile/:userId" element={<UserProfile />} />
+                <Route path="users" element={<DiscoverPage />} />
+                <Route path="post/:postId" element={<PostPage />} />
+                <Route path="blog" element={<BlogFeed />} />
+                <Route path="blog/create" element={<CreateBlog />} />
+                <Route path="blog/:slug" element={<BlogDetail />} />
+              </Route>
+            </Routes>
+          </Suspense>
+          <ModalRoot />
+        </ModalProvider>
       </SearchProvider>
     </BrowserRouter>
   );

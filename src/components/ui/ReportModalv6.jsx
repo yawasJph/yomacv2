@@ -23,6 +23,7 @@ export default function ReportModal({
   commentId = null,
 }) {
   const { user } = useAuth();
+
   const modalRef = useRef(null);
   const textareaRef = useRef(null);
 
@@ -30,47 +31,89 @@ export default function ReportModal({
   const [details, setDetails] = useState("");
   const [loading, setLoading] = useState(false);
 
-  /* ==============================
-     BLOQUEAR SCROLL BODY
-  ============================== */
-  useEffect(() => {
-    if (isOpen) document.body.style.overflow = "hidden";
-    return () => (document.body.style.overflow = "auto");
-  }, [isOpen]);
-
-  /* ==============================
-     CERRAR CON ESC
-  ============================== */
-  useEffect(() => {
-    const esc = (e) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", esc);
-    return () => window.removeEventListener("keydown", esc);
-  }, [onClose]);
-
-  /* ==============================
-     AUTO FOCUS
-  ============================== */
+  /* =========================
+     SCROLL LOCK PROFESIONAL
+  ========================= */
   useEffect(() => {
     if (!isOpen) return;
 
-    const first = modalRef.current.querySelector("button");
-    first?.focus();
+    const scrollBarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
+
+    document.body.style.overflow = "hidden";
+    document.body.style.paddingRight = `${scrollBarWidth}px`;
+
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
+    };
   }, [isOpen]);
 
-  /* ==============================
+  /* =========================
+     ESC + FOCUS TRAP
+  ========================= */
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKey = (e) => {
+      if (e.key === "Escape") onClose();
+
+      // Focus trap real
+      if (e.key === "Tab") {
+        const focusable = modalRef.current.querySelectorAll(
+          "button, input, textarea"
+        );
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            last.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === last) {
+            first.focus();
+            e.preventDefault();
+          }
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKey);
+
+    // focus inicial
+    setTimeout(() => modalRef.current?.querySelector("button")?.focus(), 50);
+
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [isOpen, onClose]);
+
+  /* =========================
      FOCUS TEXTAREA SI "OTRO"
-  ============================== */
+  ========================= */
   useEffect(() => {
     if (reason === "Otro") {
-      setTimeout(() => textareaRef.current?.focus(), 150);
+      requestAnimationFrame(() => textareaRef.current?.focus());
     }
   }, [reason]);
 
+  /* =========================
+     RESET AL CERRAR
+  ========================= */
+  useEffect(() => {
+    if (!isOpen) {
+      setReason("");
+      setDetails("");
+      setLoading(false);
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
-  /* ==============================
+  /* =========================
      SUBMIT
-  ============================== */
+  ========================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!reason || loading) return;
@@ -96,9 +139,6 @@ export default function ReportModal({
       }
 
       toast.success("Reporte enviado correctamente");
-
-      setReason("");
-      setDetails("");
       onClose();
     } catch {
       toast.error("Error al enviar el reporte");
@@ -109,16 +149,21 @@ export default function ReportModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-1000 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
-      onClick={onClose}
+      className="fixed inset-0 z-9999 flex items-end sm:items-center justify-center"
       aria-modal="true"
       role="dialog"
+      onClick={(e) => e.stopPropagation()}
     >
-      {/* PANEL */}
+      {/* BACKDROP */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
+        onClick={onClose}
+      />
+
+      {/* MODAL */}
       <div
         ref={modalRef}
-        onClick={(e) => e.stopPropagation()}
-        className="w-full sm:max-w-md bg-white dark:bg-neutral-900 rounded-t-2xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in duration-300"
+        className="relative w-full sm:max-w-md bg-white dark:bg-neutral-900 rounded-t-2xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in duration-300"
       >
         {/* HEADER */}
         <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-800">
@@ -146,7 +191,7 @@ export default function ReportModal({
             {REPORT_REASONS.map((r) => (
               <label
                 key={r}
-                className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition ${
                   reason === r
                     ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10"
                     : "border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -155,7 +200,6 @@ export default function ReportModal({
                 <input
                   type="radio"
                   name="reason"
-                  value={r}
                   checked={reason === r}
                   onChange={() => setReason(r)}
                   className="accent-emerald-500"
@@ -169,8 +213,6 @@ export default function ReportModal({
           <div>
             <textarea
               ref={textareaRef}
-              id="report-details"
-              name="details"
               rows="3"
               maxLength={MAX_CHARS}
               value={details}

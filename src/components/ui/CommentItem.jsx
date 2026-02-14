@@ -17,7 +17,7 @@ import ConfirmModal from "./ConfirmModal";
 import { useDeleteComment } from "../../hooks/useDeleteComment";
 import LikeButtonComment from "./LikeButtonComment";
 import { Link, useNavigate } from "react-router-dom";
-import ReportModal from "./ReportModalv4";
+import ReportModal from "./ReportModalv6";
 import RenderTextWithLinks from "../utils/RenderTextWithLinks";
 import { useAuthAction } from "../../hooks/useAuthAction";
 import { set } from "date-fns";
