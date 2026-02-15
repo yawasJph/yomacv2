@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import NavigationM from "../ui/NavigationM2";
 import HeaderM from "./HeaderM";
 import {useIsMobile} from "../../hooks/useIsMobile"
+import { notify } from "@/utils/toast/notifyv3";
 //import NavigationM from "../ui/NavigationM";
 
 const HomeLayout = () => {
@@ -19,10 +20,14 @@ const HomeLayout = () => {
     if (errorDescription) {
       // Si el error viene del Trigger, el mensaje suele ser "Database error saving new user"
       // o el mensaje personalizado que pusiste en el RAISE EXCEPTION
-      toast.error("Error de acceso", {
-        description: "Ingresa con tu correo institucional.",
-        duration: 5000,
-      });
+      // toast.error("Error de acceso", {
+      //   description: "Ingresa con tu correo institucional.",
+      //   duration: 5000,
+      // });
+       notify.error(
+              "Error de acceso: Solo se permiten correos institucionales",
+              "(homelayout)Si usaste el correcto, contacta a soporte.",
+            );
 
       // Limpiamos la URL para que el mensaje no vuelva a salir si el usuario recarga
       window.history.replaceState(null, "", window.location.pathname);

@@ -6,14 +6,13 @@ import EmojiPicker from "emoji-picker-react";
 import GifPicker from "../utils/GifPicker";
 import { usePostState } from "../../hooks/usePostState"; // 👈 Nuevo Hook de Estado
 import { useLinkPreview } from "../../hooks/useLinkPreview2"; // 👈 Nuevo Hook de Preview
-//import { usePostCreation } from "../../hooks/usePostCreation"; // 👈 Nuevo Hook de Creación
 import LinkPreviewCard from "../ui/createPost/LinkPreviewCard"; // 👈 Nuevo Componente
 import PostMediaGrid from "../ui/createPost/PostMediaGrid"; // 👈 Nuevo Componente
-import { toast } from "sonner";
 import { usePostCreation } from "../../hooks/usePostCreation2";
 import { useProfile } from "../../hooks/useProfile";
-import { notify } from "@/utils/toast/notify";
+import { notify } from "@/utils/toast/notifyv3";
 
+const MAX_SIZE = 100 * 1024 * 1024; // 100MB
 
 const CreatePost = () => {
   const { user } = useAuth();
@@ -98,42 +97,57 @@ const CreatePost = () => {
   const videoInputRef = useRef(null); // 👈 Ref para el input oculto
 
   // 4. ✨ NUEVA LÓGICA: Validación de Video antes de pasar al Hook
-  const onVideoSelect = async (e) => {
+  // const onVideoSelect = async (e) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
+
+  //   if (file.size > 100 * 1024 * 1024) {
+  //     notify.error("El video es muy pesado (Max 100MB)");
+  //     e.target.value = "";
+  //     return;
+  //   }
+
+  //   const video = document.createElement("video");
+  //   video.preload = "metadata";
+
+  //   video.onloadedmetadata = function () {
+  //     window.URL.revokeObjectURL(video.src);
+  //     const duration = video.duration;
+
+  //     if (duration > 180.5) {
+  //       // Margen de 0.5s
+  //       toast.error(`Máximo 3 minutos. Tu video dura ${duration.toFixed(0)}s.`);
+  //       e.target.value = "";
+  //     } else {
+  //       handleFileChange(e);
+  //     }
+  //   };
+
+  //   video.onerror = () => {
+  //     window.URL.revokeObjectURL(video.src);
+  //     toast.error("Formato de video no válido");
+  //     e.target.value = "";
+  //   };
+
+  //   video.src = URL.createObjectURL(file);
+  // };
+  const onVideoSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validación rápida de tamaño (ej. 100MB)
-    if (file.size > 100 * 1024 * 1024) {
-      //toast.error("El video es muy pesado (Max 100MB)");
-      notify.error("El video es muy pesado (Max 100MB)");
+    if (!file.type.startsWith("video/")) {
+      notify.error("Solo se permiten videos");
       e.target.value = "";
       return;
     }
 
-    const video = document.createElement("video");
-    video.preload = "metadata";
-
-    video.onloadedmetadata = function () {
-      window.URL.revokeObjectURL(video.src);
-      const duration = video.duration;
-
-      if (duration > 180.5) {
-        // Margen de 0.5s
-        toast.error(`Máximo 3 minutos. Tu video dura ${duration.toFixed(0)}s.`);
-        e.target.value = ""; // Limpiar input
-      } else {
-        // ✅ Si pasa la validación, se lo pasamos al hook de estado
-        handleFileChange(e);
-      }
-    };
-
-    video.onerror = () => {
-      window.URL.revokeObjectURL(video.src);
-      toast.error("Formato de video no válido");
+    if (file.size > MAX_SIZE) {
+      notify.error("El video es muy pesado (Max 100MB)", "Intenta subir un video más corto o de menor calidad.");
       e.target.value = "";
-    };
+      return;
+    }
 
-    video.src = URL.createObjectURL(file);
+    handleFileChange(e);
   };
 
   return (

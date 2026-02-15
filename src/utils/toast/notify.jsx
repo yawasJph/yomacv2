@@ -12,7 +12,7 @@ import {
 ============================= */
 
 const baseStyle =
-  "flex items-center gap-3 rounded-xl border px-4 py-3 shadow-lg backdrop-blur-sm";
+  "flex items-center gap-3 rounded-xl border px-4 py-3 shadow-lg backdrop-blur-lg";
 
 /* =============================
    TOAST SYSTEM

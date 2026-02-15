@@ -93,8 +93,9 @@ function App() {
           <Toaster
             richColors
             position="top-center"
-            toastOptions={{ duration: 2000 }}
-            
+            //toastOptions={{ duration: 4000 }}
+            duration={3000}
+            expand
           />
 
           {/* Suspense atrapa las rutas cargadas perezosamente */}

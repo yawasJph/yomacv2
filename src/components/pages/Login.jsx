@@ -2,12 +2,14 @@ import { useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import ToggleThemeButton from "../ui/ToggleThemeButton";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+
 import { ArrowLeft } from "lucide-react";
+import { notify } from "@/utils/toast/notifyv3";
+
 
 const Login = () => {
   const { signinWithGoogle, loading, error } = useAuth();
-   const navigate = useNavigate();
+  const navigate = useNavigate();
 
   // Dentro de tu componente Login:
   useEffect(() => {
@@ -17,12 +19,15 @@ const Login = () => {
     if (errorDescription) {
       // Si el error viene del Trigger, el mensaje suele ser "Database error saving new user"
       // o el mensaje personalizado que pusiste en el RAISE EXCEPTION
-      console.log("login");
-      toast.error("Error de acceso", {
-        description:
-          "Solo se permiten correos institucionales. Si usaste el correcto, contacta a soporte.",
-        duration: 5000,
-      });
+      // toast.error("Error de acceso", {
+      //   description:
+      //     "Solo se permiten correos institucionales. Si usaste el correcto, contacta a soporte.",
+      //   duration: 5000,
+      // });
+      notify.error(
+        "Error de acceso: Solo se permiten correos institucionales",
+        "(login)Si usaste el correcto, contacta a soporte.",
+      );
 
       // Limpiamos la URL para que el mensaje no vuelva a salir si el usuario recarga
       window.history.replaceState(null, "", window.location.pathname);
@@ -36,7 +41,7 @@ const Login = () => {
       {/* Botón volver – solo móvil */}
       <div className="absolute top-4 left-4 z-10 lg:hidden">
         <button
-           onClick={() => navigate(-1)}
+          onClick={() => navigate(-1)}
           className="
       p-2
       rounded-full
@@ -109,7 +114,7 @@ const Login = () => {
                 <button
                   onClick={signinWithGoogle}
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-700 rounded-xl hover:border-emerald-500 dark:hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-all duration-200 font-medium text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed group"
+                  className="w-full flex items-center justify-center gap-3 px-5 py-4 bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-700 rounded-xl hover:border-emerald-500 dark:hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-all duration-200 font-medium text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed group"
                 >
                   {loading ? (
                     <div className="w-5 h-5 border-2 border-emerald-600 dark:border-emerald-400 border-t-transparent rounded-full animate-spin" />
