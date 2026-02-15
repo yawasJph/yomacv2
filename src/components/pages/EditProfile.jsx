@@ -17,6 +17,7 @@ import { validateSocials } from "../utils/validateSocials";
 import { uploadToCloudinary } from "../../cloudinary/upToCloudinary";
 import ProfileEditSkeleton from "../skeletons/ProfileEditSkeleton";
 import { useQueryClient } from "@tanstack/react-query";
+import { notify } from "@/utils/toast/notifyv3";
 
 const EditProfile = () => {
   const { user } = useAuth();
@@ -136,44 +137,16 @@ const EditProfile = () => {
 
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
-      toast.success("Insignia actualizada");
+      notify.success("Insignia actualizada");
     } catch (err) {
-      toast.error("No se pudo actualizar la insignia");
+      notify.error("No se pudo actualizar la insignia");
     }
   };
-
-  // useEffect(() => {
-  //   const fetchProfile = async () => {
-  //     try {
-  //       const { data } = await supabaseClient
-  //         .from("profiles")
-  //         .select("*")
-  //         .eq("id", user.id)
-  //         .single();
-  //       if (data) {
-  //         setFormData({
-  //           ...data,
-  //           bio: data.bio || "",
-  //           socials: {
-  //             web: "",
-  //             instagram: "",
-  //             github: "",
-  //             linkedin: "",
-  //             ...data.socials,
-  //           },
-  //         });
-  //       }
-  //     } finally {
-  //       setInitialLoading(false);
-  //     }
-  //   };
-  //   fetchProfile();
-  // }, [user]);
 
   const handleSave = async () => {
     // 1. Validar Bio
     if (formData.bio?.length > BIO_LIMIT) {
-      return toast.error("La biografía es muy larga");
+      return notify.error("La biografía es muy larga");
     }
 
     if (!validateSocials(formData)) return;
@@ -212,10 +185,10 @@ const EditProfile = () => {
 
       if (error) throw error;
 
-      toast.success("Perfil guardado con éxito");
+      notify.success("Perfil guardado con éxito");
       navigate(-1);
     } catch (err) {
-      toast.error("Error al procesar el perfil");
+      notify.error("Error al procesar el perfil");
       console.error(err);
     } finally {
       setLoading(false);
@@ -223,6 +196,7 @@ const EditProfile = () => {
   };
 
   if (initialLoading) return <ProfileEditSkeleton />;
+  
   return (
     <div className="bg-white dark:bg-black pb-10">{/* min-h-screen */}
       {/* Header Estilo App */}

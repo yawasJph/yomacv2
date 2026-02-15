@@ -3,8 +3,8 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@import './styles/_variables.scss';
-@import './styles/_keyframe-animations.scss';
+@import "./styles/_variables.scss";
+@import "./styles/_keyframe-animations.scss";
 
 /* .prose pre {
   background-color: #1d1f21 !important;
@@ -19,7 +19,6 @@
   border: 1px solid #3e4451;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
 
-  
   /* ESTO ARREGLA EL LAYOUT EN MÓVIL */
   width: 100%;
   /* max-width: 100%;  */
@@ -27,11 +26,11 @@
   white-space: pre; /* Mantiene el formato del código */
   word-spacing: normal;
   word-break: normal;
-  
+
   /* Mejora visual */
   padding: 1.25rem !important;
   border-radius: 0.75rem;
-  @apply max-sm:max-w-90 
+  @apply max-sm:max-w-90;
 }
 
 /* Personalizar la barra de scroll para que no se vea fea en móviles */
@@ -70,7 +69,7 @@ ul[data-type="taskList"] input[type="checkbox"] {
 .code-wrapper pre {
   margin: 0 !important;
   /* Espacio superior para acomodar el badge y el botón */
-  padding: 3.5rem 1.5rem 1.5rem !important; 
+  padding: 3.5rem 1.5rem 1.5rem !important;
   border: none !important;
   background-color: transparent !important; /* El fondo lo da el wrapper */
 }
@@ -83,7 +82,11 @@ ul[data-type="taskList"] input[type="checkbox"] {
   left: 0;
   right: 0;
   height: 3rem;
-  background: linear-gradient(to bottom, rgba(29, 31, 33, 1), rgba(29, 31, 33, 0));
+  background: linear-gradient(
+    to bottom,
+    rgba(29, 31, 33, 1),
+    rgba(29, 31, 33, 0)
+  );
   pointer-events: none;
   z-index: 20;
 }
@@ -108,7 +111,7 @@ ul[data-type="taskList"] input[type="checkbox"] {
   /* left: 0 !important; */
   /* width: 3rem !important;  */
   letter-spacing: -1px;
-  border-right: 1px solid #3e4451; 
+  border-right: 1px solid #3e4451;
   user-select: none;
 }
 
@@ -130,8 +133,6 @@ ul[data-type="taskList"] input[type="checkbox"] {
     width: 2.2rem !important;
   }
 }
-
-
 
 @theme {
   --animate-fade-in: fade-in 0.25s ease-out;
@@ -241,16 +242,13 @@ ul[data-type="taskList"] input[type="checkbox"] {
   scrollbar-width: none;
 }
 
-
-@theme {
-  /* --- Animaciones base --- */
+/* @theme {
   --animate-fade-in: fade-in 0.3s ease-out;
   --animate-in: in 0.3s ease-out;
   --animate-bounce: bounce 1s infinite;
   --animate-ping: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
   --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  
-  /* --- Keyframes para el Chat --- */
+
   @keyframes fade-in {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -275,9 +273,95 @@ ul[data-type="taskList"] input[type="checkbox"] {
   @keyframes ping {
     75%, 100% { transform: scale(2); opacity: 0; }
   }
+} */
+
+@theme {
+  /* --- Animaciones base --- */
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-in: in 0.3s ease-out;
+  --animate-bounce: bounce 1s infinite;
+  --animate-ping: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  /* NUEVAS */
+  --animate-slide-in-bottom: slide-in-bottom 0.35s ease-out;
+  --animate-zoom-in: zoom-in 0.25s ease-out;
+
+  /* --- Keyframes --- */
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* 👉 ESTE ES EL QUE TE FALTA */
+  @keyframes slide-in-bottom {
+    from {
+      opacity: 0;
+      transform: translateY(32px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* 👉 ESTE TAMBIÉN TE FALTA */
+  @keyframes zoom-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: translateY(-25%);
+      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+    50% {
+      transform: translateY(0);
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+  }
+
+  @keyframes ping {
+    75%,
+    100% {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
 }
 
 /* --- Clases de Utilidad para el Chat --- */
+.animate-slide-in-bottom {
+  animation: slide-in-bottom 0.35s ease-out forwards;
+}
+
+.zoom-in {
+  animation: zoom-in 0.25s ease-out forwards;
+}
 
 /* Animación de entrada para los mensajes */
 .animate-in {
@@ -309,20 +393,20 @@ ul[data-type="taskList"] input[type="checkbox"] {
 }
 
 /*memorama styles*/
-.grand-blue{
-  @apply bg-linear-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-blue-200 dark:border-blue-700/30
+.grand-blue {
+  @apply bg-linear-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-blue-200 dark:border-blue-700/30;
 }
 
-.grand-purple{
-  @apply bg-linear-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-700/30
+.grand-purple {
+  @apply bg-linear-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-700/30;
 }
 
-.grand-yellow{
-  @apply bg-linear-to-br from-yellow-50 via-amber-50 to-orange-50 dark:from-yellow-900/20 dark:via-amber-900/20 dark:to-orange-900/20 border-yellow-200 dark:border-yellow-700/30
+.grand-yellow {
+  @apply bg-linear-to-br from-yellow-50 via-amber-50 to-orange-50 dark:from-yellow-900/20 dark:via-amber-900/20 dark:to-orange-900/20 border-yellow-200 dark:border-yellow-700/30;
 }
 
-.grand-emerald{
-  @apply bg-linear-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-emerald-200 dark:border-emerald-700/30
+.grand-emerald {
+  @apply bg-linear-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-emerald-200 dark:border-emerald-700/30;
 }
 
 @layer utilities {
@@ -331,12 +415,16 @@ ul[data-type="taskList"] input[type="checkbox"] {
   }
 
   @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
   }
 }
 
-.blog-editor-container{
-  @apply bg-white dark:bg-black p-4 
+.blog-editor-container {
+  @apply bg-white dark:bg-black p-4;
 }
-

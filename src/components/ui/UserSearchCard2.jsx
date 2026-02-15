@@ -19,12 +19,13 @@ const UserSearchCard = ({ profile }) => {
   const following = isFollowing(profile.id);
   const { executeAction } = useAuthAction();
 
-  const handleLikeAction = () => {
+  const handleLikeAction = (e) => {
+    e.stopPropagation();
     executeAction(handleAction, "para dar like");
   };
 
-  const handleAction = async (e) => {
-    e.stopPropagation();
+  const handleAction = async () => {
+    
     if (!currentUser || actionLoading) return;
 
     setActionLoading(true);
@@ -82,7 +83,7 @@ const UserSearchCard = ({ profile }) => {
         <div className="min-w-0 flex-1">
           {isMe ? (
             <>
-              <h4 className="font-bold text-gray-900 dark:text-white truncate hover:underline cursor-pointer decoration-emerald-500 text-sm sm:text-base">
+              <h4 className="font-bold text-gray-900 dark:text-white truncate text-sm sm:text-base">
                 {profile.full_name.length > 20
                   ? profile.full_name.substring(0, 20) + "..."
                   : profile.full_name}
@@ -133,23 +134,6 @@ const UserSearchCard = ({ profile }) => {
               </span>
             </>
           )}
-          {/* <div className="flex gap-1 items-center">
-            {profile.carrera && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold uppercase">
-                {profile.carrera}
-              </span>
-            )}
-            {profile.ciclo && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400 font-bold border border-gray-200 dark:border-gray-700">
-                Ciclo {profile.ciclo}
-              </span>
-            )}
-          </div>
-          {profile.bio && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mt-0.5">
-              {profile.bio}
-            </p>
-          )} */}
           <div className="flex gap-1 items-center">
             {profile.carrera && (
               <span className="text-xs px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider">
@@ -176,14 +160,14 @@ const UserSearchCard = ({ profile }) => {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           disabled={actionLoading}
-          className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-200 min-w-[100px] sm:min-w-[120px] flex items-center justify-center gap-2 ${
+          className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-bold transition-all duration-200 flex items-center justify-center gap-2 ${
             following
               ? isHovered
                 ? "bg-red-100 text-red-600 border border-red-200 dark:bg-red-900/20 dark:text-red-400"
                 : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"
               : "bg-emerald-500 hover:bg-emerald-600 text-white"
           }`}
-        >
+        >{/**min-w-[100px] to button*/}
           {actionLoading ? (
             <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
           ) : following ? (

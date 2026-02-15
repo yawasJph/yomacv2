@@ -61,7 +61,7 @@ export default function ReportModal({
       // Focus trap real
       if (e.key === "Tab") {
         const focusable = modalRef.current.querySelectorAll(
-          "button, input, textarea"
+          "button, input, textarea",
         );
 
         const first = focusable[0];
@@ -163,8 +163,20 @@ export default function ReportModal({
       {/* MODAL */}
       <div
         ref={modalRef}
-        className="relative w-full sm:max-w-md bg-white dark:bg-neutral-900 rounded-t-2xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in duration-300"
+        //className="relative w-full sm:max-w-md bg-white dark:bg-neutral-900 rounded-t-2xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in duration-300"
+        className="
+          relative w-full sm:max-w-md
+        bg-white dark:bg-neutral-900
+          rounded-t-3xl sm:rounded-2xl
+          shadow-2xl
+          max-h-[90vh] overflow-y-auto
+          animate-in slide-in-from-bottom-8 sm:zoom-in
+          duration-300"
       >
+        <div className="flex justify-center py-2 sm:hidden">
+          <div className="w-10 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full" />
+        </div>
+
         {/* HEADER */}
         <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-800">
           <h3 className="flex items-center gap-2 font-semibold text-lg">
@@ -255,6 +267,6 @@ export default function ReportModal({
         </form>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
