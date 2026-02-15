@@ -1,22 +1,36 @@
 import { X } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useAuthModal } from "../../context/AuthModalContext";
-import useScrollLock from "@/hooks/useScrollLock";
+import { useEffect } from "react";
+import { useModal } from "@/context/ModalContextv3";
 
-const AuthModal = () => {
-  const { open, closeAuthModal } = useAuthModal();
+const AuthModal = ({closeModal}) => {
+  // const { open, closeAuthModal } = useAuthModal();
   const { signinWithGoogle, loading } = useAuth();
+  // useEffect(() => {
+  //   function handleEsc(e) {
+  //     if (e.key === "Escape") closeAuthModal();
+  //   }
 
-  useScrollLock(open);//scroll look profesional
+  //   if (open) {
+  //     document.addEventListener("keydown", handleEsc);
+  //     document.body.style.overflow = "hidden";
+  //   }
 
-  if (!open) return null;
+  //   return () => {
+  //     document.removeEventListener("keydown", handleEsc);
+  //     document.body.style.overflow = "";
+  //   };
+  // }, [open, closeAuthModal]);
+
+  // if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div className="relative w-full max-w-md bg-white dark:bg-black rounded-3xl p-8 border border-emerald-500/30 shadow-xl animate-in fade-in zoom-in">
         {/* Cerrar */}
         <button
-          onClick={closeAuthModal}
+          onClick={closeModal}
           className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition"
         >
           <X />

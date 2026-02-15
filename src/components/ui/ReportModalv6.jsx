@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { X, AlertTriangle, Loader2 } from "lucide-react";
-import { toast } from "sonner";
 import { useAuth } from "../../context/AuthContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
+import { notify } from "@/utils/toast/notifyv3";
 
 const REPORT_REASONS = [
   "Contenido inapropiado",
@@ -131,17 +131,17 @@ export default function ReportModal({
 
       if (error) {
         if (error.code === "23505") {
-          toast.info("Ya reportaste este contenido");
+          notify.info("Ya reportaste este contenido");
           onClose();
           return;
         }
         throw error;
       }
 
-      toast.success("Reporte enviado correctamente");
+      notify.success("Reporte enviado correctamente");
       onClose();
-    } catch {
-      toast.error("Error al enviar el reporte");
+    } catch (error) {
+      notify.error("Error al enviar el reporte");
     } finally {
       setLoading(false);
     }

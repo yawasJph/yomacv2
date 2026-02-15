@@ -1,9 +1,11 @@
 import { useAuth } from "@/context/AuthContext";
 import BaseModal from "./BaseModal";
 import { X } from "lucide-react";
+import { useEffect } from "react";
 
 export default function AuthModal({ close }) {
   const { signinWithGoogle, loading } = useAuth();
+
   return (
     <BaseModal close={close}>
       <div className="relative w-full max-w-md bg-white dark:bg-black rounded-3xl p-8 border border-emerald-500/30 shadow-xl animate-in fade-in zoom-in">

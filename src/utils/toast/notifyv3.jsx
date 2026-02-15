@@ -34,14 +34,11 @@ const variants = {
    TOAST FACTORY
 ================================ */
 
-const createToast = (type, message, Icon, spin = false, description = null) =>
+const createToast = (type, message, Icon, spin = false) =>
   toast.custom(() => (
     <div className={`${baseToast} ${variants[type]}`}>
       <Icon size={18} className={spin ? "animate-spin" : ""} />
-      <div className="flex flex-col">
-        <span>{message}</span>
-        {description && <span className="text-[10px] opacity-75">{description.toLowerCase()}</span>}
-      </div>
+      <span>{message}</span>
     </div>
   ));
 
@@ -51,7 +48,7 @@ const createToast = (type, message, Icon, spin = false, description = null) =>
 
 export const notify = {
   success: (msg) => createToast("success", msg, CheckCircle2),
-  error: (msg,description) => createToast("error", msg, XCircle, false, description),
+  error: (msg) => createToast("error", msg, XCircle),
   info: (msg) => createToast("info", msg, Info),
   warning: (msg) => createToast("warning", msg, AlertTriangle),
   loading: (msg) => createToast("loading", msg, Loader2, true),

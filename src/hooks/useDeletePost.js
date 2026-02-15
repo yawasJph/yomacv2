@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabaseClient } from "../supabase/supabaseClient";
-import { toast } from "sonner";
+import { notify } from "@/utils/toast/notifyv3";
 
 export const useDeletePost = (post_id) => {
   const queryClient = useQueryClient();
@@ -21,11 +21,11 @@ export const useDeletePost = (post_id) => {
       // 2. IMPORTANTÍSIMO: Invalidamos los hashtags
       // Esto hará que el conteo en el componente TrendingTopics se actualice
       queryClient.invalidateQueries({ queryKey: ["trending_hashtags"] });
-      toast.success("Publicación eliminada");
+      notify.success("Publicación eliminada");
     },
-    onError: () => {
+    onError: (error) => {
       console.error(error);
-      toast.error("No se pudo eliminar la publicación");
+      notify.error("No se pudo eliminar la publicación");
     }
   });
 };

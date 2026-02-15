@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { useAuth } from "../../context/AuthContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import { useSearch } from "../../context/SearchContext";
+import { notify } from "@/utils/toast/notifyv3";
 
 export const useRepost = (postId) => {
   const { user } = useAuth();
@@ -73,7 +73,7 @@ export const useRepost = (postId) => {
     },
     onError: (err, newState, context) => {
       queryClient.setQueryData(["posts"], context.previousPosts);
-      toast.error("No se pudo completar la acción");
+      notify.error("No se pudo completar la acción");
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
@@ -82,8 +82,8 @@ export const useRepost = (postId) => {
       queryClient.invalidateQueries({  queryKey: ["search", queryG, user.id], });
     },
      onSuccess: () => {
-      if(!isReposted) return toast.success("Has reposteado");
-      toast.success("Has dejado de repostear")
+      if(!isReposted) return notify.success("Has reposteado");
+      notify.success("Has dejado de repostear")
     },
   });
 

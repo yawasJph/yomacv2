@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { uploadToCloudinary } from "../cloudinary/upToCloudinary";
 import { extractHashtags } from "../components/utils/extractHashtags";
+import { notify } from "@/utils/toast/notifyv3";
 
 export const usePostCreation = () => {
   const queryClient = useQueryClient();
@@ -66,11 +67,11 @@ export const usePostCreation = () => {
       }
 
       variables.resetForm();
-      toast.success("¡Publicado con éxito! 🚀");
+      notify.success("¡Publicado con éxito! 🚀");
     },
     onError: (error) => {
       console.error("Error creating post:", error);
-      toast.error(error.message || "Ocurrió un error al publicar");
+      notify.error(error.message || "Ocurrió un error al publicar");
     },
     onSettled: (data, error, variables) => {
      variables.setLoading(false);

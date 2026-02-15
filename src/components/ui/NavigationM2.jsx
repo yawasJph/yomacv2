@@ -9,6 +9,7 @@ import {
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "sonner";
+import { notify } from "@/utils/toast/notifyv3";
 
 const NavigationM = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const NavigationM = () => {
       to: "games",
       icon: <Gamepad2 size={24} />,
       text: "Juegos",
-      private: false,
+      private: true,
     },
     {
       to: `profile/${user?.id}`,
@@ -35,15 +36,11 @@ const NavigationM = () => {
       text: "Perfil",
       private: true,
     },
-    
   ];
 
   const requireAuth = (actionText = "realizar esta acción") => {
     navigate("login");
-    toast.error(`Debes iniciar sesión para ${actionText}`, {
-      className: "shadow-lg border-l-4 border-red-600",
-      icon: <TriangleAlertIcon className="w-5 h-5 text-red-500" />,
-    });
+    notify.error(`Debes iniciar sesión para ${actionText}`);
   };
 
   // Manejador de clics para los enlaces
@@ -51,6 +48,15 @@ const NavigationM = () => {
     if (link.private && !user) {
       e.preventDefault(); // Evita que el NavLink cambie la ruta
       requireAuth(`ver tu ${link.text.toLowerCase()}`);
+    }
+  };
+
+  const handleCreatePost = () => {
+    if (user) {
+      navigate("create-post");
+    } else {
+      navigate("login");
+      notify.error("Debes iniciar sesión para crear una publicación");
     }
   };
 
@@ -93,9 +99,7 @@ const NavigationM = () => {
           <div className="relative">
             {/**-mt-10 */}
             <button
-              onClick={() =>
-                user ? navigate("create-post") : navigate("login")
-              }
+              onClick={handleCreatePost}
               className="p-2 bg-linear-to-tr from-emerald-500 to-teal-400 text-white rounded-2xl shadow-lg shadow-emerald-500/40 active:scale-90 transition-transform border-4 border-white dark:border-neutral-900"
             >
               {/**p-4 */}
@@ -105,9 +109,9 @@ const NavigationM = () => {
 
           {/* Últimos dos iconos */}
           <div className="flex flex-1 justify-around">
-            {links.slice(2, 4).map((link,index) => (
+            {links.slice(2, 4).map((link, index) => (
               <NavLink
-               key={`${link.text}-${index}`}
+                key={`${link.text}-${index}`}
                 to={link.to}
                 onClick={(e) => handleProtectedNavigation(e, link)}
                 className={({ isActive }) =>

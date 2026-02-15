@@ -22,7 +22,6 @@ import { useAuthAction } from "../../../hooks/useAuthAction";
 import LikeButton from "./LikeButton";
 import BookmarkButton from "./BookmarkButton";
 import { useDeletePost } from "../../../hooks/useDeletePost";
-import { toast } from "sonner";
 import ConfirmModal from "@/components/modals/ConfirmModalv2";
 import ReportModal from "../ReportModalv6";
 import { handleShare } from "../../utils/sharePost";
@@ -31,8 +30,7 @@ import RepostButton from "../RepostButton";
 import UserHoverCard from "./UserHoverCard3";
 import useLiveTimeAgo from "@/hooks/useLiveTimeAgo";
 import { useModal } from "@/context/ModalContextv2";
-import DeletePostModal from "@/components/modals/DeletePostModal";
-import { se } from "date-fns/locale";
+import { notify } from "@/utils/toast/notifyv3";
 
 const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -54,7 +52,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
 
   const time = useLiveTimeAgo(post.created_at, isMobile);
 
-  const { openModal , closeModal} = useModal();
+  //const { openModal , closeModal} = useModal();
 
   // Cerrar menú al hacer click fuera
   useEffect(() => {
@@ -276,7 +274,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                         navigator.clipboard.writeText(
                           `${window.location.origin}/post/${post.id}`,
                         );
-                        toast.success("Enlace copiado");
+                        notify.success("Enlace copiado");
                         setShowOptions(false);
                       }}
                       className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border-t border-gray-100 dark:border-gray-800"

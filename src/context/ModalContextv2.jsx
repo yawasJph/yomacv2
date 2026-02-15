@@ -30,8 +30,10 @@ export function ModalProvider({ children }) {
   const hasModals = modals.length > 0;
 
   if (hasModals) {
+    console.log("Modal abierto, bloqueando scroll");
     document.body.style.overflow = "hidden";
   } else {
+    console.log("No hay modales abiertos, desbloqueando scroll");
     document.body.style.overflow = "";
   }
 

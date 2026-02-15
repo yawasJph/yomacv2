@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { useAuth } from "../context/AuthContext";
-import { toast } from "sonner";
+import { notify } from "@/utils/toast/notifyv3";
 
 export const useBookmark = (postId) => {
   const { user } = useAuth();
@@ -27,7 +27,7 @@ export const useBookmark = (postId) => {
   // 2. Mutación Optimista
   const toggleBookmark = useMutation({
     mutationFn: async () => {
-      if (!user) throw toast.error("Inicia sesion para guardar");
+      if (!user) throw notify.error("Inicia sesion para guardar");
       
       if (isBookmarked) {
         return await supabaseClient.from("bookmarks").delete().eq("post_id", postId).eq("user_id", user.id);
@@ -46,10 +46,10 @@ export const useBookmark = (postId) => {
     },
     onError: (err, _, context) => {
       queryClient.setQueryData(queryKey, context.previousStatus);
-      toast.error("Error al actualizar marcador");
+      notify.error("Error al actualizar marcador");
     },
     onSuccess: () => {
-      if (isBookmarked) toast.success("Guardado en marcadores");
+      if (isBookmarked) notify.success("Guardado en marcadores");
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });

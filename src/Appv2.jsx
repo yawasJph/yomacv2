@@ -26,7 +26,7 @@ import Login from "./components/pages/Login";
 import BlogFeed from "./pages/blog/BlogFeed";
 import CreateBlog from "./pages/blog/CreateBlog3";
 import BlogDetail from "./pages/blog/BlogDetailv3";
-import { ModalProvider } from "./context/ModalContextv2";
+import { ModalProvider } from "./context/ModalContextv3";
 import ModalRoot from "./components/modals/ModalRoot";
 
 // --- IMPORTS DINÁMICOS (Lazy Loading) ---

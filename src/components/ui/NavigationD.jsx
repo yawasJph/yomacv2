@@ -2,18 +2,16 @@ import {
   BlocksIcon,
   Bookmark,
   Bot,
-  Coins,
   Gamepad2,
   Home,
   Plus,
-  ShoppingBag,
-  TriangleAlertIcon,
   UserPen,
   Users,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "sonner";
+import { notify } from "@/utils/toast/notifyv3";
 
 const NavigationD = () => {
   const navigate = useNavigate();
@@ -50,7 +48,7 @@ const NavigationD = () => {
       to: "/games",
       icon: <Gamepad2 size={22} />,
       text: "Juegos",
-      private: false,
+      private: true,
     },
      {
       to: "/yawas",
@@ -69,10 +67,7 @@ const NavigationD = () => {
   // Función genérica para mostrar el error y redirigir
   const requireAuth = (actionText = "realizar esta acción") => {
     navigate("login");
-    toast.error(`Debes iniciar sesión para ${actionText}`, {
-      className: "shadow-lg border-l-4 border-red-600",
-      icon: <TriangleAlertIcon className="w-5 h-5 text-red-500" />,
-    });
+    notify.error(`Debes iniciar sesión para ${actionText}`);
   };
 
   // Manejador de clics para los enlaces

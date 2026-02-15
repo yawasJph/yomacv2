@@ -18,4 +18,5 @@ export default function useScrollLock(active) {
       document.body.style.paddingRight = originalPadding;
     };
   }, [active]);
+  
 }

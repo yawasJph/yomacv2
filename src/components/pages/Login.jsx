@@ -1,38 +1,12 @@
-import { useEffect } from "react";
+
 import { useAuth } from "../../context/AuthContext";
 import ToggleThemeButton from "../ui/ToggleThemeButton";
 import { Link, useNavigate } from "react-router-dom";
-
 import { ArrowLeft } from "lucide-react";
-import { notify } from "@/utils/toast/notifyv3";
-
 
 const Login = () => {
   const { signinWithGoogle, loading, error } = useAuth();
   const navigate = useNavigate();
-
-  // Dentro de tu componente Login:
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const errorDescription = params.get("error_description");
-
-    if (errorDescription) {
-      // Si el error viene del Trigger, el mensaje suele ser "Database error saving new user"
-      // o el mensaje personalizado que pusiste en el RAISE EXCEPTION
-      // toast.error("Error de acceso", {
-      //   description:
-      //     "Solo se permiten correos institucionales. Si usaste el correcto, contacta a soporte.",
-      //   duration: 5000,
-      // });
-      notify.error(
-        "Error de acceso: Solo se permiten correos institucionales",
-        "(login)Si usaste el correcto, contacta a soporte.",
-      );
-
-      // Limpiamos la URL para que el mensaje no vuelva a salir si el usuario recarga
-      window.history.replaceState(null, "", window.location.pathname);
-    }
-  }, []);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300 relative">
