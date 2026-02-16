@@ -51,7 +51,7 @@ const FeedVideo = ({ src, customClass, onClick, shouldPlay, onEnded }) => {
       )}
 
       <div className="absolute top-2 right-2 bg-black/50 text-white text-[9px] px-2 py-0.5 rounded-full backdrop-blur-md font-bold tracking-wider uppercase">
-        Video
+        Videoaaa
       </div>
     </div>
   );

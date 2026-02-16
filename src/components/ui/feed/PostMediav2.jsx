@@ -36,7 +36,7 @@ const PostMedia = ({ media = [], onOpen }) => {
       const isVideo = item.media_type === "video";
 
       if (isVideo) {
-        if (isMobile) {
+        // if (isMobile) {
           return (
             <FeedVideo
               src={item.media_url}
@@ -46,20 +46,20 @@ const PostMedia = ({ media = [], onOpen }) => {
               onClick={() => onOpen(index)}
             />
           );
-        }
+        // }
 
-        return (
-          <video
-            src={item.media_url}
-            className={`${customClass} w-full object-cover rounded-xl`}
-            controls
-            muted
-            preload="metadata"
-            playsInline
-            loading="lazy"
-            onClick={(e) => e.stopPropagation()}
-          />
-        );
+        // return (
+        //   <video
+        //     src={item.media_url}
+        //     className={`${customClass} w-full object-cover rounded-xl`}
+        //     controls
+        //     muted
+        //     preload="metadata"
+        //     playsInline
+        //     loading="lazy"
+        //     onClick={(e) => e.stopPropagation()}
+        //   />
+        // );
       }
 
       return (

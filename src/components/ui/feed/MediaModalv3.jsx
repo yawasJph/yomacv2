@@ -1,6 +1,6 @@
 
-import { ChevronLeft, ChevronRight, X, Play, Pause, Volume2, VolumeX } from "lucide-react";
-import React, { useEffect, useState, useRef } from "react";
+import { ChevronLeft, ChevronRight, X} from "lucide-react";
+import React, { useEffect, useState} from "react";
 import CustomVideoPlayer from "./CustomVideoPlayerv2";
 
 // Componente MediaModal mejorado
@@ -44,7 +44,7 @@ const MediaModal = ({ media, closeModal, initialIndex }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black/97 backdrop-blur-md flex justify-center items-center z-[9999] animate-fadeIn"
+      className="fixed inset-0 bg-black/97 backdrop-blur-md flex justify-center items-center z-9999 animate-fadeIn"
       onClick={closeModal}
     >
       <div
