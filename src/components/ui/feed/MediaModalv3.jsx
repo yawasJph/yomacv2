@@ -1,7 +1,7 @@
 
 import { ChevronLeft, ChevronRight, X, Play, Pause, Volume2, VolumeX } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
-import CustomVideoPlayer from "./CustomVideoPlayer ";
+import CustomVideoPlayer from "./CustomVideoPlayerv2";
 
 // Componente MediaModal mejorado
 const MediaModal = ({ media, closeModal, initialIndex }) => {
