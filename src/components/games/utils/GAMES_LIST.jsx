@@ -110,19 +110,19 @@ export const GAMES_LIST = [
         "Usa los 'bonus de red' para ganar puntos extra de hackeo."
       ]
     },
-    {
-      id: "red-connection",
-      title: "Conexión de Redes",
-      description: "Conecta las redes sin cruzar las líneas.",
-      icon: <Container className="text-lime-500" size={32} />,
-      color: "from-lime-500/20 to-lime-500/5",
-      path: "/games/red-connection",
-      difficulty: "Difícil",
-      howToPlay: [
-        "Dibuja líneas para conectar nodos del mismo color.",
-        "Las líneas no pueden cruzarse entre sí ni tocar otros nodos.",
-        "Debes llenar todos los espacios vacíos del tablero para completar el nivel.",
-        "Cada conexión exitosa suma puntos según la longitud de la línea."
-      ]
-    }
+    // {
+    //   id: "red-connection",
+    //   title: "Conexión de Redes",
+    //   description: "Conecta las redes sin cruzar las líneas.",
+    //   icon: <Container className="text-lime-500" size={32} />,
+    //   color: "from-lime-500/20 to-lime-500/5",
+    //   path: "/games/red-connection",
+    //   difficulty: "Difícil",
+    //   howToPlay: [
+    //     "Dibuja líneas para conectar nodos del mismo color.",
+    //     "Las líneas no pueden cruzarse entre sí ni tocar otros nodos.",
+    //     "Debes llenar todos los espacios vacíos del tablero para completar el nivel.",
+    //     "Cada conexión exitosa suma puntos según la longitud de la línea."
+    //   ]
+    // }
   ];

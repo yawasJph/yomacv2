@@ -1,12 +1,11 @@
 import { memo, useCallback } from "react";
 import { Zap, Copy } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { toast } from "sonner";
 import { TOAST_STYLE } from "../../utils/yawas/constants";
-import { ChatCodeBlock } from "./ChatCodeBlock";
-
+import { ChatCodeBlock } from "./ChatCodeBlockv2";
+import hljs from "highlight.js";
 
 export const MessageItem = memo(({ message, index }) => {
   const handleCopyCode = useCallback((code) => {
@@ -17,6 +16,7 @@ export const MessageItem = memo(({ message, index }) => {
     });
   }, []);
 
+  console.log("Renderizando MessageItem:", { message, index });
   return (
     <div
       className={`flex w-full animate-in slide-in-from-bottom-2 duration-300 ${
@@ -31,7 +31,7 @@ export const MessageItem = memo(({ message, index }) => {
         <div
           className={`relative p-4 md:p-5 rounded-4xl shadow-2xl transition-all duration-300 ${
             message.role === "user"
-              ? "bg-linear-to-br from-emerald-500 to-emerald-600 text-white rounded-br-none shadow-emerald-500/20"
+              ? "bg-linear-to-br from-neutral-600 to-neutral-800 text-white rounded-br-none shadow-neutral-500/20"
               : "bg-neutral-900 border border-neutral-800/80 text-neutral-200 rounded-tl-none shadow-black/40 dark:border-gray-700/50 dark:text-gray-200 rounded-bl-none dark:shadow-gray-900/30"
           }`}
         >
@@ -44,48 +44,24 @@ export const MessageItem = memo(({ message, index }) => {
               />
             </div>
           )}
-          <div className=" prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/50 prose prose-p:my-2 prose-headings:font-bold prose-code:before:content-none prose-code:after:content-none">
+          <div className="prose-sm  prose-p:leading-relaxed prose-pre:bg-black/50  prose-p:my-2 prose-headings:font-bold prose-code:before:content-none prose-code:after:content-none prose-invert  prose">
+          {/** prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/50  prose-p:my-2 prose-headings:font-bold prose-code:before:content-none prose-code:after:content-none prose-invert  prose */}
             <ReactMarkdown
               children={message.text}
               components={{
-                code({ node, inline, className, children, ...props }) {
+                code({ inline, className, children }) {
                   const match = /language-(\w+)/.exec(className || "");
-                  return !inline && match ? (
-                    <div className="relative my-4 rounded-2xl overflow-hidden border border-neutral-800 group dark:border-gray-700 group bg-gray-900">
-                      <div className="flex justify-between items-center px-4 py-2 text-[10px] font-mono text-neutral-400 bg-neutral-800/80 dark:bg-gray-800 text-xs dark:text-gray-400">
-                        <span className="font-bold text-yellow-500/70 dark:text-yellow-500/90">
-                          {match[1]}
-                        </span>
-                        <button
-                          onClick={() => handleCopyCode(String(children).replace(/\n$/, ""))}
-                          className="bg-neutral-700 px-2 py-1 rounded-md hover:bg-neutral-600 transition-all duration-300 text-xs font-medium dark:hover:bg-gray-600 text-gray-200 dark:text-gray-300 border border-gray-600 dark:border-gray-600 shadow-sm"
-                        >
-                          <Copy size={16} />
-                        </button>
-                      </div>
-                      {/* <SyntaxHighlighter
-                        {...props}
-                        children={String(children).replace(/\n$/, "")}
-                        style={vscDarkPlus}
-                        language={match[1]}
-                        PreTag="div"
-                        customStyle={{
-                          margin: 0,
-                          padding: "1.2rem",
-                          fontSize: "0.8rem",
-                          backgroundColor: "#050505",
-                        }}
-                      /> */}
-                      <ChatCodeBlock language={match[1]} code={children} vscDarkPlus={vscDarkPlus} props={props}/>
-                    </div>
-                  ) : (
-                    <code
-                      className="bg-neutral-800 px-1.5 py-0.5 rounded text-yellow-500 font-mono text-xs dark:bg-gray-800"
-                      {...props}
-                    >
-                      {children}
-                    </code>
-                  );
+                  const code = String(children).replace(/\n$/, "");
+
+                  if (inline) {
+                    return (
+                      <code className="bg-neutral-800 px-1.5 py-0.5 rounded text-yellow-400 text-xs font-mono">
+                        {children}
+                      </code>
+                    );
+                  }
+
+                  return <ChatCodeBlock code={code} language={match?.[1]} />;
                 },
               }}
             />

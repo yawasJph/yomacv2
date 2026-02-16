@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, memo } from "react";
+import React, { useState, useEffect, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import useSound from "use-sound";
@@ -11,9 +11,9 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
-import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useAudio } from "../../context/AudioContext";
+import { notify } from "@/utils/toast/notifyv3";
 
 // --- Constantes y Utilidades Externas ---
 const GRID_SIZE = 8;
@@ -226,7 +226,7 @@ const BuscaMinas = () => {
       if (gameState !== "playing" || board[r][c].revealed) return;
 
       if (!board[r][c].flagged && flagsCount >= MINES_COUNT) {
-        toast.error("No tienes más banderas");
+        notify.error("No tienes más banderas");
         return;
       }
 
@@ -257,7 +257,7 @@ const BuscaMinas = () => {
       p_moves: 0,
       p_time_seconds: timer,
     });
-    if (!error) toast.success("¡Ranking actualizado!");
+    if(error) notify.error("Error al guardar el puntaje");
   };
 
   const SoundToggle = (

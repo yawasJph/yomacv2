@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import useSound from "use-sound";
 import { useNavigate } from "react-router-dom";
 import { useAudio } from "../../context/AudioContext";
+import { notify } from "@/utils/toast/notifyv3";
 
 // --- COMPONENTES ATÓMICOS MEMORIZADOS ---
 
@@ -157,13 +158,15 @@ const CodigoMatricula = () => {
   const saveScore = useCallback(async (attempts, currentTime) => {
     const score = Math.max(1200 - attempts * 100, 200);
     try {
-      await supabaseClient.rpc("submit_game_score", {
+      const { error } = await supabaseClient.rpc("submit_game_score", {
         p_game_id: "mastermind",
         p_score: score,
         p_moves: attempts,
         p_time_seconds: currentTime,
       });
-      toast.success("¡Ranking actualizado!");
+      if (error) {
+        notify.error("Error al guardar el puntaje");
+      }
     } catch (error) {
       console.error(error);
     }
@@ -214,7 +217,15 @@ const CodigoMatricula = () => {
     });
 
     setCurrentGuess([]);
-  }, [currentGuess, secretCode, playWin, playLose, saveScore, timer, playWithCheck]);
+  }, [
+    currentGuess,
+    secretCode,
+    playWin,
+    playLose,
+    saveScore,
+    timer,
+    playWithCheck,
+  ]);
 
   const SoundToggle = (
     <motion.button

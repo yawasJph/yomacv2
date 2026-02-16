@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import filteredWords from "../../../scripts/filtered_words.json";
 import { useAudio } from "../../context/AudioContext";
 import useSound from "use-sound";
+import { notify } from "@/utils/toast/notifyv3";
 
 // Configuración de colores
 const COLORS = {
@@ -143,7 +144,7 @@ const WordleGame = () => {
     if (currentGuess.length < 5) {
       setIsInvalid(true);
       playWithCheck(playError);
-      toast.error("Faltan letras", { ...toastStyle, icon: "⌨️" });
+      notify.error("Faltan letras");
       setTimeout(() => setIsInvalid(false), 400);
       return;
     }
@@ -157,7 +158,7 @@ const WordleGame = () => {
     ) {
       setIsInvalid(true);
       playWithCheck(playError);
-      toast.info("No está en el diccionario", { ...toastStyle, icon: "📚" });
+      notify.info("No está en el diccionario");
       setTimeout(() => setIsInvalid(false), 400);
       return;
     }
@@ -248,7 +249,7 @@ const WordleGame = () => {
     const text = `Palabra del Día #Campus\n${currentRow + 1}/6\n\n${emojiGrid}`;
 
     navigator.clipboard.writeText(text);
-    toast.info("¡Resultados copiados al portapapeles!");
+    notify.info("¡Resultados copiados al portapapeles!");
   };
 
   const triggerConfetti = () => {

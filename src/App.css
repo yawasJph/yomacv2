@@ -30,13 +30,13 @@
   /* Mejora visual */
   padding: 1.25rem !important;
   border-radius: 0.75rem;
-  @apply max-sm:max-w-90;
+  @apply max-sm:max-w-90 ;
 }
 
 /* Personalizar la barra de scroll para que no se vea fea en móviles */
-.prose pre::-webkit-scrollbar {
+/* .prose pre::-webkit-scrollbar {
   height: 6px;
-}
+} */
 
 .prose pre::-webkit-scrollbar-thumb {
   background: #3e4451;
@@ -68,10 +68,10 @@ ul[data-type="taskList"] input[type="checkbox"] {
 
 .code-wrapper pre {
   margin: 0 !important;
-  /* Espacio superior para acomodar el badge y el botón */
+
   padding: 3.5rem 1.5rem 1.5rem !important;
   border: none !important;
-  background-color: transparent !important; /* El fondo lo da el wrapper */
+  background-color: transparent !important; 
 }
 
 /* Efecto de "funda" superior para que los botones siempre resalten */

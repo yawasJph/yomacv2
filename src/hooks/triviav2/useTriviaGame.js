@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import { toast } from "sonner";
+import { notify } from "@/utils/toast/notifyv3";
 
 // Constantes de dificultad
 const DIFFICULTY_SETTINGS = {
@@ -79,7 +79,7 @@ export const useTriviaGame = (profile) => {
       }
     } catch (error) {
       console.error("Error loading questions:", error);
-      toast.error("No se pudieron cargar las preguntas");
+      notify.error("No se pudieron cargar las preguntas");
       setGameState("error");
     }
   }, []);
@@ -223,7 +223,7 @@ export const useTriviaGame = (profile) => {
         console.log(data)
         if (error) {
           console.error("Error saving results:", error);
-          toast.error("Error al guardar los resultados");
+          notify.error("Error al guardar los resultados");
         }
       } catch (error) {
         console.error("Error in saveGameResults:", error);
