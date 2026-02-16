@@ -31,6 +31,7 @@ import UserHoverCard from "./UserHoverCard3";
 import useLiveTimeAgo from "@/hooks/useLiveTimeAgo";
 import { useModal } from "@/context/ModalContextv2";
 import { notify } from "@/utils/toast/notifyv3";
+import MediaViewerModal from "./MediaModalv2";
 
 const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -351,14 +352,21 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
 
       {/* MODAL FULLSCREEN (Fuera del flujo visual del post, pero dentro del componente) */}
       <FullscreenModal isOpen={isModalOpen} onClose={closeVideoModal}>
-        {isModalOpen && (
-          <MediaModal
-            media={media}
-            closeModal={closeVideoModal}
-            initialIndex={selectedIndex}
-          /> //media
-        )}
+        
       </FullscreenModal>
+      {isModalOpen && (
+          // <MediaModal
+          //   media={media}
+          //   closeModal={closeVideoModal}
+          //   initialIndex={selectedIndex}
+          // /> 
+          <MediaViewerModal
+            media={media}
+            initialIndex={selectedIndex}
+            isOpen={isModalOpen}
+            onClose={closeVideoModal}
+          />
+        )}
 
       <ConfirmModal
         isOpen={isDeleteModalOpen}

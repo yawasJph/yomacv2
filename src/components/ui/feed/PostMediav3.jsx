@@ -1,16 +1,23 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 import { useInView } from "react-intersection-observer";
 import FeedVideo from "./FeedVideo";
+import UniversalFeedVideo from "./FeedVideov2";
 
 const PostMedia = ({ media = [], onOpen }) => {
   const isMobile = useIsMobile();
+  const [hasEntered, setHasEntered] = useState(false);
 
   // 🔥 Detectar si el post está en pantalla
   const { ref, inView } = useInView({
-    threshold: 0.6,
+    threshold: 0.1,
+    rootMargin: "200px 0px",
     triggerOnce: false,
   });
+
+  useEffect(() => {
+    if (inView) setHasEntered(true);
+  }, [inView]);
 
   // 🔥 Memo: índices de videos
   const videoIndexes = useMemo(
@@ -19,11 +26,11 @@ const PostMedia = ({ media = [], onOpen }) => {
         if (item.media_type === "video") acc.push(i);
         return acc;
       }, []),
-    [media]
+    [media],
   );
 
   const [activeVideoIndex, setActiveVideoIndex] = useState(
-    videoIndexes[0] ?? -1
+    videoIndexes[0] ?? -1,
   );
 
   // 🔥 Cambiar al siguiente video automáticamente
@@ -36,58 +43,50 @@ const PostMedia = ({ media = [], onOpen }) => {
     setActiveVideoIndex(videoIndexes[nextPos]);
   }, [activeVideoIndex, videoIndexes]);
 
-  // 🔥 Render item GOD
+ 
   const renderItem = useCallback(
-    (item, index, customClass = "") => {
+    (item, index, ratioClass = "aspect-[6/4]") => {
       const isVideo = item.media_type === "video";
 
-      // 🚫 NO renderizar si no está en viewport
-      if (!inView) {
-        return (
-          <div
-            className={`${customClass} w-full h-full bg-muted rounded-xl animate-pulse`}
-          />
-        );
-      }
-
-      if (isVideo) {
-        if (isMobile) {
-          return (
-            <FeedVideo
+      return (
+        <div
+          className={`relative w-full overflow-hidden rounded-xl bg-muted ${ratioClass} transition-transform duration-300 hover:scale-[1.02]`}
+        >
+          {isVideo ? (
+            // isMobile ? (
+              <UniversalFeedVideo
+                src={item.media_url}
+                className="absolute inset-0 w-full h-full object-cover"
+                shouldPlay={hasEntered && activeVideoIndex === index}
+                onEnded={handleVideoEnd}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onOpen(index);
+                }}
+              />
+            // ) : (
+            //   <video
+            //     src={item.media_url}
+            //     className="absolute inset-0 w-full h-full object-cover"
+            //     controls
+            //     muted
+            //     playsInline
+            //     preload="metadata"
+            //   />
+            // )
+          ) : (
+            <img
               src={item.media_url}
-              customClass={customClass}
-              shouldPlay={inView && activeVideoIndex === index}
-              onEnded={handleVideoEnd}
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 w-full h-full object-cover cursor-pointer"
               onClick={() => onOpen(index)}
             />
-          );
-        }
-
-        return (
-          <video
-            src={item.media_url}
-            className={`${customClass} w-full object-cover rounded-xl`}
-            controls
-            muted
-            playsInline
-            preload="metadata"
-            onClick={(e) => e.stopPropagation()}
-          />
-        );
-      }
-
-      return (
-        <img
-          src={item.media_url}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          className={`${customClass} w-full object-cover rounded-xl cursor-pointer hover:opacity-95 transition-opacity`}
-          onClick={() => onOpen(index)}
-        />
+          )}
+        </div>
       );
     },
-    [isMobile, activeVideoIndex, handleVideoEnd, onOpen, inView]
+    [isMobile, activeVideoIndex, handleVideoEnd, onOpen, inView],
   );
 
   if (!media.length) return null;
@@ -96,7 +95,7 @@ const PostMedia = ({ media = [], onOpen }) => {
   if (media.length === 1) {
     return (
       <div ref={ref} className="mb-3 mt-3">
-        {renderItem(media[0], 0, "max-h-[500px]")}
+        {renderItem(media[0], 0, "aspect-7/5")}
       </div>
     );
   }
@@ -109,15 +108,23 @@ const PostMedia = ({ media = [], onOpen }) => {
   return (
     <div ref={ref} className="grid grid-cols-2 gap-1 mt-3 mb-3">
       {displayMedia.map((item, index) => {
-        const spanClass =
-          isThreeLayout && index === 0 ? "h-full max-h-[320px]" : "h-40";
+        // const spanClass =
+        //   isThreeLayout && index === 0 ? "h-full max-h-[320px]" : "h-40";
+
+        // const containerClass =
+        //   isThreeLayout && index === 0 ? "row-span-2" : "relative";
+
+        const ratioClass =
+          isThreeLayout && index === 0
+            ? "aspect-[6/10]" // más alto
+            : "aspect-[6/5]";
 
         const containerClass =
           isThreeLayout && index === 0 ? "row-span-2" : "relative";
 
         return (
           <div key={item.id || index} className={containerClass}>
-            {renderItem(item, index, spanClass)}
+            {renderItem(item, index, ratioClass)}
 
             {extraCount > 0 && index === 3 && (
               <div
