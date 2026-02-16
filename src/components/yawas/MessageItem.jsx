@@ -44,7 +44,7 @@ export const MessageItem = memo(({ message, index }) => {
               />
             </div>
           )}
-          <div className="prose-sm  prose-p:leading-relaxed prose-pre:bg-black/50  prose-p:my-2 prose-headings:font-bold prose-code:before:content-none prose-code:after:content-none prose-invert  prose">
+          <div className="prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/50  prose-p:my-2 prose-headings:font-bold prose-code:before:content-none prose-code:after:content-none prose-invert  prose">
           {/** prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/50  prose-p:my-2 prose-headings:font-bold prose-code:before:content-none prose-code:after:content-none prose-invert  prose */}
             <ReactMarkdown
               children={message.text}
