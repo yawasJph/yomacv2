@@ -30,7 +30,7 @@
   /* Mejora visual */
   padding: 1.25rem !important;
   border-radius: 0.75rem;
-  @apply max-sm:max-w-90 ;
+  @apply max-sm:max-w-85 ;
 }
 
 /* Personalizar la barra de scroll para que no se vea fea en móviles */

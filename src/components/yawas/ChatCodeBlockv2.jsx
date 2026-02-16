@@ -29,7 +29,7 @@ export function ChatCodeBlock({ code, language }) {
   };
 
   return (
-    <div className="group relative my-4 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 shadow-xl max-w-95">
+    <div className="group relative my-4 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900 shadow-xl max-w-100">
 
       {/* HEADER */}
       <div className="flex items-center justify-between px-4 py-2 bg-neutral-800/90 backdrop-blur border-b border-neutral-700">
