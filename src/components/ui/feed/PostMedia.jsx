@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useIsMobile } from "../../../hooks/useIsMobile";
-import FeedVideo from "./FeedVideo";
+import FeedVideo from "./FeedVideov2";
 
 const PostMedia = ({ media, onOpen }) => {
   // Estado para saber qué video del post se está reproduciendo

@@ -19,20 +19,43 @@ export default function ModernVideoPlayer({ src, autoPlay = true }) {
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showControls, setShowControls] = useState(true);
+  const hideTimeout = useRef(null)
+
+  const startHideTimer = () => {
+  clearTimeout(hideTimeout.current)
+
+  hideTimeout.current = setTimeout(() => {
+    setShowControls(false)
+  }, 2500)
+}
+
+
+  useEffect(() => {
+  if (videoRef.current && autoPlay) {
+    videoRef.current.play()
+      .then(() => setPlaying(true))
+      .catch(() => setPlaying(false));
+  }
+}, [autoPlay])
 
   // ▶️ Play / Pause
   const togglePlay = () => {
-    const video = videoRef.current;
-    if (!video) return;
+  if (videoRef.current.paused) {
+    videoRef.current.play()
+    setIsPlaying(true)
+    startHideTimer()
+  } else {
+    videoRef.current.pause()
+    setIsPlaying(false)
+    setShowControls(true)
+  }
+}
 
-    if (video.paused) {
-      video.play();
-      setPlaying(true);
-    } else {
-      video.pause();
-      setPlaying(false);
-    }
-  };
+const handleMouseMove = () => {
+  setShowControls(true)
+  if (playing) startHideTimer()
+}
+
 
   // 🔊 Mute
   const toggleMute = () => {
@@ -81,10 +104,11 @@ export default function ModernVideoPlayer({ src, autoPlay = true }) {
 
   const showUI = () => setShowControls(true);
 
+  console.log(showControls)
   return (
     <div
       className="relative w-full h-full group"
-      onMouseMove={showUI}
+      onMouseMove={handleMouseMove}
       onTouchStart={showUI}
     >
       {/* VIDEO */}
@@ -96,6 +120,9 @@ export default function ModernVideoPlayer({ src, autoPlay = true }) {
         onLoadedMetadata={handleLoaded}
         onClick={togglePlay}
         className="w-full h-full object-contain rounded-xl"
+        onEnded={() => setPlaying(false)}
+
+        
       />
 
       {/* CONTROLS */}

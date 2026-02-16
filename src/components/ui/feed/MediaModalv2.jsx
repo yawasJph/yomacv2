@@ -32,7 +32,7 @@ const MediaViewerModal = ({ media, initialIndex, isOpen, onClose }) => {
   const prev = () => setIndex((i) => (i - 1 + media.length) % media.length);
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-xl flex items-center justify-center animate-fade-in"
+    <div className="fixed inset-0 z-9999 bg-black/95 backdrop-blur-xl flex items-center justify-center animate-fade-in"
     onClick={(e) => e.stopPropagation()}>
       {/* CLOSE */}
       <button

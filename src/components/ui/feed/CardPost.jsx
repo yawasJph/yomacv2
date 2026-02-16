@@ -13,8 +13,8 @@ import {
 import FullscreenModal from "./FullscreenModal";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 import OpenGraphCard from "../openGraph/OpenGraphCard2";
-import PostMedia from "./PostMediav3";
-import MediaModal from "./MediaModal";
+import PostMedia from "./PostMediav2";
+import MediaModal from "./MediaModalv3";
 //import UserHoverCard from "./UserHoverCardv2";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
@@ -29,7 +29,6 @@ import RenderTextWithLinks from "../../utils/RenderTextWithLinks";
 import RepostButton from "../RepostButton";
 import UserHoverCard from "./UserHoverCard3";
 import useLiveTimeAgo from "@/hooks/useLiveTimeAgo";
-import { useModal } from "@/context/ModalContextv2";
 import { notify } from "@/utils/toast/notifyv3";
 import MediaViewerModal from "./MediaModalv2";
 
@@ -352,21 +351,16 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
 
       {/* MODAL FULLSCREEN (Fuera del flujo visual del post, pero dentro del componente) */}
       <FullscreenModal isOpen={isModalOpen} onClose={closeVideoModal}>
+         {isModalOpen && (
+          <MediaModal
+            media={media}
+            closeModal={closeVideoModal}
+            initialIndex={selectedIndex}
+          /> 
+        )}
         
       </FullscreenModal>
-      {isModalOpen && (
-          // <MediaModal
-          //   media={media}
-          //   closeModal={closeVideoModal}
-          //   initialIndex={selectedIndex}
-          // /> 
-          <MediaViewerModal
-            media={media}
-            initialIndex={selectedIndex}
-            isOpen={isModalOpen}
-            onClose={closeVideoModal}
-          />
-        )}
+     
 
       <ConfirmModal
         isOpen={isDeleteModalOpen}
