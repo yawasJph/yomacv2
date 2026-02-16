@@ -13,7 +13,7 @@ import {
 import FullscreenModal from "./FullscreenModal";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 import OpenGraphCard from "../openGraph/OpenGraphCard2";
-import PostMedia from "./PostMedia";
+import PostMedia from "./PostMediav3";
 import MediaModal from "./MediaModal";
 //import UserHoverCard from "./UserHoverCardv2";
 import { Link, useNavigate } from "react-router-dom";
@@ -193,16 +193,6 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                       )}
                     </h3>
                   </div>
-
-                  {/* Columna 2: Tiempo del post - se mueve según el largo del nombre */}
-                  {/* <span
-                    className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-500 font-medium whitespace-nowrap p-1.5 shrink-0 "
-                    title={new Date(post.created_at).toLocaleString("es-PE")}
-                  >
-                    {isMobile
-                      ? timeAgoTiny(post.created_at)
-                      : timeAgoLong(post.created_at)}
-                  </span> */}
                   <span
                     className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap p-1.5 shrink-0"
                     title={new Date(post.created_at).toLocaleString("es-PE")}

@@ -20,7 +20,7 @@
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
 
   /* ESTO ARREGLA EL LAYOUT EN MÓVIL */
-  /* width: 100%; */
+  width: 100%;
   /* max-width: 100%;  */
   overflow-x: auto; /* Permite scroll horizontal */
   white-space: pre; /* Mantiene el formato del código */
@@ -30,7 +30,7 @@
   /* Mejora visual */
   /* padding: 1.25rem !important; */
   border-radius: 0.75rem;
-  @apply max-sm:max-w-80 max-w-100;
+  @apply max-sm:max-w-80 max-w-120;
 }
 
 /* Personalizar la barra de scroll para que no se vea fea en móviles */

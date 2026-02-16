@@ -1,0 +1,140 @@
+import { useState, useMemo, useCallback } from "react";
+import { useIsMobile } from "../../../hooks/useIsMobile";
+import { useInView } from "react-intersection-observer";
+import FeedVideo from "./FeedVideo";
+
+const PostMedia = ({ media = [], onOpen }) => {
+  const isMobile = useIsMobile();
+
+  // 🔥 Detectar si el post está en pantalla
+  const { ref, inView } = useInView({
+    threshold: 0.6,
+    triggerOnce: false,
+  });
+
+  // 🔥 Memo: índices de videos
+  const videoIndexes = useMemo(
+    () =>
+      media.reduce((acc, item, i) => {
+        if (item.media_type === "video") acc.push(i);
+        return acc;
+      }, []),
+    [media]
+  );
+
+  const [activeVideoIndex, setActiveVideoIndex] = useState(
+    videoIndexes[0] ?? -1
+  );
+
+  // 🔥 Cambiar al siguiente video automáticamente
+  const handleVideoEnd = useCallback(() => {
+    if (!videoIndexes.length) return;
+
+    const currentPos = videoIndexes.indexOf(activeVideoIndex);
+    const nextPos = (currentPos + 1) % videoIndexes.length;
+
+    setActiveVideoIndex(videoIndexes[nextPos]);
+  }, [activeVideoIndex, videoIndexes]);
+
+  // 🔥 Render item GOD
+  const renderItem = useCallback(
+    (item, index, customClass = "") => {
+      const isVideo = item.media_type === "video";
+
+      // 🚫 NO renderizar si no está en viewport
+      if (!inView) {
+        return (
+          <div
+            className={`${customClass} w-full h-full bg-muted rounded-xl animate-pulse`}
+          />
+        );
+      }
+
+      if (isVideo) {
+        if (isMobile) {
+          return (
+            <FeedVideo
+              src={item.media_url}
+              customClass={customClass}
+              shouldPlay={inView && activeVideoIndex === index}
+              onEnded={handleVideoEnd}
+              onClick={() => onOpen(index)}
+            />
+          );
+        }
+
+        return (
+          <video
+            src={item.media_url}
+            className={`${customClass} w-full object-cover rounded-xl`}
+            controls
+            muted
+            playsInline
+            preload="metadata"
+            onClick={(e) => e.stopPropagation()}
+          />
+        );
+      }
+
+      return (
+        <img
+          src={item.media_url}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className={`${customClass} w-full object-cover rounded-xl cursor-pointer hover:opacity-95 transition-opacity`}
+          onClick={() => onOpen(index)}
+        />
+      );
+    },
+    [isMobile, activeVideoIndex, handleVideoEnd, onOpen, inView]
+  );
+
+  if (!media.length) return null;
+
+  // 📦 SINGLE MEDIA
+  if (media.length === 1) {
+    return (
+      <div ref={ref} className="mb-3 mt-3">
+        {renderItem(media[0], 0, "max-h-[500px]")}
+      </div>
+    );
+  }
+
+  // 📦 GRID LOGIC
+  const displayMedia = media.slice(0, 4);
+  const extraCount = media.length - 4;
+  const isThreeLayout = media.length === 3;
+
+  return (
+    <div ref={ref} className="grid grid-cols-2 gap-1 mt-3 mb-3">
+      {displayMedia.map((item, index) => {
+        const spanClass =
+          isThreeLayout && index === 0 ? "h-full max-h-[320px]" : "h-40";
+
+        const containerClass =
+          isThreeLayout && index === 0 ? "row-span-2" : "relative";
+
+        return (
+          <div key={item.id || index} className={containerClass}>
+            {renderItem(item, index, spanClass)}
+
+            {extraCount > 0 && index === 3 && (
+              <div
+                className="absolute inset-0 bg-black/60 hover:bg-black/70 rounded-xl flex items-center justify-center text-white text-2xl font-bold cursor-pointer transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpen(3);
+                }}
+              >
+                +{extraCount}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+export default PostMedia;
