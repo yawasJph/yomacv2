@@ -132,7 +132,7 @@ const handleMouseMove = () => {
         }`}
       >
         {/* GRADIENT */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-xl" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent rounded-xl" />
 
         {/* PROGRESS BAR */}
         <div

@@ -91,7 +91,7 @@ const PostMedia = ({ media = [], onOpen }) => {
   if (media.length === 1) {
     return (
       <div ref={ref} className="mb-3 mt-3">
-        {renderItem(media[0], 0, "aspect-7/5")}
+        {renderItem(media[0], 0, "aspect-7/5 sm:aspect-16/9")}
       </div>
     );
   }
@@ -100,7 +100,7 @@ const PostMedia = ({ media = [], onOpen }) => {
   const displayMedia = media.slice(0, 4);
   const extraCount = media.length - 4;
   const isThreeLayout = media.length === 3;
-
+  const isTwoLayout = media.length === 2;
   return (
     <div ref={ref} className="grid grid-cols-2 gap-1 mt-3 mb-3">
       {displayMedia.map((item, index) => {
@@ -110,10 +110,24 @@ const PostMedia = ({ media = [], onOpen }) => {
         // const containerClass =
         //   isThreeLayout && index === 0 ? "row-span-2" : "relative";
 
+        //  isThreeLayout && index === 0
+        //     ? "aspect-[8/16]" // más alto
+        //     : "aspect-[4/4]"; // estándar
+
+        //ratioClass threeLayout && two Layout
+
+        if(isTwoLayout){
+          return (
+            <div key={item.id || index} className="relative">
+              {renderItem(item, index, "aspect-[7/9] sm:aspect-[5/5]")}
+            </div>
+          )
+        }
+
         const ratioClass =
           isThreeLayout && index === 0
-            ? "aspect-[6/10]" // más alto
-            : "aspect-[6/5]";
+            ? "aspect-[6/10] sm:aspect-[7/10]" // más alto
+            : "aspect-[6/5] sm:aspect-[7/5]"; // estándar
 
         const containerClass =
           isThreeLayout && index === 0 ? "row-span-2" : "relative";
