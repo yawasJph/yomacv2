@@ -43,7 +43,6 @@ const PostMedia = ({ media = [], onOpen }) => {
     setActiveVideoIndex(videoIndexes[nextPos]);
   }, [activeVideoIndex, videoIndexes]);
 
- 
   const renderItem = useCallback(
     (item, index, ratioClass = "aspect-[6/4]") => {
       const isVideo = item.media_type === "video";
@@ -54,16 +53,14 @@ const PostMedia = ({ media = [], onOpen }) => {
         >
           {isVideo ? (
             // isMobile ? (
-              <UniversalFeedVideo
-                src={item.media_url}
-                className="absolute inset-0 w-full h-full object-cover"
-                shouldPlay={hasEntered && activeVideoIndex === index}
-                onEnded={handleVideoEnd}
-                onClick={(e) => {
-                    e.stopPropagation();
-                    onOpen(index);
-                }}
-              />
+            <UniversalFeedVideo
+              src={item.media_url}
+              className="absolute inset-0 w-full h-full object-cover"
+              shouldPlay={hasEntered && activeVideoIndex === index}
+              onEnded={handleVideoEnd}
+              onClick={() => onOpen(index)}
+            />
+          ) : (
             // ) : (
             //   <video
             //     src={item.media_url}
@@ -74,7 +71,6 @@ const PostMedia = ({ media = [], onOpen }) => {
             //     preload="metadata"
             //   />
             // )
-          ) : (
             <img
               src={item.media_url}
               loading="lazy"

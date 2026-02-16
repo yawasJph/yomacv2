@@ -39,12 +39,12 @@ const MediaModal = ({ media, closeModal, initialIndex }) => {
   // Manejar movimiento del toque
   const onTouchMove = (e) => {
     if (!touchStart) return;
-    
+
     const currentTouch = e.targetTouches[0].clientX;
     const diff = currentTouch - touchStart;
-    
+
     setTouchEnd(currentTouch);
-    
+
     // Solo aplicar offset si hay múltiples elementos
     if (media.length > 1) {
       // Limitar el offset para no arrastrar demasiado
@@ -105,7 +105,7 @@ const MediaModal = ({ media, closeModal, initialIndex }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black/97 backdrop-blur-md flex justify-center items-center z-[9999] animate-fadeIn"
+      className="fixed inset-0 bg-black/97 backdrop-blur-md flex justify-center items-center z-9999 animate-fadeIn"
       onClick={closeModal}
     >
       <div
@@ -200,13 +200,13 @@ const MediaModal = ({ media, closeModal, initialIndex }) => {
               </div>
 
               {/* Contador numérico */}
-              <div className="text-white text-xs sm:text-sm font-medium bg-black/60 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/10">
+              <div className="text-white text-xs sm:text-sm font-medium bg-black/60 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/10 max-sm:hidden">
                 {currentIndex + 1} / {media.length}
               </div>
             </div>
 
             {/* Hint de swipe (solo se muestra una vez en móvil) */}
-            {currentIndex === 0 && media.length > 1 && (
+            {/* {currentIndex === 0 && media.length > 1 && (
               <div className="absolute bottom-20 left-1/2 -translate-x-1/2 sm:hidden animate-bounce">
                 <div className="text-white/60 text-xs bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-2">
                   <ChevronLeft size={14} />
@@ -214,7 +214,7 @@ const MediaModal = ({ media, closeModal, initialIndex }) => {
                   <ChevronRight size={14} />
                 </div>
               </div>
-            )}
+            )} */}
           </>
         )}
       </div>

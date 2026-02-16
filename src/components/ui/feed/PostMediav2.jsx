@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { useIsMobile } from "../../../hooks/useIsMobile";
-import FeedVideo from "./FeedVideo";
+import UniversalFeedVideo from "./FeedVideov2";
 
 const PostMedia = ({ media = [], onOpen }) => {
   const isMobile = useIsMobile();
@@ -38,11 +38,18 @@ const PostMedia = ({ media = [], onOpen }) => {
       if (isVideo) {
         // if (isMobile) {
           return (
-            <FeedVideo
+            // <FeedVideo
+            //   src={item.media_url}
+            //   customClass={customClass}
+            //   shouldPlay={activeVideoIndex === index}
+            //   onEnded={handleVideoEnd}
+            //   onClick={() => onOpen(index)}
+            // />
+            <UniversalFeedVideo
               src={item.media_url}
-              customClass={customClass}
               shouldPlay={activeVideoIndex === index}
-              onEnded={handleVideoEnd}
+              onEnded={handleVideoEnd} 
+              className={customClass}
               onClick={() => onOpen(index)}
             />
           );
