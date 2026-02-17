@@ -34,6 +34,16 @@ const LinkPreviewCard = ({ preview, isLoading, onClose }) => {
         rel="noopener noreferrer"
         className="flex w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 mb-4"
       >
+        {preview.image && (
+          <div className="w-30 md:w-44 min-h-24 shrink-0 bg-gray-200 dark:bg-neutral-800 overflow-hidden">
+            <img
+              src={preview.image}
+              alt="Preview"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+        
         <div className="flex-1 p-3 flex flex-col justify-center">
           {preview.publisher && (
             <p className="text-[10px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1 line-clamp-1">
@@ -64,16 +74,6 @@ const LinkPreviewCard = ({ preview, isLoading, onClose }) => {
             </div>
           )}
         </div>
-
-        {preview.image && (
-          <div className="w-30 md:w-44 min-h-24 shrink-0 bg-gray-200 dark:bg-neutral-800 overflow-hidden">
-            <img
-              src={preview.image}
-              alt="Preview"
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
       </a>
     </div>
   );
