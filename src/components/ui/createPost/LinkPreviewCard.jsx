@@ -50,7 +50,7 @@ const LinkPreviewCard = ({ preview, isLoading, onClose }) => {
           </div>
         )}
 
-        {/* <div className="flex-1 p-3 flex flex-col justify-center">
+        <div className="flex-1 p-3 flex flex-col justify-center">
           {preview.publisher && (
             <p className="text-[10px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1 line-clamp-1">
               {preview.publisher}
@@ -79,43 +79,8 @@ const LinkPreviewCard = ({ preview, isLoading, onClose }) => {
               </span>
             </div>
           )}
-        </div> */}
-        <div className="flex flex-col flex-1 min-w-0 px-3 py-2">
-          <div className="flex-1 min-w-0">
-            {preview.publisher && (
-              <span className="block text-[9px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-0.5 truncate">
-                {preview.publisher}
-              </span>
-            )}
-
-            {preview.title && (
-              <h3 className="text-[13px] sm:text-sm font-semibold text-gray-900 dark:text-gray-100 leading-snug line-clamp-2">
-                {preview.title}
-              </h3>
-            )}
-
-            {preview.description && (
-              <p className="text-gray-500 dark:text-gray-400 text-[11px] sm:text-xs line-clamp-2 mt-1 leading-snug">
-                {preview.description}
-              </p>
-            )}
-          </div>
-
-          {/* FOOTER */}
-          <div className="flex items-center gap-1.5 mt-1.5">
-            <img
-              src={preview.logo || favicon}
-              alt="Prevciew"
-              loading="lazy"
-              decoding="async"
-              className="w-3 h-3 rounded-sm object-contain"
-            />
-
-            <span className="text-[10px] font-medium text-gray-400 dark:text-neutral-500 truncate">
-               {new URL(preview.url).hostname}
-            </span>
-          </div>
         </div>
+        
       </a>
     </div>
   );
