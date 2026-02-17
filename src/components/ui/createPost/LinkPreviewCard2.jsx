@@ -1,4 +1,4 @@
-const OpenGraphCard = ({ preview, isLoading, onClose }) => {
+const LinkPreviewCard = ({ preview, isLoading, onClose }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
 
   if (isLoading) {
@@ -95,3 +95,5 @@ const OpenGraphCard = ({ preview, isLoading, onClose }) => {
     </div>
   );
 };
+
+export default LinkPreviewCard;
