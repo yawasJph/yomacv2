@@ -36,21 +36,21 @@ const OpenGraphCard = ({ preview, isLoading, onClose }) => {
       </button>
 
       <a
-        href={og_data.url}
+        href={preview.url}
         target="_blank"
         rel="noopener noreferrer"
         className="group flex w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl overflow-hidden hover:bg-gray-50 dark:hover:bg-neutral-800/40 transition-all duration-200 shadow-sm active:scale-[0.99]"
       >
         {/* IMAGE */}
         <div className="relative w-28 sm:w-36 aspect-4/3 shrink-0 bg-gray-100 dark:bg-neutral-800 overflow-hidden">
-          {!imgLoaded && (
+          {!preview.image && (
             <div className="absolute inset-0 animate-pulse bg-linear-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-neutral-700 dark:via-neutral-600 dark:to-neutral-700" />
           )}
 
-          {visible && og_data.image && (
+          {preview.image && (
             <img
-              src={og_data.image}
-              alt={og_data.title || "Preview"}
+              src={preview.image}
+              alt={preview.title || "Preview"}
               loading="lazy"
               decoding="async"
               onLoad={() => setImgLoaded(true)}
@@ -64,28 +64,28 @@ const OpenGraphCard = ({ preview, isLoading, onClose }) => {
         {/* TEXT */}
         <div className="flex flex-col flex-1 min-w-0 px-3 py-2">
           <div className="flex-1">
-            {og_data.publisher && (
+            {preview.publisher && (
               <span className="text-[9px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide truncate">
-                {og_data.publisher}
+                {preview.publisher}
               </span>
             )}
 
-            {og_data.title && (
+            {preview.title && (
               <h3 className="text-[13px] font-semibold text-gray-900 dark:text-gray-100 line-clamp-2">
-                {og_data.title}
+                {preview.title}
               </h3>
             )}
 
-            {og_data.description && (
+            {preview.description && (
               <p className="text-gray-500 dark:text-gray-400 text-[11px] line-clamp-2 mt-1">
-                {og_data.description}
+                {preview.description}
               </p>
             )}
           </div>
 
           <div className="flex items-center gap-1.5 mt-1">
             <img
-              src={og_data.logo || favicon}
+              src={preview.logo || favicon}
               alt=""
               className="w-3 h-3 rounded-sm object-contain"
             />
