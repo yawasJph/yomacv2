@@ -3,6 +3,7 @@ import React from "react";
 import { X } from "lucide-react";
 
 const LinkPreviewCard = ({ preview, isLoading, onClose }) => {
+
   if (isLoading) {
     return (
       <div className="mt-4 p-3 border border-gray-100 dark:border-neutral-800 rounded-xl flex items-center gap-3 animate-pulse">
@@ -18,6 +19,7 @@ const LinkPreviewCard = ({ preview, isLoading, onClose }) => {
   if (!preview) return null;
 
   // Renderizado de la tarjeta de preview (tu JSX original)
+  console.log("Renderizando LinkPreviewCard con datos:", preview);
   return (
     <div className="relative mt-8 group">
       <button
@@ -43,7 +45,7 @@ const LinkPreviewCard = ({ preview, isLoading, onClose }) => {
             />
           </div>
         )}
-        
+
         <div className="flex-1 p-3 flex flex-col justify-center">
           {preview.publisher && (
             <p className="text-[10px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1 line-clamp-1">
