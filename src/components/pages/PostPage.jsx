@@ -15,7 +15,6 @@ import { useAuthModal } from "../../context/AuthModalContext";
 import { useAuthAction } from "../../hooks/useAuthAction";
 //import AuthModal from "../ui/AuthModal ";
 
-
 const PostPage = () => {
   const { postId } = useParams();
   const navigate = useNavigate();

@@ -1,4 +1,5 @@
 const OpenGraphCard = ({ og_data }) => {
+  
   if (!og_data || !og_data.url) return null;
 
   const hostname = new URL(og_data.url).hostname;

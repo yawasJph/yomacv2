@@ -20,7 +20,6 @@ import { Link, useNavigate } from "react-router-dom";
 import ReportModal from "./ReportModalv6";
 import RenderTextWithLinks from "../utils/RenderTextWithLinks";
 import { useAuthAction } from "../../hooks/useAuthAction";
-import { set } from "date-fns";
 
 const CommentItem = ({ comment, postId, isDetailedView = false }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -229,7 +228,7 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
               </div>
             </div>
           </div>
-          <div className="text-gray-800 dark:text-gray-200 mt-1 text-[15px] whitespace-pre-wrap wrap-break-word">
+          <div className="text-gray-800 dark:text-gray-200 mt-1 text-[15px] whitespace-pre-wrap wrap-break-word overflow-hidden">
             <RenderTextWithLinks text={displayedText} />
             {/* {displayedText} */}
             {isLong && !isExpanded && "..."}

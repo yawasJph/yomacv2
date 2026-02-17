@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import FullscreenModal from "./FullscreenModal";
 import { useIsMobile } from "../../../hooks/useIsMobile";
-import OpenGraphCard from "../openGraph/OpenGraphCard2";
+import OpenGraphCard from "../openGraph/OpenGraphCard3";
 import PostMedia from "./PostMediav4";
 import MediaModal from "./MediaModalv4";
 import { Link, useNavigate } from "react-router-dom";
