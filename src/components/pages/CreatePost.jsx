@@ -6,7 +6,7 @@ import EmojiPicker from "emoji-picker-react";
 import GifPicker from "../utils/GifPicker";
 import { usePostState } from "../../hooks/usePostState"; // 👈 Nuevo Hook de Estado
 import { useLinkPreview } from "../../hooks/useLinkPreview2"; // 👈 Nuevo Hook de Preview
-import LinkPreviewCard from "../ui/createPost/LinkPreviewCard2"; // 👈 Nuevo Componente
+import LinkPreviewCard from "../ui/createPost/LinkPreviewCard"; // 👈 Nuevo Componente
 import PostMediaGrid from "../ui/createPost/PostMediaGrid"; // 👈 Nuevo Componente
 import { usePostCreation } from "../../hooks/usePostCreation2";
 import { useProfile } from "../../hooks/useProfile";
