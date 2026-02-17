@@ -1,22 +1,9 @@
-import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-const OpenGraphCard = ({ og_data, onclose, isLoading }) => {
+const OpenGraphCard = ({ og_data }) => {
   const cardRef = useRef(null);
   const [visible, setVisible] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
-
-  if (isLoading) {
-    return (
-      <div className="mt-4 p-3 border border-gray-100 dark:border-neutral-800 rounded-xl flex items-center gap-3 animate-pulse">
-        <div className="skeleton h-16 w-16 bg-gray-200 dark:bg-neutral-800 rounded-md"></div>
-        <div className="flex-1 space-y-2">
-          <div className="skeleton h-3 bg-gray-200 dark:bg-neutral-800 rounded w-3/4"></div>
-          <div className="skeleton h-3 bg-gray-200 dark:bg-neutral-800 rounded w-1/2"></div>
-        </div>
-      </div>
-    );
-  }
 
   if (!og_data?.url) return null;
 
@@ -48,18 +35,8 @@ const OpenGraphCard = ({ og_data, onclose, isLoading }) => {
       href={og_data.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl hover:bg-gray-50 dark:hover:bg-neutral-800/40 transition-all duration-200 mb-3 no-underline shadow-sm active:scale-[0.99] relative"
+      className="group flex w-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl hover:bg-gray-50 dark:hover:bg-neutral-800/40 transition-all duration-200 mb-3 no-underline shadow-sm active:scale-[0.99] overflow-hidden"
     >
-      {/*overflow-hidden* */}
-      {onclose && (
-        <button
-          onClick={onclose}
-          className="absolute -top-2 right-0 bg-gray-900 text-white p-1 rounded-full z-20 shadow-md lg:opacity-0 group-hover:opacity-100 transition-opacity"
-          title="Cerrar previsualización"
-        >
-          <X size={12} />
-        </button>
-      )}
       {/* IMAGE */}
       <div className="relative w-28 sm:w-36 aspect-4/3 shrink-0 bg-gray-100 dark:bg-neutral-800 overflow-hidden">
         {/* Skeleton */}
