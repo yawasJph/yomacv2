@@ -20,7 +20,7 @@ export const useLinkPreview = (debouncedContent, linkPreviewClosed) => {
     
     queryFn: async () => {
       // La lógica de fetch de tu componente original:
-      const { data, error } = await supabaseClient.functions.invoke("og", {
+      const { data, error } = await supabaseClient.functions.invoke("ogv2", {
         body: { url: foundUrl },
       });
 
