@@ -11,6 +11,7 @@ import PostMediaGrid from "../ui/createPost/PostMediaGrid"; // 👈 Nuevo Compon
 import { usePostCreation } from "../../hooks/usePostCreation2";
 import { useProfile } from "../../hooks/useProfile";
 import { notify } from "@/utils/toast/notifyv3";
+import OpenGraphCard from "../ui/openGraph/OpenGraphCard4";
 
 const MAX_SIZE = 100 * 1024 * 1024; // 100MB
 
@@ -289,7 +290,7 @@ const CreatePost = () => {
       </div>
 
       {/* Tarjeta de Preview */}
-      <LinkPreviewCard
+      <OpenGraphCard
         preview={linkPreview}
         isLoading={isPreviewLoading}
         onClose={handleCloseLinkPreview}
