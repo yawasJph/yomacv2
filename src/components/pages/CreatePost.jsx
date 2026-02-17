@@ -290,8 +290,8 @@ const CreatePost = () => {
       </div>
 
       {/* Tarjeta de Preview */}
-      <LinkPreviewCard
-        preview={linkPreview}
+      <OpenGraphCard
+        og_data={linkPreview}
         isLoading={isPreviewLoading}
         onClose={handleCloseLinkPreview}
       />

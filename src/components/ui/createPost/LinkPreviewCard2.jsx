@@ -1,11 +1,6 @@
 import { X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
 
-const OpenGraphCard = ({ og_data, onClose, isLoading }) => {
-  const cardRef = useRef(null);
-  const [visible, setVisible] = useState(!onClose); // 👈 preview siempre visible
-  const [imgLoaded, setImgLoaded] = useState(false);
-
+const OpenGraphCard = ({ preview, isLoading, onClose }) => {
   if (isLoading) {
     return (
       <div className="mt-4 p-3 border border-gray-100 dark:border-neutral-800 rounded-xl flex items-center gap-3 animate-pulse">
@@ -18,43 +13,27 @@ const OpenGraphCard = ({ og_data, onClose, isLoading }) => {
     );
   }
 
-  if (!og_data?.url) return null;
+  if (!preview) return null;
 
   let hostname = "";
   try {
-    hostname = new URL(og_data.url).hostname.replace("www.", "");
-  } catch {
-    hostname = og_data.url;
+    hostname = new URL(preview.url).hostname.replace("www.", "");
+  } catch (err) {
+    hostname = preview.url;
   }
-
-  // Lazy only when used in feed
-  useEffect(() => {
-    if (onClose) return; // preview no necesita observer
-
-    const observer = new IntersectionObserver(
-      ([entry]) => entry.isIntersecting && setVisible(true),
-      { threshold: 0.15 }
-    );
-
-    if (cardRef.current) observer.observe(cardRef.current);
-
-    return () => observer.disconnect();
-  }, [onClose]);
 
   const favicon = `https://www.google.com/s2/favicons?domain=${hostname}&sz=32`;
 
   return (
-    <div ref={cardRef} className="relative mt-3">
-      
+    <div className="relative mt-3">
       {/* CLOSE BUTTON */}
-      {onClose && (
-        <button
-          onClick={onClose}
-          className="absolute -top-2 right-0 bg-gray-900 text-white p-1 rounded-full z-20 shadow-md lg:opacity-0 group-hover:opacity-100 transition-opacity"
-        >
-          <X size={12} />
-        </button>
-      )}
+
+      <button
+        onClick={onClose}
+        className="absolute -top-2 right-0 bg-gray-900 text-white p-1 rounded-full z-20 shadow-md lg:opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        <X size={12} />
+      </button>
 
       <a
         href={og_data.url}
