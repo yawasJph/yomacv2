@@ -19,7 +19,7 @@ const LinkPreviewCard = ({ preview, isLoading, onClose }) => {
   if (!preview) return null;
 
   // Renderizado de la tarjeta de preview (tu JSX original)
-  console.log("Renderizando LinkPreviewCard con datos:", preview);
+
   return (
     <div className="relative mt-8 group">
       <button
