@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const LinkPreviewCard = ({ preview, isLoading, onClose }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
 
