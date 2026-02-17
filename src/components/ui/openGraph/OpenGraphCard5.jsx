@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 const OpenGraphCard = ({ og_data, onClose, isLoading }) => {
   const cardRef = useRef(null);
-  const [visible, setVisible] = useState(!onClose); // 👈 preview siempre visible
+  const [visible, setVisible] = useState(true); // 👈 preview siempre visible
   const [imgLoaded, setImgLoaded] = useState(false);
 
   if (isLoading) {
