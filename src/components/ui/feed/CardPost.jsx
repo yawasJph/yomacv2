@@ -13,9 +13,8 @@ import {
 import FullscreenModal from "./FullscreenModal";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 import OpenGraphCard from "../openGraph/OpenGraphCard2";
-import PostMedia from "./PostMediav3";
+import PostMedia from "./PostMediav4";
 import MediaModal from "./MediaModalv4";
-//import UserHoverCard from "./UserHoverCardv2";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { useAuthAction } from "../../../hooks/useAuthAction";
@@ -30,7 +29,6 @@ import RepostButton from "../RepostButton";
 import UserHoverCard from "./UserHoverCard3";
 import useLiveTimeAgo from "@/hooks/useLiveTimeAgo";
 import { notify } from "@/utils/toast/notifyv3";
-import MediaViewerModal from "./MediaModalv2";
 
 const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);

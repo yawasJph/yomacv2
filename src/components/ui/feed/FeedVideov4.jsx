@@ -1,13 +1,13 @@
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef, useEffect, useState, useCallback, forwardRef, useImperativeHandle } from "react";
 import { Play, Pause, Volume2, VolumeX } from "lucide-react";
 
-const UniversalFeedVideo = ({
+const UniversalFeedVideo = forwardRef(({
   src,
   shouldPlay,
   onEnded,
   className = "",
   onClick,    
-}) => {
+}, ref) => {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -16,6 +16,24 @@ const UniversalFeedVideo = ({
   const [progress, setProgress] = useState(0);
   const [isHover, setIsHover] = useState(false);
   const [isInView, setIsInView] = useState(false);
+
+  // ✅ Exponer métodos al componente padre
+  useImperativeHandle(ref, () => ({
+    pause: () => {
+      if (videoRef.current) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      }
+    },
+    reset: () => {
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
+        setIsPlaying(false);
+        setProgress(0);
+      }
+    }
+  }));
 
   // 🎯 IntersectionObserver → pausa fuera de pantalla
   useEffect(() => {
@@ -42,7 +60,7 @@ const UniversalFeedVideo = ({
     }
   }, [shouldPlay, isInView]);
 
-  // 🎯 Progress tracking (MUY importante)
+  // 🎯 Progress tracking
   const handleTimeUpdate = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -50,8 +68,18 @@ const UniversalFeedVideo = ({
     setProgress((video.currentTime / video.duration) * 100);
   }, []);
 
+  // 🎯 Manejar cuando el video termina
+  const handleVideoEnded = useCallback(() => {
+    setIsPlaying(false);
+    setProgress(0);
+    if (onEnded) {
+      onEnded();
+    }
+  }, [onEnded]);
+
   // 🎯 Toggle Play
-  const togglePlay = useCallback(() => {
+  const togglePlay = useCallback((e) => {
+    e?.stopPropagation();
     const video = videoRef.current;
     if (!video) return;
 
@@ -62,6 +90,23 @@ const UniversalFeedVideo = ({
       video.pause();
       setIsPlaying(false);
     }
+  }, []);
+
+  // 🎯 Sincronizar estado cuando el video se pausa/reproduce
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+
+    video.addEventListener('play', handlePlay);
+    video.addEventListener('pause', handlePause);
+
+    return () => {
+      video.removeEventListener('play', handlePlay);
+      video.removeEventListener('pause', handlePause);
+    };
   }, []);
 
   return (
@@ -79,7 +124,7 @@ const UniversalFeedVideo = ({
         muted={muted}
         playsInline
         preload="metadata"
-        onEnded={onEnded}
+        onEnded={handleVideoEnded}
         onTimeUpdate={handleTimeUpdate}
         className="w-full h-full object-cover"
       />
@@ -88,12 +133,22 @@ const UniversalFeedVideo = ({
       {!isPlaying && (
         <button
           onClick={togglePlay}
-          className="absolute inset-0 flex items-center justify-center"
+          className="absolute inset-0 flex items-center justify-center bg-black/10 transition-all hover:bg-black/20"
         >
-          <div className="bg-black/40 backdrop-blur-md border border-white/20 p-3 rounded-full">
-            <Play size={24} className="text-white" fill="white" /> aaa
+          <div className="bg-black/60 backdrop-blur-md border border-white/20 p-3 rounded-full transition-transform hover:scale-110">
+            <Play size={24} className="text-white" fill="white" />
           </div>
         </button>
+      )}
+
+      {/* PROGRESS BAR */}
+      {isPlaying && (
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+          <div 
+            className="h-full bg-white transition-all duration-200"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
       )}
 
       {/* VIDEO TAG */}
@@ -102,6 +157,8 @@ const UniversalFeedVideo = ({
       </div>
     </div>
   );
-};
+});
+
+UniversalFeedVideo.displayName = "UniversalFeedVideo";
 
 export default UniversalFeedVideo;
