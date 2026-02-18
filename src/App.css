@@ -428,3 +428,13 @@ ul[data-type="taskList"] input[type="checkbox"] {
 .blog-editor-container {
   @apply bg-white dark:bg-black p-4;
 }
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

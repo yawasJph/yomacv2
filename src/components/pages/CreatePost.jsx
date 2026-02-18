@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { ArrowLeft, Image, ImagePlay, Smile, Video } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import EmojiPicker from "emoji-picker-react";
-import GifPicker from "../utils/GifPickerv2";
+import GifPicker from "../utils/GifPickerv3";
 import { usePostState } from "../../hooks/usePostState"; // 👈 Nuevo Hook de Estado
 import { useLinkPreview } from "../../hooks/useLinkPreview2"; // 👈 Nuevo Hook de Preview
 import LinkPreviewCard from "../ui/createPost/LinkPreviewCard"; // 👈 Nuevo Componente
