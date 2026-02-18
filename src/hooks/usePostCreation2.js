@@ -14,35 +14,50 @@ export const usePostCreation = () => {
       // 1️⃣ Extraer hashtags
       const hashtags = extractHashtags(content);
 
+      // --- LÓGICA PARA TENOR SEO ---
+      let finalOgData = linkPreview;
+
+      // Si no hay un link pegado, pero SI hay un GIF, creamos un preview para el share
+      if (!finalOgData && gifUrls.length > 0) {
+        finalOgData = {
+          image: gifUrls[0].staticUrl, // <--- Aquí guardamos el .png estático de Tenor
+          title: `Post de ${user.user_metadata?.full_name || "YoMAC"}`,
+          description: content.substring(0, 100) || "Mira este GIF en YoMAC",
+          is_tenor: true, // Flag opcional por si quieres saber que viene de Tenor
+        };
+      }
+
       // 2️⃣ Llamar a la función RPC
-      const { data: postId, error: postError } = await supabaseClient
-        .rpc('create_post_with_hashtags', {
+      const { data: postId, error: postError } = await supabaseClient.rpc(
+        "create_post_with_hashtags",
+        {
           p_user_id: user.id,
           p_content: content,
-          p_og_data: linkPreview,
-          p_hashtags: hashtags
-        });
+          p_og_data: finalOgData,
+          p_hashtags: hashtags,
+        },
+      );
 
       if (postError) throw postError;
 
       // 3️⃣ Subidas a Cloudinary
       const uploadPromises = files.map(async (file) => {
-        const isVideo = file.type.startsWith('video/');
+        const isVideo = file.type.startsWith("video/");
         const result = await uploadToCloudinary(file);
         return {
           post_id: postId,
           media_url: result.secure_url,
-          media_type: isVideo ? 'video' : 'image'
+          media_type: isVideo ? "video" : "image",
         };
       });
 
       const uploadedMedia = await Promise.all(uploadPromises);
 
       // 4️⃣ Preparar GIFs
-      const gifMedia = gifUrls.map(url => ({
+      const gifMedia = gifUrls.map((url) => ({
         post_id: postId,
-        media_url: url,
-        media_type: 'image'
+        media_url: url.gifUrl,
+        media_type: "image",
       }));
 
       const allMedia = [...uploadedMedia, ...gifMedia];
@@ -74,8 +89,8 @@ export const usePostCreation = () => {
       notify.error(error.message || "Ocurrió un error al publicar");
     },
     onSettled: (data, error, variables) => {
-     variables.setLoading(false);
-    }
+      variables.setLoading(false);
+    },
   });
 
   // Función puente para mantener tu interfaz actual

@@ -40,11 +40,16 @@ export default function GifPicker({ onSelect, onClose }) {
               src={gif.media_formats?.tinygif?.url}
               className="rounded-lg cursor-pointer hover:opacity-80"
               onClick={() => {
-                //onSelect(gif.media_formats.gif.url);
-                const previewUrl =
-                  gif.media_formats.gif_preview?.url ||
-                  gif.media_formats.tinygif?.url;
-                onSelect(previewUrl);
+                const gifUrl = gif.media_formats.gif.url; // El animado para tu App
+
+                // El PNG estático para WhatsApp y Redes Sociales
+                const staticUrl =
+                  gif.media_formats.gifpreview?.url ||
+                  gif.media_formats.tinygifpreview?.url;
+
+                console.log("¡Conseguido!", { gifUrl, staticUrl });
+
+                onSelect({ gifUrl, staticUrl });
                 onClose();
               }}
             />
