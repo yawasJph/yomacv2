@@ -122,6 +122,10 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
     navigate(`/post/${post.id}`);
   };
 
+  const displayContent = post.og_data?.url 
+    ? post.content.replace(post.og_data.url, "").trim() 
+    : post.content;
+
   return (
     <article
       onClick={goToPost}
@@ -283,7 +287,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
             }`}
             onClick={(e) => e.stopPropagation()}
           >
-            <RenderTextWithLinks text={post.content} />
+            <RenderTextWithLinks text={displayContent} />
           </p>
           {isTruncated && (
             <button
