@@ -8,7 +8,7 @@ export default function GifPicker({ onSelect, onClose }) {
 
   const searchGifs = async (q) => {
     const res = await fetch(
-      `https://tenor.googleapis.com/v2/search?q=${q}&key=${API_KEY}&limit=25`
+      `https://tenor.googleapis.com/v2/search?q=${q}&key=${API_KEY}&limit=25`,
     );
     const data = await res.json();
     setGifs(data.results);
@@ -22,7 +22,6 @@ export default function GifPicker({ onSelect, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-neutral-900 rounded-2xl w-[90%] max-w-xl p-4 shadow-lg">
-        
         {/* Search input */}
         <input
           type="text"
@@ -41,7 +40,11 @@ export default function GifPicker({ onSelect, onClose }) {
               src={gif.media_formats?.tinygif?.url}
               className="rounded-lg cursor-pointer hover:opacity-80"
               onClick={() => {
-                onSelect(gif.media_formats.gif.url);
+                //onSelect(gif.media_formats.gif.url);
+                const previewUrl =
+                  gif.media_formats.gif_preview?.url ||
+                  gif.media_formats.tinygif?.url;
+                onSelect(previewUrl);
                 onClose();
               }}
             />
