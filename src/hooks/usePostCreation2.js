@@ -14,6 +14,12 @@ export const usePostCreation = () => {
       // 1️⃣ Extraer hashtags
       const hashtags = extractHashtags(content);
 
+      // --- LÓGICA PARA TENOR SEO (Estrategia de Preview Estático) ---
+      // Nota: WhatsApp y otras RRSS no renderizan GIFs animados en las cards de previsualización.
+      // Para solucionar esto sin modificar el esquema de la DB (post_media), inyectamos
+      // la URL de la imagen estática (.png) proporcionada por la API de Tenor en el objeto og_data.
+      // La Edge Function priorizará esta imagen para asegurar que el post sea visualmente atractivo al compartir.
+
       // --- LÓGICA PARA TENOR SEO ---
       let finalOgData = linkPreview;
 
