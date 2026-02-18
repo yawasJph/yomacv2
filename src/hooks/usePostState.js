@@ -82,7 +82,7 @@ export const usePostState = () => {
     if (itemToRemove.type === "gif") {
       // Borrar de lista de GIFs
       //setGifUrls((prev) => prev.filter((url) => url !== itemToRemove.url));
-      setGifUrls((prev) => prev.filter((g) => g.gifUrl !== itemToRemove.gifUrl));
+      setGifUrls((prev) => prev.filter((g) => g.gifUrl !== itemToRemove.url));
     } else {
       // Es File (Imagen o Video)
       URL.revokeObjectURL(itemToRemove.url); // Liberar memoria
