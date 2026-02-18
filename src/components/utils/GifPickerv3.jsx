@@ -56,6 +56,24 @@ export default function GifPicker({ onSelect, onClose }) {
     }
   };
 
+  /* =========================
+     SCROLL LOCK PROFESIONAL
+  ========================= */
+  useEffect(() => {
+    if (!onClose) return;
+
+    const scrollBarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
+
+    document.body.style.overflow = "hidden";
+    document.body.style.paddingRight = `${scrollBarWidth}px`;
+
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
+    };
+  }, [onClose]);
+
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-end md:items-center justify-center z-1000 p-0 md:p-4">
       {/* Contenedor Principal: En móvil sale desde abajo (estilo Drawer) */}
