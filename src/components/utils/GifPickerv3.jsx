@@ -57,7 +57,7 @@ export default function GifPicker({ onSelect, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-end md:items-center justify-center z-100 p-0 md:p-4 pb-20 sm:pb-0">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-end md:items-center justify-center z-1000 p-0 md:p-4">
       {/* Contenedor Principal: En móvil sale desde abajo (estilo Drawer) */}
       <div className="bg-white dark:bg-neutral-900 rounded-t-3xl md:rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col h-[85vh] md:h-[600px] animate-in slide-in-from-bottom duration-300">
         
