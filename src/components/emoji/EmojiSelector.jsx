@@ -7,7 +7,6 @@ export default function EmojiSelector({ addEmoji }) {
   const [showPicker, setShowPicker] = useState(false);
   const {darkMode} = useDarkMode()
 
-
   // Bloquear scroll en móvil cuando el picker está abierto
   useEffect(() => {
     if (showPicker && window.innerWidth < 640) {
@@ -35,7 +34,7 @@ export default function EmojiSelector({ addEmoji }) {
         <>
           {/* Overlay para cerrar al hacer clic fuera y oscurecer fondo en móvil */}
           <div 
-            className="fixed inset-0 z-60 bg-black/20  sm:bg-transparent sm:backdrop-blur-none"
+            className="fixed inset-0 z-60 bg-black/20 sm:bg-transparent sm:backdrop-blur-none"
             onClick={() => setShowPicker(false)}
           />
 
@@ -64,7 +63,7 @@ export default function EmojiSelector({ addEmoji }) {
                 lazyLoadEmojis={true}
                 // Ajustamos el ancho para que en móvil sea 100%
                 width="100%"
-                height={window.innerWidth < 640 ? "440px" : "550px"}
+                height={window.innerWidth < 640 ? "400px" : "450px"}
                 searchPlaceholder="Buscar emoji..."
                 previewConfig={{ showPreview: false }} // Ahorra espacio
                 skinTonesDisabled
