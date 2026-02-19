@@ -1,5 +1,3 @@
-
-// Función que hace la llamada a la API de Tenor
 export const fetchTenorGifs = async ({ pageParam = "", query = "trending", apiKey }) => {
   const isTrending = query === "trending" || !query;
   const endpoint = isTrending ? "featured" : "search";

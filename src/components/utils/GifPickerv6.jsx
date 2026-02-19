@@ -1,52 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { Search, X, Loader2, TrendingUp } from "lucide-react";
-import { useInfiniteQuery } from "@tanstack/react-query";
-
-const CATEGORIES = [
-  { id: "trending", label: "Tendencias", icon: "🔥" },
-  { id: "funny", label: "Risa", icon: "😂" },
-  { id: "love", label: "Amor", icon: "❤️" },
-  { id: "reaction", label: "Reacción", icon: "😮" },
-  { id: "dance", label: "Baile", icon: "💃" },
-  { id: "sad", label: "Triste", icon: "😢" },
-  { id: "cat", label: "Gatos", icon: "🐱" },
-];
-
-const fetchTenorGifs = async ({ pageParam = "", query = "trending", apiKey }) => {
-  const isTrending = query === "trending" || !query;
-  const endpoint = isTrending ? "featured" : "search";
-  const url = `https://tenor.googleapis.com/v2/${endpoint}?q=${query}&key=${apiKey}&limit=20&pos=${pageParam}&contentfilter=medium`;
-  
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Error al cargar GIFs");
-  return res.json();
-};
+import { CATEGORIES } from "@/consts/tenor/categories";
+import { useGifInfinityQuery } from "@/hooks/tenor/useGifInfinityQuery";
 
 export default function GifPicker({ onSelect, onClose }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("trending");
   const inputRef = useRef(null);
   const loadMoreRef = useRef(null);
-  
-  const API_KEY = import.meta.env.VITE_TENOR_API_KEY;
 
-  // 1. React Query para manejar datos y caché
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    status
-  } = useInfiniteQuery({
-    queryKey: ["tenorGifs", activeCategory],
-    queryFn: ({ pageParam }) => fetchTenorGifs({ 
-      pageParam, 
-      query: activeCategory, 
-      apiKey: API_KEY 
-    }),
-    getNextPageParam: (lastPage) => lastPage.next || undefined,
-    staleTime: 1000 * 60 * 10,
-  });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useGifInfinityQuery(activeCategory);
 
   const allGifs = data?.pages.flatMap((page) => page.results) || [];
 
