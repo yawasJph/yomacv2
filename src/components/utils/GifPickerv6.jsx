@@ -9,7 +9,8 @@ export default function GifPicker({ onSelect, onClose }) {
   const inputRef = useRef(null);
   const loadMoreRef = useRef(null);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useGifInfinityQuery(activeCategory);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
+    useGifInfinityQuery(activeCategory);
 
   const allGifs = data?.pages.flatMap((page) => page.results) || [];
 
@@ -21,7 +22,7 @@ export default function GifPicker({ onSelect, onClose }) {
           fetchNextPage();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
     if (loadMoreRef.current) observer.observe(loadMoreRef.current);
     return () => observer.disconnect();
@@ -29,7 +30,8 @@ export default function GifPicker({ onSelect, onClose }) {
 
   // 3. Scroll Lock Profesional
   useEffect(() => {
-    const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+    const scrollBarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = "hidden";
     document.body.style.paddingRight = `${scrollBarWidth}px`;
     return () => {
@@ -53,18 +55,20 @@ export default function GifPicker({ onSelect, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-end md:items-center justify-center z-1000 p-0 md:p-4">
       <div className="bg-white dark:bg-neutral-900 rounded-t-3xl md:rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col h-[85vh] md:h-[600px] animate-in slide-in-from-bottom duration-300">
-        
         {/* Header y Filtros */}
         <div className="p-4 border-b dark:border-neutral-800 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-black dark:text-white flex items-center gap-2 text-indigo-500">
               <TrendingUp className="w-5 h-5" /> GIFs de Tenor
             </h3>
-            <button onClick={onClose} className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-full active:scale-90 transition-transform">
+            <button
+              onClick={onClose}
+              className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-full active:scale-90 transition-transform"
+            >
               <X className="w-5 h-5 dark:text-neutral-400" />
             </button>
           </div>
-          
+
           {/* Input de búsqueda */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500" />
@@ -108,13 +112,15 @@ export default function GifPicker({ onSelect, onClose }) {
             <>
               <div className="columns-2 sm:columns-3 gap-3 space-y-3">
                 {allGifs.map((gif, index) => (
-                  <div 
+                  <div
                     key={`${gif.id}-${index}`}
                     className="relative group cursor-pointer overflow-hidden rounded-2xl bg-neutral-100 dark:bg-neutral-800 break-inside-avoid"
-                    onClick={() => onSelect({ 
-                      gifUrl: gif.media_formats.gif.url, 
-                      staticUrl: gif.media_formats.gifpreview?.url 
-                    })}
+                    onClick={() =>
+                      onSelect({
+                        gifUrl: gif.media_formats.gif.url,
+                        staticUrl: gif.media_formats.gifpreview?.url,
+                      })
+                    }
                   >
                     <img
                       src={gif.media_formats.tinygif.url}
@@ -131,9 +137,13 @@ export default function GifPicker({ onSelect, onClose }) {
                 {isFetchingNextPage ? (
                   <Loader2 className="animate-spin text-indigo-500" />
                 ) : hasNextPage ? (
-                  <span className="text-xs text-neutral-500 font-medium">Cargando más magia...</span>
+                  <span className="text-xs text-neutral-500 font-medium">
+                    Cargando más magia...
+                  </span>
                 ) : (
-                  <span className="text-xs text-neutral-500">Llegaste al final 🏁</span>
+                  <span className="text-xs text-neutral-500">
+                    Llegaste al final 🏁
+                  </span>
                 )}
               </div>
             </>
