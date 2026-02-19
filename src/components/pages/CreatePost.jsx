@@ -2,7 +2,6 @@
 import { useEffect, useRef } from "react";
 import { ArrowLeft, Image, ImagePlay, Smile, Video } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import EmojiPicker from "emoji-picker-react";
 import GifPicker from "../utils/GifPickerv8";
 import { usePostState } from "../../hooks/usePostState"; // 👈 Nuevo Hook de Estado
 import { useLinkPreview } from "../../hooks/useLinkPreview2"; // 👈 Nuevo Hook de Preview
@@ -11,7 +10,7 @@ import PostMediaGrid from "../ui/createPost/PostMediaGrid"; // 👈 Nuevo Compon
 import { usePostCreation } from "../../hooks/usePostCreation2";
 import { useProfile } from "../../hooks/useProfile";
 import { notify } from "@/utils/toast/notifyv3";
-import EmojiSelector from "../emoji/EmojiSelector";
+import EmojiSelector from "../emoji/EmojiSelectorv2";
 
 const MAX_SIZE = 100 * 1024 * 1024; // 100MB
 
