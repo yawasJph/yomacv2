@@ -438,3 +438,18 @@ ul[data-type="taskList"] input[type="checkbox"] {
     scrollbar-width: none;
   }
 }
+
+/* Personalizar colores de la librería para que combine con tu App */
+.epr-main {
+  border-radius: 12px !important;
+  border: 1px solid #262626 !important; /* Ajusta a tu border dark */
+}
+
+.epr-category-nav > button.epr-active {
+  filter: sepia(100%) hue-rotate(100deg) saturate(500%) !important; /* Color Esmeralda */
+}
+
+.epr-search {
+  background-color: transparent !important;
+  border-radius: 12px !important;
+}

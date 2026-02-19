@@ -11,6 +11,7 @@ import PostMediaGrid from "../ui/createPost/PostMediaGrid"; // 👈 Nuevo Compon
 import { usePostCreation } from "../../hooks/usePostCreation2";
 import { useProfile } from "../../hooks/useProfile";
 import { notify } from "@/utils/toast/notifyv3";
+import EmojiSelector from "../emoji/EmojiSelector";
 
 const MAX_SIZE = 100 * 1024 * 1024; // 100MB
 
@@ -252,7 +253,7 @@ const CreatePost = () => {
               {/* Botón y Picker de Emoji */}
               {/* ... (Tu JSX de EmojiPicker) ... */}
               <div className="relative">
-                <button
+                {/* <button
                   onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                   className="text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer p-2 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
                   title="Agregar emoji"
@@ -262,8 +263,6 @@ const CreatePost = () => {
 
                 {showEmojiPicker && (
                   <div className="absolute z-50 mt-3 -left-43 sm:left-0">
-                    {" "}
-                    {/**-right-45 */}
                     <EmojiPicker
                       onEmojiClick={addEmoji}
                       theme={
@@ -273,7 +272,8 @@ const CreatePost = () => {
                       }
                     />
                   </div>
-                )}
+                )} */}
+                <EmojiSelector addEmoji={addEmoji} />
               </div>
             </div>
 
