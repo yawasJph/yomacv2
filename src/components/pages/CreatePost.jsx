@@ -6,7 +6,7 @@ import GifPicker from "../utils/GifPickerv8";
 import { usePostState } from "../../hooks/usePostState"; // 👈 Nuevo Hook de Estado
 import { useLinkPreview } from "../../hooks/useLinkPreview2"; // 👈 Nuevo Hook de Preview
 import LinkPreviewCard from "../ui/createPost/LinkPreviewCard"; // 👈 Nuevo Componente
-import PostMediaGrid from "../ui/createPost/PostMediaGrid"; // 👈 Nuevo Componente
+import PostMediaGrid from "../ui/createPost/PostMediaGridv2"; // 👈 Nuevo Componente
 import { usePostCreation } from "../../hooks/usePostCreation2";
 import { useProfile } from "../../hooks/useProfile";
 import { notify } from "@/utils/toast/notifyv3";
@@ -142,7 +142,10 @@ const CreatePost = () => {
     }
 
     if (file.size > MAX_SIZE) {
-      notify.error("El video es muy pesado (Max 100MB)", "Intenta subir un video más corto o de menor calidad.");
+      notify.error(
+        "El video es muy pesado (Max 100MB)",
+        "Intenta subir un video más corto o de menor calidad.",
+      );
       e.target.value = "";
       return;
     }
@@ -251,29 +254,7 @@ const CreatePost = () => {
 
               {/* Botón y Picker de Emoji */}
               {/* ... (Tu JSX de EmojiPicker) ... */}
-              <div className="relative">
-                {/* <button
-                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                  className="text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer p-2 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
-                  title="Agregar emoji"
-                >
-                  <Smile size={20} />
-                </button>
-
-                {showEmojiPicker && (
-                  <div className="absolute z-50 mt-3 -left-43 sm:left-0">
-                    <EmojiPicker
-                      onEmojiClick={addEmoji}
-                      theme={
-                        document.documentElement.classList.contains("dark")
-                          ? "dark"
-                          : "light"
-                      }
-                    />
-                  </div>
-                )} */}
-                <EmojiSelector addEmoji={addEmoji} />
-              </div>
+              <EmojiSelector addEmoji={addEmoji} />
             </div>
 
             <button
