@@ -25,7 +25,7 @@ export default function EmojiSelector({ addEmoji }) {
     skinTonesDisabled: true,
     lazyLoadEmojis: true, // Optimización nativa de la librería
     width: "100%",
-    height: "400px",
+    height: "390px",
     autoFocusSearch: false
   }), [isDark]);
 
