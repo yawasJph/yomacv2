@@ -106,6 +106,8 @@ export const usePostState = () => {
     setLinkPreviewClosed(false);
     setLinkPreview(null);
     setLoading(false);
+    setShowEmojiPicker(false);
+    setShowGifPicker(false);
   };
 
   return {

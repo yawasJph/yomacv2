@@ -33,10 +33,10 @@ export default function EmojiSelector({ addEmoji }) {
       {showPicker && (
         <>
           {/* Overlay para cerrar al hacer clic fuera y oscurecer fondo en móvil */}
-          {/* <div 
+          <div 
             className="fixed inset-0 z-60 bg-black/20 sm:bg-transparent sm:backdrop-blur-none"
             onClick={() => setShowPicker(false)}
-          /> */}
+          />
 
           {/* Contenedor del Picker */}
           <div className={`
@@ -45,12 +45,12 @@ export default function EmojiSelector({ addEmoji }) {
           `}>
             
             {/* Header solo para móvil (estilo Drawer) */}
-            {/* <div className="flex items-center justify-between p-4 bg-white dark:bg-[#151719] rounded-t-2xl border-b dark:border-neutral-800 sm:hidden">
+            <div className="flex items-center justify-between p-4 bg-white dark:bg-[#151719] rounded-t-2xl border-b dark:border-neutral-800 sm:hidden">
                <span className="font-bold dark:text-white text-sm uppercase tracking-wider">Emojis</span>
                <button onClick={() => setShowPicker(false)} className="p-1 bg-neutral-100 dark:bg-neutral-800 rounded-full">
                   <X size={18} className="dark:text-neutral-400" />
                </button>
-            </div> */}
+            </div>
 
             <div className="shadow-2xl sm:shadow-xl overflow-hidden rounded-b-none sm:rounded-2xl ">
               <EmojiPicker
@@ -63,7 +63,7 @@ export default function EmojiSelector({ addEmoji }) {
                 lazyLoadEmojis={true}
                 // Ajustamos el ancho para que en móvil sea 100%
                 width="100%"
-                height={window.innerWidth < 640 ? "400px" : "450px"}
+                height={window.innerWidth < 640 ? "420px" : "450px"}
                 searchPlaceholder="Buscar emoji..."
                 previewConfig={{ showPreview: false }} // Ahorra espacio
                 skinTonesDisabled
