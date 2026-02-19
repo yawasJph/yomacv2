@@ -64,7 +64,7 @@ export default function EmojiSelector({ addEmoji }) {
                 lazyLoadEmojis={true}
                 // Ajustamos el ancho para que en móvil sea 100%
                 width="100%"
-                height={window.innerWidth < 640 ? "450px" : "550px"}
+                height={window.innerWidth < 640 ? "440px" : "550px"}
                 searchPlaceholder="Buscar emoji..."
                 previewConfig={{ showPreview: false }} // Ahorra espacio
                 skinTonesDisabled
