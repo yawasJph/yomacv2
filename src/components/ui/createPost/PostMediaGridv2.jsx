@@ -16,11 +16,13 @@ const PostMediaGrid = ({ previews, removeFileOrGif, removeAllImages }) => {
   return (
     <div className="mt-4 group">
       {/* --- VISTA MÓVIL: Carrusel Horizontal --- */}
-      <div className="flex sm:hidden overflow-x-auto pb-2 gap-3 no-scrollbar snap-x snap-mandatory">
+      <div className="flex sm:hidden overflow-x-auto pb-2 gap-3 no-scrollbar snap-x snap-mandatory"
+      >
         {previews.map((mediaItem, index) => (
           <div 
             key={`mobile-${index}`}
-            className="relative flex-none w-10/12 aspect-4/3 bg-neutral-100 dark:bg-neutral-800 rounded-2xl overflow-hidden snap-center border dark:border-neutral-700"
+            className="relative flex-none w-10/12 aspect-4/3 bg-neutral-100 dark:bg-neutral-800 rounded-2xl overflow-hidden snap-center border dark:border-neutral-700
+            "
           >
             <MediaRender mediaItem={mediaItem} index={index} isMobile />
             <RemoveButton onClick={() => removeFileOrGif(index)} />

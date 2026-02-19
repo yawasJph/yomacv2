@@ -46,11 +46,8 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
   const optionsRef = useRef(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const [DeleteModalId, setDeleteModalId] = useState(null);
 
   const time = useLiveTimeAgo(post.created_at, isMobile);
-
-  //const { openModal , closeModal} = useModal();
 
   // Cerrar menú al hacer click fuera
   useEffect(() => {

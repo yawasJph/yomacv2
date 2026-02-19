@@ -1,5 +1,5 @@
 // 📄 components/CreatePost.jsx (Refactorizado)
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Image, ImagePlay, Smile, Video } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import GifPicker from "../utils/GifPickerv8";
@@ -18,6 +18,7 @@ const CreatePost = () => {
   const { user } = useAuth();
   const { data: profile } = useProfile(user.id);
   const { createPost } = usePostCreation();
+
 
   // 1. Lógica de Estado (del formulario)
   const {
@@ -281,6 +282,7 @@ const CreatePost = () => {
         removeFileOrGif={removeFileOrGif}
         removeAllImages={resetForm} // Reusa resetForm si quieres que también limpie el texto
       />
+
     </div>
   );
 };
