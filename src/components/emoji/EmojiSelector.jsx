@@ -35,7 +35,7 @@ export default function EmojiSelector({ addEmoji }) {
         <>
           {/* Overlay para cerrar al hacer clic fuera y oscurecer fondo en móvil */}
           <div 
-            className="fixed inset-0 z-60 bg-black/20 backdrop-blur-sm sm:bg-transparent sm:backdrop-blur-none"
+            className="fixed inset-0 z-60 bg-black/20  sm:bg-transparent sm:backdrop-blur-none"
             onClick={() => setShowPicker(false)}
           />
 
@@ -64,7 +64,7 @@ export default function EmojiSelector({ addEmoji }) {
                 lazyLoadEmojis={true}
                 // Ajustamos el ancho para que en móvil sea 100%
                 width="100%"
-                height={window.innerWidth < 640 ? "400px" : "450px"}
+                height={window.innerWidth < 640 ? "450px" : "550px"}
                 searchPlaceholder="Buscar emoji..."
                 previewConfig={{ showPreview: false }} // Ahorra espacio
                 skinTonesDisabled
