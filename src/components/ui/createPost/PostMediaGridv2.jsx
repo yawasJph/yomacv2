@@ -20,7 +20,7 @@ const PostMediaGrid = ({ previews, removeFileOrGif, removeAllImages }) => {
         {previews.map((mediaItem, index) => (
           <div 
             key={`mobile-${index}`}
-            className="relative flex-none w-10/12 aspect-square bg-neutral-100 dark:bg-neutral-800 rounded-2xl overflow-hidden snap-center border dark:border-neutral-700"
+            className="relative flex-none w-10/12 aspect-4/3 bg-neutral-100 dark:bg-neutral-800 rounded-2xl overflow-hidden snap-center border dark:border-neutral-700"
           >
             <MediaRender mediaItem={mediaItem} index={index} isMobile />
             <RemoveButton onClick={() => removeFileOrGif(index)} />
@@ -104,7 +104,7 @@ const MediaRender = ({ mediaItem, index, isMobile = false }) => {
 const RemoveButton = ({ onClick }) => (
   <button
     onClick={onClick}
-    className="absolute top-2 right-2 bg-black/50 hover:bg-red-600 text-white p-1.5 rounded-full backdrop-blur-md transition-all z-20 hover:scale-110 active:scale-90"
+    className="absolute top-2 right-2 bg-black/50 hover:bg-gray-800 text-white p-1.5 rounded-full backdrop-blur-md transition-all z-20 hover:scale-110 active:scale-90"
   >
     <X size={14} strokeWidth={3} />
   </button>
