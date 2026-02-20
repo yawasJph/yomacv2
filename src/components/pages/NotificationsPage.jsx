@@ -11,11 +11,14 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
-import { useNotifications } from "../../hooks/useNotifications";
+//import { useNotifications } from "../../hooks/useNotifications";
 import NotificationSkeleton from "../skeletons/NotificationSkeleton";
+import ConfirmModal from "../modals/ConfirmModalv2";
+import { useNotifications } from "@/hooks/notification/useNotificationsv2";
 
 const NotificationsPage = () => {
-  const { notifications, isLoading, markAsRead, clearAll } = useNotifications();
+  const { notifications, isLoading, clearAll, isDeleting, markAsRead } =
+    useNotifications();
   const navigate = useNavigate();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -27,7 +30,13 @@ const NotificationsPage = () => {
       }, 2000);
       return () => clearTimeout(timer); // Limpieza crucial
     }
-  }, [notifications]);
+  }, [notifications, markAsRead]);
+
+  const handleConfirmDelete = () => {
+    clearAll(null, {
+      onSuccess: () => setIsDeleteModalOpen(false), // El modal se cierra SOLO si salió bien
+    });
+  };
 
   const getIcon = (type) => {
     switch (type) {
@@ -82,7 +91,7 @@ const NotificationsPage = () => {
           navigate(`/post/${notif.post_id}`);
         } else {
           navigate(
-            `/comment/${notif.comments.parent_id}#comment-${notif.comment_id}`
+            `/comment/${notif.comments.parent_id}#comment-${notif.comment_id}`,
           );
         }
         break;
@@ -98,7 +107,7 @@ const NotificationsPage = () => {
         // Si tienes scroll al comentario, puedes pasar el ID como hash
         if (notif.post_id)
           navigate(
-            `/comment/${notif.comments.parent_id}#comment-${notif.comment_id}`
+            `/comment/${notif.comments.parent_id}#comment-${notif.comment_id}`,
           );
         break;
       default:
@@ -108,7 +117,8 @@ const NotificationsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="max-w-2xl mx-auto border-x border-gray-100 dark:border-gray-800">{/**min-h-screen */}
+      <div className="max-w-2xl mx-auto border-x border-gray-100 dark:border-gray-800">
+        {/**min-h-screen */}
         <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex items-center gap-4">
           <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-neutral-800 animate-pulse" />
           <div className="w-32 h-6 bg-gray-200 dark:bg-neutral-800 animate-pulse rounded" />
@@ -119,7 +129,8 @@ const NotificationsPage = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto border-x border-gray-100 dark:border-gray-800 ">{/**min-h-screen */}
+    <div className="max-w-2xl mx-auto border-x border-gray-100 dark:border-gray-800 ">
+      {/**min-h-screen */}
       <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 flex items-center gap-6 border-b border-gray-100 dark:border-gray-800 justify-between">
         <div className="flex items-center justify-between gap-1">
           <button
@@ -173,84 +184,61 @@ const NotificationsPage = () => {
             </button>
           </div>
         ) : (
-          notifications.map((notif) => (
-            <div
-              key={notif.id}
-              onClick={() => handleNotificationClick(notif)}
-              className={`flex gap-4 p-4 hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer ${
-                !notif.is_read ? "bg-blue-50/50 dark:bg-blue-900/10" : ""
-              }`}
-            >
-              <div className="mt-1">{getIcon(notif.type)}</div>
+          <div className="divide-y divide-gray-100 dark:divide-gray-800">
+            {notifications.map((notif) => (
+              <div
+                key={notif.id}
+                onClick={() => handleNotificationClick(notif)}
+                className={`flex gap-4 p-4 hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer ${
+                  !notif.is_read ? "bg-blue-50/50 dark:bg-blue-900/10" : ""
+                }`}
+              >
+                <div className="mt-1">{getIcon(notif.type)}</div>
 
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <img
-                    src={notif.sender?.avatar}
-                    alt={notif.sender?.full_name}
-                    className="w-8 h-8 rounded-full object-cover border border-gray-200"
-                  />
-                  <span className="text-xs text-gray-500">
-                    {formatDistanceToNow(new Date(notif.created_at), {
-                      addSuffix: true,
-                      locale: es,
-                    })}
-                  </span>
-                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <img
+                      src={notif.sender?.avatar}
+                      alt={notif.sender?.full_name}
+                      className="w-8 h-8 rounded-full object-cover border border-gray-200"
+                    />
+                    <span className="text-xs text-gray-500">
+                      {formatDistanceToNow(new Date(notif.created_at), {
+                        addSuffix: true,
+                        locale: es,
+                      })}
+                    </span>
+                  </div>
 
-                <p className="text-[15px] text-gray-800 dark:text-gray-200">
-                  {getMessage(notif)}
-                </p>
-
-                {/* Muestra el contenido según lo que causó la notificación */}
-                {(notif.post?.content || notif.comments?.content) && (
-                  <p className="mt-2 text-sm text-gray-500 line-clamp-2 italic border-l-2 border-gray-200 pl-2">
-                    "
-                    {notif.comment_id
-                      ? notif.comments?.content
-                      : notif.post?.content}
-                    "
+                  <p className="text-[15px] text-gray-800 dark:text-gray-200">
+                    {getMessage(notif)}
                   </p>
-                )}
+
+                  {/* Muestra el contenido según lo que causó la notificación */}
+                  {(notif.post?.content || notif.comments?.content) && (
+                    <p className="mt-2 text-sm text-gray-500 line-clamp-2 italic border-l-2 border-gray-200 pl-2">
+                      "
+                      {notif.comment_id
+                        ? notif.comments?.content
+                        : notif.post?.content}
+                      "
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
-      {isDeleteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            onClick={() => setIsDeleteModalOpen(false)}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-          />
-          <div className="relative bg-white dark:bg-neutral-900 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-            <h3 className="text-xl font-bold mb-2 dark:text-white text-center">
-              ¿Borrar todo?
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 text-center mb-6">
-              Esta acción eliminará permanentemente todas tus notificaciones. No
-              se puede deshacer.
-            </p>
-            <div className="flex flex-col gap-3">
-              <button
-                onClick={() => {
-                  clearAll();
-                  setIsDeleteModalOpen(false);
-                }}
-                className="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-colors"
-              >
-                Sí, borrar todas
-              </button>
-              <button
-                onClick={() => setIsDeleteModalOpen(false)}
-                className="w-full py-3 bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-gray-300 font-bold rounded-xl transition-colors"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        isLoading={isDeleting}
+        title="¿Borrar todas las notificaciones?"
+        message="Esta acción eliminará permanentemente todas tus notificaciones. No se puede deshacer."
+      />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import { createPortal } from "react-dom";
 
 export default function ConfirmModal({
@@ -29,18 +29,21 @@ export default function ConfirmModal({
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-9999 flex items-center justify-center" 
-    onClick={e => e.stopPropagation()}>
-      
+    <div
+      className="fixed inset-0 z-9999 flex items-center justify-center"
+      onClick={(e) => e.stopPropagation()}
+    >
       {/* BACKDROP */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
-        onClick={onClose}
+        onClick={() => {
+          // Solo permitir cerrar si no está cargando
+          if (!isLoading) onClose();
+        }}
       />
 
       {/* MODAL */}
       <div className="relative w-[92%] max-w-md rounded-2xl bg-white dark:bg-zinc-900 shadow-2xl animate-in zoom-in-95 fade-in duration-200 border border-gray-200 dark:border-zinc-700">
-
         {/* HEADER */}
         <div className="p-6 pb-3">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -55,7 +58,6 @@ export default function ConfirmModal({
 
         {/* FOOTER */}
         <div className="flex justify-end gap-3 px-6 pb-6">
-
           {/* CANCEL */}
           <button
             onClick={onClose}
@@ -79,6 +81,6 @@ export default function ConfirmModal({
         </div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }

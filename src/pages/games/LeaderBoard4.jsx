@@ -188,7 +188,7 @@ const Leaderboard = () => {
           </div>
 
           <h2 className="text-xl font-black tracking-[0.2em] uppercase text-gray-800 dark:text-white leading-none mt-2">
-            Ranking <span className="text-emerald-500">Campus</span>
+            Ranking <span className="text-emerald-500">YoMAC</span>
           </h2>
 
           <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em] ml-1">
