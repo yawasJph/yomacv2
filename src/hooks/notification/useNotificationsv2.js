@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { supabaseClient } from "@/supabase/supabaseClient";
 import { useAuth } from "@/context/AuthContext";
+import { notify } from "@/utils/toast/notifyv3";
 
 export const useNotifications = () => {
   const { user } = useAuth();
@@ -53,10 +53,10 @@ export const useNotifications = () => {
     },
     onError: (err, variables, context) => {
       queryClient.setQueryData(queryKey, context.previousNotifications);
-      toast.error("No se pudieron borrar las notificaciones");
+      notify.error("No se pudieron borrar las notificaciones");
     },
     onSuccess: () => {
-      toast.success("Notificaciones borradas");
+      notify.success("Notificaciones borradas");
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });

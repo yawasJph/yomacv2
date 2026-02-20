@@ -60,8 +60,9 @@ export const usePostsInfiniteQuery = (filterConfig = {}) => {
           if (!post) return null;
           return {
             ...post,
-            original_post_date: post.created_at, // Guardamos la fecha del post por si acaso
-            created_at: entry.created_at,        // Sobrescribimos con la fecha del Like/Repost/Bookmark
+            //original_post_date: post.created_at, // Guardamos la fecha del post por si acaso
+            //created_at: entry.created_at,// Sobrescribimos con la fecha del Like/Repost/Bookmark
+            created_at: post.created_at, // Mantenemos la fecha original del post para evitar confusiones en el feed
           };
         })
         .filter(Boolean);
