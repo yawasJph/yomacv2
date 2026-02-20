@@ -14,6 +14,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useAudio } from "../../context/AudioContext";
 import { notify } from "@/utils/toast/notifyv3";
+import { useQueryClient } from "@tanstack/react-query";
 
 // --- Constantes y Utilidades Externas ---
 const GRID_SIZE = 8;
@@ -104,7 +105,8 @@ const BuscaMinas = () => {
   const [flagsCount, setFlagsCount] = useState(0);
   //const [isMuted, setIsMuted] = useState(false);
   const [firstClick, setFirstClick] = useState(true);
-  const {isMuted, setIsMuted, playWithCheck} = useAudio()
+  const { isMuted, setIsMuted, playWithCheck } = useAudio();
+  const queryClient = useQueryClient();
 
   const navigate = useNavigate();
 
@@ -251,13 +253,24 @@ const BuscaMinas = () => {
 
   const saveScore = async (isWin) => {
     const score = isWin ? Math.max(1000 - timer, 100) : 0;
-    const { error } = await supabaseClient.rpc("submit_game_score", {
-      p_game_id: "buscaminas",
-      p_score: score,
-      p_moves: 0,
-      p_time_seconds: timer,
-    });
-    if(error) notify.error("Error al guardar el puntaje");
+
+    try {
+      const { error } = await supabaseClient.rpc("submit_game_score", {
+        p_game_id: "buscaminas",
+        p_score: score,
+        p_moves: 0,
+        p_time_seconds: timer,
+      });
+      if (!error) {
+        console.log("Puntaje guardado exitosamente");
+        queryClient.invalidateQueries({
+          queryKey: ["leaderboard", "buscaminas"],
+        });
+      }
+    } catch (error) {
+      console.error("Error al guardar el puntaje:", error);
+      notify.error("Error al guardar el puntaje");
+    }
   };
 
   const SoundToggle = (

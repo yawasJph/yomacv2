@@ -167,17 +167,6 @@ const Leaderboard = () => {
   return (
     <div className="max-w-xl max-sm:max-w-sm mx-auto bg-gray-50/50 dark:bg-white/2 pb-2 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden mt-2 ms:mt-5">
         
-      {/* <div className="bg-linear-to-r from-emerald-500 to-teal-600 p-6 text-white text-center flex gap-2">
-        <button
-          onClick={() => navigate(-1)}
-          className="p-2 hover:bg-gray-600 dark:hover:bg-gray-600 rounded-full transition-colors"
-        >
-          <ArrowLeft size={20} className="dark:text-white" />
-        </button>
-        <h2 className="text-2xl font-black uppercase tracking-tighter italic flex items-center justify-center gap-2">
-          <Trophy className="text-yellow-300" /> Ranking Campus
-        </h2>
-      </div> */}
       <div className="relative p-8 pb-4">
         {/* Botón Volver - Minimalista y funcional */}
         <button
@@ -317,6 +306,8 @@ const Leaderboard = () => {
                   />
                 </>
               )}
+
+              {data?.leaders.length === 0 && <EmptyState />}
             </motion.div>
           )}
         </AnimatePresence>
@@ -325,83 +316,6 @@ const Leaderboard = () => {
     </div>
   );
 };
-
-// const LeaderItem = memo(({ entry, isMe, isMichi }) => {
-
-//   const rank = entry.rank_position;
-
-//   // Colores suaves para el resplandor de fondo según el rank
-//   const rankGlow = {
-//     1: "after:shadow-[0_0_20px_rgba(250,204,21,0.3)]",
-//     2: "after:shadow-[0_0_20px_rgba(148,163,184,0.2)]",
-//     3: "after:shadow-[0_0_20px_rgba(253,186,116,0.2)]",
-//   };
-
-//   return (
-//     <motion.div
-//       layout
-//       whileHover={{ x: 4 }} // Un movimiento lateral mínimo es más elegante que escalar
-//       className={`relative group flex items-center gap-4 p-4 rounded-4xl transition-all duration-500
-//         ${isMe
-//           ? "bg-white/10 backdrop-blur-md border border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)]"
-//           : "bg-transparent border border-transparent hover:bg-gray-50/40 dark:hover:bg-white/3"
-//         }`}
-//     >
-//       {/* Indicador de posición con resplandor */}
-//       <div className="relative flex-none">
-//         <div
-//           className={`relative z-10 w-10 h-10 flex items-center justify-center rounded-2xl font-black text-lg transition-transform duration-500 group-hover:scale-110
-//           ${rank === 1 ? "bg-yellow-400 text-yellow-900" :
-//             rank === 2 ? "bg-slate-300 text-slate-700" :
-//             rank === 3 ? "bg-orange-300 text-orange-800" : "text-gray-400 bg-gray-100/50 dark:bg-gray-800/50"}
-//           ${rankGlow[rank] || ""} after:content-[''] after:absolute after:inset-0 after:rounded-2xl after:-z-10`}
-//         >
-//           {rank}
-//         </div>
-//       </div>
-
-//       {/* Avatar con forma orgánica */}
-//       <div className="relative">
-//         <img
-//           src={entry.profiles?.avatar}
-//           className="w-12 h-12 rounded-[1.2rem] object-cover grayscale-20% group-hover:grayscale-0 transition-all duration-500 ring-1 ring-black/5 dark:ring-white/5"
-//         />
-//         {isMe && (
-//           <span className="absolute -top-1 -right-1 flex h-3 w-3">
-//             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-//             <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500 border-2 border-white dark:border-gray-900"></span>
-//           </span>
-//         )}
-//       </div>
-
-//       <div className="flex-1 min-w-0">
-//         <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100 truncate tracking-tight">
-//           {entry.profiles?.full_name}
-//         </h3>
-//         <p className="text-[9px] font-semibold text-gray-400 uppercase tracking-[0.15em] mt-0.5 truncate">
-//           {entry.profiles?.carrera}
-//         </p>
-//       </div>
-
-//       {/* Puntuación minimalista */}
-//       <div className="text-right flex flex-col items-end gap-1">
-//         <div className="flex items-center gap-1.5">
-//           <div className="h-1.5 w-1.5 rounded-full bg-emerald-500/50 animate-pulse" />
-//           <span className="text-base md:text-lg font-black tracking-tighter bg-linear-to-b from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 bg-clip-text text-transparent">
-//             {entry.score.toLocaleString()}
-//           </span>
-//         </div>
-
-//         <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800/50 border border-gray-200/50 dark:border-white/5">
-//           {!isMichi && <Clock size={9} className="text-gray-400" />}
-//           <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">
-//             {entry.time_seconds}{!isMichi && "s"}
-//           </span>
-//         </div>
-//       </div>
-//     </motion.div>
-//   );
-// });
 
 const LeaderItem = memo(({ entry, isMe, isMichi }) => {
   const rank = entry.rank_position;

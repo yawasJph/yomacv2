@@ -10,6 +10,7 @@ import filteredWords from "../../../scripts/filtered_words.json";
 import { useAudio } from "../../context/AudioContext";
 import useSound from "use-sound";
 import { notify } from "@/utils/toast/notifyv3";
+import { useQueryClient } from "@tanstack/react-query";
 
 // Configuración de colores
 const COLORS = {
@@ -54,6 +55,7 @@ const WordleGame = () => {
   const [showClue, setShowClue] = useState(false);
   const navigate = useNavigate();
   const { isMuted, setIsMuted, playWithCheck } = useAudio();
+  const queryClient = useQueryClient();
 
   const [playClick] = useSound("/sounds/click.mp3", { volume: 0.5 });
   const [playDelete] = useSound("/sounds/delete.mp3", { volume: 0.5 });
@@ -211,7 +213,12 @@ const WordleGame = () => {
 
         if (newStatus !== "playing") {
           setGameState(newStatus);
-          if (newStatus === "won") triggerConfetti();
+          if (newStatus === "won") {
+            triggerConfetti();
+            queryClient.invalidateQueries({
+              queryKey: ["leaderboard", "wordle"],
+            });
+          }
         } else {
           setCurrentRow((prev) => prev + 1);
           setCurrentGuess("");

@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import DECKS_DATA from "../../assets/data-game/barajas.json";
 import { useAudio } from "../../context/AudioContext";
 import useSound from "use-sound";
+import { useQueryClient } from "@tanstack/react-query";
 
 // --- COMPONENTE TARGET (Separado para evitar re-renders del grid) ---
 
@@ -153,6 +154,7 @@ const CazaTalentos = () => {
   const [currentDeck, setCurrentDeck] = useState(null);
   const { isMuted, setIsMuted, playWithCheck } = useAudio();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [playClick] = useSound("/sounds/click.mp3", { volume: 0.5 });
   const [playTime] = useSound("/sounds/time.mp3", { volume: 0.5 });
@@ -307,16 +309,29 @@ const CazaTalentos = () => {
   );
 
   const endGame = async () => {
-    setGameState("ended");
-    setTargets([]);
-    playWithCheck(playWin);
-    const { data } = await supabaseClient.rpc("submit_game_score", {
+  setGameState("ended");
+  setTargets([]);
+  playWithCheck(playWin);
+
+  try {
+    // 1. Enviamos el puntaje
+    const { error } = await supabaseClient.rpc("submit_game_score", {
       p_game_id: "hunter-talents",
       p_score: score,
       p_moves: 0,
       p_time_seconds: 0,
     });
-  };
+
+    // 2. Si no hay error, invalidamos específicamente este juego
+    if (!error) {
+      queryClient.invalidateQueries({ 
+        queryKey: ["leaderboard", "hunter-talents"] 
+      });
+    }
+  } catch (err) {
+    console.error("Error al guardar puntaje:", err);
+  }
+};
 
   // Botón de sonido reutilizable
   const SoundToggle = (

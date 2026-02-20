@@ -7,6 +7,7 @@ import useSound from "use-sound";
 import { useNavigate } from "react-router-dom";
 import { useAudio } from "../../context/AudioContext";
 import { notify } from "@/utils/toast/notifyv3";
+import { useQueryClient } from "@tanstack/react-query";
 
 // --- COMPONENTES ATÓMICOS MEMORIZADOS ---
 
@@ -99,6 +100,7 @@ const CodigoMatricula = () => {
   const [gameState, setGameState] = useState("playing");
   const [timer, setTimer] = useState(0);
   const { isMuted, setIsMuted, playWithCheck } = useAudio();
+  const queryClient = useQueryClient();
 
   const [playPop] = useSound("/sounds/click.mp3", { volume: 0.5 });
   const [playWin] = useSound("/sounds/win.mp3", { volume: 0.7 });
@@ -164,8 +166,11 @@ const CodigoMatricula = () => {
         p_moves: attempts,
         p_time_seconds: currentTime,
       });
-      if (error) {
-        notify.error("Error al guardar el puntaje");
+      if (!error) {
+        console.log("Puntaje guardado exitosamente"); 
+         queryClient.invalidateQueries({
+          queryKey: ["leaderboard", "mastermind"],
+        });
       }
     } catch (error) {
       console.error(error);

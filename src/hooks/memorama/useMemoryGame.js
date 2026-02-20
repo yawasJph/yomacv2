@@ -4,6 +4,7 @@ import useSound from "use-sound";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import { prepararTablero } from "../../components/games/utils/memoryHelpers";
 import { useAudio } from "../../context/AudioContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useMemoryGame = () => {
   const [cards, setCards] = useState([]);
@@ -17,6 +18,7 @@ export const useMemoryGame = () => {
   const [selectedBaraja, setSelectedBaraja] = useState(null);
   //const [isMuted, setIsMuted] = useState(false);
   const { isMuted, setIsMuted, playWithCheck } = useAudio();
+  const queryClient = useQueryClient();
 
   // Sonidos
   const [playFip] = useSound("/sounds/click.mp3", { volume: 0.5 });
@@ -39,12 +41,20 @@ export const useMemoryGame = () => {
 
   const saveGameResult = async (score, steps, time) => {
     try {
-      await supabaseClient.rpc("submit_game_score", {
+     const {error} =  await supabaseClient.rpc("submit_game_score", {
         p_game_id: "memory",
         p_score: score,
         p_moves: steps,
         p_time_seconds: time,
       });
+      if(!error){ 
+        console.log("Resultado guardado exitosamente");
+        queryClient.invalidateQueries({ 
+        queryKey: ["leaderboard", "memory"] 
+      });
+      } else {  
+        console.error("Error al guardar resultado:", error);
+      }
     } catch (error) {
       console.error("Error al guardar:", error);
     }

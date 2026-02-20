@@ -16,6 +16,7 @@ import useSound from "use-sound"; // 1. Importar la librería
 import confetti from "canvas-confetti";
 import ResultsView from "../../components/games/trivia/ResultViewv3";
 import { useAudio } from "../../context/AudioContext";
+import { useQueryClient } from "@tanstack/react-query";
 //import ResultsView from "../../components/games/trivia/ResultViewv2";
 
 const TriviaGame = () => {
@@ -39,6 +40,7 @@ const TriviaGame = () => {
   const [countdown, setCountdown] = useState(3);
   //const [isMuted, setIsMuted] = useState(false);
   const {isMuted , setIsMuted, playWithCheck} = useAudio()
+  const queryClient = useQueryClient();
 
   // Configuramos los sonidos
   const [playCorrect] = useSound("/sounds/correct.mp3", { volume: 0.5 });
@@ -272,13 +274,24 @@ const TriviaGame = () => {
   };
 
   const saveResults = async (finalPoints, finalScore, finalTime) => {
+    try {
+
     const { error } = await supabaseClient.rpc("submit_trivia_score", {
       p_points: finalPoints, // El estado 'points' con el Time-Bonus
       p_accuracy: finalScore, // El estado 'score' con los aciertos (0-10)
       p_time_seconds: finalTime, // Opcional: tiempo total
     });
 
-    if (error) console.error(error);
+     if (!error) {
+      queryClient.invalidateQueries({ 
+        queryKey: ["leaderboard", "trivia"] 
+      });
+    } else {
+      console.error("Error en RPC:", error);
+    } 
+    } catch (error) {
+      console.error("Error guardando resultados:", error);
+    }
   };
 
   // 1. Pantalla de Carga Inicial (Fetching de datos)
