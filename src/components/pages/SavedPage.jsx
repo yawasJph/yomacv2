@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import CardPost from "../ui/feed/CardPost";
 import SkeletonPost from "../skeletons/SkeletonPost";
-import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery2";
+import { usePostsInfiniteQuery } from "@/hooks/posts/usePostsInfiniteQueryv3";
+//import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery2";
 
 const SavedPage = () => {
   const { user } = useAuth();

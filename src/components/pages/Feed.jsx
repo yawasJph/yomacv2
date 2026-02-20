@@ -1,7 +1,8 @@
 import { useRef, useEffect } from "react";
 import SkeletonPost from "../skeletons/SkeletonPost";
 import CardPost from "../ui/feed/CardPost";
-import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery2";
+import { usePostsInfiniteQuery } from "@/hooks/posts/usePostsInfiniteQueryv3";
+//import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery2";
 
 const Feed = () => {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -27,8 +28,6 @@ const Feed = () => {
   }, [hasNextPage, isFetchingNextPage]);
 
   const allPosts = data?.pages.flat() || [];
-
-  console.log("hola")
 
   return (
     <>

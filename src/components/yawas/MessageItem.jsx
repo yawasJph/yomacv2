@@ -16,7 +16,6 @@ export const MessageItem = memo(({ message, index }) => {
     });
   }, []);
 
-  console.log("Renderizando MessageItem:", { message, index });
   return (
     <div
       className={`flex w-full animate-in slide-in-from-bottom-2 duration-300 ${

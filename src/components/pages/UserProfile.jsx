@@ -14,9 +14,10 @@ import CardPost from "../ui/feed/CardPost";
 import UserProfileSkeleton from "../skeletons/UserProfileSkeleton";
 import ImageModal from "../ui/userProfile/ImageModal";
 import { useProfile } from "../../hooks/useProfile";
-import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery2";
+//import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery2";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuthAction } from "../../hooks/useAuthAction";
+import { usePostsInfiniteQuery } from "@/hooks/posts/usePostsInfiniteQueryv3";
 
 const UserProfile = () => {
   const { userId } = useParams();
