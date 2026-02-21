@@ -1,29 +1,9 @@
 import { X } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import { useAuthModal } from "../../context/AuthModalContext";
-import { useEffect } from "react";
-import { useModal } from "@/context/ModalContextv3";
 
 const AuthModal = ({closeModal}) => {
-  // const { open, closeAuthModal } = useAuthModal();
+
   const { signinWithGoogle, loading } = useAuth();
-  // useEffect(() => {
-  //   function handleEsc(e) {
-  //     if (e.key === "Escape") closeAuthModal();
-  //   }
-
-  //   if (open) {
-  //     document.addEventListener("keydown", handleEsc);
-  //     document.body.style.overflow = "hidden";
-  //   }
-
-  //   return () => {
-  //     document.removeEventListener("keydown", handleEsc);
-  //     document.body.style.overflow = "";
-  //   };
-  // }, [open, closeAuthModal]);
-
-  // if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/60 backdrop-blur-sm">

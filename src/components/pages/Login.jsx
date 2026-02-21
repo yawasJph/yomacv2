@@ -1,12 +1,21 @@
-
 import { useAuth } from "../../context/AuthContext";
 import ToggleThemeButton from "../ui/ToggleThemeButton";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 const Login = () => {
-  const { signinWithGoogle, loading, error } = useAuth();
+  const { signinWithGoogle, loading, error, user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user && !loading) {
+      // 1. Si existe 'from', volvemos a la ruta protegida que intentó abrir.
+      // 2. Si no existe (entró al login normal), lo mandamos al feed "/".
+      const destination = location.state?.from?.pathname || "/";
+
+      navigate(destination, { replace: true });
+    }
+  }, [user, loading, navigate, location]);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300 relative">

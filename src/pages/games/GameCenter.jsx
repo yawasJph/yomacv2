@@ -4,14 +4,14 @@ import { GAMES_LIST } from "../../components/games/utils/GAMES_LIST";
 import GameCard from "../../components/games/game-center/GameCard";
 import GameCenterHeader from "../../components/games/game-center/GameCenterHeader";
 import useSound from "use-sound"; // 1. Importar la librería
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAudio } from "../../context/AudioContext";
 
 const GameCenter = () => {
   const navigate = useNavigate();
   const { executeAction } = useAuthAction();
-  //const [isMuted, setIsMuted] = useState(false);
-  const {isMuted, setIsMuted} = useAudio()
+  const { isMuted, setIsMuted } = useAudio();
+  const [isDimmed, setIsDimmed] = useState(false);
 
   // 1. Elegimos una canción al azar al cargar el componente
   // Usamos useMemo para que el número no cambie cada vez que el componente se re-renderice
@@ -20,7 +20,7 @@ const GameCenter = () => {
 
   // 2. Configuramos useSound para música de fondo
   const [play, { stop, sound }] = useSound(trackPath, {
-    volume: 0.5, // Volumen bajo para que no aturda
+    volume: isMuted ? 0 : isDimmed ? 0.1 : 0.5, // Volumen bajo para que no aturda
     interrupt: true, // Interrumpe otros sonidos si fuera necesario
     loop: true, // ¡Importante! Para que la música no se corte
   });
@@ -38,9 +38,21 @@ const GameCenter = () => {
   }, [isMuted, play, stop]);
 
   const handleGameNavigate = (path) => {
-    // Detenemos la música antes de navegar para que no se filtre al juego
-    stop();
-    executeAction(() => navigate(path), "para jugar");
+    // 1. Bajamos el volumen preventivamente
+    setIsDimmed(true);
+
+    executeAction(
+      () => {
+        // 2. Si hay éxito (usuario logueado)
+        stop();
+        navigate(path);
+      },
+      "para jugar",
+      () => {
+        // 3. Si cancela o cierra el modal
+        setIsDimmed(false); // Sube el volumen de nuevo
+      },
+    );
   };
 
   return (

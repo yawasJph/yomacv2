@@ -48,7 +48,7 @@ const NavigationD = () => {
       to: "/games",
       icon: <Gamepad2 size={22} />,
       text: "Juegos",
-      private: true,
+      private: false,
     },
      {
       to: "/yawas",

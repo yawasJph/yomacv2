@@ -97,7 +97,6 @@ function App() {
             duration={3000}
             expand
           />
-
           {/* Suspense atrapa las rutas cargadas perezosamente */}
           <Suspense fallback={<PageLoader />}>
             <Routes>
@@ -105,6 +104,7 @@ function App() {
 
               <Route path="/" element={<HomeLayout />}>
                 <Route index element={<Feed />} />
+                <Route path="games" element={<GameCenter />} />
 
                 {/* Rutas Protegidas */}
                 <Route element={<ProtectedRoute />}>
@@ -124,7 +124,6 @@ function App() {
 
                   {/* Sub-Rutas de Juegos */}
                   <Route path="games">
-                    <Route index element={<GameCenter />} />
                     <Route path="memory" element={<MemoryGame />} />
                     <Route path="trivia" element={<TriviaGame />} />
                     <Route path="michi" element={<MichiGame />} />
@@ -139,6 +138,9 @@ function App() {
                     <Route path="leaderboard" element={<Leaderboard />} />
                     <Route path="store" element={<YoMACStore />} />
                   </Route>
+
+                  <Route path="blog/create" element={<CreateBlog />} />
+                  <Route path="blog/:slug" element={<BlogDetail />} />
                 </Route>
 
                 {/* Rutas Públicas dentro del Layout */}
@@ -147,8 +149,7 @@ function App() {
                 <Route path="users" element={<DiscoverPage />} />
                 <Route path="post/:postId" element={<PostPage />} />
                 <Route path="blog" element={<BlogFeed />} />
-                <Route path="blog/create" element={<CreateBlog />} />
-                <Route path="blog/:slug" element={<BlogDetail />} />
+                
               </Route>
             </Routes>
           </Suspense>

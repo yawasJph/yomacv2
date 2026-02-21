@@ -1,4 +1,3 @@
-
 import { supabaseClient } from "../supabase/supabaseClient";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -17,24 +16,26 @@ export const AuthContextProvider = ({ children }) => {
     });
 
     // Listener de cambios de sesión
-   const { data: { subscription } } = supabaseClient.auth.onAuthStateChange(async (_event, session) => {
-    if (session?.user) {
-      const email = session.user.email;
-      const domain = email.split('@')[1];
-      const allowedDomains = ['gmail.com'];
+    const {
+      data: { subscription },
+    } = supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        const email = session.user.email;
+        const domain = email.split("@")[1];
+        const allowedDomains = ["gmail.com"];
 
-      if (!allowedDomains.includes(domain)) {
-        await supabaseClient.auth.signOut();
-        setUser(null);
-        setError("Dominio de correo no autorizado.");
+        if (!allowedDomains.includes(domain)) {
+          await supabaseClient.auth.signOut();
+          setUser(null);
+          setError("Dominio de correo no autorizado.");
+        } else {
+          setUser(session.user);
+        }
       } else {
-        setUser(session.user);  
+        setUser(null);
       }
-    } else {
-      setUser(null);
-    }
-    setLoading(false);
-  });
+      setLoading(false);
+    });
 
     return () => subscription.unsubscribe();
   }, []);
@@ -44,10 +45,26 @@ export const AuthContextProvider = ({ children }) => {
       setLoading(true);
       setError(null);
 
+      // 1. Calculamos a dónde debe volver el usuario
+      const currentPath = window.location.pathname;
+
+      // Si está en el login, la base URL será el Home.
+      // Si no, será la URL actual (para que funcione en Games, Profile, etc.)
+      const returnTo =
+        currentPath === "/login"
+          ? window.location.origin // Esto es http://localhost:5173 o tu dominio
+          : window.location.href; // La URL completa actual
+
+      // Guardamos la marca para la música si no es el login
+      if (currentPath !== "/login") {
+        localStorage.setItem("should_play_bgm", "true");
+      }
+
       const { data, error } = await supabaseClient.auth.signInWithOAuth({
         provider: "google",
         options: {
           // Esto asegura que si el trigger falla, el error regrese aquí
+          redirectTo: returnTo,
           queryParams: {
             prompt: "select_account",
           },
@@ -57,8 +74,9 @@ export const AuthContextProvider = ({ children }) => {
       if (error) throw error;
     } catch (err) {
       console.error("Error en login:", err.message);
+      localStorage.removeItem("should_play_bgm");
       setError(
-        "Solo se permiten correos institucionales (@institutomanuelarevalo.delm.edu.pe)"
+        "Solo se permiten correos institucionales (@institutomanuelarevalo.delm.edu.pe)",
       );
     } finally {
       setLoading(false);
@@ -72,7 +90,7 @@ export const AuthContextProvider = ({ children }) => {
       setUser(null);
     } catch (err) {
       console.error(err.message);
-      setError(null)
+      setError(null);
       setError(err.message);
     }
   }
