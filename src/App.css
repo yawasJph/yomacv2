@@ -457,7 +457,7 @@ ul[data-type="taskList"] input[type="checkbox"] {
 /* Dentro de tu CSS del editor */
 .ProseMirror {
   min-height: 300px;
-  padding-bottom: 20vh; /* Espacio extra para que el texto siempre suba */
+  /* padding-bottom: 20vh;  */
 }
 
 /* Si tienes una barra de herramientas arriba del editor */

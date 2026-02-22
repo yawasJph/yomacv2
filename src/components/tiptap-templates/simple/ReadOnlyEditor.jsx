@@ -20,7 +20,6 @@ import "@/components/tiptap-node/image-node/image-node.scss";
 import "@/components/tiptap-node/heading-node/heading-node.scss";
 import "@/components/tiptap-node/paragraph-node/paragraph-node.scss";
 import { common, createLowlight } from "lowlight";
-import CodeBlockNode from "@/pages/blog/CodeBlockNode";
 import CodeBlockNodev2 from "@/pages/blog/CodeBlockNodev2";
 
 
