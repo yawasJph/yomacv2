@@ -11,19 +11,8 @@ const TOOLBAR_STYLES = {
   fixed: cn("sticky -top-1 z-30 w-full bg-white dark:bg-black border-b border-gray-200 flex-wrap"), 
   floating: "rounded-lg border border-gray-200 bg-white shadow-lg p-2"
 };
-const GROUP_STYLES = "flex items-center gap-0.5 flex-wrap";
-// const TOOLBAR_STYLES = {
-//   base: "flex items-center gap-1 p-1 transition-all",
-//   // Modificado: En móvil no rompe línea, permite scroll horizontal y oculta la scrollbar
-//   fixed: cn(
-//     "sticky -top-1 z-30 w-full bg-white dark:bg-black border-b border-gray-200",
-//     "overflow-x-auto overflow-y-hidden whitespace-nowrap scrollbar-hide no-scrollbar", // Scroll horizontal
-//     "md:flex-wrap md:overflow-visible" // En escritorio vuelve al comportamiento original
-//   ),
-//   floating: "rounded-lg border border-gray-200 bg-white shadow-lg p-2"
-// };
 
-// const GROUP_STYLES = "flex items-center gap-0.5 flex-nowrap md:flex-wrap"; // Evita que los grupos se rompan en móvil
+const GROUP_STYLES = "flex items-center gap-0.5 flex-wrap";
 const SEPARATOR_STYLES ="h-6 w-[1px] bg-gray-200";
 
 // --- HOOK DE NAVEGACIÓN (Sin cambios lógicos) ---

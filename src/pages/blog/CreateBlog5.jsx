@@ -26,6 +26,17 @@ const CreateBlog = ({ isEditing = false }) => {
 
   const navigate = useNavigate();
 
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Si bajamos más de 100px, activamos el modo compacto
+      setIsScrolled(window.scrollY > 100);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   useEffect(() => {
     const fetchBlogData = async () => {
       const { data, error } = await supabaseClient
@@ -181,7 +192,7 @@ const CreateBlog = ({ isEditing = false }) => {
     // Cambiamos p-6 por p-4 en móvil y usamos dvh
     <div className="max-w-5xl mx-auto min-h-screen bg-white dark:bg-zinc-950 p-4 md:p-6 pb-24 md:pb-6">
       {/* HEADER: En móvil lo hacemos más compacto y sticky si es necesario */}
-      <div className="sticky top-0 z-30 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md pb-4 pt-2 -mx-4 px-4 border-b border-zinc-100 dark:border-zinc-900 md:relative md:border-none md:bg-transparent">
+      <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md pb-4 pt-2 -mx-4 px-4 border-b border-zinc-100 dark:border-zinc-900 md:relative md:border-none md:bg-transparent">
         <div className="flex justify-between items-center gap-2">
           <div className="flex items-center gap-2">
             {isMobile && (
@@ -222,8 +233,6 @@ const CreateBlog = ({ isEditing = false }) => {
           className="text-2xl md:text-5xl font-black bg-transparent border-none outline-none focus:ring-0 dark:text-white placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
         />
 
-        {/* Banner upload compacto en móvil */}
-
         <div className="relative">
           <input
             type="file"
@@ -259,7 +268,7 @@ const CreateBlog = ({ isEditing = false }) => {
 
       {/* EDITOR: Aquí está el truco para el teclado */}
       <div className="mt-2 md:mt-5 border-t border-zinc-100 dark:border-zinc-900 pt-4">
-        <SimpleEditor onEditorReady={setEditor}/>
+        <SimpleEditor onEditorReady={setEditor} />
       </div>
 
       {/* ESPACIADOR PARA EL TECLADO: Evita que el teclado tape el final del texto */}
