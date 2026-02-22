@@ -1,6 +1,7 @@
 import { Bookmark } from "lucide-react";
 import { useBookmark } from "../../../hooks/useBookmark";
 import { useAuthAction } from "../../../hooks/useAuthAction";
+import { notify } from "@/utils/toast/notifyv3";
 
 const BookmarkButton = ({ postId }) => {
   const { isBookmarked, toggleBookmark } = useBookmark(postId);
@@ -10,7 +11,11 @@ const BookmarkButton = ({ postId }) => {
     e.stopPropagation();
     executeAction(() => {
       toggleBookmark();
-    }, "guardar esta publicación");
+    }, "guardar esta publicación",
+      () => {
+        notify.info("Necesitas iniciar sesión para guardar esta publicación.");
+      }
+    );
   };
 
   return (

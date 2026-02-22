@@ -105,6 +105,7 @@ function App() {
               <Route path="/" element={<HomeLayout />}>
                 <Route index element={<Feed />} />
                 <Route path="games" element={<GameCenter />} />
+                <Route path="games/leaderboard" element={<Leaderboard />} />
 
                 {/* Rutas Protegidas */}
                 <Route element={<ProtectedRoute />}>
@@ -135,7 +136,7 @@ function App() {
                       element={<CodigoMatricula />}
                     />
                     <Route path="red-connection" element={<ConectorRedes />} />
-                    <Route path="leaderboard" element={<Leaderboard />} />
+                    
                     <Route path="store" element={<YoMACStore />} />
                   </Route>
 

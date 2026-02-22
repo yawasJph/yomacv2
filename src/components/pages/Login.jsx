@@ -2,6 +2,7 @@ import { useAuth } from "../../context/AuthContext";
 import ToggleThemeButton from "../ui/ToggleThemeButton";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { useEffect } from "react";
 
 const Login = () => {
   const { signinWithGoogle, loading, error, user } = useAuth();

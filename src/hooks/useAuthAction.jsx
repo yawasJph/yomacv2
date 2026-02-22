@@ -1,15 +1,11 @@
 // hooks/useAuthAction.js
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useAuthModal } from "../context/AuthModalContext";
 import { useModal } from "@/context/ModalContextv3";
 import AuthModal from "@/components/ui/AuthModal ";
 
 
 export const useAuthAction = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
-  const { openAuthModal } = useAuthModal();
   const { openModal, closeModal } = useModal();
 
   const executeAction = (callback, actionText = "realizar esta acción", onCancel) => {

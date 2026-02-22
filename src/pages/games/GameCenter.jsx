@@ -6,6 +6,8 @@ import GameCenterHeader from "../../components/games/game-center/GameCenterHeade
 import useSound from "use-sound"; // 1. Importar la librería
 import { useEffect, useState } from "react";
 import { useAudio } from "../../context/AudioContext";
+import { notify } from "@/utils/toast/notifyv3";
+
 
 const GameCenter = () => {
   const navigate = useNavigate();
@@ -50,6 +52,7 @@ const GameCenter = () => {
       "para jugar",
       () => {
         // 3. Si cancela o cierra el modal
+        notify.info("Necesitas iniciar sesión para jugar.");
         setIsDimmed(false); // Sube el volumen de nuevo
       },
     );

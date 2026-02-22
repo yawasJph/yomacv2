@@ -28,7 +28,7 @@ const NavigationM = () => {
       to: "games",
       icon: <Gamepad2 size={24} />,
       text: "Juegos",
-      private: true,
+      private: false,
     },
     {
       to: `profile/${user?.id}`,

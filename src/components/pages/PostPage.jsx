@@ -1,9 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, BellOff, ImageIcon, Smile, X } from "lucide-react";
+import { ArrowLeft, ImageIcon, Smile, X } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useComments } from "../../hooks/useComments";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import CardPost from "../ui/feed/CardPost";
 import SkeletonPost from "../skeletons/SkeletonPost";
@@ -13,7 +13,9 @@ import GifPicker from "../utils/GifPicker";
 import CommentItem from "../ui/CommentItem";
 import { useAuthModal } from "../../context/AuthModalContext";
 import { useAuthAction } from "../../hooks/useAuthAction";
-//import AuthModal from "../ui/AuthModal ";
+import { notify } from "@/utils/toast/notifyv3";
+
+const MAX_CHARS = 500;
 
 const PostPage = () => {
   const { postId } = useParams();
@@ -24,10 +26,22 @@ const PostPage = () => {
   const [showGif, setShowGif] = useState(false);
   const [selectedGif, setSelectedGif] = useState(null);
   const { data } = useProfile(user?.id);
-  const MAX_CHARS = 500;
- const { openAuthModal } = useAuthModal();
- const {executeAction} = useAuthAction()
- const queryClient = useQueryClient();
+  const {} = useAuthAction();
+  const { executeAction } = useAuthAction();
+
+  const openAuthModalForComment = () => { 
+    executeAction(
+      () => {
+        // Si el usuario está autenticado, no hacemos nada
+      },
+      "comentar",
+      () => {
+        // Si el usuario cancela o cierra el modal, podemos mostrar un mensaje o simplemente no hacer nada
+        // Por ejemplo, podríamos mostrar una alerta (aunque lo ideal sería un toast o algo menos intrusivo)
+        notify.info("Necesitas iniciar sesión para comentar.");
+      }
+    );  
+  };  
 
   // 1. Cargar el post principal
   const { data: post, isLoading: postLoading } = useQuery({
@@ -51,7 +65,7 @@ const PostPage = () => {
       )
     ),
     post_media (id, media_url, media_type)
-  `
+  `,
         )
         .filter("profiles.user_badges.is_equipped", "eq", true)
         .eq("id", postId)
@@ -93,9 +107,13 @@ const PostPage = () => {
     setShowEmoji(false);
   };
 
-  const hanldeNextComments = () =>{
-    executeAction(fetchNextPage,"ver mas comentarios")
-  }
+  const hanldeNextComments = () => {
+    executeAction(fetchNextPage, "ver mas comentarios",
+      () => { 
+        notify.info("Necesitas iniciar sesión para ver más comentarios.");  
+      }
+    );
+  };
 
   if (postLoading) return <SkeletonPost />;
 
@@ -214,7 +232,6 @@ const PostPage = () => {
           </form>
         ) : (
           <div className="text-center py-12 px-4">
-           
             {/* <h3 className="text-xl font-bold text-gray-800 dark:text-indigo-100 mb-2">
               Iniciar Sesion
             </h3> */}
@@ -222,7 +239,7 @@ const PostPage = () => {
               Debes iniciar sesion para escribir un comentario
             </p>
             <button
-              onClick={openAuthModal}
+              onClick={openAuthModalForComment}
               className="px-6 py-2.5 bg-linear-to-r from-emerald-500 to-emerald-600 text-white font-medium rounded-full hover:shadow-lg hover:shadow-emerald-indigo/25 transition-all duration-300 dark:from-emerald-600 dark:to-emerald-500 hover:scale-100"
             >
               Iniciar Sesion
@@ -258,8 +275,6 @@ const PostPage = () => {
           </div>
         )}
       </div>
-
-     
     </div>
   );
 };

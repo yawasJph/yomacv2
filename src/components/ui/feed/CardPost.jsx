@@ -67,9 +67,10 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
 
   const handleReportAction = () => {
     setShowOptions(false);
-    executeAction(handleReport, "para reportar");
+    executeAction(handleReport, "para reportar", () => {
+      notify.info("Necesitas iniciar sesión para reportar este contenido.");
+    });
   };
-
 
   // Función que se ejecuta al confirmar en el modal
   const confirmDelete = () => {
@@ -98,9 +99,15 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
 
   const handleComment = () => {
     if (isDetailedView) return;
-    executeAction(() => {
-      navigate(`/post/${post.id}`);
-    }, "escribir un comentario");
+    executeAction(
+      () => {
+        navigate(`/post/${post.id}`);
+      },
+      "escribir un comentario",
+      () => {
+        notify.info("Necesitas iniciar sesión para comentar.");
+      },
+    );
   };
 
   const c = (e) => {
@@ -119,8 +126,8 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
     navigate(`/post/${post.id}`);
   };
 
-  const displayContent = post.og_data?.url 
-    ? post.content.replace(post.og_data.url, "").trim() 
+  const displayContent = post.og_data?.url
+    ? post.content.replace(post.og_data.url, "").trim()
     : post.content;
 
   return (
@@ -239,7 +246,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                         onClick={() => {
                           setIsDeleteModalOpen(true); // Abrimos el modal en vez de usar confirm()
                           setShowOptions(false);
-                          
+
                           //onDeletModalConfirm();
                         }}
                         className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
@@ -350,16 +357,14 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
 
       {/* MODAL FULLSCREEN (Fuera del flujo visual del post, pero dentro del componente) */}
       <FullscreenModal isOpen={isModalOpen} onClose={closeVideoModal}>
-         {isModalOpen && (
+        {isModalOpen && (
           <MediaModal
             media={media}
             closeModal={closeVideoModal}
             initialIndex={selectedIndex}
-          /> 
+          />
         )}
-        
       </FullscreenModal>
-     
 
       <ConfirmModal
         isOpen={isDeleteModalOpen}

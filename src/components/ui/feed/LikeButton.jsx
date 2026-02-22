@@ -1,6 +1,7 @@
 import { Heart } from "lucide-react";
 import { useLike } from "../../../hooks/useLike";
 import { useAuthAction } from "../../../hooks/useAuthAction";
+import { notify } from "@/utils/toast/notifyv3";
 
 const LikeButton = ({ postId, initialCount = 0, query = "" }) => {
   const { isLiked, toggleLike, isLoading } = useLike(postId, query);
@@ -13,8 +14,11 @@ const LikeButton = ({ postId, initialCount = 0, query = "" }) => {
         disabled={isLoading}
         onClick={(e) => {
           e.stopPropagation();
-          executeAction(toggleLike, "para dar like");
-          // toggleLike();
+          executeAction(toggleLike, "para dar like",
+              () => {
+                notify.info("Necesitas iniciar sesión para dar like."); 
+              }
+          );
         }}
         className={`flex items-center gap-2 transition-colors group ${
           isLiked
