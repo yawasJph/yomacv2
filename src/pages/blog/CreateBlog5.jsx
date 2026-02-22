@@ -223,26 +223,25 @@ const CreateBlog = ({ isEditing = false }) => {
         />
 
         {/* Banner upload compacto en móvil */}
-        {!previewUrl && (
-          <div className="relative">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="hidden"
-              id="banner-upload"
-            />
-            <label
-              htmlFor="banner-upload"
-              className="flex items-center gap-2 cursor-pointer text-sm font-medium text-zinc-500 hover:text-indigo-500 transition-colors"
-            >
-              <ImagePlus size={20} />
-              {imageFile && previewUrl
-                ? "Cambiar imagen de portada"
-                : "Añadir imagen de portada"}
-            </label>
-          </div>
-        )}
+
+        <div className="relative">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="hidden"
+            id="banner-upload"
+          />
+          <label
+            htmlFor="banner-upload"
+            className="flex items-center gap-2 cursor-pointer text-sm font-medium text-zinc-500 hover:text-indigo-500 transition-colors"
+          >
+            <ImagePlus size={20} />
+            {previewUrl
+              ? "Cambiar imagen de portada"
+              : "Añadir imagen de portada"}
+          </label>
+        </div>
       </div>
 
       {/* PREVIEW DE IMAGEN: En móvil la hacemos más pequeña para que no empuje el editor hacia abajo */}
@@ -250,7 +249,7 @@ const CreateBlog = ({ isEditing = false }) => {
         <div className="relative my-4 rounded-2xl overflow-hidden h-[150px] md:h-[350px] border dark:border-zinc-800">
           <img src={previewUrl} className="w-full h-full object-cover" />
           <label
-            htmlFor="banner-upload"
+            htmlFor="banner-img"
             className="absolute bottom-2 right-2 bg-black/50 p-2 rounded-full text-white backdrop-blur-sm"
           >
             <ImagePlus size={16} />
@@ -260,11 +259,11 @@ const CreateBlog = ({ isEditing = false }) => {
 
       {/* EDITOR: Aquí está el truco para el teclado */}
       <div className="mt-2 md:mt-5 border-t border-zinc-100 dark:border-zinc-900 pt-4">
-        <SimpleEditor onEditorReady={setEditor} />
+        <SimpleEditor onEditorReady={setEditor}/>
       </div>
 
       {/* ESPACIADOR PARA EL TECLADO: Evita que el teclado tape el final del texto */}
-      <div className="h-40 md:hidden" />
+      {/* <div className="h-40 md:hidden" /> */}
     </div>
   );
 };
