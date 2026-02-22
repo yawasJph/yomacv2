@@ -20,7 +20,8 @@ const BlogCard = ({ post }) => {
             {post.reading_time} min lectura
           </span>
           <span className="text-xs text-gray-500">
-            {new Date(post.created_at).toLocaleDateString()}
+            {/* {new Date(post.created_at).toLocaleDateString()} */}
+            {new Date(post.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
           </span>
         </div>
 

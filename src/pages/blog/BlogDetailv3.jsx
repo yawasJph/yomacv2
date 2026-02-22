@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabaseClient } from "@/supabase/supabaseClient";
-import Prism from "prismjs";
-
-import { toast } from "sonner";
 import ReadOnlyEditor from "@/components/tiptap-templates/simple/ReadOnlyEditor";
 
 const BlogDetail = () => {
@@ -33,7 +30,7 @@ const BlogDetail = () => {
   }, [slug]);
 
   if (loading) return <div className="py-20 text-center">Cargando...</div>;
-  if (!post) return <div className="py-20 text-center">Post no encontrado</div>;
+  if (!post) return <div className="py-20 text-center">Blog no encontrado</div>;
 
   return (
     <article className="bg-white dark:bg-zinc-950 pb-20">

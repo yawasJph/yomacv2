@@ -453,3 +453,20 @@ ul[data-type="taskList"] input[type="checkbox"] {
   background-color: transparent !important;
   border-radius: 12px !important;
 }
+
+/* Dentro de tu CSS del editor */
+.ProseMirror {
+  min-height: 300px;
+  padding-bottom: 20vh; /* Espacio extra para que el texto siempre suba */
+}
+
+/* Si tienes una barra de herramientas arriba del editor */
+.tiptap-toolbar {
+  position: sticky;
+  top: 60px; /* Debajo de nuestro Header sticky */
+  z-index: 20;
+  background: white;
+  display: flex;
+  overflow-x: auto; /* Permite scroll horizontal si los iconos no caben */
+  white-space: nowrap;
+}

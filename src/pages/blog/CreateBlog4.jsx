@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
 import { supabaseClient } from "@/supabase/supabaseClient";
 import { generateSlug } from "@/utils/blog/slugify";
@@ -15,10 +15,8 @@ const CreateBlog = ({ isEditing = false }) => {
   const [editor, setEditor] = useState(null);
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
-  const isMobile = useIsMobile()
-
-  const {id} = useParams()
-  console.log("ID del blog para editar:", id);
+  const isMobile = useIsMobile();
+  const { id } = useParams();
 
   // Estados para la imagen
   const [imageFile, setImageFile] = useState(null); // Archivo crudo (File)
@@ -26,6 +24,23 @@ const CreateBlog = ({ isEditing = false }) => {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchBlogData = async () => {
+      const { data, error } = await supabaseClient
+        .from("blogs")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (data && editor) {
+        setTitle(data.title);
+        setPreviewUrl(data.banner_url);
+        editor.commands.setContent(data.content); // Tiptap carga el HTML
+      }
+    };
+    if (editor) fetchBlogData();
+  }, [id, editor]);
 
   // Manejar selección de imagen (Localmente)
   const handleImageChange = (e) => {
@@ -45,62 +60,122 @@ const CreateBlog = ({ isEditing = false }) => {
     return { readingTime, excerpt };
   };
 
-  const handlePublish = async (targetStatus = "published") => {
-    if (!title || !editor || editor.isEmpty || !imageFile) {
-      return alert(
-        "Por favor completa el título, contenido y selecciona una imagen de portada.",
-      );
-    }
+  //   const handlePublish = async (targetStatus = "published") => {
+  //     if (!title || !editor || editor.isEmpty || !imageFile) {
+  //       return alert(
+  //         "Por favor completa el título, contenido y selecciona una imagen de portada.",
+  //       );
+  //     }
 
+  //     setLoading(true);
+  //     setUploadProgress(0);
+
+  //     try {
+  //       const cloudinaryResponse = await uploadToCloudinary(
+  //         imageFile,
+  //         (progress) => {
+  //           setUploadProgress(progress);
+  //         },
+  //       );
+  //       const bannerUrl = cloudinaryResponse.secure_url;
+
+  //       const rawHtml = editor.getHTML();
+  //       const { readingTime, excerpt } = getMetadata(rawHtml);
+  //       const slug = `${generateSlug(title)}-${Math.random().toString(36).substring(2, 7)}`;
+
+  //       const { data, error } = await supabaseClient
+  //         .from("blogs")
+  //         .insert([
+  //           {
+  //             author_id: user?.id,
+  //             title,
+  //             content: rawHtml,
+  //             slug,
+  //             banner_url: bannerUrl,
+  //             status: targetStatus,
+  //             excerpt: excerpt,
+  //             reading_time: readingTime,
+  //           },
+  //         ])
+  //         .select()
+  //         .single();
+
+  //       if (error) throw error;
+
+  //       alert("¡Blog publicado con éxito!");
+  //       navigate(`/blog/${data.slug}`);
+  //     } catch (err) {
+  //       console.error("Error al guardar:", err);
+  //       alert("Hubo un problema al publicar.");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  const handleSave = async (targetStatus = "published") => {
     setLoading(true);
-    setUploadProgress(0);
-
     try {
-      // 1. RECIÉN AQUÍ SUBIMOS A CLOUDINARY
-      console.log("Subiendo imagen a Cloudinary...");
-      //const cloudinaryResponse = await uploadToCloudinary(imageFile);
-      const cloudinaryResponse = await uploadToCloudinary(
-        imageFile,
-        (progress) => {
-          setUploadProgress(progress);
-        },
-      );
-      const bannerUrl = cloudinaryResponse.secure_url;
+      let bannerUrl = previewUrl;
 
-      // 2. Preparar datos del blog
+      // 1. Solo subir a Cloudinary si el usuario seleccionó un archivo nuevo
+      if (imageFile) {
+        const cloudinaryResponse = await uploadToCloudinary(
+          imageFile,
+          setUploadProgress,
+        );
+        bannerUrl = cloudinaryResponse.secure_url;
+      }
+
       const rawHtml = editor.getHTML();
       const { readingTime, excerpt } = getMetadata(rawHtml);
-      const slug = `${generateSlug(title)}-${Math.random().toString(36).substring(2, 7)}`;
 
-      const { data, error } = await supabaseClient
-        .from("blogs")
-        .insert([
-          {
-            author_id: user?.id,
-            title,
-            content: rawHtml,
-            slug,
-            banner_url: bannerUrl,
-            status: targetStatus,
-            excerpt: excerpt,
-            reading_time: readingTime,
-          },
-        ])
-        .select()
-        .single();
+      const blogData = {
+        title,
+        content: rawHtml,
+        banner_url: bannerUrl,
+        status: targetStatus,
+        excerpt,
+        reading_time: readingTime,
+      };
 
-      if (error) throw error;
+      let result;
+      if (id) {
+        // MODO EDICIÓN
+        result = await supabaseClient
+          .from("blogs")
+          .update(blogData)
+          .eq("id", id)
+          .select()
+          .single();
+      } else {
+        // MODO CREACIÓN
+        result = await supabaseClient
+          .from("blogs")
+          .insert([
+            {
+              ...blogData,
+              author_id: user.id,
+              slug: `${generateSlug(title)}-${Math.random().toString(36).substring(2, 7)}`,
+            },
+          ])
+          .select()
+          .single();
+      }
 
-      alert("¡Blog publicado con éxito!");
-      navigate(`/blog/${data.slug}`); // Redirigir al detalle del blog
+      if (result.error) throw result.error;
+
+      navigate(
+        targetStatus === "published"
+          ? `/blog/${result.data.slug}`
+          : "/blog/my-blogs",
+      );
     } catch (err) {
-      console.error("Error al guardar:", err);
-      alert("Hubo un problema al publicar.");
+      console.error(err);
+      alert("Error al guardar");
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <div className="max-w-5xl mx-auto min-h-screen bg-white dark:bg-zinc-950 p-6">
       {/* Header con Inputs */}
@@ -109,8 +184,16 @@ const CreateBlog = ({ isEditing = false }) => {
           <h1 className="text-2xl font-bold dark:text-white">Nuevo Artículo</h1>
 
           <div className="flex gap-3">
-            <SaveButton isMobile={isMobile} loading={loading} onSave={() => handlePublish("draft")} />
-            <PublicButton isMobile={isMobile} loading={loading} onPublic={()=> handlePublish("published")}/>
+            <SaveButton
+              isMobile={isMobile}
+              loading={loading}
+              onSave={() => handleSave("draft")}
+            />
+            <PublicButton
+              isMobile={isMobile}
+              loading={loading}
+              onPublic={() => handleSave("published")}
+            />
           </div>
         </div>
 
@@ -122,7 +205,6 @@ const CreateBlog = ({ isEditing = false }) => {
           className="text-4xl md:text-5xl font-black bg-transparent border-none outline-none focus:ring-0 dark:text-white placeholder:text-zinc-300 dark:placeholder:text-zinc-700 max-w-85 md:max-w-full"
         />
 
-        {/* Input de Imagen (Custom) */}
         <div className="relative">
           <input
             type="file"
@@ -136,7 +218,7 @@ const CreateBlog = ({ isEditing = false }) => {
             className="flex items-center gap-2 cursor-pointer text-sm font-medium text-zinc-500 hover:text-indigo-500 transition-colors"
           >
             <ImagePlus size={20} />
-            {imageFile
+            {imageFile && previewUrl
               ? "Cambiar imagen de portada"
               : "Añadir imagen de portada"}
           </label>
@@ -157,7 +239,6 @@ const CreateBlog = ({ isEditing = false }) => {
         </div>
       )}
 
-      {/* Preview del Banner */}
       {previewUrl && (
         <div className="relative mb-10 rounded-3xl overflow-hidden h-[350px] border dark:border-zinc-800 shadow-xl">
           <img

@@ -24,10 +24,10 @@ import ProtectedRoute from "./components/utils/ProtectedRoute";
 import Feed from "./components/pages/Feed";
 import Login from "./components/pages/Login";
 import BlogFeed from "./pages/blog/BlogFeed";
-import CreateBlog from "./pages/blog/CreateBlog3";
-import BlogDetail from "./pages/blog/BlogDetailv3";
+import CreateBlog from "./pages/blog/CreateBlog5";
+import BlogDetail from "./pages/blog/BlogDetailv5";
 import { ModalProvider } from "./context/ModalContextv3";
-import ModalRoot from "./components/modals/ModalRoot";
+import MyBlogs from "./pages/user-blog/MyBlogs";
 
 // --- IMPORTS DINÁMICOS (Lazy Loading) ---
 const CreatePost = lazy(() => import("./components/pages/CreatePost"));
@@ -141,7 +141,9 @@ function App() {
                   </Route>
 
                   <Route path="blog/create" element={<CreateBlog />} />
+                  <Route path="blog/edit/:id" element={<CreateBlog isEditing={true} />} />
                   <Route path="blog/:slug" element={<BlogDetail />} />
+                  <Route path="blog/my-blogs" element={<MyBlogs />} />
                 </Route>
 
                 {/* Rutas Públicas dentro del Layout */}
