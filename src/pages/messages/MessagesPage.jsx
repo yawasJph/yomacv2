@@ -17,12 +17,30 @@ const MessagesPage = () => {
   }, [user]);
 
   const handleSelectChat = (friend) => {
-  setActiveChat(friend);
-  // Limpiamos el contador localmente para feedback instantáneo
-  setMutuals(prev => prev.map(f => 
-    f.friend_id === friend.friend_id ? { ...f, unreadCount: 0 } : f
-  ));
-};
+    setActiveChat(friend);
+    // Limpiamos el contador localmente para feedback instantáneo
+    setMutuals((prev) =>
+      prev.map((f) =>
+        f.friend_id === friend.friend_id ? { ...f, unreadCount: 0 } : f,
+      ),
+    );
+  };
+
+  // Escuchar cambios globales en mensajes para reordenar la lista de amigos
+  useEffect(() => {
+    const channel = supabaseClient
+      .channel("global_messages_changes")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "direct_messages" },
+        () => {
+          loadMutuals(); // Recargar lista para actualizar previews y orden
+        },
+      )
+      .subscribe();
+
+    return () => supabaseClient.removeChannel(channel);
+  }, []);
 
   // Cargar mensajes y suscripción Real-time
   useEffect(() => {
@@ -38,16 +56,14 @@ const MessagesPage = () => {
             event: "*",
             schema: "public",
             table: "direct_messages",
-           // filter: `receiver_id=eq.${user.id}`,
+            filter: `receiver_id=eq.${user.id}`,
           },
           (payload) => {
-            
             if (
               payload.eventType === "INSERT" &&
               payload.new.sender_id === activeChat.friend_id
             ) {
               setMessages((prev) => [...prev, payload.new]);
-              loadMutuals()
             }
             if (payload.eventType === "UPDATE") {
               // Si un mensaje se actualizó a is_read = true, actualizamos el estado local
