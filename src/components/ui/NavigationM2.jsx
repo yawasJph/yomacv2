@@ -60,7 +60,7 @@ const NavigationM = () => {
     }
   };
 
-  const onViewCredits = ["games", "yawas", "blog"].some((route) =>
+  const onViewCredits = ["games", "yawas", "blog", "messages"].some((route) =>
     location.pathname.includes(route),
   );
 

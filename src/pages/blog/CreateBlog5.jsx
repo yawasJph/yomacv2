@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
 import { supabaseClient } from "@/supabase/supabaseClient";
 import { generateSlug } from "@/utils/blog/slugify";
@@ -192,7 +192,7 @@ const CreateBlog = ({ isEditing = false }) => {
     // Cambiamos p-6 por p-4 en móvil y usamos dvh
     <div className="max-w-5xl mx-auto min-h-screen bg-white dark:bg-zinc-950 p-4 md:p-6 pb-24 md:pb-6">
       {/* HEADER: En móvil lo hacemos más compacto y sticky si es necesario */}
-      <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md pb-4 pt-2 -mx-4 px-4 border-b border-zinc-100 dark:border-zinc-900 md:relative md:border-none md:bg-transparent">
+      <div className="sticky top-0 z-30 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md pb-4 pt-2 -mx-4 px-4 border-b border-zinc-100 dark:border-zinc-900 md:relative md:border-none md:bg-transparent">
         <div className="flex justify-between items-center gap-2">
           <div className="flex items-center gap-2">
             {isMobile && (

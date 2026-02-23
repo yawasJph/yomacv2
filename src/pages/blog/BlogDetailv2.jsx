@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabaseClient } from "@/supabase/supabaseClient";
-import Prism from "prismjs";
-
-import { toast } from "sonner";
 
 const BlogDetail = () => {
   const { slug } = useParams();

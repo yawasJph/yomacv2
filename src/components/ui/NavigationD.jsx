@@ -4,6 +4,7 @@ import {
   Bot,
   Gamepad2,
   Home,
+  MessageSquarePlus,
   Plus,
   UserPen,
   Users,
@@ -60,6 +61,12 @@ const NavigationD = () => {
       to: "/blog",
       icon: <BlocksIcon size={22} />,
       text: "Blog",
+      private: false,
+    },
+     {
+      to: "/messages",
+      icon: <MessageSquarePlus size={22} />,
+      text: "Mensajes",
       private: false,
     },
   ];

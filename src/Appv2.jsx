@@ -28,6 +28,7 @@ import CreateBlog from "./pages/blog/CreateBlog5";
 import BlogDetail from "./pages/blog/BlogDetailv5";
 import { ModalProvider } from "./context/ModalContextv3";
 import MyBlogs from "./pages/user-blog/MyBlogs";
+import MessagesPage from "./pages/messages/MessagesPage";
 
 // --- IMPORTS DINÁMICOS (Lazy Loading) ---
 const CreatePost = lazy(() => import("./components/pages/CreatePost"));
@@ -144,6 +145,7 @@ function App() {
                   <Route path="blog/edit/:id" element={<CreateBlog isEditing={true} />} />
                   <Route path="blog/:slug" element={<BlogDetail />} />
                   <Route path="blog/my-blogs" element={<MyBlogs />} />
+                  <Route path="messages" element={<MessagesPage />} />
                 </Route>
 
                 {/* Rutas Públicas dentro del Layout */}
