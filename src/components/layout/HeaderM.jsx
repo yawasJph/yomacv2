@@ -9,6 +9,7 @@ import {
   Search,
   Bot,
   BlocksIcon,
+  MessageCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -46,6 +47,11 @@ const HeaderM = () => {
       icon: <BlocksIcon size={22} />,
       text: "Blog",
       path: "/blog",
+    },
+     {
+      icon: <MessageCircle size={22} />,
+      text: "Mensages",
+      path: "/messages",
     },
   ];
 

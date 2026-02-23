@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { ChevronLeft, Send, MoreVertical } from "lucide-react";
+import { supabaseClient } from "@/supabase/supabaseClient";
 
 const ChatWindow = ({
   activeChat,
@@ -12,6 +13,43 @@ const ChatWindow = ({
   loading,
 }) => {
   const scrollRef = useRef(null);
+  const [isFriendTyping, setIsFriendTyping] = React.useState(false);
+
+  // Escuchar el evento de "typing" desde el canal
+  useEffect(() => {
+    const channel = supabaseClient.channel(`chat_${activeChat.friend_id}`);
+
+    channel
+      .on("broadcast", { event: "typing" }, ({ payload }) => {
+        if (payload.userId === activeChat.friend_id) {
+          setIsFriendTyping(true);
+          // Ocultar después de 3 segundos de inactividad
+          setTimeout(() => setIsFriendTyping(false), 3000);
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabaseClient.removeChannel(channel);
+    };
+  }, [activeChat.friend_id]);
+
+  // Función para avisar que YO estoy escribiendo
+  const handleKeyDown = () => {
+    // Solo enviar si no hemos enviado uno en los últimos 2 segundos
+    if (window.typingTimeout) return;
+
+    const channel = supabaseClient.channel(`chat_${activeChat.friend_id}`);
+    channel.send({
+      type: "broadcast",
+      event: "typing",
+      payload: { userId: props.user.id },
+    });
+
+    window.typingTimeout = setTimeout(() => {
+      window.typingTimeout = null;
+    }, 2000);
+  };
 
   // EFECTO: Scroll automático al final cuando hay nuevos mensajes
   useEffect(() => {
@@ -33,6 +71,28 @@ const ChatWindow = ({
       hour12: true,
     }).format(date);
   };
+
+  const markAsRead = async () => {
+    if (!activeChat || !user) return;
+
+    const { error } = await supabaseClient
+      .from("direct_messages")
+      .update({ is_read: true, read_at: new Date().toISOString() })
+      .eq("sender_id", activeChat.friend_id) // Mensajes que él me envió
+      .eq("receiver_id", user.id) // ... a mí
+      .eq("is_read", false); // Solo los que no están leídos
+
+    if (error) console.error("Error marcando como leído:", error.message);
+  };
+
+  // Ejecutar cuando se abre el chat o cuando llegan nuevos mensajes
+  useEffect(() => {
+    if (activeChat && messages.length > 0) {
+      markAsRead();
+    }
+  }, [activeChat, messages]);
+
+  console.log(messages);
 
   return (
     <div className="flex flex-col h-full bg-zinc-50 dark:bg-zinc-950">
@@ -116,18 +176,33 @@ const ChatWindow = ({
 
                     {/* Icono de check (opcional por ahora, estático) */}
                     {isMine && (
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M20 6L9 17l-5-5" />
-                      </svg>
+                      <span className="ml-1">
+                        {msg.is_read ? (
+                          // Doble check azul (Leído)
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#34D399"
+                            strokeWidth="3"
+                          >
+                            <path d="M2 12l5 5L20 4M7 12l5 5L22 4" />
+                          </svg>
+                        ) : (
+                          // Check simple (Enviado)
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                          >
+                            <path d="M20 6L9 17l-5-5" />
+                          </svg>
+                        )}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -135,6 +210,14 @@ const ChatWindow = ({
             </React.Fragment>
           );
         })}
+
+        {isFriendTyping && (
+          <div className="flex justify-start animate-pulse">
+            <div className="bg-zinc-200 dark:bg-zinc-800 text-[10px] px-3 py-1 rounded-full text-zinc-500">
+              {activeChat.full_name} está escribiendo...
+            </div>
+          </div>
+        )}
       </div>
 
       {/* INPUT DE MENSAJE */}
@@ -143,6 +226,7 @@ const ChatWindow = ({
         className="p-4 border-t dark:border-zinc-900 flex gap-2 bg-white dark:bg-zinc-950"
       >
         <input
+          onKeyDown={handleKeyDown}
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
