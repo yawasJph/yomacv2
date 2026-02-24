@@ -50,6 +50,8 @@ const NotificationsPage = () => {
         return <UserPlus className="text-purple-500" size={20} />;
       case "reply":
         return <Reply className="text-sky-500" size={20} />;
+      case "message":
+        return <MessageCircle className="text-amber-500" size={20} />;
       default:
         return <BellOff size={20} />;
     }
@@ -76,6 +78,8 @@ const NotificationsPage = () => {
         return <>{name} comenzó a seguirte</>;
       case "reply":
         return <>{name} respondió a tu comentario</>;
+      case "message":
+        return <>{name} te envió un mensage</>;
       default:
         return <>{name} interactuó contigo</>;
     }
@@ -109,6 +113,9 @@ const NotificationsPage = () => {
           navigate(
             `/comment/${notif.comments.parent_id}#comment-${notif.comment_id}`,
           );
+        break;
+      case "message":
+        navigate(`/messages`);
         break;
       default:
         break;
@@ -215,12 +222,25 @@ const NotificationsPage = () => {
                   </p>
 
                   {/* Muestra el contenido según lo que causó la notificación */}
-                  {(notif.post?.content || notif.comments?.content) && (
+                  {/* {(notif.post?.content || notif.comments?.content) && (
                     <p className="mt-2 text-sm text-gray-500 line-clamp-2 italic border-l-2 border-gray-200 pl-2">
                       "
                       {notif.comment_id
                         ? notif.comments?.content
                         : notif.post?.content}
+                      "
+                    </p>
+                  )} */}
+                  {/* Ahora usamos content_preview que sirve para TODO */}
+                  {(notif.post?.content ||
+                    notif.comments?.content ||
+                    notif.content_preview) && (
+                    <p className="mt-2 text-sm text-gray-500 line-clamp-2 italic border-l-2 border-gray-200 pl-2">
+                      "
+                      {notif.content_preview ||
+                        (notif.comment_id
+                          ? notif.comments?.content
+                          : notif.post?.content)}
                       "
                     </p>
                   )}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabaseClient } from "@/supabase/supabaseClient";
 import { useAuth } from "@/context/AuthContext";
 import MutualsList from "./MutualsList";
-import ChatWindow from "./ChatWindow";
+import ChatWindow from "./ChatWindowv2";
 
 const MessagesPage = () => {
   const { user } = useAuth();
@@ -11,6 +11,38 @@ const MessagesPage = () => {
   const [messages, setMessages] = useState([]); // <--- NUEVO: Guardar mensajes
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  // Agrega este estado arriba
+  const [onlineUsers, setOnlineUsers] = useState({});
+
+  useEffect(() => {
+    if (!user) return;
+
+    // Creamos un canal de Presence
+    const presenceChannel = supabaseClient.channel("global_presence", {
+      config: { presence: { key: user.id } },
+    });
+
+    presenceChannel
+      .on("presence", { event: "sync" }, () => {
+        // Aquí podrías actualizar el estado de tus mutuals si quisieras
+        // ver quién está online en la lista lateral.
+        const state = presenceChannel.presenceState();
+        setOnlineUsers(state)
+      })
+      .subscribe(async (status) => {
+        if (status === "SUBSCRIBED") {
+          // "Track" anuncia mis datos al resto de usuarios
+          await presenceChannel.track({
+            online_at: new Date().toISOString(),
+            user_id: user.id,
+          });
+        }
+      });
+
+    return () => {
+      presenceChannel.unsubscribe();
+    };
+  }, [user]);
 
   useEffect(() => {
     if (user) loadMutuals();
@@ -18,10 +50,11 @@ const MessagesPage = () => {
 
   const handleSelectChat = (friend) => {
     setActiveChat(friend);
-    // Limpiamos el contador localmente para feedback instantáneo
+
+    // 1. Resetear el contador en la UI localmente de forma inmediata
     setMutuals((prev) =>
       prev.map((f) =>
-        f.friend_id === friend.friend_id ? { ...f, unreadCount: 0 } : f,
+        f.friend_id === friend.friend_id ? { ...f, unread_count: 0 } : f,
       ),
     );
   };
@@ -56,19 +89,30 @@ const MessagesPage = () => {
             event: "*",
             schema: "public",
             table: "direct_messages",
-            filter: `receiver_id=eq.${user.id}`,
+            // filter: `receiver_id=eq.${user.id}`,
           },
           (payload) => {
+            // 1. Si es un mensaje NUEVO enviado por el amigo a mí
             if (
               payload.eventType === "INSERT" &&
-              payload.new.sender_id === activeChat.friend_id
+              payload.new.sender_id === activeChat.friend_id &&
+              payload.new.receiver_id === user.id
             ) {
               setMessages((prev) => [...prev, payload.new]);
             }
+
+            // Dentro del useEffect de suscripción en MessagesPage.jsx
             if (payload.eventType === "UPDATE") {
-              // Si un mensaje se actualizó a is_read = true, actualizamos el estado local
+              const updatedMsg = payload.new;
+
               setMessages((prev) =>
-                prev.map((m) => (m.id === payload.new.id ? payload.new : m)),
+                prev.map((m) => {
+                  // Si el ID coincide, reemplazamos con el nuevo objeto que ya trae is_read: true
+                  if (m.id === updatedMsg.id) {
+                    return { ...m, ...updatedMsg };
+                  }
+                  return m;
+                }),
               );
             }
           },
@@ -112,30 +156,40 @@ const MessagesPage = () => {
     e.preventDefault();
     if (!newMessage.trim() || !activeChat) return;
 
-    // Optimistic Update: Añadir el mensaje a la UI antes de que llegue a la DB
+    const tempId = Date.now(); // Guardamos el temporal
     const tempMsg = {
-      id: Date.now(),
+      id: tempId,
       sender_id: user.id,
+      receiver_id: activeChat.friend_id,
       content: newMessage.trim(),
+      is_read: false,
+      created_at: new Date().toISOString(),
     };
-    setMessages([...messages, tempMsg]);
+
+    setMessages((prev) => [...prev, tempMsg]);
     setNewMessage("");
 
-    const { error } = await supabaseClient.from("direct_messages").insert([
-      {
-        sender_id: user.id,
-        receiver_id: activeChat.friend_id,
-        content: tempMsg.content,
-      },
-    ]);
+    const { data, error } = await supabaseClient
+      .from("direct_messages")
+      .insert([
+        {
+          sender_id: user.id,
+          receiver_id: activeChat.friend_id,
+          content: tempMsg.content,
+        },
+      ])
+      .select(); // <--- IMPORTANTE: Pedir que devuelva el mensaje insertado
 
-    if (error) console.error(error);
+    if (!error && data) {
+      // Reemplazamos el mensaje temporal con el real de la DB (que ya tiene el ID correcto)
+      setMessages((prev) => prev.map((m) => (m.id === tempId ? data[0] : m)));
+    }
   };
 
   return (
     <div className="max-w-2xl mx-auto h-screen flex flex-col bg-white dark:bg-zinc-950 border-x dark:border-zinc-900">
       {!activeChat ? (
-        <MutualsList mutuals={mutuals} onSelectChat={handleSelectChat} />
+        <MutualsList mutuals={mutuals} onSelectChat={handleSelectChat} onlineUsers={onlineUsers} />
       ) : (
         <ChatWindow
           activeChat={activeChat}
@@ -146,6 +200,7 @@ const MessagesPage = () => {
           onSendMessage={handleSendMessage}
           onBack={() => setActiveChat(null)}
           loading={loading}
+          onlineUsers={onlineUsers}
         />
       )}
     </div>

@@ -11,25 +11,27 @@ const ChatWindow = ({
   onSendMessage,
   onBack,
   loading,
+  onlineUsers,
 }) => {
   const scrollRef = useRef(null);
   const [isFriendTyping, setIsFriendTyping] = React.useState(false);
 
-  // 1. Generamos un nombre de canal único para la pareja
+  // 1. Nombre de canal ÚNICO y COMPARTIDO (Sorted IDs)
   const typingChannelName = `typing_${[user.id, activeChat.friend_id].sort().join("_")}`;
 
-  // Escuchar el evento de "typing" desde el canal
+  //online user
+  const isFriendOnline = !!onlineUsers[activeChat.friend_id];
+
   useEffect(() => {
-    // Escuchar en el canal unificado
     const channel = supabaseClient.channel(typingChannelName);
 
     channel
       .on("broadcast", { event: "typing" }, ({ payload }) => {
-        // Si el que escribe no soy yo, muestro el indicador
-        if (payload.userId !== user.id) {
+        // Si el que escribe es mi amigo
+        if (payload.userId === activeChat.friend_id) {
           setIsFriendTyping(true);
 
-          // Limpiar el timeout anterior si existe para que no parpadee
+          // Resetear el temporizador si el amigo sigue pulsando teclas
           if (window.typingUIDisplayTimeout)
             clearTimeout(window.typingUIDisplayTimeout);
 
@@ -45,13 +47,12 @@ const ChatWindow = ({
       if (window.typingUIDisplayTimeout)
         clearTimeout(window.typingUIDisplayTimeout);
     };
-  }, [activeChat.friend_id]); // Se reinicia si cambias de chat
+  }, [activeChat.friend_id]); // Importante: se reinicia al cambiar de chat
 
-  // Función para avisar que YO estoy escribiendo
-  const handleKeyDown = () => {
+  // 2. Función para notificar que YO escribo
+  const sendTypingSignal = () => {
     if (window.typingPublishTimeout) return;
 
-    // Enviar al canal unificado
     const channel = supabaseClient.channel(typingChannelName);
     channel.send({
       type: "broadcast",
@@ -59,21 +60,11 @@ const ChatWindow = ({
       payload: { userId: user.id },
     });
 
-    // Debounce: Solo enviar una señal cada 2 segundos para no saturar
+    // Limitamos a un envío cada 2 segundos para no saturar el tráfico
     window.typingPublishTimeout = setTimeout(() => {
       window.typingPublishTimeout = null;
     }, 2000);
   };
-
-  // EFECTO: Scroll automático al final cuando hay nuevos mensajes
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTo({
-        top: scrollRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  }, [messages]);
 
   const formatMessageTime = (dateString) => {
     if (!dateString) return "";
@@ -119,8 +110,21 @@ const ChatWindow = ({
     }
   }, [messages]);
 
+  // EFECTO: Scroll automático al final cuando hay nuevos mensajes
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [messages, isFriendTyping]);
+
+  console.log(isFriendOnline);
+
   return (
     <div className="flex flex-col h-full bg-zinc-50 dark:bg-zinc-950">
+      {/* ... Header del Chat ... */}
       {/* HEADER DEL CHAT */}
       <div className="p-4 border-b dark:border-zinc-900 flex items-center justify-between bg-white dark:bg-zinc-950 sticky top-0 z-20 shadow-sm">
         <div className="flex items-center gap-3">
@@ -136,14 +140,26 @@ const ChatWindow = ({
               className="w-10 h-10 rounded-full object-cover border dark:border-zinc-800"
               alt={activeChat.full_name}
             />
-            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white dark:border-zinc-950 rounded-full"></div>
+            {isFriendOnline && (
+              <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white dark:border-zinc-950 rounded-full"></div>
+            )}
           </div>
           <div>
             <span className="font-bold dark:text-white text-sm block leading-none">
               {activeChat.full_name}
             </span>
-            <span className="text-[10px] text-green-500 font-medium">
-              En línea
+            <span className="text-[10px] font-medium transition-colors">
+              <span className="text-[10px] font-medium transition-colors">
+                {isFriendTyping ? (
+                  <span className="text-indigo-500 animate-pulse">
+                    Escribiendo...
+                  </span>
+                ) : isFriendOnline ? (
+                  <span className="text-green-500">En línea</span>
+                ) : (
+                  <span className="text-zinc-500">Desconectado</span>
+                )}
+              </span>
             </span>
           </div>
         </div>
@@ -236,9 +252,15 @@ const ChatWindow = ({
           );
         })}
 
+        {/* INDICADOR DE TYPING */}
         {isFriendTyping && (
-          <div className="flex justify-start animate-pulse">
-            <div className="bg-zinc-200 dark:bg-zinc-800 text-[10px] px-3 py-1 rounded-full text-zinc-500">
+          <div className="flex justify-start animate-pulse mb-2">
+            <div className="bg-zinc-200 dark:bg-zinc-800 text-[10px] px-3 py-1.5 rounded-full text-zinc-500 font-medium flex items-center gap-2">
+              <span className="flex gap-0.5">
+                <span className="w-1 h-1 bg-zinc-400 rounded-full animate-bounce"></span>
+                <span className="w-1 h-1 bg-zinc-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                <span className="w-1 h-1 bg-zinc-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+              </span>
               {activeChat.full_name} está escribiendo...
             </div>
           </div>
@@ -251,12 +273,11 @@ const ChatWindow = ({
         className="p-4 border-t dark:border-zinc-900 flex gap-2 bg-white dark:bg-zinc-950"
       >
         <input
-          // onKeyDown={handleKeyDown}
           type="text"
           value={newMessage}
           onChange={(e) => {
             setNewMessage(e.target.value);
-            handleKeyDown(); // Se ejecuta al escribir
+            sendTypingSignal(); // <--- Se activa aquí para mayor precisión
           }}
           placeholder="Escribe un mensaje..."
           className="flex-1 bg-zinc-100 dark:bg-zinc-900 border-none rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 dark:text-white text-sm outline-none"
@@ -264,7 +285,7 @@ const ChatWindow = ({
         <button
           type="submit"
           disabled={loading || !newMessage.trim()}
-          className="bg-indigo-600 p-3 rounded-2xl text-white disabled:opacity-30 disabled:grayscale transition-all hover:bg-indigo-700 active:scale-95"
+          className="bg-indigo-600 p-3 rounded-2xl text-white"
         >
           <Send size={20} />
         </button>

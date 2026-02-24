@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { Search, MoreVertical } from "lucide-react";
+import { isObject } from "framer-motion";
 
-const MutualsList = ({ mutuals, onSelectChat }) => {
+const MutualsList = ({ mutuals, onSelectChat , onlineUsers}) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Lógica de filtrado reactiva
-  const filteredMutuals = mutuals
-  .filter((friend) =>
-    friend.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    friend.username?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredMutuals = mutuals.filter(
+    (friend) =>
+      friend.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      friend.username?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const formatMessageTime = (dateString) => {
@@ -51,49 +52,52 @@ const MutualsList = ({ mutuals, onSelectChat }) => {
       {/* LISTA DE CONVERSACIONES */}
       <div className="flex-1 overflow-y-auto">
         {filteredMutuals.length > 0 ? (
-          filteredMutuals.map((friend) => (
-            <button
-              key={friend.friend_id}
-              onClick={() => onSelectChat(friend)}
-              className="w-full flex items-center gap-4 p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors border-b dark:border-zinc-900/50"
-            >
-              <div className="relative shrink-0">
-                <img
-                  src={friend.avatar || "/default-avatar.png"}
-                  className="w-14 h-14 rounded-full object-cover border dark:border-zinc-800"
-                  alt={friend.full_name}
-                />
-                <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-zinc-950 rounded-full"></div>
-              </div>
-
-              <div className="flex-1 text-left min-w-0">
-                <div className="flex justify-between items-baseline mb-1">
-                  <h3 className="font-bold dark:text-white text-[15px] truncate">
-                    {friend.full_name}
-                  </h3>
-                  <span
-                    className={`text-[11px] ${friend.unread_count > 0 ? "text-indigo-500 font-bold" : "text-zinc-400"}`}
-                  >
-                    {friend.last_message_time
-                      ? formatMessageTime(friend.last_message_time)
-                      : ""}
-                  </span>
+          filteredMutuals.map((friend) => {
+            const isOnline = !!onlineUsers[friend.friend_id];
+            return (
+              <button
+                key={friend.friend_id}
+                onClick={() => onSelectChat(friend)}
+                className="w-full flex items-center gap-4 p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors border-b dark:border-zinc-900/50"
+              >
+                <div className="relative shrink-0">
+                  <img
+                    src={friend.avatar || "/default-avatar.png"}
+                    className="w-14 h-14 rounded-full object-cover border dark:border-zinc-800"
+                    alt={friend.full_name}
+                  />
+                  {isOnline && <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-zinc-950 rounded-full"></div>}
                 </div>
 
-                <div className="flex justify-between items-center">
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400 truncate pr-4">
-                    {friend.last_message || `Saluda a ${friend.username}`}
-                  </p>
-
-                  {friend.unread_count > 0 && (
-                    <span className="bg-indigo-600 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
-                      {friend.unread_count}
+                <div className="flex-1 text-left min-w-0">
+                  <div className="flex justify-between items-baseline mb-1">
+                    <h3 className="font-bold dark:text-white text-[15px] truncate">
+                      {friend.full_name}
+                    </h3>
+                    <span
+                      className={`text-[11px] ${friend.unread_count > 0 ? "text-indigo-500 font-bold" : "text-zinc-400"}`}
+                    >
+                      {friend.last_message_time
+                        ? formatMessageTime(friend.last_message_time)
+                        : ""}
                     </span>
-                  )}
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400 truncate pr-4">
+                      {friend.last_message || `Saluda a ${friend.username}`}
+                    </p>
+
+                    {friend.unread_count > 0 && (
+                      <span className="bg-indigo-600 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+                        {friend.unread_count}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </button>
-          ))
+              </button>
+            );
+          })
         ) : (
           <div className="p-10 text-center text-zinc-500 text-sm">
             {searchTerm
