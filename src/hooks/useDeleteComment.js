@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabaseClient } from "../supabase/supabaseClient";
-import { toast } from "sonner";
+import { notify } from "@/utils/toast/notifyv3";
 
 export const useDeleteComment = (postId) => {
   const queryClient = useQueryClient();
@@ -14,10 +14,10 @@ export const useDeleteComment = (postId) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["comments", postId]);
-      toast.success("Comentario eliminado");
+      notify.success("Comentario eliminado");
     },
     onError: () => {
-      toast.error("No se puedo eliminar el comentario");
+      notify.error("No se puedo eliminar el comentario");
     },
   });
 };

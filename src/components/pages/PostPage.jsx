@@ -8,12 +8,11 @@ import { supabaseClient } from "../../supabase/supabaseClient";
 import CardPost from "../ui/feed/CardPost";
 import SkeletonPost from "../skeletons/SkeletonPost";
 import { useProfile } from "../../hooks/useProfile";
-import EmojiPicker from "emoji-picker-react";
-import GifPicker from "../utils/GifPicker";
+import GifPicker from "../utils/GifPickerv8";
 import CommentItem from "../ui/CommentItem";
-import { useAuthModal } from "../../context/AuthModalContext";
 import { useAuthAction } from "../../hooks/useAuthAction";
 import { notify } from "@/utils/toast/notifyv3";
+import EmojiSelector from "../emoji/EmojiSelector";
 
 const MAX_CHARS = 500;
 
@@ -93,7 +92,7 @@ const PostPage = () => {
     addComment({
       content: newComment,
       userId: user.id,
-      gifUrl: selectedGif,
+      gifUrl: selectedGif?.gifUrl,
       postId: postId,
     });
     //queryClient.invalidateQueries({ queryKey: ["post", postId] });
@@ -116,6 +115,8 @@ const PostPage = () => {
   };
 
   if (postLoading) return <SkeletonPost />;
+
+  console.log(selectedGif)
 
   return (
     <div className="bg-white dark:bg-black pb-24 min-h-screen">
@@ -163,7 +164,7 @@ const PostPage = () => {
                 {selectedGif && (
                   <div className="relative mt-2 inline-block">
                     <img
-                      src={selectedGif}
+                      src={selectedGif.gifUrl}
                       className="h-40 rounded-xl border dark:border-gray-700"
                     />
                     <button
@@ -177,13 +178,7 @@ const PostPage = () => {
 
                 <div className="flex items-center justify-between mt-3">
                   <div className="flex gap-2 text-emerald-500">
-                    <button
-                      type="button"
-                      onClick={() => setShowEmoji(!showEmoji)}
-                      className="p-2 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-full"
-                    >
-                      <Smile size={20} />
-                    </button>
+                    <EmojiSelector addEmoji={onEmojiClick}/>
                     <button
                       type="button"
                       onClick={() => setShowGif(true)}
@@ -217,12 +212,7 @@ const PostPage = () => {
                 </div>
               </div>
             </div>
-            {/* Pickers Flotantes/Modales */}
-            {showEmoji && (
-              <div className="absolute z-50 mt-2">
-                <EmojiPicker onEmojiClick={onEmojiClick} theme="auto" />
-              </div>
-            )}
+           
             {showGif && (
               <GifPicker
                 onSelect={(url) => setSelectedGif(url)}

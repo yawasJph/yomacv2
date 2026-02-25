@@ -25,7 +25,7 @@ const HomeLayout = () => {
     }
   }, []);
 
-  const hideHeader = ["yawas"].some((route) =>
+  const hideHeader = ["yawas", "messages"].some((route) =>
     location.pathname.includes(route),
   );
 

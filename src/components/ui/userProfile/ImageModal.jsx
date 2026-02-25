@@ -1,5 +1,6 @@
 import { X} from "lucide-react";
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 
 const ImageModal = ({ src, onClose }) => {
   // Bloquear el scroll del cuerpo cuando el modal está abierto
@@ -10,9 +11,9 @@ const ImageModal = ({ src, onClose }) => {
 
   if (!src) return null;
 
-  return (
+  return createPortal(
     <div 
-      className="fixed inset-0 z-100 flex items-center justify-center bg-black/90 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-1000 flex items-center justify-center bg-black/90 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={onClose}
     >
       {/* Botón Cerrar */}
@@ -34,7 +35,8 @@ const ImageModal = ({ src, onClose }) => {
           className="rounded-lg shadow-2xl object-contain max-w-full max-h-full"
         />
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

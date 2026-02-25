@@ -5,10 +5,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useComments } from "../../hooks/useComments";
 import { useState } from "react";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import EmojiPicker from "emoji-picker-react";
-import GifPicker from "../utils/GifPicker";
+import GifPicker from "../utils/GifPickerv8";
 import { useAuth } from "../../context/AuthContext";
 import { useProfile } from "../../hooks/useProfile";
+import EmojiSelector from "../emoji/EmojiSelector";
 // Importa tus componentes...
 
 const CommentThreadPage = () => {
@@ -84,7 +84,7 @@ const CommentThreadPage = () => {
       userId: user.id,
       postId: parentComment.post_id, // El post original donde nació el hilo
       parentId: commentId, // El ID del comentario que estamos respondiendo
-      gifUrl: selectedGif,
+      gifUrl: selectedGif?.gifUrl,
     });
 
     setNewComment("");
@@ -150,7 +150,7 @@ const CommentThreadPage = () => {
               {selectedGif && (
                 <div className="relative mt-2 inline-block">
                   <img
-                    src={selectedGif}
+                    src={selectedGif.gifUrl}
                     className="h-40 rounded-xl border dark:border-gray-700"
                   />
                   <button
@@ -164,13 +164,7 @@ const CommentThreadPage = () => {
 
               <div className="flex items-center justify-between mt-3">
                 <div className="flex gap-2 text-emerald-500">
-                  <button
-                    type="button"
-                    onClick={() => setShowEmoji(!showEmoji)}
-                    className="p-2 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-full"
-                  >
-                    <Smile size={20} />
-                  </button>
+                  <EmojiSelector addEmoji={onEmojiClick}/>
                   <button
                     type="button"
                     onClick={() => setShowGif(true)}
@@ -205,12 +199,6 @@ const CommentThreadPage = () => {
           </div>
         </form>
 
-        {/* Pickers Flotantes/Modales */}
-        {showEmoji && (
-          <div className="absolute z-50 mt-2">
-            <EmojiPicker onEmojiClick={onEmojiClick} theme="auto" />
-          </div>
-        )}
         {showGif && (
           <GifPicker
             onSelect={(url) => setSelectedGif(url)}

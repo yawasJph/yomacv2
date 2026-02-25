@@ -12,7 +12,6 @@ import {
 import ImageModal from "./userProfile/ImageModal";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { useAuth } from "../../context/AuthContext";
-import { toast } from "sonner";
 import ConfirmModal from "@/components/modals/ConfirmModalv2";
 import { useDeleteComment } from "../../hooks/useDeleteComment";
 import LikeButtonComment from "./LikeButtonComment";
@@ -20,6 +19,8 @@ import { Link, useNavigate } from "react-router-dom";
 import ReportModal from "./ReportModalv6";
 import RenderTextWithLinks from "../utils/RenderTextWithLinks";
 import { useAuthAction } from "../../hooks/useAuthAction";
+import { notify } from "@/utils/toast/notifyv3";
+
 
 const CommentItem = ({ comment, postId, isDetailedView = false }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -81,7 +82,7 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(comment.content);
-    toast.success("Copiado al portapapeles");
+    notify.success("Copiado al portapapeles");
     setShowOptions(false);
   };
 
@@ -99,15 +100,21 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
 
     if (hash) {
       const element = document.querySelector(hash);
+
       if (element) {
-         element.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+
         element.classList.add("bg-indigo-100", "dark:bg-indigo-900/20");
+
         setTimeout(() => {
           element.classList.remove("bg-indigo-100", "dark:bg-indigo-900/20");
         }, 3000);
+
+        // 🔥 Limpiar el hash sin recargar
+        history.replaceState(null, "", window.location.pathname);
       }
     }
   }, [comment]);

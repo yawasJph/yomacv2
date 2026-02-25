@@ -3,6 +3,7 @@ import { supabaseClient } from "@/supabase/supabaseClient";
 import { useAuth } from "@/context/AuthContext";
 import MutualsList from "./MutualsList";
 import ChatWindow from "./ChatWindowv2";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 const MessagesPage = () => {
   const { user } = useAuth();
@@ -13,6 +14,7 @@ const MessagesPage = () => {
   const [loading, setLoading] = useState(false);
   // Agrega este estado arriba
   const [onlineUsers, setOnlineUsers] = useState({});
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     if (!user) return;
@@ -201,6 +203,7 @@ const MessagesPage = () => {
           onBack={() => setActiveChat(null)}
           loading={loading}
           onlineUsers={onlineUsers}
+          isMobile={isMobile}
         />
       )}
     </div>
