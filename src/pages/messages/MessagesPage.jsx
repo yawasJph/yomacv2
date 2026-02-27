@@ -18,13 +18,15 @@ const MessagesPage = () => {
 
   // MessagesPage.jsx o donde manejes el estado del chat activo
   useEffect(() => {
-  if (activeChat) {
-    // ASEGÚRATE DE QUE SEA EL ID DEL AMIGO, NO EL TUYO
-    window.activeChatFriendId = activeChat.friend_id; 
-    console.log("ID AMIGO SETEADO:", window.activeChatFriendId);
-  }
-  return () => { window.activeChatFriendId = null; };
-}, [activeChat]);
+    if (activeChat) {
+      // ASEGÚRATE DE QUE SEA EL ID DEL AMIGO, NO EL TUYO
+      window.activeChatFriendId = activeChat.friend_id;
+      console.log("ID AMIGO SETEADO:", window.activeChatFriendId);
+    }
+    return () => {
+      window.activeChatFriendId = null;
+    };
+  }, [activeChat]);
 
   useEffect(() => {
     if (!user) return;
@@ -127,6 +129,14 @@ const MessagesPage = () => {
                   return m;
                 }),
               );
+            }
+
+            if (payload.eventType === "DELETE") {
+              // FILTRAR el mensaje borrado de la lista actual
+              setMessages((prev) =>
+                prev.filter((msg) => msg.id !== payload.old.id),
+              );
+              console.log("Mensaje eliminado en tiempo real:", payload.old.id);
             }
           },
         )

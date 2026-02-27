@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { ChevronLeft, Send, MoreVertical } from "lucide-react";
 import { supabaseClient } from "@/supabase/supabaseClient";
+import { notify } from "@/utils/toast/notifyv3";
 
 const ChatWindow = ({
   activeChat,
@@ -16,6 +17,7 @@ const ChatWindow = ({
 }) => {
   const scrollRef = useRef(null);
   const [isFriendTyping, setIsFriendTyping] = React.useState(false);
+  const [selectedMessage, setSelectedMessage] = React.useState(null);
 
   // 1. Nombre de canal ÚNICO y COMPARTIDO (Sorted IDs)
   const typingChannelName = `typing_${[user.id, activeChat.friend_id].sort().join("_")}`;
@@ -122,22 +124,30 @@ const ChatWindow = ({
   }, [messages, isFriendTyping]);
 
   const handleDeleteMessage = async (messageId) => {
-  // Confirmación simple
-  if (!confirm("¿Eliminar este mensaje para todos?")) return;
+    // Confirmación simple
+    if (!confirm("¿Eliminar este mensaje para todos?")) return;
 
-  const { error } = await supabaseClient
-    .from("direct_messages")
-    .delete()
-    .eq("id", messageId)
-    .eq("sender_id", user.id); // Seguridad extra: solo mis mensajes
+    const { error } = await supabaseClient
+      .from("direct_messages")
+      .delete()
+      .eq("id", messageId)
+      .eq("sender_id", user.id); // Seguridad extra: solo mis mensajes
 
-  if (error) {
-    console.error("Error al borrar:", error.message);
-  } else {
-    // Si usas Realtime, el mensaje desaparecerá automáticamente de la lista 'messages'
-    // que viene por props si tienes configurado el canal de escucha.
-  }
-};
+    if (error) {
+      console.error("Error al borrar:", error.message);
+    } else {
+      // Si usas Realtime, el mensaje desaparecerá automáticamente de la lista 'messages'
+      // que viene por props si tienes configurado el canal de escucha.
+    }
+  };
+
+  const handleCopyMessage = (text) => {
+    navigator.clipboard.writeText(text);
+    // Si usas alguna librería de notificaciones tipo toast:
+    // notify.success("Copiado al portapapeles");
+    setSelectedMessage(null);
+    notify.success("mensaje copiado")
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-black bg-linear-to-br from-white via-gray-50 to-white text-gray-900 dark:bg-linear-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 dark:text-white transition-colors duration-300">
@@ -216,14 +226,19 @@ const ChatWindow = ({
               )}
               <div
                 key={msg.id || index}
-                className={`flex group ${isMine ? "justify-end" : "justify-start"} relative mb-3`}
+                className={`flex group ${isMine ? "justify-end" : "justify-start"} mb-3 px-2`}
+                // En móvil: Abrir menú al hacer clic largo o clic simple
+                onClick={() => isMobile && isMine && setSelectedMessage(msg)}
               >
                 {/* Botón de borrar (Solo visible en mis mensajes y al hacer hover) */}
-                {isMine && (
+                {/* DESKTOP: Icono basura al hacer hover */}
+                {!isMobile && isMine && (
                   <button
-                    onClick={() => handleDeleteMessage(msg.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteMessage(msg.id);
+                    }}
                     className="opacity-0 group-hover:opacity-100 transition-opacity mr-2 p-1 text-zinc-400 hover:text-red-500 self-center"
-                    title="Borrar mensaje"
                   >
                     <svg
                       width="16"
@@ -232,14 +247,11 @@ const ChatWindow = ({
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
                     >
                       <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                     </svg>
                   </button>
                 )}
-
                 <div
                   className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-[14.5px] shadow-sm ${
                     isMine
@@ -333,6 +345,94 @@ const ChatWindow = ({
           <Send size={20} />
         </button>
       </form>
+
+      {/* MOBILE ACTION SHEET */}
+      {/* MOBILE ACTION SHEET */}
+      {isMobile && selectedMessage && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center">
+          {/* Overlay oscuro con fade-in */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-[2px] animate-in fade-in duration-300"
+            onClick={() => setSelectedMessage(null)}
+          />
+
+          {/* Menú con slide-up */}
+          <div className="relative w-full bg-white dark:bg-neutral-900 rounded-t-[32px] p-6 pb-10 shadow-2xl animate-in slide-in-from-bottom duration-300 ease-out">
+            {/* Tirador superior estético */}
+            <div className="w-12 h-1.5 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto mb-6" />
+
+            <div className="space-y-3">
+              {/* BOTÓN COPIAR - Disponible para todos los mensajes */}
+              <button
+                onClick={() => handleCopyMessage(selectedMessage.content)}
+                className="w-full flex items-center gap-4 p-4 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-2xl transition-all active:scale-[0.98]"
+              >
+                <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-xl">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect
+                      x="9"
+                      y="9"
+                      width="13"
+                      height="13"
+                      rx="2"
+                      ry="2"
+                    ></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </div>
+                <span className="font-semibold text-[15px]">Copiar texto</span>
+              </button>
+
+              {/* BOTÓN ELIMINAR - Solo para mis mensajes */}
+              {selectedMessage.sender_id === user.id && (
+                <button
+                  onClick={() => {
+                    handleDeleteMessage(selectedMessage.id);
+                    setSelectedMessage(null);
+                  }}
+                  className="w-full flex items-center gap-4 p-4 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-2xl transition-all active:scale-[0.98]"
+                >
+                  <div className="p-2 bg-red-50 dark:bg-red-500/10 rounded-xl">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </div>
+                  <span className="font-semibold text-[15px]">
+                    Eliminar para todos
+                  </span>
+                </button>
+              )}
+
+              <div className="pt-2">
+                <button
+                  onClick={() => setSelectedMessage(null)}
+                  className="w-full p-4 text-zinc-500 dark:text-zinc-400 font-bold bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl active:bg-zinc-100 transition-colors"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
