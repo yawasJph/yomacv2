@@ -12,7 +12,7 @@ const ChatWindow = ({
   onBack,
   loading,
   onlineUsers,
-  isMobile
+  isMobile,
 }) => {
   const scrollRef = useRef(null);
   const [isFriendTyping, setIsFriendTyping] = React.useState(false);
@@ -121,15 +121,17 @@ const ChatWindow = ({
     }
   }, [messages, isFriendTyping]);
 
-  console.log(isFriendOnline);
+
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-black bg-linear-to-br from-white via-gray-50 to-white text-gray-900 dark:bg-linear-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 dark:text-white transition-colors duration-300">
       {/* ... Header del Chat ... */}
       {/* HEADER DEL CHAT */}
-      <div  className={`flex justify-between items-center gap-5 p-4 md:p-6 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl z-40 border-b border-gray-100 dark:border-neutral-900 ${
-        isMobile ? "sticky top-16 z-10 px-3" : "sticky top-15 z-10 px-3"
-      } bg-white/90 dark:bg-black/90 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800/50 shadow-sm dark:shadow-gray-900/30 transition-all`}>
+      <div
+        className={`flex justify-between items-center gap-5 p-4 md:p-6 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl z-40 border-b border-gray-100 dark:border-neutral-900 ${
+          isMobile ? "sticky top-16 z-10 px-3" : "sticky top-15 z-10 px-3"
+        } bg-white/90 dark:bg-black/90 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800/50 shadow-sm dark:shadow-gray-900/30 transition-all`}
+      >
         <div className="flex items-center gap-3">
           <button
             onClick={onBack}

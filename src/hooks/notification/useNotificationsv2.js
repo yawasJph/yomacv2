@@ -64,6 +64,8 @@ export const useNotifications = () => {
   });
 
   // 3. Suscripción en Tiempo Real
+  // ... dentro de useNotifications.js
+
   useEffect(() => {
     if (!user) return;
 
@@ -78,18 +80,35 @@ export const useNotifications = () => {
           filter: `recipient_id=eq.${user.id}`,
         },
         (payload) => {
-          // Cuando llega una nueva, invalidamos la query para refrescar la lista
+          // LEER EL ID JUSTO EN EL MOMENTO DEL INSERT
+          const currentActiveChatId = window.activeChatFriendId;
+
+          console.log("ID del chat activo en ventana:", currentActiveChatId);
+          console.log("Datos recibidos:", payload.new);
+
+          // Extraer el tipo del payload
+          const type = payload.new.type;
+          const senderId = payload.new.sender_id;
+
+          // VALIDACIÓN: Si es mensaje y es del amigo con el que hablo -> SILENCIAR
+          if (type === "message" && currentActiveChatId === senderId) {
+            console.log(
+              "🚫 Silenciando notificación: Chat abierto con este usuario.",
+            );
+            // Opcional: Podrías invalidar la query sin sonar el audio para que
+            // la campana se actualice, pero sin molestar.
+            queryClient.invalidateQueries({ queryKey });
+            return;
+          }
+
+          // Si no es el chat activo, procedemos con audio y refresco
           queryClient.invalidateQueries({ queryKey });
 
           audioRef.current.play().catch((error) => {
-            // Esto fallará si el usuario no ha interactuado aún con la web
-            console.log(
-              "El sonido no pudo reproducirse por políticas del navegador.",
-            );
+            console.log("Audio bloqueado por el navegador hasta interacción.");
           });
 
-          // Opcional: Reproducir un sonido o mostrar un aviso visual nativo
-          console.log("¡Nueva notificación!", payload);
+          console.log("🔔 ¡Nueva notificación procesada!", type);
         },
       )
       .subscribe();

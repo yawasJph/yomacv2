@@ -221,20 +221,6 @@ const NotificationsPage = () => {
                     {getMessage(notif)}
                   </p>
 
-                  {/* Muestra el contenido según lo que causó la notificación */}
-                  {/* Ahora usamos content_preview que sirve para TODO */}
-                  {/* {(notif.post?.content ||
-                    notif.comments?.content ||
-                    notif.content_preview) && (
-                    <p className="mt-2 text-sm text-gray-500 line-clamp-2 italic border-l-2 border-gray-200 pl-2">
-                      "
-                      {notif.content_preview ||
-                        (notif.comment_id
-                          ? notif.comments?.content
-                          : notif.post?.content)}
-                      "
-                    </p>
-                  )} */}
                   {/* RENDERIZADO UNIFICADO */}
                   {notif.content_preview && (
                     <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2 italic border-l-2 border-indigo-500/50 pl-3 py-1 bg-zinc-50 dark:bg-white/5 rounded-r-md">

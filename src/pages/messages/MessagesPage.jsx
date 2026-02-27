@@ -14,7 +14,17 @@ const MessagesPage = () => {
   const [loading, setLoading] = useState(false);
   // Agrega este estado arriba
   const [onlineUsers, setOnlineUsers] = useState({});
-  const isMobile = useIsMobile()
+  const isMobile = useIsMobile();
+
+  // MessagesPage.jsx o donde manejes el estado del chat activo
+  useEffect(() => {
+  if (activeChat) {
+    // ASEGÚRATE DE QUE SEA EL ID DEL AMIGO, NO EL TUYO
+    window.activeChatFriendId = activeChat.friend_id; 
+    console.log("ID AMIGO SETEADO:", window.activeChatFriendId);
+  }
+  return () => { window.activeChatFriendId = null; };
+}, [activeChat]);
 
   useEffect(() => {
     if (!user) return;
@@ -29,7 +39,7 @@ const MessagesPage = () => {
         // Aquí podrías actualizar el estado de tus mutuals si quisieras
         // ver quién está online en la lista lateral.
         const state = presenceChannel.presenceState();
-        setOnlineUsers(state)
+        setOnlineUsers(state);
       })
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
@@ -52,6 +62,7 @@ const MessagesPage = () => {
 
   const handleSelectChat = (friend) => {
     setActiveChat(friend);
+    //window.activeChatFriendId = friend.friend_id;
 
     // 1. Resetear el contador en la UI localmente de forma inmediata
     setMutuals((prev) =>
@@ -191,7 +202,11 @@ const MessagesPage = () => {
   return (
     <div className="max-w-2xl mx-auto h-screen flex flex-col bg-white dark:bg-zinc-950 border-x dark:border-zinc-900">
       {!activeChat ? (
-        <MutualsList mutuals={mutuals} onSelectChat={handleSelectChat} onlineUsers={onlineUsers} />
+        <MutualsList
+          mutuals={mutuals}
+          onSelectChat={handleSelectChat}
+          onlineUsers={onlineUsers}
+        />
       ) : (
         <ChatWindow
           activeChat={activeChat}
