@@ -121,7 +121,23 @@ const ChatWindow = ({
     }
   }, [messages, isFriendTyping]);
 
+  const handleDeleteMessage = async (messageId) => {
+  // Confirmación simple
+  if (!confirm("¿Eliminar este mensaje para todos?")) return;
 
+  const { error } = await supabaseClient
+    .from("direct_messages")
+    .delete()
+    .eq("id", messageId)
+    .eq("sender_id", user.id); // Seguridad extra: solo mis mensajes
+
+  if (error) {
+    console.error("Error al borrar:", error.message);
+  } else {
+    // Si usas Realtime, el mensaje desaparecerá automáticamente de la lista 'messages'
+    // que viene por props si tienes configurado el canal de escucha.
+  }
+};
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-black bg-linear-to-br from-white via-gray-50 to-white text-gray-900 dark:bg-linear-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 dark:text-white transition-colors duration-300">
@@ -200,8 +216,30 @@ const ChatWindow = ({
               )}
               <div
                 key={msg.id || index}
-                className={`flex ${isMine ? "justify-end" : "justify-start"}`}
+                className={`flex group ${isMine ? "justify-end" : "justify-start"} relative mb-3`}
               >
+                {/* Botón de borrar (Solo visible en mis mensajes y al hacer hover) */}
+                {isMine && (
+                  <button
+                    onClick={() => handleDeleteMessage(msg.id)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity mr-2 p-1 text-zinc-400 hover:text-red-500 self-center"
+                    title="Borrar mensaje"
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                )}
+
                 <div
                   className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-[14.5px] shadow-sm ${
                     isMine
