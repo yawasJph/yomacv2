@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { supabaseClient } from "@/supabase/supabaseClient";
 import { useAuth } from "@/context/AuthContext";
-import MutualsList from "./MutualsList";
+import MutualsList from "./MutualsListv2";
 import ChatWindow from "./ChatWindowv2";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useNavigate } from "react-router-dom";
 
 const MessagesPage = () => {
   const { user } = useAuth();
@@ -15,6 +16,7 @@ const MessagesPage = () => {
   // Agrega este estado arriba
   const [onlineUsers, setOnlineUsers] = useState({});
   const isMobile = useIsMobile();
+  const navigate = useNavigate()
 
   // MessagesPage.jsx o donde manejes el estado del chat activo
   useEffect(() => {
@@ -175,8 +177,8 @@ const MessagesPage = () => {
     if (!error) setMessages(data);
   };
 
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
+  const handleSendMessage = async () => {
+    //e.preventDefault();
     if (!newMessage.trim() || !activeChat) return;
 
     const tempId = Date.now(); // Guardamos el temporal
@@ -210,12 +212,13 @@ const MessagesPage = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto h-screen flex flex-col bg-white dark:bg-zinc-950 border-x dark:border-zinc-900">
+    <div className="max-w-2xl mx-auto h-screen flex flex-col bg-white dark:bg-black ">
       {!activeChat ? (
         <MutualsList
           mutuals={mutuals}
           onSelectChat={handleSelectChat}
           onlineUsers={onlineUsers}
+          onBack={() => navigate(-1)}
         />
       ) : (
         <ChatWindow

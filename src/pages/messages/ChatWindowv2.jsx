@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import { ChevronLeft, Send, MoreVertical } from "lucide-react";
+import { ChevronLeft, Send, MoreVertical, Trash2 } from "lucide-react";
 import { supabaseClient } from "@/supabase/supabaseClient";
 import { notify } from "@/utils/toast/notifyv3";
+import ConfirmModal from "@/components/modals/ConfirmModalv2";
+import { InputMessage } from "./InputMessage";
 
 const ChatWindow = ({
   activeChat,
@@ -18,6 +20,15 @@ const ChatWindow = ({
   const scrollRef = useRef(null);
   const [isFriendTyping, setIsFriendTyping] = React.useState(false);
   const [selectedMessage, setSelectedMessage] = React.useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+  const [messageToDelete, setMessageToDelete] = React.useState(null);
+  const [isPending, setIsPending] = React.useState(false);
+
+  // Función que abre el modal
+  const openDeleteModal = (messageId) => {
+    setMessageToDelete(messageId);
+    setIsDeleteModalOpen(true);
+  };
 
   // 1. Nombre de canal ÚNICO y COMPARTIDO (Sorted IDs)
   const typingChannelName = `typing_${[user.id, activeChat.friend_id].sort().join("_")}`;
@@ -123,21 +134,25 @@ const ChatWindow = ({
     }
   }, [messages, isFriendTyping]);
 
-  const handleDeleteMessage = async (messageId) => {
-    // Confirmación simple
-    if (!confirm("¿Eliminar este mensaje para todos?")) return;
+  const handleConfirmDelete = async () => {
+    if (!messageToDelete) return;
 
-    const { error } = await supabaseClient
-      .from("direct_messages")
-      .delete()
-      .eq("id", messageId)
-      .eq("sender_id", user.id); // Seguridad extra: solo mis mensajes
+    setIsPending(true);
+    try {
+      const { error } = await supabaseClient
+        .from("direct_messages")
+        .delete()
+        .eq("id", messageToDelete)
+        .eq("sender_id", user.id);
 
-    if (error) {
-      console.error("Error al borrar:", error.message);
-    } else {
-      // Si usas Realtime, el mensaje desaparecerá automáticamente de la lista 'messages'
-      // que viene por props si tienes configurado el canal de escucha.
+      if (error) throw error;
+
+      setIsDeleteModalOpen(false);
+      setMessageToDelete(null);
+    } catch (error) {
+      console.error("Error borrando mensaje:", error.message);
+    } finally {
+      setIsPending(false);
     }
   };
 
@@ -146,12 +161,11 @@ const ChatWindow = ({
     // Si usas alguna librería de notificaciones tipo toast:
     // notify.success("Copiado al portapapeles");
     setSelectedMessage(null);
-    notify.success("mensaje copiado")
+    notify.success("mensaje copiado");
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-black bg-linear-to-br from-white via-gray-50 to-white text-gray-900 dark:bg-linear-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 dark:text-white transition-colors duration-300">
-      {/* ... Header del Chat ... */}
       {/* HEADER DEL CHAT */}
       <div
         className={`flex justify-between items-center gap-5 p-4 md:p-6 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl z-40 border-b border-gray-100 dark:border-neutral-900 ${
@@ -202,7 +216,7 @@ const ChatWindow = ({
       {/* CUERPO DE MENSAJES */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar"
+        className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar"
       >
         {messages.map((msg, index) => {
           //const isMine = msg.sender_id === user.id;
@@ -236,7 +250,7 @@ const ChatWindow = ({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDeleteMessage(msg.id);
+                      openDeleteModal(msg.id);
                     }}
                     className="opacity-0 group-hover:opacity-100 transition-opacity mr-2 p-1 text-zinc-400 hover:text-red-500 self-center"
                   >
@@ -256,7 +270,7 @@ const ChatWindow = ({
                   className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-[14.5px] shadow-sm ${
                     isMine
                       ? "bg-indigo-600 text-white rounded-br-none"
-                      : "bg-white dark:bg-zinc-800 dark:text-white rounded-bl-none border dark:border-zinc-700/50"
+                      : "bg-zinc-300 dark:bg-zinc-800 dark:text-white rounded-bl-none border dark:border-zinc-700/50 border-zinc-50"
                   }`}
                 >
                   <p className="leading-relaxed">{msg.content}</p>
@@ -323,7 +337,7 @@ const ChatWindow = ({
       </div>
 
       {/* INPUT DE MENSAJE */}
-      <form
+      {/* <form
         onSubmit={onSendMessage}
         className="p-4 border-t dark:border-zinc-900 flex gap-2 bg-white dark:bg-zinc-950"
       >
@@ -332,7 +346,6 @@ const ChatWindow = ({
           value={newMessage}
           onChange={(e) => {
             setNewMessage(e.target.value);
-            sendTypingSignal(); // <--- Se activa aquí para mayor precisión
           }}
           placeholder="Escribe un mensaje..."
           className="flex-1 bg-zinc-100 dark:bg-zinc-900 border-none rounded-2xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 dark:text-white text-sm outline-none"
@@ -344,9 +357,16 @@ const ChatWindow = ({
         >
           <Send size={20} />
         </button>
-      </form>
+      </form> */}
 
-      {/* MOBILE ACTION SHEET */}
+      <InputMessage
+        input={newMessage}
+        setInput={setNewMessage}
+        isTyping={isFriendTyping}
+        onSubmit={onSendMessage}
+        sendTypingSignal={sendTypingSignal}
+      />
+
       {/* MOBILE ACTION SHEET */}
       {isMobile && selectedMessage && (
         <div className="fixed inset-0 z-50 flex items-end justify-center">
@@ -357,7 +377,7 @@ const ChatWindow = ({
           />
 
           {/* Menú con slide-up */}
-          <div className="relative w-full bg-white dark:bg-neutral-900 rounded-t-[32px] p-6 pb-10 shadow-2xl animate-in slide-in-from-bottom duration-300 ease-out">
+          <div className="relative w-full bg-white dark:bg-neutral-900 rounded-t-32px p-6 pb-10 shadow-2xl animate-in slide-in-from-bottom duration-300 ease-out">
             {/* Tirador superior estético */}
             <div className="w-12 h-1.5 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto mb-6" />
 
@@ -396,24 +416,15 @@ const ChatWindow = ({
               {selectedMessage.sender_id === user.id && (
                 <button
                   onClick={() => {
-                    handleDeleteMessage(selectedMessage.id);
+                    // Primero cerramos el Action Sheet y luego abrimos el Modal de confirmación
+                    const id = selectedMessage.id;
                     setSelectedMessage(null);
+                    setTimeout(() => openDeleteModal(id), 100);
                   }}
                   className="w-full flex items-center gap-4 p-4 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-2xl transition-all active:scale-[0.98]"
                 >
                   <div className="p-2 bg-red-50 dark:bg-red-500/10 rounded-xl">
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    </svg>
+                    <Trash2 size={20} />
                   </div>
                   <span className="font-semibold text-[15px]">
                     Eliminar para todos
@@ -433,6 +444,18 @@ const ChatWindow = ({
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setMessageToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        title="¿Eliminar mensaje?"
+        message="Esta acción eliminará el mensaje para todos los participantes. No se puede deshacer."
+        isLoading={isPending}
+      />
     </div>
   );
 };

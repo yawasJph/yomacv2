@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Search, MoreVertical, ChevronLeft, HelpCircle } from "lucide-react";
+import { Search, ChevronLeft, HelpCircle, X, Users } from "lucide-react";
+import HelperModal from "./HelperModal";
 
-const MutualsList = ({ mutuals, onSelectChat , onlineUsers, onBack}) => {
+const MutualsList = ({ mutuals, onSelectChat, onlineUsers, onBack }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isHelpOpen, setIsHelpOpen] = useState(false); // Estado para el modal
 
-  // Lógica de filtrado reactiva
   const filteredMutuals = mutuals.filter(
     (friend) =>
       friend.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -14,7 +15,6 @@ const MutualsList = ({ mutuals, onSelectChat , onlineUsers, onBack}) => {
   const formatMessageTime = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-
     return new Intl.DateTimeFormat("es-MX", {
       hour: "numeric",
       minute: "numeric",
@@ -23,31 +23,32 @@ const MutualsList = ({ mutuals, onSelectChat , onlineUsers, onBack}) => {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full relative">
       {/* HEADER CON BUSCADOR */}
       <div className="p-4 space-y-4 bg-white dark:bg-zinc-950 sticky top-0 z-10">
         <div className="flex justify-between items-center">
-          <div className="flex gap-3"> 
+          <div className="flex gap-3">
             <button
-            onClick={onBack}
-            className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-full transition-colors"
-          >
-            <ChevronLeft className="dark:text-white" />
-          </button>
-          <h1 className="text-2xl font-black dark:text-white">Mensajes</h1>
+              onClick={onBack}
+              className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-full transition-colors"
+            >
+              <ChevronLeft className="dark:text-white" />
+            </button>
+            <h1 className="text-2xl font-black dark:text-white">Mensajes</h1>
           </div>
-          <button className="p-2 bg-zinc-100 dark:bg-zinc-900 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-colors"
+          
+          {/* BOTÓN DE AYUDA */}
+          <button 
+            onClick={() => setIsHelpOpen(true)}
+            className="p-2 bg-zinc-100 dark:bg-zinc-900 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
           >
-            {/* <MoreVertical size={20} className="dark:text-zinc-400" /> */}
-            <HelpCircle size={20} className="dark:text-zinc-400" />
+            <HelpCircle size={20} className="text-zinc-500 dark:text-zinc-400" />
           </button>
         </div>
 
+        {/* ... (resto del buscador igual) ... */}
         <div className="relative">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"
-            size={18}
-          />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
           <input
             type="text"
             placeholder="Buscar amigos..."
@@ -60,6 +61,7 @@ const MutualsList = ({ mutuals, onSelectChat , onlineUsers, onBack}) => {
 
       {/* LISTA DE CONVERSACIONES */}
       <div className="flex-1 overflow-y-auto">
+        {/* ... (tu mapeo de mutuals igual) ... */}
         {filteredMutuals.length > 0 ? (
           filteredMutuals.map((friend) => {
             const isOnline = !!onlineUsers[friend.friend_id];
@@ -67,7 +69,7 @@ const MutualsList = ({ mutuals, onSelectChat , onlineUsers, onBack}) => {
               <button
                 key={friend.friend_id}
                 onClick={() => onSelectChat(friend)}
-                className="w-full flex items-center gap-4 p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors border-b border-zinc-50 dark:border-zinc-200/50"
+                className="w-full flex items-center gap-4 p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors border-b border-gray-300 dark:border-gray-800"
               >
                 <div className="relative shrink-0">
                   <img
@@ -77,26 +79,17 @@ const MutualsList = ({ mutuals, onSelectChat , onlineUsers, onBack}) => {
                   />
                   {isOnline && <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-zinc-950 rounded-full"></div>}
                 </div>
-
                 <div className="flex-1 text-left min-w-0">
                   <div className="flex justify-between items-baseline mb-1">
-                    <h3 className="font-bold dark:text-white text-[15px] truncate">
-                      {friend.full_name}
-                    </h3>
-                    <span
-                      className={`text-[11px] ${friend.unread_count > 0 ? "text-indigo-500 font-bold" : "text-zinc-400"}`}
-                    >
-                      {friend.last_message_time
-                        ? formatMessageTime(friend.last_message_time)
-                        : ""}
+                    <h3 className="font-bold dark:text-white text-[15px] truncate">{friend.full_name}</h3>
+                    <span className={`text-[11px] ${friend.unread_count > 0 ? "text-indigo-500 font-bold" : "text-zinc-400"}`}>
+                      {friend.last_message_time ? formatMessageTime(friend.last_message_time) : ""}
                     </span>
                   </div>
-
                   <div className="flex justify-between items-center">
                     <p className="text-sm text-zinc-500 dark:text-zinc-400 truncate pr-4">
                       {friend.last_message || `Saluda a ${friend.username}`}
                     </p>
-
                     {friend.unread_count > 0 && (
                       <span className="bg-indigo-600 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
                         {friend.unread_count}
@@ -109,12 +102,15 @@ const MutualsList = ({ mutuals, onSelectChat , onlineUsers, onBack}) => {
           })
         ) : (
           <div className="p-10 text-center text-zinc-500 text-sm">
-            {searchTerm
-              ? `No se encontró a "${searchTerm}"`
-              : "No tienes amigos mutuos aún."}
+            {searchTerm ? `No se encontró a "${searchTerm}"` : "No tienes amigos mutuos aún."}
           </div>
         )}
       </div>
+
+      {/* --- UI DE AYUDA (MODAL/ACTION SHEET) --- */}
+      {isHelpOpen && (
+        <HelperModal onClose={() => setIsHelpOpen(false)}/>
+      )}
     </div>
   );
 };
