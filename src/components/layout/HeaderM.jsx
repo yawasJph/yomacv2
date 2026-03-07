@@ -54,6 +54,26 @@ const HeaderM = () => {
       text: "Mensages",
       path: "/messages",
     },
+    {
+      icon: <Settings size={20} />,
+      text: "Configuración",
+      path: "/editProfile",
+    },
+    {
+      icon: <Bot size={20} />,
+      text: "Yawas",
+      path: "/yawas",
+    },
+    {
+      icon: <BlocksIcon size={22} />,
+      text: "Blog",
+      path: "/blog",
+    },
+    {
+      icon: <MessageCircle size={22} />,
+      text: "Mensages",
+      path: "/messages",
+    },
   ];
 
   const onViewCredits = ["games"].some((route) =>
@@ -86,7 +106,7 @@ const HeaderM = () => {
           {/* DERECHA: Notificaciones y Avatar */}
           <div className="flex items-center gap-2">
             {/* {!onViewCredits && <ToggleThemeButton />} */}
-            <ToggleThemeButton />
+            {/* <ToggleThemeButton /> */}
             {user && <NotificationIcon />}
             {user ? (
               <button

@@ -2,6 +2,7 @@ import { ChevronRight, LogOut, X } from "lucide-react";
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import ToggleThemeButton from "../ToggleThemeButton";
 
 const Drawer = ({ onClose, profile, menuItems, signout }) => {
   const navigate = useNavigate();
@@ -40,11 +41,12 @@ const Drawer = ({ onClose, profile, menuItems, signout }) => {
       >
         {/* Header del Drawer (Perfil) */}
         <div className="p-6 pt-10 bg-linear-to-b from-emerald-50/50 dark:from-emerald-500/5 to-transparent">
-          <div className="flex justify-between items-start mb-4">
+          <div className="flex justify-between items-center mb-4">
             <img
               src={profile?.avatar || "/default-avatar.jpg"}
               className="w-16 h-16 rounded-2xl object-cover border-4 border-white dark:border-neutral-900 shadow-xl"
             />
+            <ToggleThemeButton/>
             <button
               onClick={onClose}
               className="p-2 bg-gray-100 dark:bg-neutral-800 rounded-full text-gray-500"
@@ -73,7 +75,7 @@ const Drawer = ({ onClose, profile, menuItems, signout }) => {
               key={idx}
               onClick={() => {
                 navigate(item.path);
-                onClose;
+                onClose();
               }}
               className="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-neutral-900 text-gray-700 dark:text-gray-300 transition-colors group"
             >
