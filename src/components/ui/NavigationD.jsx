@@ -57,12 +57,12 @@ const NavigationD = () => {
       text: "Yawas",
       private: true,
     },
-     {
-      to: "/blog",
-      icon: <BlocksIcon size={22} />,
-      text: "Blog",
-      private: false,
-    },
+    //  {
+    //   to: "/blog",
+    //   icon: <BlocksIcon size={22} />,
+    //   text: "Blog",
+    //   private: false,
+    // },
      {
       to: "/messages",
       icon: <MessageSquarePlus size={22} />,

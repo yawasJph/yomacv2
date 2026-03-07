@@ -12,6 +12,9 @@ const MutualsList = ({ mutuals, onSelectChat, onlineUsers, onBack }) => {
       friend.username?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
+   const testMUtuasl = [...filteredMutuals, ...filteredMutuals, ...filteredMutuals, ...filteredMutuals, ...filteredMutuals]
+ const testMUtuasl2 = []
+
   const formatMessageTime = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -23,7 +26,7 @@ const MutualsList = ({ mutuals, onSelectChat, onlineUsers, onBack }) => {
   };
 
   return (
-    <div className="flex flex-col h-full relative">
+    <div className="flex flex-col h-full min-h-screen relative">
       {/* HEADER CON BUSCADOR */}
       <div className="p-4 space-y-4 bg-white dark:bg-zinc-950 sticky top-0 z-10">
         <div className="flex justify-between items-center">
@@ -60,23 +63,24 @@ const MutualsList = ({ mutuals, onSelectChat, onlineUsers, onBack }) => {
       </div>
 
       {/* LISTA DE CONVERSACIONES */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto ">
         {/* ... (tu mapeo de mutuals igual) ... */}
         {filteredMutuals.length > 0 ? (
+          
           filteredMutuals.map((friend) => {
             const isOnline = !!onlineUsers[friend.friend_id];
             return (
               <button
-                key={friend.friend_id}
-                onClick={() => onSelectChat(friend)}
-                className="w-full flex items-center gap-4 p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors border-b border-gray-300 dark:border-gray-800"
+              key={friend.friend_id}
+              onClick={() => onSelectChat(friend)}
+              className="w-full flex items-center gap-4 p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors border-b border-gray-300 dark:border-gray-800"
               >
                 <div className="relative shrink-0">
                   <img
                     src={friend.avatar || "/default-avatar.png"}
                     className="w-14 h-14 rounded-full object-cover border dark:border-zinc-800"
                     alt={friend.full_name}
-                  />
+                    />
                   {isOnline && <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-zinc-950 rounded-full"></div>}
                 </div>
                 <div className="flex-1 text-left min-w-0">
@@ -99,13 +103,16 @@ const MutualsList = ({ mutuals, onSelectChat, onlineUsers, onBack }) => {
                 </div>
               </button>
             );
+            
           })
+          
         ) : (
           <div className="p-10 text-center text-zinc-500 text-sm">
             {searchTerm ? `No se encontró a "${searchTerm}"` : "No tienes amigos mutuos aún."}
           </div>
         )}
       </div>
+      
 
       {/* --- UI DE AYUDA (MODAL/ACTION SHEET) --- */}
       {isHelpOpen && (

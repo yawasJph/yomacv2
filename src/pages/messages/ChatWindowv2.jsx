@@ -208,9 +208,9 @@ const ChatWindow = ({
             </span>
           </div>
         </div>
-        <button className="p-2 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200">
+        {/* <button className="p-2 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200">
           <MoreVertical size={20} />
-        </button>
+        </button> */}
       </div>
 
       {/* CUERPO DE MENSAJES */}

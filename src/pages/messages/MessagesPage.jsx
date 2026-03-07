@@ -16,7 +16,7 @@ const MessagesPage = () => {
   // Agrega este estado arriba
   const [onlineUsers, setOnlineUsers] = useState({});
   const isMobile = useIsMobile();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // MessagesPage.jsx o donde manejes el estado del chat activo
   useEffect(() => {
@@ -212,14 +212,17 @@ const MessagesPage = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto h-screen flex flex-col bg-white dark:bg-black ">
+    <div className="max-w-2xl mx-auto h-screen flex flex-col bg-white dark:bg-black">
       {!activeChat ? (
-        <MutualsList
-          mutuals={mutuals}
-          onSelectChat={handleSelectChat}
-          onlineUsers={onlineUsers}
-          onBack={() => navigate(-1)}
-        />
+        <>
+          <MutualsList
+            mutuals={mutuals}
+            onSelectChat={handleSelectChat}
+            onlineUsers={onlineUsers}
+            onBack={() => navigate(-1)}
+          />
+          
+        </>
       ) : (
         <ChatWindow
           activeChat={activeChat}
