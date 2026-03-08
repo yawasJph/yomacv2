@@ -2,7 +2,6 @@ import { useRef, useEffect } from "react";
 import SkeletonPost from "../skeletons/SkeletonPost";
 import CardPost from "../ui/feed/CardPost";
 import { usePostsInfiniteQuery } from "@/hooks/posts/usePostsInfiniteQueryv3";
-//import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery2";
 
 const Feed = () => {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -17,17 +16,20 @@ const Feed = () => {
           fetchNextPage();
         }
       },
-      { threshold: 1 }
+      { threshold: 0.1},
     );
 
-    if (loaderRef.current) observer.observe(loaderRef.current);
+    const current = loaderRef.current;
+
+    if (current) observer.observe(current);
 
     return () => {
-      if (loaderRef.current) observer.unobserve(loaderRef.current);
+      if (current) observer.unobserve(current);
     };
-  }, [hasNextPage, isFetchingNextPage]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const allPosts = data?.pages.flat() || [];
+  //const allPosts = data?.pages.flat() || [];
+  const allPosts = data?.pages.flatMap(page => page) ?? [];
 
   return (
     <>
@@ -40,7 +42,6 @@ const Feed = () => {
       ) : (
         <>
           {allPosts.map((post) => (
-            //<CardPost key={post.id} post={post} media={post.post_media ?? []} />
             <CardPost key={post.id} post={post} media={post.post_media ?? []} />
           ))}
 
