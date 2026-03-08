@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import { useAuth } from "../../context/AuthContext";
-import { toast } from "sonner"; // O tu librería de notificaciones
 import { validateSocials } from "../utils/validateSocials";
 import { uploadToCloudinary } from "../../cloudinary/upToCloudinary";
 import ProfileEditSkeleton from "../skeletons/ProfileEditSkeleton";

@@ -3,12 +3,15 @@ import { Search, Filter, GraduationCap } from "lucide-react";
 import { useDiscoverProfiles } from "../../hooks/useDiscoverProfiles";
 //import UserSearchCard from "../ui/UserSearchCard2";
 import UserSearchCard from "@/components/ui/users/UserSearchCardv2";
+import { UserItemSkeleton } from "../skeletons/UserSearchCardSkleton";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 const DiscoverPage = () => {
   const [activeTab, setActiveTab] = useState("TODOS");
   const [selectedCiclo, setSelectedCiclo] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const isMobile = useIsMobile()
 
   // Manejo de Debounce para no saturar la API al escribir
   useEffect(() => {
@@ -53,37 +56,6 @@ const DiscoverPage = () => {
         </div>
 
         {/* SELECT DE CICLO Y TABS */}
-        {/* <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-          <div className="flex bg-gray-100 dark:bg-gray-900 p-1 rounded-xl shrink-0">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${
-                  activeTab === tab.id
-                    ? "bg-white dark:bg-gray-800 text-emerald-500 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="relative shrink-0">
-            <select
-              value={selectedCiclo}
-              onChange={(e) => setSelectedCiclo(e.target.value)}
-              className="appearance-none pl-3 pr-8 py-2 bg-gray-100 dark:bg-gray-900 text-xs font-bold rounded-xl outline-none border border-transparent focus:border-emerald-500 dark:text-gray-300  max-sm:max-w-30" 
-            >
-              <option value="">Todos los Ciclos</option>
-              {ciclos.map((c) => (
-                <option key={c} value={c}>Ciclo {c}</option>
-              ))}
-            </select>
-            <Filter className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
-          </div>
-        </div> */}
         <div className="flex items-center gap-2 pb-1">
           {/* Tabs con scroll */}
           <div className="flex-1 overflow-x-auto no-scrollbar">
@@ -129,11 +101,9 @@ const DiscoverPage = () => {
       {/* RESULTADOS */}
       <div className="p-2 pb-20">
         {isLoading ? (
-          <div className="flex justify-center p-10">
-            <div className="animate-spin h-6 w-6 border-2 border-emerald-500 border-t-transparent rounded-full"></div>
-          </div>
+          Array.from({ length: 6 }).map((_, i) => <UserItemSkeleton key={i} isMobile={isMobile} />)
         ) : profiles.length > 0 ? (
-          <div className="grid grid-cols-1 divide-y divide-gray-50 dark:divide-gray-900">
+          <div className="grid grid-cols-1 divide-y divide-gray-50 dark:divide-gray-900 animate-fade-in-up">
             {profiles.map((profile) => (
               <UserSearchCard key={profile.id} profile={profile} />
             ))}

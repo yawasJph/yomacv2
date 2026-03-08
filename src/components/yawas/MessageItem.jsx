@@ -1,20 +1,8 @@
-import { memo, useCallback } from "react";
-import { Zap, Copy } from "lucide-react";
+import { memo } from "react";
 import ReactMarkdown from "react-markdown";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { toast } from "sonner";
-import { TOAST_STYLE } from "../../utils/yawas/constants";
 import { ChatCodeBlock } from "./ChatCodeBlockv2";
-import hljs from "highlight.js";
 
-export const MessageItem = memo(({ message, index }) => {
-  const handleCopyCode = useCallback((code) => {
-    navigator.clipboard.writeText(code);
-    toast.success("Copiado al portapapeles", {
-      ...TOAST_STYLE,
-      icon: "🔥",
-    });
-  }, []);
+export const MessageItem = memo(({ message }) => {
 
   return (
     <div
@@ -44,7 +32,6 @@ export const MessageItem = memo(({ message, index }) => {
             </div>
           )}
           <div className="prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/50  prose-p:my-2 prose-headings:font-bold prose-code:before:content-none prose-code:after:content-none prose-invert  prose">
-          {/** prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/50  prose-p:my-2 prose-headings:font-bold prose-code:before:content-none prose-code:after:content-none prose-invert  prose */}
             <ReactMarkdown
               children={message.text}
               components={{

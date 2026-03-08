@@ -12,10 +12,9 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
 import { useProfile } from "../../hooks/useProfile";
-import ToggleThemeButton from "../ui/ToggleThemeButton";
 import UserCredits from "../games/UserCredits";
 import Logo from "../ui/Logo";
 import NotificationIcon from "../ui/NotificationIcon";
@@ -33,26 +32,6 @@ const HeaderM = () => {
       icon: <ShoppingBag size={20} />,
       text: "YoMAC Store",
       path: "/games/store",
-    },
-    {
-      icon: <Settings size={20} />,
-      text: "Configuración",
-      path: "/editProfile",
-    },
-    {
-      icon: <Bot size={20} />,
-      text: "Yawas",
-      path: "/yawas",
-    },
-    {
-      icon: <BlocksIcon size={22} />,
-      text: "Blog",
-      path: "/blog",
-    },
-    {
-      icon: <MessageCircle size={22} />,
-      text: "Mensages",
-      path: "/messages",
     },
     {
       icon: <Settings size={20} />,

@@ -8,6 +8,7 @@ import { EmptyState } from "../../components/yawas/EmptyState ";
 import { ChatHeader } from "../../components/yawas/ChatHeader";
 import { ChatInput2 } from "../../components/yawas/InputPro";
 import { useYawasChat } from "../../hooks/yawas/useYawasChat2";
+import { MessageItemSkeleton } from "@/components/skeletons/ChatBotMessageSkeleton";
 
 const CampusAI = () => {
   const { user } = useAuth();
@@ -18,7 +19,7 @@ const CampusAI = () => {
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
 
-  const { messages, isTyping, sendMessage } = useYawasChat(user?.id);
+  const { messages, isTyping, sendMessage, isLoading } = useYawasChat(user?.id);
 
   // Auto-scroll al final cuando hay nuevos mensajes
   useEffect(() => {
@@ -90,7 +91,17 @@ const CampusAI = () => {
 
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-8 custom-scrollbar bg-[radial-gradient(circle_at_top,var(--tw-gradient-stops))] from-neutral-900/20 via-transparent to-transparent md:px-4 md:py-6 bg-linear-to-b dark:from-gray-900/50 dark:via-black/50 dark:to-gray-900/50 custom-scrollbar">
         {emptyState}
-        {messageList}
+        {isLoading ? (
+          <>
+            {/* Simulación de historial */}
+            <MessageItemSkeleton isUser={false} hasImage={true} />
+            <MessageItemSkeleton isUser={true} />
+            <MessageItemSkeleton isUser={false} />
+            <MessageItemSkeleton isUser={true} />
+          </>
+        ) : (
+          messageList
+        )}
         {isTyping && <TypingIndicator />}
         <div ref={scrollRef} className="h-2 md:h-4" />
       </div>

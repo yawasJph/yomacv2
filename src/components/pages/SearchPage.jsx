@@ -12,6 +12,7 @@ import TrendingTopics from "../ui/rigthSidebar/TrendingTopics";
 //import UserSuggestions from "../ui/rigthSidebar/UserSuggestions";
 import NoResultsMessage from "../ui/NoResultsMessage";
 import UserSuggestions from "../ui/rigthSidebar/UserSuggestions2";
+import SkeletonPost from "../skeletons/SkeletonPost";
 
 
 const SearchPage = () => {
@@ -63,10 +64,11 @@ const SearchPage = () => {
             </section>
           </div>
         ) : isLoading ? (
-          <div className="p-10 text-center text-gray-500">
-            <div className="animate-spin inline-block w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full mb-2"></div>
-            <p>Buscando...</p>
-          </div>
+          <div>
+          {[1, 2, 3, 4].map((i) => (
+            <SkeletonPost key={i} />
+          ))}
+        </div>
         ) : (
           /* RESULTADOS CON TABS */
           <>

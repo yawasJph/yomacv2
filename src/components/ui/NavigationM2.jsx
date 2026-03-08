@@ -64,7 +64,7 @@ const NavigationM = () => {
 
   return (
     <div
-      className={`fixed -bottom-1 left-0 right-0 z-100 lg:hidden ${onViewCredits && "hidden"}`}
+      className={`fixed -bottom-1 left-0 right-0 z-90 lg:hidden ${onViewCredits && "hidden"}`}
     >
       {/**bottom-0 */}
       {/* Efecto de degradado de fondo para que no corte el contenido bruscamente */}

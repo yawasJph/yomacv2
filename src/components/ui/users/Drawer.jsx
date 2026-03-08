@@ -37,22 +37,24 @@ const Drawer = ({ onClose, profile, menuItems, signout }) => {
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        className="fixed top-0 right-0 bottom-0 w-[80%] max-w-sm bg-white dark:bg-neutral-950 z-110 shadow-2xl lg:hidden flex flex-col"
+        className="fixed top-0 right-0 bottom-0 w-[80%] max-w-sm bg-white dark:bg-neutral-950 z-110 shadow-2xl lg:hidden flex flex-col h-screen"
       >
-        {/* Header del Drawer (Perfil) */}
-        <div className="p-6 pt-10 bg-linear-to-b from-emerald-50/50 dark:from-emerald-500/5 to-transparent">
+        {/* 1. Header del Drawer - Estático arriba */}
+        <div className="p-6 pt-10 bg-linear-to-b from-emerald-50/50 dark:from-emerald-500/5 to-transparent shrink-0">
           <div className="flex justify-between items-center mb-4">
             <img
               src={profile?.avatar || "/default-avatar.jpg"}
               className="w-16 h-16 rounded-2xl object-cover border-4 border-white dark:border-neutral-900 shadow-xl"
             />
-            <ToggleThemeButton/>
-            <button
-              onClick={onClose}
-              className="p-2 bg-gray-100 dark:bg-neutral-800 rounded-full text-gray-500"
-            >
-              <X size={20} />
-            </button>
+            <div className="flex items-center space-x-6">
+              <ToggleThemeButton />
+              <button
+                onClick={onClose}
+                className="p-2 bg-gray-100 dark:bg-neutral-800 rounded-full text-gray-500"
+              >
+                <X size={20} />
+              </button>
+            </div>
           </div>
 
           <h2 className="text-xl font-black dark:text-white truncate">
@@ -68,30 +70,40 @@ const Drawer = ({ onClose, profile, menuItems, signout }) => {
           </div>
         </div>
 
-        {/* Rutas / Enlaces */}
-        <nav className="flex-1 p-4 space-y-1">
-          {menuItems.map((item, idx) => (
-            <button
-              key={idx}
-              onClick={() => {
-                navigate(item.path);
-                onClose();
-              }}
-              className="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-neutral-900 text-gray-700 dark:text-gray-300 transition-colors group"
-            >
-              <div className="flex items-center gap-4">
-                <div className="p-2 bg-gray-50 dark:bg-neutral-800 rounded-xl group-hover:text-emerald-500 transition-colors">
-                  {item.icon}
-                </div>
-                <span className="font-bold text-sm">{item.text}</span>
-              </div>
-              <ChevronRight size={16} className="text-gray-400" />
-            </button>
-          ))}
-        </nav>
+        {/* 2. Área de Navegación - SCROLLABLE */}
+        <div className="flex-1 relative overflow-hidden flex flex-col">
+          {/* Gradiente superior (opcional, por si hay mucho scroll hacia arriba) */}
+          <div className="absolute top-0 left-0 right-0 h-4 bg-linear-to-b from-white dark:from-neutral-950 to-transparent z-10 pointer-events-none" />
 
-        {/* Logout al final */}
-        <div className="p-4 border-t border-gray-100 dark:border-neutral-900">
+          {/* ÁREA DE NAVEGACIÓN */}
+          <nav className="flex-1 p-4 space-y-1 overflow-y-auto no-scrollbar pb-10">
+            {menuItems.map((item, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  navigate(item.path);
+                  onClose();
+                }}
+                className="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-neutral-900 text-gray-700 dark:text-gray-300 transition-colors group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="p-2 bg-gray-50 dark:bg-neutral-800 rounded-xl group-hover:text-emerald-500 transition-colors">
+                    {item.icon}
+                  </div>
+                  <span className="font-bold text-sm">{item.text}</span>
+                </div>
+                <ChevronRight size={16} className="text-gray-400" />
+              </button>
+            ))}
+            
+          </nav>
+
+          {/* GRADIENTE INFERIOR - El indicador de "más contenido" */}
+          <div className="absolute bottom-0 left-0 right-0 h-12 bg-linear-to-t from-white dark:from-neutral-950 to-transparent z-10 pointer-events-none" />
+        </div>
+
+        {/* 3. Footer / Logout - Estático abajo */}
+        <div className="p-4 border-t border-gray-100 dark:border-neutral-900 shrink-0 bg-white dark:bg-neutral-950">
           <button
             onClick={() => {
               signout();

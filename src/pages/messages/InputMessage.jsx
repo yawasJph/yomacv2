@@ -72,7 +72,8 @@ export const InputMessage = memo(
                 <button
                   type="submit"
                   disabled={!input.trim()}
-                  className="flex items-center justify-center rounded-full text-white hover:scale-105 active:scale-95 transition-all disabled:opacity-60 disabled:grayscale shrink-0 shadow-lg shadow-indigo-500/20 bg-linear-to-r from-indigo-500 to-indigo-600 dark:from-indigo-400 dark:to-indigo-500 w-8 h-8 md:w-10 md:h-10 disabled:cursor-not-allowed dark:shadow-indigo-500/40"
+                  className="flex items-center justify-center rounded-full text-white hover:scale-105 active:scale-95 transition-all disabled:opacity-60 disabled:grayscale shrink-0 shadow-lg shadow-indigo-500/20 bg-linear-to-r from-indigo-500 via-indigo-600 to-indigo-700 dark:from-indigo-400 
+                  dark:via-indigo-500 dark:to-indigo-600 w-8 h-8 md:w-10 md:h-10 disabled:cursor-not-allowed dark:shadow-indigo-500/40"
                 >
                   <Send size={16} />
                 </button>

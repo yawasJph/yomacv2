@@ -37,6 +37,7 @@ export const useYawasChat = (userId) => {
   const [messages, setMessages] = useState([]);
   //const [userProfile, setUserProfile] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
 
   const { userProfile,fetchUserProfile,saveNotes } = useUserData(userId)
   const {sendMessageWithFallback,streamResponse,triggerWelcomeGreeting} = useYawasApi(userId, setIsTyping)
@@ -44,7 +45,7 @@ export const useYawasChat = (userId) => {
   // Fetch chat history
   const fetchChatHistory = useCallback(async () => {
     if (!userId) return [];
-
+    setIsLoading(true)
     const { data } = await supabaseClient
       .from("chat_messages")
       .select("*")
@@ -54,8 +55,10 @@ export const useYawasChat = (userId) => {
 
     if (data) {
       setMessages(data);
+      setIsLoading(false)
       return data;
     }
+    setIsLoading(false)
     return [];
   }, [userId]);
 
@@ -147,5 +150,6 @@ export const useYawasChat = (userId) => {
     isTyping,
     userProfile,
     sendMessage,
+    isLoading
   };
 };

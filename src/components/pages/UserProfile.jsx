@@ -18,6 +18,7 @@ import { useProfile } from "../../hooks/useProfile";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuthAction } from "../../hooks/useAuthAction";
 import { usePostsInfiniteQuery } from "@/hooks/posts/usePostsInfiniteQueryv3";
+import SkeletonPost from "../skeletons/SkeletonPost";
 
 const UserProfile = () => {
   const { userId } = useParams();
@@ -183,8 +184,7 @@ const UserProfile = () => {
       <div className="px-4 mt-5 space-y-3">
         <div>
           <h2 className="text-xl font-extrabold dark:text-white tracking-tight sm:text-2xl sm:font-black">
-            {profile?.full_name} carrasco gonzales carrasco gonzales carrasco
-            gonzales
+            {profile?.full_name}
           </h2>
           {/* RENDERIZADO DE INSIGNIAS */}
           <div className="flex items-center gap-1">
@@ -303,9 +303,11 @@ const UserProfile = () => {
       {/* LISTADO DE POSTS CON INFINITE SCROLL */}
       <div className="divide-y divide-gray-100 dark:divide-gray-800">
         {postsLoading ? (
-          <div className="p-10 text-center">
-            <div className="animate-spin inline-block w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full" />
-          </div>
+          <div>
+          {[1, 2, 3, 4].map((i) => (
+            <SkeletonPost key={i} />
+          ))}
+        </div>
         ) : allPosts.length > 0 ? (
           <>
             {allPosts.map((post) => (

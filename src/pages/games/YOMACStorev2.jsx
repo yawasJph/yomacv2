@@ -17,6 +17,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useProfile } from "../../hooks/useProfile";
 import { useNavigate } from "react-router-dom";
 import StoreSkeleton from "../../components/skeletons/StoreSkeleton";
+import { WalletSkeleton } from "@/components/skeletons/WalletSkeleton";
 
 // 1. Sub-componente Memoizado para las tarjetas
 const StoreItem = memo(
@@ -97,7 +98,7 @@ const YoMACStore = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user: currentUser } = useAuth();
-  const { data: userProfile } = useProfile(currentUser?.id);
+  const { data: userProfile, isPending } = useProfile(currentUser?.id);
 
   // Estados Locales
   const [activeTab, setActiveTab] = useState("badge");
@@ -156,13 +157,17 @@ const YoMACStore = () => {
   const categories = [
     { id: "badge", label: "Insignias", icon: <Sparkles size={18} /> },
     { id: "sticker", label: "Stickers", icon: <ImageIcon size={18} /> },
-    { id: "gif", label: "Gifs Animados", icon: <Gift size={18} /> },
+    { id: "gif", label: "Gifs", icon: <Gift size={18} /> },
   ];
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6 pb-24">
       {/* HEADER (Reutiliza tu diseño, pero usa userProfile.credits directamente) */}
-      <HeaderSection navigate={navigate} credits={userProfile?.credits || 0} />
+      <HeaderSection
+        navigate={navigate}
+        credits={userProfile?.credits || 0}
+        isLoading={isPending}
+      />
 
       {/* TABS (Memoizados por CSS o extraídos) */}
       <nav className="flex gap-2 mb-8 bg-gray-100 dark:bg-white/5 p-1 rounded-2xl w-fit">
@@ -228,28 +233,6 @@ const YoMACStore = () => {
         </select>
       </div>
 
-      {/* GRID OPTIMIZADA */}
-      {/* <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-        <AnimatePresence>
-          {isLoading ? (
-            <SkeletonLoader />
-          ) : (
-            filteredItems.map((item) => (
-              <StoreItem
-                key={item.id}
-                item={item}
-                isOwned={myItems.includes(item.id)}
-                canAfford={(userProfile?.credits || 0) >= item.price}
-                isWrongCarrera={
-                  item.carrera_restriccion &&
-                  item.carrera_restriccion !== userProfile?.carrera
-                }
-                onBuy={handleBuy}
-              />
-            ))
-          )}
-        </AnimatePresence>
-      </div> */}
       {/* GRID DE PRODUCTOS */}
       <div className="min-h-[400px]">
         {" "}
@@ -291,7 +274,7 @@ const YoMACStore = () => {
   );
 };
 
-const HeaderSection = memo(({ navigate, credits }) => {
+const HeaderSection = memo(({ navigate, credits, isLoading }) => {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 ">
       <div>
@@ -310,20 +293,24 @@ const HeaderSection = memo(({ navigate, credits }) => {
         </p>
       </div>
 
-      <div className="bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-2xl flex items-center gap-3">
-        <div className="bg-emerald-500 p-1.5 rounded-lg text-white">
-          <Wallet size={20} />
+      {isLoading ? (
+        <WalletSkeleton />
+      ) : (
+        <div className="bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-2xl flex items-center gap-3">
+          <div className="bg-emerald-500 p-1.5 rounded-lg text-white">
+            <Wallet size={20} />
+          </div>
+          <div>
+            <p className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 leading-none">
+              Tu Saldo
+            </p>
+            <p className="text-lg font-black dark:text-white">
+              {credits.toLocaleString()}
+              <span className="text-xs font-medium text-gray-500"> CC</span>
+            </p>
+          </div>
         </div>
-        <div>
-          <p className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 leading-none">
-            Tu Saldo
-          </p>
-          <p className="text-lg font-black dark:text-white">
-            {credits.toLocaleString()}
-            <span className="text-xs font-medium text-gray-500">CC</span>
-          </p>
-        </div>
-      </div>
+      )}
     </div>
   );
 });
