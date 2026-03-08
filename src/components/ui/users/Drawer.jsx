@@ -95,7 +95,7 @@ const Drawer = ({ onClose, profile, menuItems, signout }) => {
           <button
             onClick={() => {
               signout();
-              onClose;
+              onClose();
             }}
             className="w-full flex items-center gap-4 p-4 rounded-2xl text-rose-500 font-bold hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
           >

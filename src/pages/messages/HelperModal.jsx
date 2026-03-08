@@ -1,7 +1,11 @@
-import { Users, X } from "lucide-react";
+import { Search, Users, X } from "lucide-react";
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const HelperModal = ({ onClose }) => {
+
+  const navigate = useNavigate()
+
   useEffect(() => {
     const scrollBarWidth =
       window.innerWidth - document.documentElement.clientWidth;
@@ -50,8 +54,8 @@ const HelperModal = ({ onClose }) => {
             Amigos Mutuos
           </h2>
 
-          <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed text-[15px]">
-            Para proteger la privacidad, en{" "}
+          <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed text-[15px] px-2">
+            Para proteger tu privacidad, en{" "}
             <span className="text-indigo-600 font-bold">YoMAC</span> solo puedes
             chatear con personas que{" "}
             <span className="font-bold underline decoration-indigo-500">
@@ -61,9 +65,22 @@ const HelperModal = ({ onClose }) => {
           </p>
 
           <div className="mt-8 space-y-3">
+            {/* BOTÓN PRIMARIO: IR A BUSCAR AMIGOS */}
+            <button
+              onClick={() => {
+                onClose();
+                navigate("/users");
+              }}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl transition-all active:scale-[0.97] shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2"
+            >
+              <Search size={18} />
+              Explorar personas
+            </button>
+
+            {/* BOTÓN SECUNDARIO: CERRAR */}
             <button
               onClick={onClose}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl transition-all active:scale-95 shadow-lg shadow-indigo-500/20"
+              className="w-full bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200 font-bold py-4 rounded-2xl transition-all active:scale-[0.97]"
             >
               Entendido
             </button>

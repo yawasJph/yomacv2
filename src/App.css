@@ -470,3 +470,18 @@ ul[data-type="taskList"] input[type="checkbox"] {
   overflow-x: auto; /* Permite scroll horizontal si los iconos no caben */
   white-space: nowrap;
 }
+
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInSlideUp 0.4s ease-out forwards;
+}

@@ -13,6 +13,7 @@ const MessagesPage = () => {
   const [messages, setMessages] = useState([]); // <--- NUEVO: Guardar mensajes
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingMutuals, setLoadingMutuals] = useState(false)
   // Agrega este estado arriba
   const [onlineUsers, setOnlineUsers] = useState({});
   const isMobile = useIsMobile();
@@ -149,6 +150,7 @@ const MessagesPage = () => {
   }, [activeChat]);
 
   const loadMutuals = async () => {
+      setLoadingMutuals(true)
     const { data, error } = await supabaseClient.rpc(
       "get_mutual_followers_with_unread",
       {
@@ -161,10 +163,12 @@ const MessagesPage = () => {
     } else {
       console.error("Error al cargar mutuals:", error.message);
     }
+    setLoadingMutuals(false)
   };
 
   // CONSULTA FILTRADA POR CONVERSACIÓN
   const fetchMessages = async () => {
+    setLoading(true)
     const { data, error } = await supabaseClient
       .from("direct_messages")
       .select("*")
@@ -175,6 +179,7 @@ const MessagesPage = () => {
       .order("created_at", { ascending: true });
 
     if (!error) setMessages(data);
+    setLoading(false)
   };
 
   const handleSendMessage = async () => {
@@ -220,6 +225,7 @@ const MessagesPage = () => {
             onSelectChat={handleSelectChat}
             onlineUsers={onlineUsers}
             onBack={() => navigate(-1)}
+            loadingMutuals={loadingMutuals}
           />
           
         </>
