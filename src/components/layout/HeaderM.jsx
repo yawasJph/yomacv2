@@ -4,8 +4,6 @@ import {
   Bookmark,
   ShoppingBag,
   Settings,
-  LogOut,
-  ChevronRight,
   Search,
   Bot,
   BlocksIcon,
@@ -18,7 +16,7 @@ import { useProfile } from "../../hooks/useProfile";
 import UserCredits from "../games/UserCredits";
 import Logo from "../ui/Logo";
 import NotificationIcon from "../ui/NotificationIcon";
-import Drawer from "../ui/users/Drawer";
+import Drawer from "../ui/users/Drawerv3";
 
 const HeaderM = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
