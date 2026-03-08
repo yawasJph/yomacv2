@@ -37,7 +37,7 @@ const Drawer = ({ onClose, profile, menuItems, signout }) => {
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        className="fixed top-0 right-0 bottom-0 w-[80%] max-w-sm bg-white dark:bg-neutral-950 z-110 shadow-2xl lg:hidden flex flex-col h-screen"
+        className="fixed top-0 right-0 bottom-0 w-[80%] max-w-sm bg-white dark:bg-neutral-950 z-110 shadow-2xl lg:hidden flex flex-col"
       >
         {/* 1. Header del Drawer - Estático arriba */}
         <div className="p-6 pt-10 bg-linear-to-b from-emerald-50/50 dark:from-emerald-500/5 to-transparent shrink-0">
