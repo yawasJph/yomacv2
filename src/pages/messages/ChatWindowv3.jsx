@@ -75,7 +75,6 @@ const ChatWindow = ({
     }).format(new Date(dateString));
   };
 
-  console.log(isFriendTyping)
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white transition-colors duration-300">
       

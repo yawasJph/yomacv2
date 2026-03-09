@@ -83,6 +83,7 @@ const MutualsList = ({
                 <button
                   key={friend.friend_id}
                   onClick={() => onSelectChat(friend)}
+                  // Añadimos "overflow-hidden" al botón para asegurar que nada escape
                   className="w-full flex items-center gap-4 p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors border-b border-gray-300 dark:border-gray-800"
                 >
                   <div className="relative shrink-0">
@@ -95,25 +96,34 @@ const MutualsList = ({
                       <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-zinc-950 rounded-full"></div>
                     )}
                   </div>
+
+                  {/* CLAVE 1: El contenedor padre debe tener flex-1 y min-w-0 */}
                   <div className="flex-1 text-left min-w-0">
-                    <div className="flex justify-between items-baseline mb-1">
-                      <h3 className="font-bold dark:text-white text-[15px] truncate">
-                        {friend.full_name}
+                    <div className="flex justify-between items-baseline mb-1 gap-2">
+                      {/* CLAVE 2: El nombre también necesita truncate por si es muy largo */}
+                      <h3 className="font-bold dark:text-white text-[15px] line-clamp-1 flex-1">
+                        {friend.full_name} marai mercedes gutttititfjfjfjfjfjfjflslslslslsskskskksksks
                       </h3>
                       <span
-                        className={`text-[11px] ${friend.unread_count > 0 ? "text-indigo-500 font-bold" : "text-zinc-400"}`}
+                        className={`text-[11px] shrink-0 ${friend.unread_count > 0 ? "text-indigo-500 font-bold" : "text-zinc-400"}`}
                       >
                         {friend.last_message_time
                           ? formatMessageTime(friend.last_message_time)
                           : ""}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <p className="text-sm text-zinc-500 dark:text-zinc-400 truncate pr-4">
-                        {friend.last_message || `Saluda a ${friend.username}`}
-                      </p>
+
+                    <div className="flex items-center justify-between gap-2">
+                      {/* CLAVE 3: El contenedor del mensaje debe ser flex-1 y min-w-0 */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-zinc-500 dark:text-zinc-400 line-clamp-1">
+                          {friend.last_message || `Saluda a ${friend.username}`}
+                        </p>
+                      </div>
+
+                      {/* El badge se mantiene con shrink-0 para que no se aplaste */}
                       {friend.unread_count > 0 && (
-                        <span className="bg-indigo-600 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+                        <span className="shrink-0 bg-indigo-600 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1 animate-in zoom-in duration-300">
                           {friend.unread_count}
                         </span>
                       )}

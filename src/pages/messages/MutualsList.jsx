@@ -103,6 +103,16 @@ const MutualsList = ({ mutuals, onSelectChat , onlineUsers, onBack}) => {
                       </span>
                     )}
                   </div>
+                  {/* <div className="flex justify-between items-center">
+                      <p className="text-sm text-zinc-500 dark:text-zinc-400 truncate pr-4">
+                        {friend.last_message || `Saluda a ${friend.username}`}
+                      </p>
+                      {friend.unread_count > 0 && (
+                        <span className="bg-indigo-600 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+                          {friend.unread_count}
+                        </span>
+                      )}
+                    </div> */}
                 </div>
               </button>
             );

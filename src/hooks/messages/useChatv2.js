@@ -107,6 +107,7 @@ export const useChat = (userId, activeFriendId) => {
       messages.some((m) => m.sender_id === activeFriendId && !m.is_read)
     ) {
       markAsReadMutation.mutate();
+      console.log("juju")
     }
   }, [activeFriendId, messages.length]);
 
