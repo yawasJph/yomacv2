@@ -28,7 +28,7 @@ import CreateBlog from "./pages/blog/CreateBlog5";
 import BlogDetail from "./pages/blog/BlogDetailv5";
 import { ModalProvider } from "./context/ModalContextv3";
 import MyBlogs from "./pages/user-blog/MyBlogs";
-import MessagesPage from "./pages/messages/MessagesPage";
+import MessagesPage from "./pages/messages/MessagesPagev2";
 
 // --- IMPORTS DINÁMICOS (Lazy Loading) ---
 const CreatePost = lazy(() => import("./components/pages/CreatePost"));
