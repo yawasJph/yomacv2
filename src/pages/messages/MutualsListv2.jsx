@@ -79,6 +79,7 @@ const MutualsList = ({
           {filteredMutuals.length > 0 ? (
             filteredMutuals.map((friend) => {
               const isOnline = !!onlineUsers[friend.friend_id];
+              console.log(friend.last_message)
               return (
                 <button
                   key={friend.friend_id}
@@ -102,7 +103,7 @@ const MutualsList = ({
                     <div className="flex justify-between items-baseline mb-1 gap-2">
                       {/* CLAVE 2: El nombre también necesita truncate por si es muy largo */}
                       <h3 className="font-bold dark:text-white text-[15px] line-clamp-1 flex-1">
-                        {friend.full_name} marai mercedes gutttititfjfjfjfjfjfjflslslslslsskskskksksks
+                        {friend.full_name}
                       </h3>
                       <span
                         className={`text-[11px] shrink-0 ${friend.unread_count > 0 ? "text-indigo-500 font-bold" : "text-zinc-400"}`}

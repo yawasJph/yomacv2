@@ -45,24 +45,54 @@ export const useChat = (userId, activeFriendId) => {
   });
 
   // 3. BORRAR MENSAJE (Optimista)
+  // const deleteMessageMutation = useMutation({
+  //   mutationFn: async (messageId) => {
+  //     const { error } = await supabaseClient
+  //       .from("direct_messages")
+  //       .delete()
+  //       .eq("id", messageId);
+  //     if (error) throw error;
+  //   },
+  //   onMutate: async (messageId) => {
+  //     await queryClient.cancelQueries({ queryKey });
+  //     const previousMessages = queryClient.getQueryData(queryKey);
+  //     queryClient.setQueryData(queryKey, (old) =>
+  //       old.filter((m) => m.id !== messageId),
+  //     );
+  //     return { previousMessages };
+  //   },
+  //   onError: (err, id, context) =>
+  //     queryClient.setQueryData(queryKey, context.previousMessages),
+  // });
+  // Busca deleteMessageMutation dentro de useChat.js y reemplázalo:
   const deleteMessageMutation = useMutation({
     mutationFn: async (messageId) => {
       const { error } = await supabaseClient
         .from("direct_messages")
-        .delete()
+        .update({
+          content: null, // Vaciamos el texto por privacidad
+          deleted_at: new Date().toISOString(),
+        })
         .eq("id", messageId);
       if (error) throw error;
     },
     onMutate: async (messageId) => {
       await queryClient.cancelQueries({ queryKey });
       const previousMessages = queryClient.getQueryData(queryKey);
+
+      // Actualización optimista local
       queryClient.setQueryData(queryKey, (old) =>
-        old.filter((m) => m.id !== messageId),
+        old?.map((m) =>
+          m.id === messageId
+            ? { ...m, content: null, deleted_at: new Date().toISOString() }
+            : m,
+        ),
       );
       return { previousMessages };
     },
-    onError: (err, id, context) =>
-      queryClient.setQueryData(queryKey, context.previousMessages),
+    onError: (err, id, context) => {
+      queryClient.setQueryData(queryKey, context.previousMessages);
+    },
   });
 
   // 4. LÓGICA DE TYPING (Broadcast)
@@ -107,7 +137,7 @@ export const useChat = (userId, activeFriendId) => {
       messages.some((m) => m.sender_id === activeFriendId && !m.is_read)
     ) {
       markAsReadMutation.mutate();
-      console.log("juju")
+      console.log("juju");
     }
   }, [activeFriendId, messages.length]);
 
@@ -132,12 +162,13 @@ export const useChat = (userId, activeFriendId) => {
 
       // Creamos el mensaje temporal (Optimista)
       const optimisticMsg = {
-        id: Date.now(), // ID temporal
+        id: `temp-${crypto.randomUUID ? crypto.randomUUID() : Date.now()}`,
         sender_id: userId,
         receiver_id: activeFriendId,
         content: newContent,
         created_at: new Date().toISOString(),
         is_sending: true, // Flag para mostrar un icono de "enviando"
+        is_optimistic: true,
       };
 
       // Actualizamos la cache instantáneamente
@@ -171,6 +202,41 @@ export const useChat = (userId, activeFriendId) => {
   });
 
   // 3. REALTIME (Sincronización para mensajes que RECIBO)
+  // useEffect(() => {
+  //   if (!activeFriendId) return;
+  //   const channel = supabaseClient
+  //     .channel(`chat_${activeFriendId}`)
+  //     .on(
+  //       "postgres_changes",
+  //       { event: "*", schema: "public", table: "direct_messages" },
+  //       (payload) => {
+  //         if (
+  //           payload.eventType === "INSERT" &&
+  //           payload.new.sender_id === activeFriendId
+  //         ) {
+  //           queryClient.setQueryData(queryKey, (old) => [
+  //             ...(old || []),
+  //             payload.new,
+  //           ]);
+  //         }
+  //         if (payload.eventType === "UPDATE") {
+  //           queryClient.setQueryData(queryKey, (old) =>
+  //             old?.map((m) => (m.id === payload.new.id ? payload.new : m)),
+  //           );
+  //         }
+  //         if (payload.eventType === "DELETE") {
+  //           queryClient.setQueryData(queryKey, (old) =>
+  //             old?.filter((m) => m.id !== payload.old.id),
+  //           );
+  //         }
+  //       },
+  //     )
+  //     .subscribe();
+  //   return () => {
+  //     supabaseClient.removeChannel(channel);
+  //   };
+  // }, [activeFriendId, queryClient, queryKey]);
+  // 3. REALTIME (Sincronización para mensajes que RECIBO y ACTUALIZO)
   useEffect(() => {
     if (!activeFriendId) return;
     const channel = supabaseClient
@@ -179,22 +245,37 @@ export const useChat = (userId, activeFriendId) => {
         "postgres_changes",
         { event: "*", schema: "public", table: "direct_messages" },
         (payload) => {
-          // Solo procesamos si el mensaje es del AMIGO hacia MÍ (nosotros ya manejamos los nuestros vía Mutation)
-          if (
-            payload.eventType === "INSERT" &&
-            payload.new.sender_id === activeFriendId
-          ) {
-            queryClient.setQueryData(queryKey, (old) => [
-              ...(old || []),
-              payload.new,
-            ]);
+          // --- MANEJO DE INSERT ---
+          if (payload.eventType === "INSERT") {
+            queryClient.setQueryData(queryKey, (old) => {
+              const oldMessages = old || [];
+
+              // 1. Verificamos si el mensaje ya existe (por si el Realtime es más rápido que el Mutation)
+              const exists = oldMessages.some((m) => m.id === payload.new.id);
+              if (exists) return oldMessages;
+
+              // 2. Si el mensaje es mío, React Query ya lo maneja en onSuccess de la mutación.
+              // Pero si el Realtime llega antes, lo insertamos aquí y la mutación lo ignorará luego.
+              // Solo insertamos si el mensaje pertenece a esta conversación.
+              if (
+                payload.new.sender_id === activeFriendId ||
+                payload.new.sender_id === userId // userId debe venir de los argumentos del hook
+              ) {
+                return [...oldMessages, payload.new];
+              }
+
+              return oldMessages;
+            });
           }
-          // Actualizar estados (leído/borrado)
+
+          // --- MANEJO DE UPDATE (Leídos, Borrados lógicos) ---
           if (payload.eventType === "UPDATE") {
             queryClient.setQueryData(queryKey, (old) =>
               old?.map((m) => (m.id === payload.new.id ? payload.new : m)),
             );
           }
+
+          // --- MANEJO DE DELETE ---
           if (payload.eventType === "DELETE") {
             queryClient.setQueryData(queryKey, (old) =>
               old?.filter((m) => m.id !== payload.old.id),
@@ -203,10 +284,27 @@ export const useChat = (userId, activeFriendId) => {
         },
       )
       .subscribe();
+
     return () => {
       supabaseClient.removeChannel(channel);
     };
-  }, [activeFriendId, queryClient, queryKey]);
+  }, [activeFriendId, queryClient, queryKey, userId]); // Asegúrate de incluir userId
+  
+
+  // Añade esto dentro de tu hook useChatv2
+  const reactToMessage = async (messageId, emoji) => {
+    try {
+      const { error } = await supabaseClient
+        .from("direct_messages")
+        .update({ reaction: emoji })
+        .eq("id", messageId);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error("Error al reaccionar:", error);
+      notify.error("No se pudo enviar la reacción");
+    }
+  };
 
   return {
     messages,
@@ -217,5 +315,6 @@ export const useChat = (userId, activeFriendId) => {
     sendTypingSignal,
     deleteMessage: deleteMessageMutation.mutate,
     isDeleting: deleteMessageMutation.isLoading,
+    reactToMessage,
   };
 };

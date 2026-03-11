@@ -5,7 +5,7 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MutualsList from "./MutualsListv2";
-import ChatWindow from "./ChatWindowv3";
+import ChatWindow from "./ChatWindowv4";
 
 const MessagesPage = () => {
   const { user } = useAuth();
