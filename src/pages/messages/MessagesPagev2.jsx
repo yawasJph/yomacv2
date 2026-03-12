@@ -31,9 +31,11 @@ const MessagesPage = () => {
   };
 
   return (
-    <div 
-    className="max-w-2xl mx-auto h-screen flex flex-col bg-white dark:bg-black overflow-hidden"
-    >
+    // <div 
+    // className="max-w-2xl mx-auto h-screen flex flex-col bg-white dark:bg-black overflow-hidden"
+    // >
+    // </div>
+    <>
       {!activeChat ? (
         <MutualsList
           mutuals={mutuals}
@@ -56,7 +58,7 @@ const MessagesPage = () => {
           isMobile={isMobile}
         />
       )}
-    </div>
+    </>
   );
 };
 

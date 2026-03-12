@@ -103,7 +103,7 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
       {/* HEADER */}
       <div 
       // className="flex justify-between items-center gap-5 p-4 md:px-8 md:py-4 bg-white/80 dark:bg-black/80 backdrop-blur-md z-40 border-b border-gray-200 dark:border-zinc-800  shadow-sm"
-       className={`flex items-center gap-5 p-4 md:p-6  backdrop-blur-xl z-40 sticky top-15 border-b border-gray-100 dark:border-neutral-900  bg-white/90 dark:bg-black/90 shadow-sm dark:shadow-gray-900/30 transition-all`}
+       className={`flex items-center gap-5 p-4 md:p-6  backdrop-blur-xl z-40 sticky top-0 border-b border-gray-100 dark:border-neutral-900  bg-white/90 dark:bg-black/90 shadow-sm dark:shadow-gray-900/30 transition-all`}
       
       >
         <div className="flex items-center gap-3">
