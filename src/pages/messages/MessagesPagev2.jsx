@@ -31,7 +31,7 @@ const MessagesPage = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto h-screen flex flex-col bg-white dark:bg-black">
+    <div className="max-w-2xl mx-auto h-screen flex flex-col bg-white dark:bg-black overflow-hidden">
       {!activeChat ? (
         <MutualsList
           mutuals={mutuals}

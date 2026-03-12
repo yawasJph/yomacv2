@@ -44,12 +44,6 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
     }
   }, [messages, isFriendTyping]);
 
-  // const handleSendMessage = () => {
-  //   if (!newMessage.trim()) return;
-  //   sendMessage(newMessage.trim());
-  //   setNewMessage("");
-  // };
-
   const handleSendMessage = () => {
     const cleanMessage = newMessage.trim();
     if (!cleanMessage) return;
@@ -65,7 +59,7 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
       onSuccess: () => {
         setIsDeleteModalOpen(false);
         setSelectedMessage(null);
-        notify.success("Mensaje eliminado");
+        //notify.success("Mensaje eliminado");
       },
     });
   };
@@ -86,21 +80,6 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
     }).format(new Date(dateString));
   };
 
-  // Dentro de ChatWindow antes del return
-  const lastTap = useRef(0);
-
-  const handleDoubleTap = (msg) => {
-    const now = Date.now();
-    const DOUBLE_PRESS_DELAY = 300;
-    if (now - lastTap.current < DOUBLE_PRESS_DELAY) {
-      // Es un doble tap
-      if (!msg.deleted_at) {
-        reactToMessage(msg.id, "❤️"); // Reacción por defecto
-      }
-    }
-    lastTap.current = now;
-  };
-
   const handleTouchStart = (msgId) => {
     longPressTimer.current = setTimeout(() => {
       setReactionMessageId(msgId);
@@ -113,7 +92,10 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white transition-colors duration-300">
+    <div 
+    //className="flex flex-col min-h-[700px] bg-white dark:bg-black text-gray-900 dark:text-white transition-colors duration-300 overflow-hidden"
+     className={`flex flex-col min-h-screen bg-white dark:bg-black bg-linear-to-br from-white via-gray-50 to-white text-gray-900 dark:bg-linear-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 dark:text-white transition-colors duration-300 `}
+    >
       {/* HEADER */}
       <div className="flex justify-between items-center gap-5 p-4 md:px-8 md:py-4 bg-white/80 dark:bg-black/80 backdrop-blur-md z-40 border-b border-gray-200 dark:border-zinc-800 sticky top-0 shadow-sm">
         <div className="flex items-center gap-3">
@@ -163,7 +145,7 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
 
       {/* CHAT BODY */}
       <div
-        ref={scrollRef}
+        //ref={scrollRef}
         className="flex-1 overflow-y-auto px-4 py-6 space-y-6 no-scrollbar pb-24"
       >
         {loading && messages.length === 0 ? (
@@ -320,10 +302,10 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
                   {msg.reaction && !isDeleted && (
                     <div
                       className={`absolute -bottom-3 
-      ${isMine ? "-right-2" : "-left-2"} 
-      bg-white dark:bg-zinc-800 border dark:border-zinc-700 
-      rounded-full px-1.5 py-0.5 text-[11px] shadow-md 
-      z-20 animate-in zoom-in duration-300`}
+                        ${isMine ? "-right-2" : "-left-2"} 
+                           g-white dark:bg-zinc-800 border dark:border-zinc-700 
+                           rounded-full px-1.5 py-0.5 text-[11px] shadow-md 
+                           z-20 animate-in zoom-in duration-300`}
                     >
                       {msg.reaction}
                     </div>
@@ -333,17 +315,13 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
             );
           })
         )}
+         <div ref={scrollRef} className="h-2 md:h-4" />
       </div>
 
       {/* INPUT */}
-      <div className="bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 border-t dark:border-zinc-800 z-30">
-        <InputMessage
-          input={newMessage}
-          setInput={setNewMessage}
-          onSubmit={handleSendMessage}
-          sendTypingSignal={sendTypingSignal}
-        />
-      </div>
+      {/* <div className="bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 border-t dark:border-zinc-800 z-30">
+       
+      </div> */}
 
       {/* MOBILE ACTION SHEET (Ahora para todos los mensajes no eliminados) */}
       {isMobile && selectedMessage && (
@@ -402,6 +380,12 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
         message="El contenido del mensaje será reemplazado por un aviso de eliminación."
         isLoading={isDeleting}
       />
+       <InputMessage
+          input={newMessage}
+          setInput={setNewMessage}
+          onSubmit={handleSendMessage}
+          sendTypingSignal={sendTypingSignal}
+        />
     </div>
   );
 };
