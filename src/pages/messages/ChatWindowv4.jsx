@@ -98,7 +98,7 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
   return (
     <div 
     //className="flex flex-col min-h-[700px] bg-white dark:bg-black text-gray-900 dark:text-white transition-colors duration-300 overflow-hidden"
-     className={`flex flex-col min-h-screen bg-white dark:bg-black bg-linear-to-br from-white via-gray-50 to-white text-gray-900 dark:bg-linear-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 dark:text-white transition-colors duration-300 `}
+     className={`flex flex-col min-h-screen bg-white dark:bg-black text-gray-900 d dark:text-white transition-colors duration-300 overflow-y-hidden`}
     >
       {/* HEADER */}
       <div className="flex justify-between items-center gap-5 p-4 md:px-8 md:py-4 bg-white/80 dark:bg-black/80 backdrop-blur-md z-40 border-b border-gray-200 dark:border-zinc-800 sticky top-0 shadow-sm">
@@ -150,8 +150,8 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
       {/* CHAT BODY */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto px-4 py-6 space-y-6 no-scrollbar pb-24"
-      >
+        className="flex-1 overflow-y-auto px-4 sm:py-6 sm:space-y-6 no-scrollbar"
+      >{/**pb-24 */}
         {loading && messages.length === 0 ? (
           <ChatSkeleton />
         ) : (
