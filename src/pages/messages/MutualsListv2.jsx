@@ -1,7 +1,14 @@
 import React, { useState } from "react";
-import { Search, ChevronLeft, HelpCircle } from "lucide-react";
+import {
+  Search,
+  ChevronLeft,
+  HelpCircle,
+  CheckCheck,
+  Check,
+} from "lucide-react";
 import HelperModal from "./HelperModal";
 import { MutualsSkeleton } from "@/components/skeletons/MutualsSkeleton";
+import { useAuth } from "@/context/AuthContext";
 
 const MutualsList = ({
   mutuals,
@@ -12,6 +19,7 @@ const MutualsList = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isHelpOpen, setIsHelpOpen] = useState(false); // Estado para el modal
+  const {user} = useAuth()
 
   const filteredMutuals = mutuals.filter(
     (friend) =>
@@ -79,7 +87,7 @@ const MutualsList = ({
           {filteredMutuals.length > 0 ? (
             filteredMutuals.map((friend) => {
               const isOnline = !!onlineUsers[friend.friend_id];
-              console.log(friend.last_message)
+              console.log(friend.last_message);
               return (
                 <button
                   key={friend.friend_id}
@@ -116,10 +124,29 @@ const MutualsList = ({
 
                     <div className="flex items-center justify-between gap-2">
                       {/* CLAVE 3: El contenedor del mensaje debe ser flex-1 y min-w-0 */}
-                      <div className="flex-1 min-w-0">
+                      {/* <div className="flex-1 min-w-0">
                         <p className="text-sm text-zinc-500 dark:text-zinc-400 line-clamp-1">
-                          {friend.last_message || `Saluda a ${friend.username}`}
+                         {friend.last_message || `Saluda a ${friend.username}`} 
                         </p>
+                      </div> */}
+                      <div className="flex items-center gap-1 text-sm text-zinc-500">
+                        {/* Solo mostramos el check si el último mensaje es MÍO */}
+                        {friend.last_message_sender_id === user.id && (
+                          <span className="shrink-0">
+                            {friend.last_message_is_read ? (
+                              <CheckCheck
+                                size={14}
+                                className="text-cyan-500"
+                              /> // Doble check azul/indigo
+                            ) : (
+                              <Check size={14} className="text-zinc-400" /> // Un solo check gris
+                            )}
+                          </span>
+                        )}
+
+                        <span className="text-sm text-zinc-500 dark:text-zinc-400 line-clamp-1">
+                          {friend.last_message || `Saluda a ${friend.username}`}
+                        </span>
                       </div>
 
                       {/* El badge se mantiene con shrink-0 para que no se aplaste */}

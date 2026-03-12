@@ -44,9 +44,6 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
     }
   }, [messages, isFriendTyping]);
 
-  // useEffect(() => {
-  //   scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  // }, [messages]);
 
   const handleSendMessage = () => {
     const cleanMessage = newMessage.trim();
@@ -98,7 +95,7 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
   return (
     <div 
     //className="flex flex-col min-h-[700px] bg-white dark:bg-black text-gray-900 dark:text-white transition-colors duration-300 overflow-hidden"
-     className={`flex flex-col min-h-screen bg-white dark:bg-black text-gray-900  dark:text-white transition-colors duration-300 `}
+     className={`flex flex-col min-h-screen bg-white dark:bg-black text-gray-900  dark:text-white transition-colors duration-300`}
     >
       {/* HEADER */}
       <div 
@@ -268,7 +265,7 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
                                 (msg.is_read ? (
                                   <CheckCheck
                                     size={13}
-                                    className="text-emerald-500"
+                                    className="text-cyan-500"
                                   />
                                 ) : (
                                   <Check size={13} />
