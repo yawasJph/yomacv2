@@ -44,6 +44,10 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
     }
   }, [messages, isFriendTyping]);
 
+  // useEffect(() => {
+  //   scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  // }, [messages]);
+
   const handleSendMessage = () => {
     const cleanMessage = newMessage.trim();
     if (!cleanMessage) return;
@@ -145,7 +149,7 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
 
       {/* CHAT BODY */}
       <div
-        //ref={scrollRef}
+        ref={scrollRef}
         className="flex-1 overflow-y-auto px-4 py-6 space-y-6 no-scrollbar pb-24"
       >
         {loading && messages.length === 0 ? (
@@ -315,7 +319,7 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
             );
           })
         )}
-         <div ref={scrollRef} className="h-2 md:h-4" />
+         {/* <div ref={scrollRef} className="h-2 md:h-4" /> */}
       </div>
 
       {/* INPUT */}
