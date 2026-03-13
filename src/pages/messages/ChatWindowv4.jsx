@@ -44,7 +44,6 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
     }
   }, [messages, isFriendTyping]);
 
-
   const handleSendMessage = () => {
     const cleanMessage = newMessage.trim();
     if (!cleanMessage) return;
@@ -93,15 +92,14 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
   };
 
   return (
-    <div 
-    //className="flex flex-col min-h-[700px] bg-white dark:bg-black text-gray-900 dark:text-white transition-colors duration-300 overflow-hidden"
-     className={`flex flex-col min-h-screen bg-white dark:bg-black text-gray-900  dark:text-white transition-colors duration-300`}
+    <div
+      //className="flex flex-col min-h-[700px] bg-white dark:bg-black text-gray-900 dark:text-white transition-colors duration-300 overflow-hidden"
+      className={`flex flex-col min-h-screen bg-white dark:bg-black text-gray-900  dark:text-white transition-colors duration-300`}
     >
       {/* HEADER */}
-      <div 
-      // className="flex justify-between items-center gap-5 p-4 md:px-8 md:py-4 bg-white/80 dark:bg-black/80 backdrop-blur-md z-40 border-b border-gray-200 dark:border-zinc-800  shadow-sm"
-       className={`flex items-center gap-5 p-4 md:p-6  backdrop-blur-xl z-40 sticky top-0 border-b border-gray-100 dark:border-neutral-900  bg-white/90 dark:bg-black/90 shadow-sm dark:shadow-gray-900/30 transition-all`}
-      
+      <div
+        // className="flex justify-between items-center gap-5 p-4 md:px-8 md:py-4 bg-white/80 dark:bg-black/80 backdrop-blur-md z-40 border-b border-gray-200 dark:border-zinc-800  shadow-sm"
+        className={`flex items-center gap-5 p-4 md:p-6  backdrop-blur-xl z-40 sticky top-0 border-b border-gray-100 dark:border-neutral-900  bg-white/90 dark:bg-black/90 shadow-sm dark:shadow-gray-900/30 transition-all`}
       >
         <div className="flex items-center gap-3">
           <button
@@ -152,7 +150,8 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
       <div
         ref={scrollRef}
         className="flex-1 overflow-y-auto px-4 sm:py-6 sm:space-y-6 no-scrollbar"
-      >{/**pb-24 */}
+      >
+        {/**pb-24 */}
         {loading && messages.length === 0 ? (
           <ChatSkeleton />
         ) : (
@@ -235,7 +234,7 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
                       onDoubleClick={() =>
                         !isMobile && !isDeleted && reactToMessage(msg.id, "❤️")
                       }
-                      className={`relative ${msg.is_optimistic ? "opacity-70 scale-95" : "opacity-100 scale-100"}  px-4 py-2.5 rounded-2xl text-[14px] md:text-[15px] shadow-sm cursor-pointer transition-all active:scale-[0.98] ${
+                      className={`relative select-none ${msg.is_optimistic ? "opacity-70 scale-95" : "opacity-100 scale-100"}  px-4 py-2.5 rounded-2xl text-[14px] md:text-[15px] shadow-sm cursor-pointer transition-all active:scale-[0.98] ${
                         isDeleted
                           ? "bg-transparent border border-zinc-200 dark:border-zinc-800 text-zinc-400 italic"
                           : isMine
@@ -279,7 +278,10 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
 
                   {/* SELECTOR DE EMOJIS - UI Mejorada */}
                   {reactionMessageId === msg.id && !isDeleted && (
-                    <div className="absolute -top-14 left-1/2 -translate-x-1/2 flex gap-1 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-full shadow-2xl z-50 animate-in fade-in zoom-in slide-in-from-bottom-3 duration-200 ring-1 ring-black/5">
+                    <div
+                      //  className="absolute -top-14 left-1/2 -translate-x-1/2 flex gap-1 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-full shadow-2xl z-50 animate-in fade-in zoom-in slide-in-from-bottom-3 duration-200 ring-1 ring-black/5"
+                      className="absolute -top-14 left-1/2 -translate-x-1/2 flex gap-1 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-full shadow-2xl z-50 animate-in fade-in zoom-in slide-in-from-bottom-3 duration-200 ring-1 ring-black/5"
+                    >
                       {["❤️", "😂", "😮", "🔥", "😢", "👍"].map((emoji) => (
                         <button
                           key={emoji}
@@ -295,10 +297,10 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
                           {emoji}
                         </button>
                       ))}
-                      <div
-                        className="fixed inset-0 z-[-1]"
+                      {/* <div
+                        className="fixed inset-0 z-40"
                         onClick={() => setReactionMessageId(null)}
-                      />
+                      /> */}
                     </div>
                   )}
 
@@ -316,19 +318,24 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
                     </div>
                   )}
                 </div>
+                {reactionMessageId && (
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setReactionMessageId(null)}
+                  />
+                )}
               </React.Fragment>
             );
           })
         )}
-         {/* <div ref={scrollRef} className="h-2 md:h-4" /> */}
       </div>
 
-       <InputMessage
-          input={newMessage}
-          setInput={setNewMessage}
-          onSubmit={handleSendMessage}
-          sendTypingSignal={sendTypingSignal}
-        />
+      <InputMessage
+        input={newMessage}
+        setInput={setNewMessage}
+        onSubmit={handleSendMessage}
+        sendTypingSignal={sendTypingSignal}
+      />
 
       {/* INPUT */}
       {/* <div className="bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 border-t dark:border-zinc-800 z-30">
@@ -392,7 +399,6 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
         message="El contenido del mensaje será reemplazado por un aviso de eliminación."
         isLoading={isDeleting}
       />
-      
     </div>
   );
 };
