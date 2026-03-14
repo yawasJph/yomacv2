@@ -59,6 +59,7 @@ const UserProfile = () => {
       // 3. Refrescar sugerencias y conexiones
       queryClient.invalidateQueries({ queryKey: ["user_suggestions"] });
       queryClient.invalidateQueries({ queryKey: ["connections", userId] });
+      queryClient.invalidateQueries({ queryKey: ["mutuals"] });
     } catch (error) {
       console.error("Error al cambiar estado de seguimiento", error);
     } finally {

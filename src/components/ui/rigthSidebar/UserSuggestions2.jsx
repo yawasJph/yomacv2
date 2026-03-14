@@ -28,6 +28,10 @@ const UserSuggestions = () => {
         queryClient.invalidateQueries({
           queryKey: ["user_suggestions", user?.id],
         });
+        queryClient.invalidateQueries({ queryKey: ["mutuals"] });
+        queryClient.invalidateQueries({ queryKey: ["profile", targetId] });
+        queryClient.invalidateQueries({ queryKey: ["mutuals"] });
+        queryClient.invalidateQueries({ queryKey: ["connections"] });
       }
     } finally {
       setActionId(null);

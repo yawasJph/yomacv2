@@ -55,6 +55,8 @@ const UserSearchCard = ({ profile }) => {
 
       // 3. Invalida el perfil específico del usuario al que acabamos de seguir/dejar de seguir
       queryClient.invalidateQueries({ queryKey: ["profile", profile.id] });
+
+      queryClient.invalidateQueries({ queryKey: ["mutuals"] });
     } catch (error) {
       console.error("Error en la acción de seguimiento:", error);
     } finally {

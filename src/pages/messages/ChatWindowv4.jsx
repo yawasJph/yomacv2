@@ -6,6 +6,8 @@ import {
   MoreHorizontal,
   Check,
   CheckCheck,
+  ShieldAlert,
+  User,
 } from "lucide-react";
 import { notify } from "@/utils/toast/notifyv3";
 import ConfirmModal from "@/components/modals/ConfirmModalv2";
@@ -13,6 +15,9 @@ import { InputMessage } from "./InputMessage";
 import { ChatSkeleton } from "@/components/skeletons/ChatSkeleton";
 import { HeaderSkeleton } from "@/components/skeletons/HeaderSkeletonChat";
 import { useChat } from "@/hooks/messages/useChatv2";
+import { useNavigate } from "react-router-dom";
+import { useFollow } from "@/context/FollowContext";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
   const scrollRef = useRef(null);
@@ -20,7 +25,19 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [reactionMessageId, setReactionMessageId] = useState(null);
+  const [showMenu, setShowMenu] = useState(false);
   const longPressTimer = useRef(null);
+  const navigate = useNavigate();
+  const { unfollowUser, loading: unFollowLoading } = useFollow();
+  const [isBlockConfirmOpen, setIsBlockConfirmOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const { data: mutuals } = useQuery({ queryKey: ["mutuals", user.id] });
+
+  console.log(mutuals);
+
+  function goToProfile(id) {
+    navigate(`/profile/${id}`);
+  }
 
   const {
     messages,
@@ -35,14 +52,18 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
 
   const isFriendOnline = !!onlineUsers[activeChat.friend_id];
 
+  // useEffect(() => {
+  //   if (scrollRef.current) {
+  //     scrollRef.current.scrollTo({
+  //       top: scrollRef.current.scrollHeight,
+  //       behavior: "smooth",
+  //     });
+  //   }
+  // }, [messages, isFriendTyping]);
+
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTo({
-        top: scrollRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  }, [messages, isFriendTyping]);
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const handleSendMessage = () => {
     const cleanMessage = newMessage.trim();
@@ -90,6 +111,42 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
   const handleTouchEnd = () => {
     if (longPressTimer.current) clearTimeout(longPressTimer.current);
   };
+
+  const handleBlockUser = async (targetUserId) => {
+    try {
+      // 1. Ejecutar el unfollow
+      await unfollowUser(targetUserId);
+
+      // 2. Invalidad queries (Sincronización masiva)
+      // Esto refrescará todo lo relacionado al perfil y los mutuals en background
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["mutuals"] });
+      queryClient.invalidateQueries({ queryKey: ["user_suggestions"] });
+      queryClient.invalidateQueries({ queryKey: ["connections"] });
+
+      // 3. Salir del chat ANTES de mostrar el mensaje de éxito para evitar parpadeos
+      setIsBlockConfirmOpen(false);
+      onBack();
+      notify.success("Usuario bloqueado y eliminado de tus mutuals");
+    } catch (error) {
+      console.error("Error al bloquear:", error);
+      notify.error("No se pudo completar la acción");
+    }
+  };
+
+  useEffect(() => {
+    if (!loading && mutuals) {
+      // Verificamos si el amigo del chat activo sigue estando en la lista de mutuals
+      const stillMutual = mutuals.some(
+        (m) => m.friend_id === activeChat.friend_id,
+      );
+
+      if (!stillMutual) {
+        notify.error("Esta conversación ya no está disponible");
+        onBack(); // Cerramos el chat automáticamente
+      }
+    }
+  }, [mutuals, activeChat.friend_id, loading, onBack]);
 
   return (
     <div
@@ -141,6 +198,28 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
                   )}
                 </span>
               </div>
+            </div>
+          )}
+        </div>
+        {/* BOTÓN MÁS OPCIONES */}
+        <div className="relative ml-auto">
+          <button
+            onClick={() => setShowMenu(!showMenu)}
+            className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-full transition-all active:scale-95 text-zinc-400"
+          >
+            <MoreHorizontal size={22} />
+          </button>
+
+          {/* DROPDOWN DESKTOP */}
+          {!isMobile && showMenu && (
+            <div className="absolute top-12 right-0 w-56 bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-gray-100 dark:border-zinc-800 p-2 z-60 animate-in fade-in zoom-in-95 origin-top-right">
+              <MenuContent
+                goToProfile={goToProfile}
+                mutualId={activeChat.friend_id}
+                setShowMenu={setShowMenu}
+                setIsBlockConfirmOpen={setIsBlockConfirmOpen}
+                unFollowLoading={unFollowLoading}
+              />
             </div>
           )}
         </div>
@@ -251,10 +330,6 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
                           <p className="leading-relaxed whitespace-pre-wrap wrap-break-word">
                             {msg.content}
                           </p>
-                          {/* <p className={`leading-relaxed whitespace-pre-wrap wrap-break-word ${isMine ? "pr-12" : "pr-4"}`}>
-                             {msg.content}
-                          </p> */}
-
                           {!isDeleted && (
                             <div
                               className={`flex items-center gap-1.5 mt-1 px-1 text-[10px] text-zinc-400 font-medium ${isMine ? "justify-end" : "justify-start"}`}
@@ -278,10 +353,7 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
 
                   {/* SELECTOR DE EMOJIS - UI Mejorada */}
                   {reactionMessageId === msg.id && !isDeleted && (
-                    <div
-                      //  className="absolute -top-14 left-1/2 -translate-x-1/2 flex gap-1 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-full shadow-2xl z-50 animate-in fade-in zoom-in slide-in-from-bottom-3 duration-200 ring-1 ring-black/5"
-                      className="absolute -top-14 left-1/2 -translate-x-1/2 flex gap-1 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-full shadow-2xl z-50 animate-in fade-in zoom-in slide-in-from-bottom-3 duration-200 ring-1 ring-black/5"
-                    >
+                    <div className="absolute -top-14 left-1/2 -translate-x-1/2 flex gap-1 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 p-1.5 rounded-full shadow-2xl z-50 animate-in fade-in zoom-in slide-in-from-bottom-3 duration-200 ring-1 ring-black/5">
                       {["❤️", "😂", "😮", "🔥", "😢", "👍"].map((emoji) => (
                         <button
                           key={emoji}
@@ -337,11 +409,6 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
         sendTypingSignal={sendTypingSignal}
       />
 
-      {/* INPUT */}
-      {/* <div className="bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 border-t dark:border-zinc-800 z-30">
-       
-      </div> */}
-
       {/* MOBILE ACTION SHEET (Ahora para todos los mensajes no eliminados) */}
       {isMobile && selectedMessage && (
         <div className="fixed inset-0 z-100 flex items-end justify-center">
@@ -388,6 +455,32 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
         </div>
       )}
 
+      {/* SHEET MOBILE */}
+      {isMobile && showMenu && (
+        <div className="fixed inset-0 z-100 flex items-end">
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setShowMenu(false)}
+          />
+          <div className="relative w-full bg-white dark:bg-zinc-950 rounded-t-4xl p-6 pb-10 shadow-2xl animate-in slide-in-from-bottom duration-300">
+            <div className="w-12 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full mx-auto mb-6" />
+            <MenuContent
+              goToProfile={goToProfile}
+              mutualId={activeChat.friend_id}
+              setShowMenu={setShowMenu}
+              setIsBlockConfirmOpen={setIsBlockConfirmOpen}
+              unFollowLoading={unFollowLoading}
+            />
+            <button
+              onClick={() => setShowMenu(false)}
+              className="w-full mt-4 p-2 text-zinc-400 font-bold text-sm"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
+
       <ConfirmModal
         isOpen={isDeleteModalOpen}
         onClose={() => {
@@ -399,8 +492,65 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
         message="El contenido del mensaje será reemplazado por un aviso de eliminación."
         isLoading={isDeleting}
       />
+
+      <ConfirmModal
+        isOpen={isBlockConfirmOpen}
+        onClose={() => {
+          setIsBlockConfirmOpen(false);
+        }}
+        onConfirm={() => handleBlockUser(activeChat.friend_id)}
+        title="¿Bloquear a este usuario?"
+        message="Se borrara de tu lista de seguidos."
+        isLoading={unFollowLoading}
+      />
     </div>
   );
 };
+
+const MenuContent = ({
+  goToProfile,
+  mutualId,
+  setShowMenu,
+  setIsBlockConfirmOpen,
+  unFollowLoading
+}) => (
+  <div className="space-y-1">
+    <button
+      onClick={() => {
+        goToProfile(mutualId);
+        setShowMenu(false);
+      }}
+      className="w-full flex items-center gap-3 p-3 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 rounded-xl transition-colors text-zinc-700 dark:text-zinc-200"
+    >
+      <User size={18} className="text-zinc-400" />
+      <span className="font-semibold text-sm">Ver perfil</span>
+    </button>
+
+    <button
+      onClick={() => {
+        setShowMenu(false);
+        setIsBlockConfirmOpen(true); // Abrimos el modal de confirmación
+      }}
+      // className="w-full flex items-center gap-3 p-3 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors text-red-500"
+      className={`w-full flex items-center gap-3 p-3 rounded-xl transition-colors ${
+        unFollowLoading
+          ? "opacity-50 cursor-not-allowed"
+          : "hover:bg-red-50 dark:hover:bg-red-500/10 text-red-500"
+      }`}
+      disabled={unFollowLoading}
+    >
+      <ShieldAlert size={18} />
+      <div className="text-left">
+        {/* <span className="font-semibold text-sm block">Bloquear usuario</span>
+        <span className="text-[10px] opacity-70 block">
+          Se eliminará de tus mutuals
+        </span> */}
+        <span className="font-semibold text-sm">
+          {unFollowLoading ? "Bloqueando..." : "Bloquear usuario"}
+        </span>
+      </div>
+    </button>
+  </div>
+);
 
 export default ChatWindow;

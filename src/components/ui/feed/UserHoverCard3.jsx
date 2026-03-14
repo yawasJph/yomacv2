@@ -45,6 +45,7 @@ export default function UserHoverCard({ user, children }) {
         queryKey: ["user_suggestions", currentUser?.id],
       });
       queryClient.invalidateQueries({ queryKey: ["connections", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["mutuals"] });
     } finally {
       setIsLoadingAction(false);
     }
