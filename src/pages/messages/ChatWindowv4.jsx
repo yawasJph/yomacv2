@@ -33,8 +33,6 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
   const queryClient = useQueryClient();
   const { data: mutuals } = useQuery({ queryKey: ["mutuals", user.id] });
 
-  console.log(mutuals);
-
   function goToProfile(id) {
     navigate(`/profile/${id}`);
   }
