@@ -30,7 +30,7 @@ const UserAvatar = () => {
       >
         <div className="relative">
           <img
-            src={optimizeMedia(profile?.avatar,"image")|| "/default-avatar.jpg"}
+            src={profile?.avatar || "/default-avatar.jpg"}
             alt={user.user_metadata.full_name}
             className="w-9 h-9 rounded-xl border-2 border-emerald-400/50 shadow-sm"
           />
