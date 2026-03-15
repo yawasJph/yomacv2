@@ -22,30 +22,75 @@ const CustomVideoPlayer = ({ src, autoPlay = true }) => {
   const containerRef = useRef(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const toggleFullscreen = () => {
+  //   const toggleFullscreen = () => {
+  //     const element = containerRef.current;
+
+  //     if (!document.fullscreenElement) {
+  //       if (element.requestFullscreen) element.requestFullscreen();
+  //       else if (videoRef.current?.webkitEnterFullscreen) {
+  //         videoRef.current.webkitEnterFullscreen();
+  //       }
+  //     } else {
+  //       document.exitFullscreen?.();
+  //     }
+  //   };
+
+  const toggleFullscreen = async (e) => {
+    e?.stopPropagation();
+
     const element = containerRef.current;
 
-    if (!document.fullscreenElement) {
-      if (element.requestFullscreen) element.requestFullscreen();
-      else if (videoRef.current?.webkitEnterFullscreen) {
-        videoRef.current.webkitEnterFullscreen();
+    try {
+      if (!document.fullscreenElement) {
+        await element.requestFullscreen?.();
+
+        // Bloquear orientación en móvil
+        if (screen.orientation?.lock) {
+          await screen.orientation.lock("landscape");
+        }
+
+        setIsFullscreen(true);
+      } else {
+        await document.exitFullscreen?.();
+
+        if (screen.orientation?.unlock) {
+          screen.orientation.unlock();
+        }
+
+        setIsFullscreen(false);
       }
-    } else {
-      document.exitFullscreen?.();
+    } catch (err) {
+      console.warn("Fullscreen/orientation error:", err);
     }
   };
 
   useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
+  const handleFullscreenChange = () => {
+    const isFs = !!document.fullscreenElement;
+    setIsFullscreen(isFs);
 
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    if (!isFs && screen.orientation?.unlock) {
+      screen.orientation.unlock();
+    }
+  };
 
-    return () => {
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-    };
-  }, []);
+  document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+  return () =>
+    document.removeEventListener("fullscreenchange", handleFullscreenChange);
+}, []);
+
+//   useEffect(() => {
+//     const handleFullscreenChange = () => {
+//       setIsFullscreen(!!document.fullscreenElement);
+//     };
+
+//     document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+//     return () => {
+//       document.removeEventListener("fullscreenchange", handleFullscreenChange);
+//     };
+//   }, []);
 
   // Formatear tiempo (segundos a mm:ss)
   const formatTime = (seconds) => {
