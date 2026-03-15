@@ -1,5 +1,12 @@
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
-import { ChevronLeft, ChevronRight, X, Play, Pause, Volume2, VolumeX } from "lucide-react";
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Maximize,
+  Minimize,
+} from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
 
 // Componente VideoPlayer personalizado
@@ -13,6 +20,32 @@ const CustomVideoPlayer = ({ src, autoPlay = true }) => {
   const [isDragging, setIsDragging] = useState(false);
   const controlsTimeoutRef = useRef(null);
   const containerRef = useRef(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = () => {
+    const element = containerRef.current;
+
+    if (!document.fullscreenElement) {
+      if (element.requestFullscreen) element.requestFullscreen();
+      else if (videoRef.current?.webkitEnterFullscreen) {
+        videoRef.current.webkitEnterFullscreen();
+      }
+    } else {
+      document.exitFullscreen?.();
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
 
   // Formatear tiempo (segundos a mm:ss)
   const formatTime = (seconds) => {
@@ -154,20 +187,24 @@ const CustomVideoPlayer = ({ src, autoPlay = true }) => {
       onMouseMove={handleMouseMove}
       onMouseLeave={() => isPlaying && setShowControls(false)}
       onTouchStart={handleTouchStart}
+      onDoubleClick={toggleFullscreen}
     >
       {/* Video */}
       <video
         ref={videoRef}
         //src={src}
         src={optimizeMedia(src)}
-        className="w-full h-full max-w-full max-h-[90vh] rounded-xl shadow-2xl object-contain"
+        //className="w-full h-full max-w-full max-h-[90vh] rounded-xl shadow-2xl object-contain"
+        className={`w-full h-full object-contain ${
+          isFullscreen ? "max-h-screen rounded-none" : "max-h-[90vh] rounded-xl"
+        }`}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={() => setIsPlaying(false)}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         playsInline
-        onContextMenu={e => e.preventDefault()}
+        onContextMenu={(e) => e.preventDefault()}
       />
 
       {/* Overlay para play/pause en el centro - Solo visible cuando está pausado o controles visibles */}
@@ -193,11 +230,13 @@ const CustomVideoPlayer = ({ src, autoPlay = true }) => {
       {/* Controles inferiores */}
       <div
         className={`absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/95 via-black/70 to-transparent p-3 sm:p-4 rounded-b-xl transition-all duration-300 ${
-          showControls ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"
+          showControls
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-2 pointer-events-none"
         }`}
       >
         {/* Barra de progreso */}
-        <div 
+        <div
           className="relative w-full h-1.5 sm:h-1 bg-white/20 rounded-full mb-3 group/progress cursor-pointer"
           onClick={(e) => {
             // Permitir click directo en la barra
@@ -231,17 +270,16 @@ const CustomVideoPlayer = ({ src, autoPlay = true }) => {
           {/* Thumb visible al hover/touch */}
           <div
             className="absolute top-1/2 -translate-y-1/2 w-3 h-3 sm:w-3 sm:h-3 bg-blue-500 rounded-full opacity-0 group-hover/progress:opacity-100 transition-opacity shadow-lg pointer-events-none"
-            style={{ 
-              left: `${progress}%`, 
+            style={{
+              left: `${progress}%`,
               transform: "translate(-50%, -50%)",
-              opacity: isDragging ? 1 : undefined
+              opacity: isDragging ? 1 : undefined,
             }}
           />
         </div>
 
         {/* Controles inferiores */}
         <div className="flex items-center justify-between text-white">
-          {/* Play/Pause y Mute */}
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={togglePlay}
@@ -264,12 +302,41 @@ const CustomVideoPlayer = ({ src, autoPlay = true }) => {
               )}
             </button>
           </div>
-
-          {/* Tiempo */}
-          <div className="text-xs sm:text-sm font-medium tabular-nums bg-black/30 px-2 py-1 rounded">
-            {formatTime(currentTime)} / {formatTime(duration)}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="text-xs sm:text-sm font-medium tabular-nums bg-black/30 px-2 py-1 rounded">
+              {formatTime(currentTime)} / {formatTime(duration)}
+            </div>
+            {/* FULLSCREEN */}
+            <button
+              onClick={toggleFullscreen}
+              className="hover:bg-white/10 active:bg-white/20 p-2 rounded-full transition"
+            >
+              {isFullscreen ? <Minimize size={22} /> : <Maximize size={22} />}
+            </button>
           </div>
         </div>
+
+        {/* <div className="flex items-center gap-2 sm:gap-3">
+          <button
+            onClick={togglePlay}
+            className="hover:bg-white/10 active:bg-white/20 p-2 rounded-full transition"
+          >
+            {isPlaying ? <Pause size={22} /> : <Play size={22} />}
+          </button>
+
+          <button
+            onClick={toggleMute}
+            className="hover:bg-white/10 active:bg-white/20 p-2 rounded-full transition"
+          >
+            {isMuted ? <VolumeX size={22} /> : <Volume2 size={22} />}
+          </button>
+          <button
+            onClick={toggleFullscreen}
+            className="hover:bg-white/10 active:bg-white/20 p-2 rounded-full transition"
+          >
+            {isFullscreen ? <Minimize size={22} /> : <Maximize size={22} />}
+          </button>
+        </div> */}
       </div>
     </div>
   );

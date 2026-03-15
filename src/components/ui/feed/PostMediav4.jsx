@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 import { useInView } from "react-intersection-observer";
 import UniversalFeedVideo from "./FeedVideov4";
+import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 const PostMedia = ({ media = [], onOpen }) => {
   const isMobile = useIsMobile();
@@ -74,14 +75,18 @@ const PostMedia = ({ media = [], onOpen }) => {
               shouldPlay={hasEntered && activeVideoIndex === index}
               onEnded={handleVideoEnd}
               onClick={() => handleOpenModal(index)}
+              
             />
           ) : (
             <img
-              src={item.media_url}
+              //src={item.media_url}
+              src={optimizeMedia(item.media_url)}
               loading="lazy"
               decoding="async"
               className="absolute inset-0 w-full h-full object-cover cursor-pointer"
               onClick={() => handleOpenModal(index)}
+              onContextMenu={e => e.preventDefault()}
+              onDragStart={(e) => e.preventDefault()}
             />
           )}
         </div>

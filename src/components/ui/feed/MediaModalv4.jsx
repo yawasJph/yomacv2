@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
-import CustomVideoPlayer from "./CustomVideoPlayerv2";
+import CustomVideoPlayer from "./CustomVideoPlayerv3";
+import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 // Componente MediaModal mejorado
 const MediaModal = ({ media, closeModal, initialIndex }) => {
@@ -130,10 +131,12 @@ const MediaModal = ({ media, closeModal, initialIndex }) => {
             <CustomVideoPlayer src={currentItem.media_url} />
           ) : (
             <img
-              src={currentItem.media_url} // Soporte para diferentes formatos de mediaItem  
+              //src={currentItem.media_url} // Soporte para diferentes formatos de mediaItem  
+              src={optimizeMedia(currentItem.media_url)}
               className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl animate-scaleIn"
               alt="Media"
               draggable={false}
+              onContextMenu={e => e.preventDefault()}
             />
           )}
         </div>
