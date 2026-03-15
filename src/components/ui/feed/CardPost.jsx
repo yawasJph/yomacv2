@@ -29,6 +29,7 @@ import RepostButton from "../RepostButton";
 import UserHoverCard from "./UserHoverCard3";
 import useLiveTimeAgo from "@/hooks/useLiveTimeAgo";
 import { notify } from "@/utils/toast/notifyv3";
+import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -154,14 +155,14 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
         <div onClick={(e) => e.stopPropagation()}>
           {isMe ? (
             <img
-              src={post.profiles.avatar || "/default-avatar.jpg"}
+              src={optimizeMedia(post.profiles.avatar, "image") || "/default-avatar.jpg"}
               alt="avatar"
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
             />
           ) : (
             <Link to={`/profile/${post.profiles.id}`}>
               <img
-                src={post.profiles.avatar || "/default-avatar.jpg"}
+                src={optimizeMedia(post.profiles.avatar, "image") || "/default-avatar.jpg"}
                 alt="avatar"
                 className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
               />

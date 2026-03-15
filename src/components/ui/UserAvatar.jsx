@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useProfile } from "../../hooks/useProfile";
+import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 const UserAvatar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -29,7 +30,7 @@ const UserAvatar = () => {
       >
         <div className="relative">
           <img
-            src={profile?.avatar || "/default-avatar.jpg"}
+            src={optimizeMedia(profile?.avatar,"image")|| "/default-avatar.jpg"}
             alt={user.user_metadata.full_name}
             className="w-9 h-9 rounded-xl border-2 border-emerald-400/50 shadow-sm"
           />

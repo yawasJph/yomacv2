@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthAction } from "@/hooks/useAuthAction";
+import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 const UserSearchCard = ({ profile }) => {
   const { user: currentUser } = useAuth();
@@ -89,7 +90,7 @@ const UserSearchCard = ({ profile }) => {
       <div className="flex items-center gap-3 min-w-0 flex-1">
         {renderLink(
           <img
-            src={profile.avatar || "/default-avatar.jpg"}
+            src={optimizeMedia(profile.avatar,"image") || "/default-avatar.jpg"}
             alt={profile.full_name}
             className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border border-emerald-500/10 bg-gray-200 dark:bg-gray-700 transition-transform hover:scale-105"
           />

@@ -19,6 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useAuthAction } from "../../hooks/useAuthAction";
 import { usePostsInfiniteQuery } from "@/hooks/posts/usePostsInfiniteQueryv3";
 import SkeletonPost from "../skeletons/SkeletonPost";
+import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 const UserProfile = () => {
   const { userId } = useParams();
@@ -96,7 +97,8 @@ const UserProfile = () => {
   const following = isFollowing(userId);
 
   if (profileLoading) return <UserProfileSkeleton />;
-
+  const opt = optimizeMedia(profile.avatar, "image")
+    console.log("opt", opt)
   return (
     <div className="min-h-screen bg-white dark:bg-black pb-10">
       {/* min-h-screen */}
@@ -129,7 +131,7 @@ const UserProfile = () => {
         >
           {profile?.cover && (
             <img
-              src={profile.cover}
+              src={optimizeMedia(profile.cover, "image")}
               alt="Cover"
               className="w-full h-full object-cover"
             />
@@ -138,7 +140,7 @@ const UserProfile = () => {
 
         <div className="absolute bottom-3 sm:bottom-0 left-4">
           <img
-            src={profile?.avatar || "/default-avatar.jpg"}
+            src={optimizeMedia(profile?.avatar,"image" )|| "/default-avatar.jpg"}
             className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white dark:border-black object-cover"
             alt={profile?.full_name}
             onClick={() => profile?.avatar && setSelectedImg(profile.avatar)}

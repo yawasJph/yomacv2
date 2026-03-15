@@ -20,6 +20,7 @@ import ReportModal from "./ReportModalv6";
 import RenderTextWithLinks from "../utils/RenderTextWithLinks";
 import { useAuthAction } from "../../hooks/useAuthAction";
 import { notify } from "@/utils/toast/notifyv3";
+import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 
 const CommentItem = ({ comment, postId, isDetailedView = false }) => {
@@ -131,13 +132,13 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
         )}
         {isMe ? (
           <img
-            src={comment.profiles.avatar}
+            src={optimizeMedia(comment.profiles.avatar,"image")}
             className="w-10 h-10 rounded-full object-cover shrink-0 z-10"
           />
         ) : (
           <Link to={`/profile/${comment.profiles.id}`}>
             <img
-              src={comment.profiles.avatar}
+              src={optimizeMedia(comment.profiles.avatar,"image")}
               className="w-10 h-10 rounded-full object-cover shrink-0 z-10"
             />
           </Link>

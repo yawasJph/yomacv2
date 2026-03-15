@@ -18,6 +18,7 @@ import { useChat } from "@/hooks/messages/useChatv2";
 import { useNavigate } from "react-router-dom";
 import { useFollow } from "@/context/FollowContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 // ─── Constantes fuera del componente para evitar recreación ───────────────────
 const EMOJIS = ["❤️", "😂", "😮", "🔥", "😢", "👍"];
@@ -72,7 +73,7 @@ const ChatHeader = React.memo(({
         <div className="flex items-center gap-3">
           <div className="relative">
             <img
-              src={activeChat.avatar || "/default-avatar.png"}
+              src={optimizeMedia(activeChat.avatar,"image") || "/default-avatar.png"}
               className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100 dark:ring-zinc-800"
               alt={activeChat.full_name}
             />

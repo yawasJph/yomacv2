@@ -6,7 +6,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import { Play, Pause, Volume2, VolumeX } from "lucide-react";
+import { Play } from "lucide-react";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 const UniversalFeedVideo = forwardRef(
@@ -114,7 +114,7 @@ const UniversalFeedVideo = forwardRef(
         video.removeEventListener("pause", handlePause);
       };
     }, []);
-
+    
     return (
       <div
         ref={containerRef}

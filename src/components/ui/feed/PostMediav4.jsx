@@ -62,7 +62,6 @@ const PostMedia = ({ media = [], onOpen }) => {
   const renderItem = useCallback(
     (item, index, ratioClass = "aspect-[6/4]") => {
       const isVideo = item.media_type === "video";
-
       return (
         <div
           className={`relative w-full overflow-hidden rounded-xl bg-muted ${ratioClass} transition-transform duration-300 hover:scale-[1.02]`}
@@ -70,7 +69,7 @@ const PostMedia = ({ media = [], onOpen }) => {
           {isVideo ? (
             <UniversalFeedVideo
               ref={(el) => (videoRefs.current[index] = el)}
-              src={item.media_url}
+              src={optimizeMedia(item.media_url, item.media_type)}
               className="absolute inset-0 w-full h-full object-cover"
               shouldPlay={hasEntered && activeVideoIndex === index}
               onEnded={handleVideoEnd}
@@ -80,7 +79,7 @@ const PostMedia = ({ media = [], onOpen }) => {
           ) : (
             <img
               //src={item.media_url}
-              src={optimizeMedia(item.media_url)}
+              src={optimizeMedia(item.media_url, item.media_type)}
               loading="lazy"
               decoding="async"
               className="absolute inset-0 w-full h-full object-cover cursor-pointer"

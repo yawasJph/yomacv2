@@ -1,3 +1,4 @@
+import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 import { X} from "lucide-react";
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -30,7 +31,7 @@ const ImageModal = ({ src, onClose }) => {
         onClick={(e) => e.stopPropagation()} // Evita cerrar al hacer clic en la imagen
       >
         <img 
-          src={src} 
+          src={optimizeMedia(src)} 
           alt="Full size view" 
           className="rounded-lg shadow-2xl object-contain max-w-full max-h-full"
         />

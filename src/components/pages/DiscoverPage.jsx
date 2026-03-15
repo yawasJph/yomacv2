@@ -6,6 +6,15 @@ import UserSearchCard from "@/components/ui/users/UserSearchCardv2";
 import { UserItemSkeleton } from "../skeletons/UserSearchCardSkleton";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
+const tabs = [
+    { id: "TODOS", label: "Todos" },
+    { id: "D.S.I.", label: "D.S.I." },
+    { id: "E.T.", label: "E.T." },
+    { id: "I.A.B.", label: "I.A.B." },
+  ];
+
+  const ciclos = ["I", "II", "III", "IV", "V", "VI"];
+
 const DiscoverPage = () => {
   const [activeTab, setActiveTab] = useState("TODOS");
   const [selectedCiclo, setSelectedCiclo] = useState("");
@@ -26,15 +35,6 @@ const DiscoverPage = () => {
     selectedCiclo,
     searchTerm: debouncedSearch,
   });
-
-  const tabs = [
-    { id: "TODOS", label: "Todos" },
-    { id: "D.S.I.", label: "D.S.I." },
-    { id: "E.T.", label: "E.T." },
-    { id: "I.A.B.", label: "I.A.B." },
-  ];
-
-  const ciclos = ["I", "II", "III", "IV", "V", "VI"];
 
   return (
     <div className="bg-white dark:bg-black">

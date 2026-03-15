@@ -17,6 +17,7 @@ import UserCredits from "../games/UserCredits";
 import Logo from "../ui/Logo";
 import NotificationIcon from "../ui/NotificationIcon";
 import Drawer from "../ui/users/Drawer";
+import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 const HeaderM = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -91,7 +92,7 @@ const HeaderM = () => {
                 className="ml-1 active:scale-90 transition-transform"
               >
                 <img
-                  src={profile?.avatar || "/default-avatar.jpg"}
+                  src={optimizeMedia(profile?.avatar,"image") || "/default-avatar.jpg"}
                   className={`w-9 h-9 rounded-xl object-cover border-2 border-emerald-500/50 shadow-sm `}
                   alt="Menu"
                 />

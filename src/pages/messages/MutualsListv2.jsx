@@ -9,6 +9,7 @@ import {
 import HelperModal from "./HelperModal";
 import { MutualsSkeleton } from "@/components/skeletons/MutualsSkeleton";
 import { useAuth } from "@/context/AuthContext";
+import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 const MutualsList = ({
   mutuals,
@@ -97,7 +98,7 @@ const MutualsList = ({
                 >
                   <div className="relative shrink-0">
                     <img
-                      src={friend.avatar || "/default-avatar.png"}
+                      src={optimizeMedia(friend.avatar, "image")|| "/default-avatar.png"}
                       className="w-14 h-14 rounded-full object-cover border dark:border-zinc-800"
                       alt={friend.full_name}
                     />

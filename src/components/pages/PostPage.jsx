@@ -13,6 +13,7 @@ import CommentItem from "../ui/CommentItem";
 import { useAuthAction } from "../../hooks/useAuthAction";
 import { notify } from "@/utils/toast/notifyv3";
 import EmojiSelector from "../emoji/EmojiSelector";
+import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 const MAX_CHARS = 500;
 
@@ -146,7 +147,7 @@ const PostPage = () => {
           <form onSubmit={handleSendComment}>
             <div className="flex gap-3">
               <img
-                src={data?.avatar}
+                src={optimizeMedia(data?.avatar, "image")}
                 className="w-10 h-10 rounded-full object-cover"
               />
               <div className="flex-1">

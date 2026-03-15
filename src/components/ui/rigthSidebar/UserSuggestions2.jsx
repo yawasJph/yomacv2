@@ -6,6 +6,7 @@ import { useUserSuggestions } from "../../../hooks/useUserSuggestions";
 import { useQueryClient } from "@tanstack/react-query";
 import SuggestionSkeleton from "../../skeletons/SuggestionSkeleton";
 import { Link } from "react-router-dom";
+import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 const UserSuggestions = () => {
   const { user } = useAuth();
@@ -64,7 +65,7 @@ const UserSuggestions = () => {
                 <div className="flex items-center gap-2 min-w-0 flex-1">
                   <Link to={`/profile/${profile.id}`}>
                     <img
-                      src={profile.avatar || "/default-avatar.jpg"}
+                      src={optimizeMedia(profile.avatar, "media")|| "/default-avatar.jpg"}
                       className="w-10 h-10 rounded-full object-cover border border-emerald-500/10"
                       alt=""
                     />

@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuthAction } from "../../../hooks/useAuthAction";
 import { useProfile } from "../../../hooks/useProfile"; // 👈 Importamos tu hook de caché
 import { useQueryClient } from "@tanstack/react-query";
+import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 export default function UserHoverCard({ user, children }) {
   const [open, setOpen] = useState(false);
@@ -78,7 +79,7 @@ export default function UserHoverCard({ user, children }) {
             <div className="relative">
               <Link to={`/profile/${user.id}`}>
                 <img
-                  src={user.avatar || "/default-avatar.jpg"}
+                  src={optimizeMedia(user.avatar, "image") || "/default-avatar.jpg"}
                   alt={user.full_name}
                   className="w-14 h-14 rounded-full object-cover border-2 border-emerald-500/10 shrink-0"
                 />

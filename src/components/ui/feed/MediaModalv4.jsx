@@ -104,7 +104,6 @@ const MediaModal = ({ media, closeModal, initialIndex }) => {
 
   const currentItem = media[currentIndex];
 
-  console.log("MediaModal Rendered with media:", media, "Current Index:", currentIndex);
   return (
     <div
       className="fixed inset-0 bg-black/97 backdrop-blur-md flex justify-center items-center z-9999 animate-fadeIn"
@@ -128,11 +127,11 @@ const MediaModal = ({ media, closeModal, initialIndex }) => {
         >
           {/* Renderizado dinámico según el tipo */}
           {currentItem.media_type === "video" ? (
-            <CustomVideoPlayer src={currentItem.media_url} />
+            <CustomVideoPlayer src={optimizeMedia(currentItem.media_url, currentItem.media_type)} />
           ) : (
             <img
               //src={currentItem.media_url} // Soporte para diferentes formatos de mediaItem  
-              src={optimizeMedia(currentItem.media_url)}
+              src={optimizeMedia(currentItem.media_url, currentItem.media_type)}
               className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl animate-scaleIn"
               alt="Media"
               draggable={false}

@@ -237,8 +237,7 @@ const CustomVideoPlayer = ({ src, autoPlay = true }) => {
       {/* Video */}
       <video
         ref={videoRef}
-        //src={src}
-        src={optimizeMedia(src)}
+        src={src}
         //className="w-full h-full max-w-full max-h-[90vh] rounded-xl shadow-2xl object-contain"
         className={`w-full h-full object-contain ${
           isFullscreen ? "max-h-screen rounded-none" : "max-h-[90vh] rounded-xl"
