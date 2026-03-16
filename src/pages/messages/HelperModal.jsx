@@ -56,10 +56,10 @@ const HelperModal = ({ onClose }) => {
 
           <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed text-[15px] px-2">
             Para proteger tu privacidad, en{" "}
-            <span className="text-indigo-600 font-bold">YoMAC</span> solo puedes
-            chatear con personas que{" "}
+            <span className="text-indigo-600 font-bold">YoMAC</span> solo pueden
+            chatear las personas que{" "}
             <span className="font-bold underline decoration-indigo-500">
-              te siguen y tú también sigues
+              se siguen mutuamente
             </span>
             .
           </p>

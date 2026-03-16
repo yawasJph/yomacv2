@@ -100,6 +100,7 @@ export default function UserHoverCard({ user, children }) {
                 src={user.avatar || "/default-avatar.jpg"}
                 alt={user.full_name}
                 className="w-14 h-14 rounded-full object-cover border-2 border-emerald-500/10 shrink-0"
+                loading="lazy"
               />
             </Link>
              

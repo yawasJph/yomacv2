@@ -149,6 +149,7 @@ const PostPage = () => {
               <img
                 src={optimizeMedia(data?.avatar, "image")}
                 className="w-10 h-10 rounded-full object-cover"
+                loading="lazy"
               />
               <div className="flex-1">
                 <textarea

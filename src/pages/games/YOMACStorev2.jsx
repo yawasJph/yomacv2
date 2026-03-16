@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 // ... (mismos imports de iconos)
 import {
   ShoppingBag,
-  Check,
   Sparkles,
   Image as ImageIcon,
   Gift,
@@ -18,6 +17,7 @@ import { useProfile } from "../../hooks/useProfile";
 import { useNavigate } from "react-router-dom";
 import StoreSkeleton from "../../components/skeletons/StoreSkeleton";
 import { WalletSkeleton } from "@/components/skeletons/WalletSkeleton";
+import { supabaseClient } from "@/supabase/supabaseClient";
 
 // 1. Sub-componente Memoizado para las tarjetas
 const StoreItem = memo(

@@ -158,6 +158,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
               src={optimizeMedia(post.profiles.avatar, "image") || "/default-avatar.jpg"}
               alt="avatar"
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
+              loading="lazy"
             />
           ) : (
             <Link to={`/profile/${post.profiles.id}`}>
@@ -165,6 +166,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                 src={optimizeMedia(post.profiles.avatar, "image") || "/default-avatar.jpg"}
                 alt="avatar"
                 className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
+                loading="lazy"
               />
             </Link>
           )}

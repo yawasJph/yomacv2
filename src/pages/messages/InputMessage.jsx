@@ -50,7 +50,7 @@ export const InputMessage = memo(
                   sendTypingSignal();
                 }}
                 onKeyDown={handleKeyDown}
-                placeholder="Escribe algo a Yawas..."
+                placeholder="Escribe algo ..."
                 rows={1}
                 className="w-full bg-transparent text-white focus:outline-none text-sm md:text-base font-medium placeholder:text-gray-500 resize-none max-h-[250px] custom-scrollbar leading-relaxed"
               />

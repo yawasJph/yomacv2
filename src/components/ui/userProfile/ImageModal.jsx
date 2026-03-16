@@ -34,6 +34,7 @@ const ImageModal = ({ src, onClose }) => {
           src={optimizeMedia(src)} 
           alt="Full size view" 
           className="rounded-lg shadow-2xl object-contain max-w-full max-h-full"
+          loading="lazy"
         />
       </div>
     </div>,

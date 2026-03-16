@@ -202,6 +202,7 @@ const UserProfile = () => {
                     src={badge.url}
                     alt="Cover"
                     className="object-cover size-8"
+                    loading="lazy"
                   />
                 )}
               </>

@@ -134,12 +134,14 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
           <img
             src={optimizeMedia(comment.profiles.avatar,"image")}
             className="w-10 h-10 rounded-full object-cover shrink-0 z-10"
+            loading="lazy"
           />
         ) : (
           <Link to={`/profile/${comment.profiles.id}`}>
             <img
               src={optimizeMedia(comment.profiles.avatar,"image")}
               className="w-10 h-10 rounded-full object-cover shrink-0 z-10"
+              loading="lazy"
             />
           </Link>
         )}
@@ -257,6 +259,7 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
               alt="comment-gif"
               className="mt-3 rounded-xl max-h-60 w-full object-cover border dark:border-gray-800"
               onClick={() => setSelectedImg(comment.gif_url)}
+              loading="lazy"
             />
           )}
 

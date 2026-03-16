@@ -57,6 +57,7 @@ const Feed = () => {
           {!hasNextPage && (
             <div className="text-center py-6 text-gray-400 text-sm pb-10">
               No hay más publicaciones
+             
             </div>
           )}
         </>

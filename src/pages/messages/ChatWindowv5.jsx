@@ -14,7 +14,7 @@ import ConfirmModal from "@/components/modals/ConfirmModalv2";
 import { InputMessage } from "./InputMessage";
 import { ChatSkeleton } from "@/components/skeletons/ChatSkeleton";
 import { HeaderSkeleton } from "@/components/skeletons/HeaderSkeletonChat";
-import { useChat } from "@/hooks/messages/useChatv2";
+import { useChat } from "@/hooks/messages/useChatv4";
 import { useNavigate } from "react-router-dom";
 import { useFollow } from "@/context/FollowContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";

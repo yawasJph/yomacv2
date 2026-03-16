@@ -42,7 +42,7 @@ const MemoryCard = memo(({ card, isFlipped, isMatched, onClick, isDisabled, card
           style={{ backfaceVisibility: "hidden", zIndex: 2 }}
         >
           <div className={CARD_STYLES.logoContainer}>
-            <img src="/logo.png" alt="logo" className="w-full h-full object-cover" />
+            <img src="/logo.png" alt="logo" className="w-full h-full object-cover" loading="lazy"/>
           </div>
         </div>
 
@@ -57,7 +57,7 @@ const MemoryCard = memo(({ card, isFlipped, isMatched, onClick, isDisabled, card
           {cardType === "icon" ? (
             <span className="relative z-10">{card.icon}</span>
           ) : (
-            <img src={card.icon} className="w-full h-full rounded-2xl object-cover shadow-lg" />
+            <img src={card.icon} className="w-full h-full rounded-2xl object-cover shadow-lg" loading="lazy" />
           )}
           
           {isMatched && (

@@ -3,7 +3,16 @@ import { useEditProfile } from "@/hooks/editProfile/useEditProfile";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileEditSkeleton from "../skeletons/ProfileEditSkeleton";
-import { ArrowLeft, Camera, Check, Github, Globe, Instagram, Linkedin, Save } from "lucide-react";
+import {
+  ArrowLeft,
+  Camera,
+  Check,
+  Github,
+  Globe,
+  Instagram,
+  Linkedin,
+  Save,
+} from "lucide-react";
 
 const BIO_LIMIT = 250;
 
@@ -14,20 +23,30 @@ const EditProfile = () => {
   const coverInputRef = useRef(null);
 
   const {
-    formData, setFormData,
-    initialLoading, isSaving,
-    previews, handleFileChange,
-    handleSave, toggleBadge, loading
+    formData,
+    setFormData,
+    initialLoading,
+    isSaving,
+    previews,
+    handleFileChange,
+    handleSave,
+    toggleBadge,
+    loading,
   } = useEditProfile(user, navigate);
 
   if (initialLoading || !formData) return <ProfileEditSkeleton />;
+
+  console.log(formData.all_user_badges);
 
   return (
     <div className="bg-white dark:bg-black pb-10">
       {/* HEADER */}
       <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-full">
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-full"
+          >
             <ArrowLeft size={20} className="dark:text-white" />
           </button>
           <h1 className="text-xl font-bold dark:text-white">Editar Perfil</h1>
@@ -37,12 +56,18 @@ const EditProfile = () => {
           disabled={isSaving}
           className="bg-emerald-500 text-white px-6 py-2 rounded-full font-bold text-sm disabled:opacity-50 flex items-center gap-2"
         >
-          {isSaving ? "Guardando..." : <><Save size={18} /> Guardar</>}
+          {isSaving ? (
+            "Guardando..."
+          ) : (
+            <>
+              <Save size={18} /> Guardar
+            </>
+          )}
         </button>
       </div>
 
       {/* RESTO DE LA UI IGUAL, PERO USANDO formData y toggleBadge del hook */}
-       {/* Edición de Imágenes */}
+      {/* Edición de Imágenes */}
       <div className="relative">
         {/* Input ocultos */}
         <input
@@ -224,6 +249,7 @@ const EditProfile = () => {
           </div>
         </div>
         {/* GESTIÓN DE INSIGNIAS */}
+
         <div className="space-y-4 pt-4">
           <h3 className="font-bold dark:text-white border-b border-gray-800 pb-2">
             Mis Insignias (Toca para equipar/desequipar)
@@ -267,4 +293,4 @@ const EditProfile = () => {
   );
 };
 
-export default EditProfile
+export default EditProfile;

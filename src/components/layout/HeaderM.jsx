@@ -8,6 +8,7 @@ import {
   Bot,
   BlocksIcon,
   MessageCircle,
+  Trophy,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
@@ -43,9 +44,9 @@ const HeaderM = () => {
       path: "/yawas",
     },
     {
-      icon: <BlocksIcon size={22} />,
-      text: "Blog",
-      path: "/blog",
+      icon: <Trophy size={22} />,
+      text: "Ranking",
+      path: "/games/leaderboard",
     },
     {
       icon: <MessageCircle size={22} />,
@@ -95,6 +96,7 @@ const HeaderM = () => {
                   src={optimizeMedia(profile?.avatar,"image") || "/default-avatar.jpg"}
                   className={`w-9 h-9 rounded-xl object-cover border-2 border-emerald-500/50 shadow-sm `}
                   alt="Menu"
+                  loading="lazy"
                 />
               </button>
             ) : (

@@ -33,6 +33,7 @@ const UserAvatar = () => {
             src={optimizeMedia(profile?.avatar, "image") || "/default-avatar.jpg"}
             alt={user.user_metadata.full_name}
             className="w-9 h-9 rounded-xl border-2 border-emerald-400/50 shadow-sm"
+            loading="lazy"
           />
 
           <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-gray-900"></div>

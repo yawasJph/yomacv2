@@ -136,6 +136,7 @@ const MediaModal = ({ media, closeModal, initialIndex }) => {
               alt="Media"
               draggable={false}
               onContextMenu={e => e.preventDefault()}
+              loading="lazy"
             />
           )}
         </div>

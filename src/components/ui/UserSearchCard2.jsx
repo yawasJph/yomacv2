@@ -6,6 +6,7 @@ import { useIsMobile } from "../../hooks/useIsMobile";
 import { useQueryClient } from "@tanstack/react-query"; // 👈 Importamos QueryClient
 import { Link, useParams } from "react-router-dom"; // 👈 Para saber si estamos en un perfil
 import { useAuthAction } from "../../hooks/useAuthAction";
+import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 const UserSearchCard = ({ profile }) => {
   const { user: currentUser } = useAuth();
@@ -25,7 +26,6 @@ const UserSearchCard = ({ profile }) => {
   };
 
   const handleAction = async () => {
-    
     if (!currentUser || actionLoading) return;
 
     setActionLoading(true);
@@ -67,20 +67,27 @@ const UserSearchCard = ({ profile }) => {
   return (
     <div className="p-4 hover:bg-gray-50/50 dark:hover:bg-gray-900/20 transition-colors border-b border-gray-100 dark:border-gray-800 flex items-center justify-between gap-4">
       <div className="flex items-center gap-3 min-w-0 flex-1">
-        {isMe ? ( <img
-          src={profile.avatar || "/default-avatar.jpg"}
-          alt={profile.full_name}
-          className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 border border-emerald-500/10 cursor-pointer"
-        />): (
+        {isMe ? (
+          <img
+            src={
+              optimizeMedia(profile.avatar, "image") || "/default-avatar.jpg"
+            }
+            alt={profile.full_name}
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 border border-emerald-500/10 cursor-pointer"
+            loading="lazy"
+          />
+        ) : (
           <Link to={`/profile/${profile.id}`}>
-             <img
-          src={profile.avatar || "/default-avatar.jpg"}
-          alt={profile.full_name}
-          className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 border border-emerald-500/10 cursor-pointer"
-        />
+            <img
+              src={
+                optimizeMedia(profile.avatar, "image") || "/default-avatar.jpg"
+              }
+              alt={profile.full_name}
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 border border-emerald-500/10 cursor-pointer"
+              loading="lazy"
+            />
           </Link>
         )}
-       
 
         <div className="min-w-0 flex-1">
           {isMe ? (
@@ -169,7 +176,8 @@ const UserSearchCard = ({ profile }) => {
                 : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"
               : "bg-emerald-500 hover:bg-emerald-600 text-white"
           }`}
-        >{/**min-w-[100px] to button*/}
+        >
+          {/**min-w-[100px] to button*/}
           {actionLoading ? (
             <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
           ) : following ? (
