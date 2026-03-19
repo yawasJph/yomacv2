@@ -2,7 +2,7 @@ import { UserPlus, Megaphone, ArrowLeft, Users } from "lucide-react";
 import UserStatCard from "./UserStatCard";
 import ReportStatCard from "./ReportStatCard";
 import ReportList from "./ReportList";
-import ReportManagementModal from "./ReportManagementModal";
+import ReportManagementModal from "./ReportManagementModalv2";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 

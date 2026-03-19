@@ -42,7 +42,6 @@ const ReportManagementModal = ({ report, onClose }) => {
     );
   };
 
-  console.log(report.post.author.id);
   return (
     <div className="fixed inset-0 z-150 flex items-end justify-center bg-black/40 backdrop-blur-sm p-4">
       {/* Tap to close overlay */}
@@ -107,20 +106,6 @@ const ReportManagementModal = ({ report, onClose }) => {
               <Trash2 size={28} />
               <span className="text-[10px] uppercase">Borrar Contenido</span>
             </button>
-
-            {/* <button
-              className="flex flex-col items-center gap-2 p-4 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-3xl font-bold transition-all active:scale-95"
-              disabled={isLoading}
-              onClick={() =>
-                handleBan({
-                  userId: authorId,
-                  reason: "Imcumplientos de Normas",
-                })
-              }
-            >
-              <Ban size={28} />
-              <span className="text-[10px] uppercase">Banear Autor</span>
-            </button> */}
 
             <button
               className="flex flex-col items-center gap-2 p-4 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-3xl font-bold transition-all active:scale-95 disabled:opacity-50"

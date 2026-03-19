@@ -1,3 +1,4 @@
+import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 import { useAdminUsers } from "@/hooks/admin/useAdminUsers";
 import { useToggleBan } from "@/hooks/admin/useToggleBan";
 import { Search, UserX, UserCheck, ShieldAlert, ArrowLeft } from "lucide-react";
@@ -15,7 +16,7 @@ const AdminUsersManager = () => {
     <div className="flex flex-col h-full bg-gray-50 dark:bg-black">
       {/* Header & Search - Sticky */}
       <div className="sticky top-0 z-10 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md p-4 border-b border-gray-100 dark:border-neutral-800">
-        <div className="bg-white/80 dark:bg-black/80 backdrop-blur-md p-2 flex items-center gap-6 border-b border-transparent">
+        <div className="p-2 flex items-center gap-6 border-b border-transparent">
           <button
             onClick={() => navigate(-1)}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-full transition-colors"
@@ -70,7 +71,7 @@ const AdminUsersManager = () => {
               className="bg-white dark:bg-neutral-900 p-4 rounded-3xl border border-gray-100 dark:border-neutral-800 flex items-center gap-4"
             >
               <img
-                src={user.avatar || "/default.jpg"}
+                src={optimizeMedia(user.avatar, "image") || "/default.jpg"}
                 className="w-12 h-12 rounded-2xl object-cover"
               />
 

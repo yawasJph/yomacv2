@@ -54,10 +54,6 @@ const ReportList = ({ onSelect }) => {
                 {report.reason}
               </span>
               <span className="text-[10px] text-gray-400 font-medium">
-                {/* {formatDistanceToNow(new Date(report.created_at), {
-                  addSuffix: true,
-                  locale: es,
-                })} */}
                  {formatDate(report.created_at)}
               </span>
             </div>
@@ -71,7 +67,6 @@ const ReportList = ({ onSelect }) => {
             <p className="text-[10px] text-gray-500">
               Reportado por{" "}
               <span className="font-semibold text-gray-700 dark:text-gray-300">
-                {/* @{report.reporter?.full_name.split(" ")[0]} */}
                 {report.reporter?.full_name}
               </span>
             </p>
