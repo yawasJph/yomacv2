@@ -1,6 +1,5 @@
 import { useAdminUsers } from "@/hooks/admin/useAdminUsers";
 import { useToggleBan } from "@/hooks/admin/useToggleBan";
-import { useBanUser } from "@/hooks/admin/useBanUser";
 import { Search, UserX, UserCheck, ShieldAlert, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
