@@ -47,7 +47,7 @@ const ReportList = ({ onSelect }) => {
           <div
             key={report.id}
             onClick={() => onSelect(report)} // 👈 Ahora TODO el card es clicable
-            className="flex items-center gap-3 p-4 bg-white dark:bg-neutral-900 rounded-3xl border border-gray-100 dark:border-neutral-800 cursor-pointer hover:border-gray-200 dark:hover:border-neutral-700 hover:shadow-sm active:scale-[0.98] transition-all"
+            className="flex items-center gap-3 p-1 bg-white dark:bg-neutral-900 rounded-3xl border border-gray-100 dark:border-neutral-800 cursor-pointer hover:border-gray-200 dark:hover:border-neutral-700 hover:shadow-sm active:scale-[0.98] transition-all"
           >
             {/* Icono Principal (Cambié ImageIcon por LayoutList para Posts en general) */}
             <div
