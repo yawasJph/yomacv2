@@ -15,8 +15,8 @@ export const useUrgentReports = () => {
           created_at,
           status,
           reporter:reporter_id (full_name, avatar),
-          post:post_id (id, content, author:profiles(id, full_name), post_media(media_url, media_type)),
-          comment:comment_id (id, content, author:profiles(id, full_name))
+          post:post_id (id, content, author:profiles(id, full_name, avatar), post_media(media_url, media_type)),
+          comment:comment_id (id, content, author:profiles(id, full_name, avatar))
         `,
         )
         .eq("status", "pending")
