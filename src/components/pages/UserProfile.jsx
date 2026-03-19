@@ -7,6 +7,7 @@ import {
   Globe,
   Instagram,
   Linkedin,
+  ShieldAlert,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useFollow } from "../../context/FollowContext";
@@ -14,7 +15,6 @@ import CardPost from "../ui/feed/CardPost";
 import UserProfileSkeleton from "../skeletons/UserProfileSkeleton";
 import ImageModal from "../ui/userProfile/ImageModal";
 import { useProfile } from "../../hooks/useProfile";
-//import { usePostsInfiniteQuery } from "../../hooks/usePostsInfiniteQuery2";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuthAction } from "../../hooks/useAuthAction";
 import { usePostsInfiniteQuery } from "@/hooks/posts/usePostsInfiniteQueryv3";
@@ -32,11 +32,11 @@ const UserProfile = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const loaderRef = useRef();
   const { data: profile, isLoading: profileLoading } = useProfile(userId);
-  const {executeAction} = useAuthAction()
+  const { executeAction } = useAuthAction();
 
-  const hanldeFollowAction = () =>{
-    executeAction(handleFollowToggle,"para segui a este usuario")
-  }
+  const hanldeFollowAction = () => {
+    executeAction(handleFollowToggle, "para segui a este usuario");
+  };
 
   // 🔥 NUEVA LÓGICA DE SEGUIMIENTO 🔥
   const handleFollowToggle = async () => {
@@ -87,7 +87,7 @@ const UserProfile = () => {
           fetchNextPage();
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.5 },
     );
     if (loaderRef.current) observer.observe(loaderRef.current);
     return () => observer.disconnect();
@@ -97,8 +97,7 @@ const UserProfile = () => {
   const following = isFollowing(userId);
 
   if (profileLoading) return <UserProfileSkeleton />;
-  const opt = optimizeMedia(profile.avatar, "image")
-    console.log("opt", opt)
+
   return (
     <div className="min-h-screen bg-white dark:bg-black pb-10">
       {/* min-h-screen */}
@@ -111,9 +110,18 @@ const UserProfile = () => {
           <ArrowLeft size={20} className="dark:text-white" />
         </button>
         <div>
-          <h1 className="text-lg font-bold dark:text-white leading-tight">
+          {/* <h1 className="text-lg font-bold dark:text-white leading-tight">
             {profile?.full_name}
-          </h1>
+          </h1> */}
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-bold dark:text-white leading-tight">
+              {profile?.full_name}
+            </h1>
+            {/* Badge discreto en el header */}
+            {profile?.is_banned && (
+              <ShieldAlert size={16} className="text-rose-500" />
+            )}
+          </div>
           <span className="text-xs text-gray-500">
             {allPosts.length} {activeTab === "posts" && "publicaciones"}
             {activeTab === "media" && "medias"}
@@ -139,17 +147,40 @@ const UserProfile = () => {
         </div>
 
         <div className="absolute bottom-3 sm:bottom-0 left-4">
-          <img
-            src={optimizeMedia(profile?.avatar,"image" )|| "/default-avatar.jpg"}
+          {/* <img
+            src={
+              optimizeMedia(profile?.avatar, "image") || "/default-avatar.jpg"
+            }
             className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white dark:border-black object-cover"
             alt={profile?.full_name}
             onClick={() => profile?.avatar && setSelectedImg(profile.avatar)}
-          />
+          /> */}
+          <div className="relative">
+            <img
+              src={
+                optimizeMedia(profile?.avatar, "image") || "/default-avatar.jpg"
+              }
+              className={`w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white dark:border-black object-cover ${profile?.is_banned ? "grayscale opacity-70" : ""}`}
+              alt={profile?.full_name}
+            />
+            {/* Overlay de baneo sobre el avatar */}
+            {profile?.is_banned && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="bg-rose-500 text-white p-1.5 rounded-full shadow-lg">
+                  <ShieldAlert size={20} />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* BOTÓN ACCIÓN (Editar o Seguir) */}
         <div className="flex justify-end p-4">
-          {isMe ? (
+          {profile?.is_banned ? (
+            <div className="px-4 py-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full font-bold text-xs uppercase tracking-wider border border-rose-100 dark:border-rose-500/20">
+              Cuenta Suspendida
+            </div>
+          ) : isMe ? (
             <Link
               className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-full font-bold text-sm dark:text-white hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
               to={"/editProfile"}
@@ -186,9 +217,20 @@ const UserProfile = () => {
       {/* INFORMACIÓN DEL PERFIL */}
       <div className="px-4 mt-5 space-y-3">
         <div>
-          <h2 className="text-xl font-extrabold dark:text-white tracking-tight sm:text-2xl sm:font-black">
+          {/* <h2 className="text-xl font-extrabold dark:text-white tracking-tight sm:text-2xl sm:font-black">
             {profile?.full_name}
-          </h2>
+          </h2> */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <h2 className="text-xl font-extrabold dark:text-white tracking-tight sm:text-2xl sm:font-black">
+              {profile?.full_name}
+            </h2>
+            {/* Cartel llamativo de baneo */}
+            {profile?.is_banned && (
+              <span className="bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full font-black uppercase">
+                Baneado
+              </span>
+            )}
+          </div>
           {/* RENDERIZADO DE INSIGNIAS */}
           <div className="flex items-center gap-1">
             {profile?.equipped_badges?.map((badge) => (
@@ -308,10 +350,10 @@ const UserProfile = () => {
       <div className="divide-y divide-gray-100 dark:divide-gray-800">
         {postsLoading ? (
           <div>
-          {[1, 2, 3, 4].map((i) => (
-            <SkeletonPost key={i} />
-          ))}
-        </div>
+            {[1, 2, 3, 4].map((i) => (
+              <SkeletonPost key={i} />
+            ))}
+          </div>
         ) : allPosts.length > 0 ? (
           <>
             {allPosts.map((post) => (

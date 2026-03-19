@@ -1,5 +1,5 @@
 import React, { memo, useMemo, useCallback } from "react";
-import { UserPlus, UserCheck, UserMinus } from "lucide-react";
+import { UserPlus, UserCheck, UserMinus, Ban } from "lucide-react";
 import { useFollow } from "@/context/FollowContext";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useQueryClient } from "@tanstack/react-query";
@@ -21,7 +21,7 @@ const UserSearchCard = ({ profile }) => {
   // ⭐ Memo: evita recalcular en cada render
   const following = useMemo(
     () => isFollowing(profile.id),
-    [isFollowing, profile.id]
+    [isFollowing, profile.id],
   );
 
   // ⭐ Optimistic Follow Handler
@@ -75,13 +75,13 @@ const UserSearchCard = ({ profile }) => {
       e.stopPropagation();
       executeAction(handleAction, "para seguir usuarios");
     },
-    [executeAction, handleAction]
+    [executeAction, handleAction],
   );
 
   const renderLink = useCallback(
     (children) =>
       isMe ? children : <Link to={`/profile/${profile.id}`}>{children}</Link>,
-    [isMe, profile.id]
+    [isMe, profile.id],
   );
 
   return (
@@ -90,17 +90,19 @@ const UserSearchCard = ({ profile }) => {
       <div className="flex items-center gap-3 min-w-0 flex-1">
         {renderLink(
           <img
-            src={optimizeMedia(profile.avatar,"image") || "/default-avatar.jpg"}
+            src={
+              optimizeMedia(profile.avatar, "image") || "/default-avatar.jpg"
+            }
             alt={profile.full_name}
             className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border border-emerald-500/10 bg-gray-200 dark:bg-gray-700 transition-transform hover:scale-105"
-          />
+          />,
         )}
 
         <div className="min-w-0 flex-1">
           {renderLink(
             <h4 className="font-bold text-gray-900 dark:text-white truncate text-sm sm:text-base hover:underline decoration-emerald-500">
               {profile.full_name}
-            </h4>
+            </h4>,
           )}
 
           {/* BADGES */}
@@ -142,37 +144,42 @@ const UserSearchCard = ({ profile }) => {
       </div>
 
       {/* FOLLOW BUTTON */}
-      {!isMe && (
-        <button
-          onClick={handleFollowClick}
-          className={`group shrink-0 px-4 py-1.5 rounded-full text-sm font-bold transition-all flex items-center gap-2
+      {!isMe &&
+        (profile.is_banned ? (
+          <div className="px-4 py-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full font-bold text-xs uppercase tracking-wider border border-rose-100 dark:border-rose-500/20">
+            {isMobile ? <Ban size={16}/> : "Cuenta Suspendida"}
+          </div>
+        ) : (
+          <button
+            onClick={handleFollowClick}
+            className={`group shrink-0 px-4 py-1.5 rounded-full text-sm font-bold transition-all flex items-center gap-2
             ${
               following
                 ? "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/20"
                 : "bg-emerald-500 hover:bg-emerald-600 text-white"
             }`}
-        >
-          {following ? (
-            <>
-              <UserCheck size={16} className="group-hover:hidden" />
-              <UserMinus size={16} className="hidden group-hover:block" />
-              {!isMobile && (
-                <>
-                  <span className="group-hover:hidden">Siguiendo</span>
-                  <span className="hidden group-hover:inline">
-                    Dejar de seguir
-                  </span>
-                </>
-              )}
-            </>
-          ) : (
-            <>
-              <UserPlus size={16} />
-              {!isMobile && "Seguir"}
-            </>
-          )}
-        </button>
-      )}
+          >
+            {following ? (
+              <>
+                <UserCheck size={16} className="group-hover:hidden" />
+                <UserMinus size={16} className="hidden group-hover:block" />
+                {!isMobile && (
+                  <>
+                    <span className="group-hover:hidden">Siguiendo</span>
+                    <span className="hidden group-hover:inline">
+                      Dejar de seguir
+                    </span>
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                <UserPlus size={16} />
+                {!isMobile && "Seguir"}
+              </>
+            )}
+          </button>
+        ))}
     </div>
   );
 };

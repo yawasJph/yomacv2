@@ -29,6 +29,9 @@ import BlogDetail from "./pages/blog/BlogDetailv5";
 import { ModalProvider } from "./context/ModalContextv3";
 import MyBlogs from "./pages/user-blog/MyBlogs";
 import MessagesPage from "./pages/messages/MessagesPagev2";
+import AdminOverview from "./pages/admin/AdminOverview";
+import AdminUsersManager from "./pages/admin/AdminUsersManager";
+import AdminRoute from "./routes/AdminRoute";
 
 // --- IMPORTS DINÁMICOS (Lazy Loading) ---
 const CreatePost = lazy(() => import("./components/pages/CreatePost"));
@@ -137,15 +140,29 @@ function App() {
                       element={<CodigoMatricula />}
                     />
                     <Route path="red-connection" element={<ConectorRedes />} />
-                    
+
                     <Route path="store" element={<YoMACStore />} />
                   </Route>
 
                   <Route path="blog/create" element={<CreateBlog />} />
-                  <Route path="blog/edit/:id" element={<CreateBlog isEditing={true} />} />
+                  <Route
+                    path="blog/edit/:id"
+                    element={<CreateBlog isEditing={true} />}
+                  />
                   <Route path="blog/:slug" element={<BlogDetail />} />
                   <Route path="blog/my-blogs" element={<MyBlogs />} />
                   <Route path="messages" element={<MessagesPage />} />
+                </Route>
+
+                {/* Rutas de Admin Protegidas */}
+                <Route element={<AdminRoute />}>
+                  <Route path="admin">
+                    <Route path="dashboard" element={<AdminOverview />} />
+                    <Route
+                      path="dashboard/users"
+                      element={<AdminUsersManager />}
+                    />
+                  </Route>
                 </Route>
 
                 {/* Rutas Públicas dentro del Layout */}
@@ -154,7 +171,6 @@ function App() {
                 <Route path="users" element={<DiscoverPage />} />
                 <Route path="post/:postId" element={<PostPage />} />
                 <Route path="blog" element={<BlogFeed />} />
-                
               </Route>
             </Routes>
           </Suspense>

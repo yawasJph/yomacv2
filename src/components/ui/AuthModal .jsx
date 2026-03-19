@@ -1,9 +1,8 @@
 import { X } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
-const AuthModal = ({closeModal}) => {
-
-  const { signinWithGoogle, loading } = useAuth();
+const AuthModal = ({ closeModal }) => {
+  const { signinWithGoogle, loading, error } = useAuth();
 
   return (
     <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/60 backdrop-blur-sm">
@@ -62,6 +61,14 @@ const AuthModal = ({closeModal}) => {
             </>
           )}
         </button>
+
+        {error && (
+          <div className="p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg mt-3">
+            <p className="text-sm text-red-600 dark:text-red-400 text-center">
+              {error}
+            </p>
+          </div>
+        )}
 
         <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-4">
           Solo correos institucionales

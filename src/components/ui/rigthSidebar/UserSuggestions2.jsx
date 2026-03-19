@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { UserPlus, UserMinus } from "lucide-react";
+import { UserPlus, UserMinus, Ban } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 import { useFollow } from "../../../context/FollowContext";
 import { useUserSuggestions } from "../../../hooks/useUserSuggestions";
@@ -65,7 +65,10 @@ const UserSuggestions = () => {
                 <div className="flex items-center gap-2 min-w-0 flex-1">
                   <Link to={`/profile/${profile.id}`}>
                     <img
-                      src={optimizeMedia(profile.avatar, "media") || "/default-avatar.jpg"}
+                      src={
+                        optimizeMedia(profile.avatar, "media") ||
+                        "/default-avatar.jpg"
+                      }
                       className="w-10 h-10 rounded-full object-cover border border-emerald-500/10"
                       alt={profile.full_name}
                       loading="lazy"
@@ -86,7 +89,8 @@ const UserSuggestions = () => {
                   </div>
                 </div>
 
-                <button
+                {profile.is_banned ? <Ban size={16} className="text-red-500 mx-2"/> : 
+                  <button
                   onClick={() => handleToggleFollow(profile.id)}
                   disabled={actionId === profile.id}
                   className={`p-2 rounded-full transition-all ${
@@ -103,6 +107,10 @@ const UserSuggestions = () => {
                     <UserPlus size={16} />
                   )}
                 </button>
+                
+                }
+
+                
               </div>
             );
           })

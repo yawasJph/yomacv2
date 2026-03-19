@@ -8,33 +8,97 @@ export const AuthContextProvider = ({ children }) => {
   const [loading, setLoading] = useState(true); // 👈 loading inicial
   const [error, setError] = useState(null);
 
+  // useEffect(() => {
+  //   supabaseClient.auth.getSession().then(({ data }) => {
+  //     setUser(data?.session?.user ?? null);
+  //     setLoading(false);
+  //   });
+
+  //   const {
+  //     data: { subscription },
+  //   } = supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+  //     if (session?.user) {
+  //       const email = session.user.email;
+  //       const domain = email.split("@")[1];
+  //       const allowedDomains = ["gmail.com"];
+
+  //       if (!allowedDomains.includes(domain)) {
+  //         await supabaseClient.auth.signOut();
+  //         setUser(null);
+  //         setError("Dominio de correo no autorizado.");
+  //       } else {
+  //         setUser(session.user);
+  //       }
+  //     } else {
+  //       setUser(null);
+  //     }
+  //     setLoading(false);
+  //   });
+
+  //   return () => subscription.unsubscribe();
+  // }, []);
+
+  // Helper para verificar baneo
+
   useEffect(() => {
-    // Obtiene la sesión al cargar la app
-    supabaseClient.auth.getSession().then(({ data }) => {
-      setUser(data?.session?.user ?? null);
-      setLoading(false);
-    });
+    // Función centralizada para validar usuario
+    const validateUser = async (session) => {
+      if (!session?.user) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
 
-    // Listener de cambios de sesión
-    const {
-      data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user) {
-        const email = session.user.email;
-        const domain = email.split("@")[1];
-        const allowedDomains = ["gmail.com"];
+      const email = session.user.email;
+      const domain = email?.split("@")[1];
+      const allowedDomains = ["gmail.com"];
 
-        if (!allowedDomains.includes(domain)) {
+      // 1. Validar Dominio
+      if (!allowedDomains.includes(domain)) {
+        await supabaseClient.auth.signOut();
+        setUser(null);
+        setError("Dominio de correo no autorizado.");
+        setLoading(false);
+        return;
+      }
+
+      // 2. Validar Baneo
+      try {
+        const { data: profile, error: profileError } = await supabaseClient
+          .from("profiles")
+          .select("is_banned, ban_reason")
+          .eq("id", session.user.id)
+          .maybeSingle();
+
+        if (profile?.is_banned) {
           await supabaseClient.auth.signOut();
           setUser(null);
-          setError("Dominio de correo no autorizado.");
+          setError(`Cuenta suspendida: ${profile.ban_reason || "Infracción de normas"}`);
         } else {
+          // Si todo está ok, RECIÉN aquí seteamos al usuario
           setUser(session.user);
+          setError(null);
         }
-      } else {
-        setUser(null);
+      } catch (err) {
+        console.error("Error validando baneo:", err);
+        // En caso de error de red, dejamos entrar para no romper la sesión
+        setUser(session.user);
+      } finally {
+        setLoading(false); // IMPORTANTE: Solo dejamos de cargar cuando termina la validación
       }
-      setLoading(false);
+    };
+
+    // Al cargar la app por primera vez
+    supabaseClient.auth.getSession().then(({ data }) => {
+      validateUser(data?.session);
+    });
+
+    // Listener para cambios (login, logout, etc)
+    const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((_event, session) => {
+      // Solo validamos si es un evento distinto a la carga inicial para evitar doble validación
+      if (_event === "SIGNED_IN" || _event === "SIGNED_OUT") {
+        validateUser(session);
+      }
     });
 
     return () => subscription.unsubscribe();

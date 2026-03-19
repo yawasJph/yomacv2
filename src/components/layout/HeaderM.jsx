@@ -1,30 +1,28 @@
 import { useState } from "react";
 import {
-  X,
   Bookmark,
   ShoppingBag,
-  Settings,
   Search,
   Bot,
-  BlocksIcon,
   MessageCircle,
   Trophy,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
-import { useProfile } from "../../hooks/useProfile";
 import UserCredits from "../games/UserCredits";
 import Logo from "../ui/Logo";
 import NotificationIcon from "../ui/NotificationIcon";
 import Drawer from "../ui/users/Drawer";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
+import { useSimpleProfile } from "@/hooks/user/useSimpleProfile";
 
 const HeaderM = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const { user, signout } = useAuth();
-  const { data: profile } = useProfile(user?.id);
+  const { user, signout, loading } = useAuth();
+  const { data: profile } = useSimpleProfile(user?.id);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const menuItems = [
     { icon: <Bookmark size={20} />, text: "Guardados", path: "/savedPost" },
@@ -32,11 +30,6 @@ const HeaderM = () => {
       icon: <ShoppingBag size={20} />,
       text: "YoMAC Store",
       path: "/games/store",
-    },
-    {
-      icon: <Settings size={20} />,
-      text: "Configuración",
-      path: "/editProfile",
     },
     {
       icon: <Bot size={20} />,
@@ -69,7 +62,9 @@ const HeaderM = () => {
           {/* IZQUIERDA: Logo y Nombre */}
           <Logo />
 
-          {user && onViewCredits && <UserCredits userId={user?.id} />}
+          {!loading && user && onViewCredits && (
+            <UserCredits userId={user.id} />
+          )}
 
           {!onViewCredits && (
             <div className="flex items-center gap-2">
@@ -84,16 +79,20 @@ const HeaderM = () => {
 
           {/* DERECHA: Notificaciones y Avatar */}
           <div className="flex items-center gap-2">
-            {/* {!onViewCredits && <ToggleThemeButton />} */}
-            {/* <ToggleThemeButton /> */}
-            {user && <NotificationIcon />}
-            {user ? (
+            {!loading && user && <NotificationIcon />}
+            {loading ? (
+              // Skeleton o espacio vacío mientras valida la sesión
+              <div className="skeleton w-10 h-10 rounded-full bg-gray-200 dark:bg-neutral-800 animate-pulse" />
+            ) : user ? (
               <button
                 onClick={() => setIsDrawerOpen(true)}
                 className="ml-1 active:scale-90 transition-transform"
               >
                 <img
-                  src={optimizeMedia(profile?.avatar,"image") || "/default-avatar.jpg"}
+                  src={
+                    optimizeMedia(profile?.avatar, "image") ||
+                    "/default-avatar.jpg"
+                  }
                   className={`w-9 h-9 rounded-xl object-cover border-2 border-emerald-500/50 shadow-sm `}
                   alt="Menu"
                   loading="lazy"

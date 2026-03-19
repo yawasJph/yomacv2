@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Code, Leaf, Stethoscope } from "lucide-react";
+import { Ban, Code, Leaf, Stethoscope } from "lucide-react";
 import { useFollow } from "../../../context/FollowContext";
 import { useAuth } from "../../../context/AuthContext";
 import { useIsMobile } from "../../../hooks/useIsMobile";
@@ -77,67 +77,83 @@ export default function UserHoverCard({ user, children }) {
           {/* Header */}
           <div className="flex justify-between items-start mb-3">
             <div className="relative">
-              <Link to={`/profile/${user.id}`}>
+              <Link to={`/profile/${targetUser?.id}`}>
                 <img
-                  src={optimizeMedia(user.avatar, "image") || "/default-avatar.jpg"}
-                  alt={user.full_name}
+                  src={
+                    optimizeMedia(targetUser?.avatar, "image") ||
+                    "/default-avatar.jpg"
+                  }
+                  alt={targetUser?.full_name}
                   className="w-14 h-14 rounded-full object-cover border-2 border-emerald-500/10 shrink-0"
                   loading="lazy"
                 />
               </Link>
 
-              <div className="absolute -bottom-1 -right-1 bg-white dark:bg-gray-800 rounded-full p-1 shadow-md border border-gray-200 dark:border-gray-700">
-                {user?.carrera === "I.A.B." && (
-                  <Leaf size={16} className="text-emerald-500" />
-                )}
-                {user?.carrera === "E.T." && (
-                  <Stethoscope size={16} className="text-emerald-500" />
-                )}
-                {user?.carrera === "D.S.I." && (
-                  <Code size={16} className="text-emerald-500" />
-                )}
-              </div>
+              {targetUser?.carrera && (
+                <div className="absolute -bottom-1 -right-1 bg-white dark:bg-gray-800 rounded-full p-1 shadow-md border border-gray-200 dark:border-gray-700">
+                  {targetUser?.carrera === "I.A.B." && (
+                    <Leaf size={16} className="text-emerald-500" />
+                  )}
+                  {targetUser?.carrera === "E.T." && (
+                    <Stethoscope size={16} className="text-emerald-500" />
+                  )}
+                  {targetUser?.carrera === "D.S.I." && (
+                    <Code size={16} className="text-emerald-500" />
+                  )}
+                </div>
+              )}
+
+              {targetUser?.is_banned && (
+                <div className="absolute -bottom-1 -right-1 bg-white dark:bg-gray-800 rounded-full p-1 shadow-md border border-gray-200 dark:border-gray-700">
+                  <Ban size={16} className="text-red-500" />
+                </div>
+              )}
             </div>
 
-            {!isMe && (
-              <button
-                onClick={handleFollowClick}
-                onMouseEnter={() => setIsHoveredBtn(true)}
-                onMouseLeave={() => setIsHoveredBtn(false)}
-                disabled={isLoadingAction}
-                className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all min-h-9 min-w-[100px] flex items-center justify-center ${
-                  following
-                    ? isHoveredBtn
-                      ? "bg-red-50 text-red-600 border border-red-100 dark:bg-red-500/10 dark:text-red-400"
-                      : "bg-gray-100 dark:bg-emerald-500/10 text-gray-800 dark:text-emerald-400"
-                    : "bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg shadow-emerald-500/20"
-                }`}
-              >
-                {isLoadingAction ? (
-                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                ) : following ? (
-                  isHoveredBtn ? (
-                    "Dejar de seguir"
+            {!isMe &&
+              (targetUser?.is_banned ? (
+                <div className="px-4 py-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full font-bold text-xs uppercase tracking-wider border border-rose-100 dark:border-rose-500/20">
+                  Cuenta Suspendida
+                </div>
+              ) : (
+                <button
+                  onClick={handleFollowClick}
+                  onMouseEnter={() => setIsHoveredBtn(true)}
+                  onMouseLeave={() => setIsHoveredBtn(false)}
+                  disabled={isLoadingAction}
+                  className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all min-h-9 min-w-[100px] flex items-center justify-center ${
+                    following
+                      ? isHoveredBtn
+                        ? "bg-red-50 text-red-600 border border-red-100 dark:bg-red-500/10 dark:text-red-400"
+                        : "bg-gray-100 dark:bg-emerald-500/10 text-gray-800 dark:text-emerald-400"
+                      : "bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg shadow-emerald-500/20"
+                  }`}
+                >
+                  {isLoadingAction ? (
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  ) : following ? (
+                    isHoveredBtn ? (
+                      "Dejar de seguir"
+                    ) : (
+                      "Siguiendo"
+                    )
                   ) : (
-                    "Siguiendo"
-                  )
-                ) : (
-                  "Seguir"
-                )}
-              </button>
-            )}
+                    "Seguir"
+                  )}
+                </button>
+              ))}
           </div>
 
           {/* Información */}
           <div className="space-y-1">
-            <Link to={`/profile/${user.id}`}>
+            <Link to={`/profile/${targetUser?.id}`}>
               <h2 className="text-lg font-extrabold leading-tight dark:text-white hover:text-emerald-500 transition-colors">
-                {user.full_name}
+                {targetUser?.full_name}
               </h2>
             </Link>
             {/* RENDERIZADO DE INSIGNIAS EN EL FEED (LIMITADO A 3) */}
             <span className="flex items-center gap-0.5 ml-1 shrink-0">
-              {user.equipped_badges?.slice(0, 3).map((item, idx) => (
+              {targetUser?.equipped_badges?.slice(0, 3).map((item, idx) => (
                 <span
                   key={idx}
                   className="text-[14px] sm:text-[16px] select-none"
@@ -146,20 +162,20 @@ export default function UserHoverCard({ user, children }) {
                   {item.badges?.icon || item.icon}
                 </span>
               ))}
-              {user.equipped_badges?.length > 3 && (
+              {targetUser?.equipped_badges?.length > 3 && (
                 <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 ml-0.5">
-                  +{user.equipped_badges.length - 3}
+                  +{targetUser?.equipped_badges.length - 3}
                 </span>
               )}
             </span>
             <p className="text-emerald-600 dark:text-emerald-400 text-sm font-medium">
-              {user.carrera || "Estudiante"}
+              {targetUser?.carrera || "Estudiante"}
             </p>
           </div>
 
-          {user.bio && (
+          {targetUser?.bio && (
             <p className="mt-3 text-gray-600 dark:text-gray-300 text-[14px] leading-snug line-clamp-3">
-              {user.bio}
+              {targetUser.bio}
             </p>
           )}
 

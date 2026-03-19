@@ -1,14 +1,18 @@
-import { LogOut, Settings, UserPen } from "lucide-react";
+import { LayoutDashboard, LogOut, Settings, UserPen } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useProfile } from "../../hooks/useProfile";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
+import { useSimpleProfile } from "@/hooks/user/useSimpleProfile";
 
 const UserAvatar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, signout } = useAuth();
   const { data: profile } = useProfile(user.id);
+  const {
+    data, isLoading
+  } = useSimpleProfile(user?.id);
   const optionsRef = useRef(null);
 
   // Cerrar menú al hacer click fuera
@@ -22,6 +26,7 @@ const UserAvatar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  if(isLoading) return (<div className="skeleton w-10 h-10 rounded-full bg-gray-200 dark:bg-neutral-800 animate-pulse" />)
   return (
     <div className="relative" ref={optionsRef}>
       <button
@@ -30,7 +35,9 @@ const UserAvatar = () => {
       >
         <div className="relative">
           <img
-            src={optimizeMedia(profile?.avatar, "image") || "/default-avatar.jpg"}
+            src={
+              optimizeMedia(profile?.avatar, "image") || "/default-avatar.jpg"
+            }
             alt={user.user_metadata.full_name}
             className="w-9 h-9 rounded-xl border-2 border-emerald-400/50 shadow-sm"
             loading="lazy"
@@ -80,9 +87,19 @@ const UserAvatar = () => {
           </div>
 
           <div className="p-2">
+            {data.is_admin && (
+              <NavLink
+                to={`/admin/dashboard`}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 transition-colors"
+                onClick={()=> setMenuOpen(false)}
+              >
+                <LayoutDashboard size={18} /> Dashboard
+              </NavLink>
+            )}
             <NavLink
               to={`/profile/${user.id}`}
               className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 transition-colors"
+              onClick={()=> setMenuOpen(false)}
             >
               <UserPen size={18} /> Perfil
             </NavLink>

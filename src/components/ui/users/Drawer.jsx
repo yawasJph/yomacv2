@@ -1,8 +1,9 @@
-import { ChevronRight, LogOut, X } from "lucide-react";
+import { ChevronRight, LayoutDashboard, LogOut, ShieldCheck, X } from "lucide-react";
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import ToggleThemeButton from "../ToggleThemeButton";
+import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 const Drawer = ({ onClose, profile, menuItems, signout }) => {
   const navigate = useNavigate();
@@ -42,10 +43,18 @@ const Drawer = ({ onClose, profile, menuItems, signout }) => {
         {/* 1. Header del Drawer - Estático arriba */}
         <div className="p-6 pt-10 bg-linear-to-b from-emerald-50/50 dark:from-emerald-500/5 to-transparent shrink-0">
           <div className="flex justify-between items-center mb-4">
-            <img
-              src={profile?.avatar || "/default-avatar.jpg"}
-              className="w-16 h-16 rounded-2xl object-cover border-4 border-white dark:border-neutral-900 shadow-xl"
-            />
+            <div className="relative">
+               <img
+                src={optimizeMedia(profile?.avatar,"image") || "/default-avatar.jpg"}
+                className="w-16 h-16 rounded-2xl object-cover border-4 border-white dark:border-neutral-900 shadow-xl"
+              />
+              {/* Badge de Admin si aplica */}
+              {profile?.is_admin && (
+                <div className="absolute -bottom-1 -right-1 bg-amber-500 text-white p-1 rounded-lg border-2 border-white dark:border-neutral-900 shadow-lg">
+                  <ShieldCheck size={12} fill="currentColor" />
+                </div>
+              )}
+            </div>
             <div className="flex items-center space-x-6">
               <ToggleThemeButton />
               <button
@@ -77,6 +86,29 @@ const Drawer = ({ onClose, profile, menuItems, signout }) => {
 
           {/* ÁREA DE NAVEGACIÓN */}
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto no-scrollbar pb-10">
+            {/* --- SECCIÓN ADMIN (NUEVA) --- */}
+            {profile?.is_admin && (
+              <div className="mb-2">
+                <p className="px-4 text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2">
+                  Administración
+                </p>
+                <button
+                  onClick={() => {
+                    navigate("/admin/dashboard");
+                    onClose();
+                  }}
+                  className="w-full flex items-center justify-between p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 transition-all hover:scale-[1.02]"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="p-2 bg-white dark:bg-neutral-800 rounded-xl shadow-sm">
+                      <LayoutDashboard size={18} />
+                    </div>
+                    <span className="font-black text-sm">Admin Panel</span>
+                  </div>
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            )}
             {menuItems.map((item, idx) => (
               <button
                 key={idx}
@@ -95,7 +127,6 @@ const Drawer = ({ onClose, profile, menuItems, signout }) => {
                 <ChevronRight size={16} className="text-gray-400" />
               </button>
             ))}
-            
           </nav>
 
           {/* GRADIENTE INFERIOR - El indicador de "más contenido" */}
