@@ -5,15 +5,16 @@ import {
   Users,
   User,
 } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { NavLink, useNavigate, useLocation } from "react-router-dom"; // 👈 1. Importar useLocation
 import { notify } from "@/utils/toast/notifyv3";
 import { useSimpleProfile } from "@/hooks/user/useSimpleProfile";
+import { useAuth } from "@/context/AuthContext";
 
 const NavigationM = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // 👈 2. Inicializar el hook
   const { user } = useAuth();
-  const {data, isLoading} = useSimpleProfile(user?.id)
+  const { data } = useSimpleProfile(user?.id);
 
   // Reducimos a los 4 pilares + Botón Central
   const links = [
@@ -31,7 +32,8 @@ const NavigationM = () => {
       private: false,
     },
     {
-      to: `profile/@${data ? data.username : ""}`,
+      // 👈 3. Evitar URL rara si no hay datos aún o no hay sesión
+      to: data?.username ? `profile/@${data.username}` : "#",
       icon: <User size={24} />,
       text: "Perfil",
       private: true,
@@ -60,15 +62,17 @@ const NavigationM = () => {
     }
   };
 
-  const onViewCredits = ["games", "yawas", "blog", "messages", "admin"].some((route) =>
-    location.pathname.includes(route),
+  // 👈 4. Ahora location.pathname sí será reactivo cuando navegues por la app
+  const onViewCredits = ["games", "yawas", "blog", "messages", "admin"].some(
+    (route) => location.pathname.includes(route)
   );
 
   return (
     <div
-      className={`fixed -bottom-1 left-0 right-0 z-90 lg:hidden ${onViewCredits && "hidden"}`}
+      className={`fixed -bottom-1 left-0 right-0 z-90 lg:hidden ${
+        onViewCredits ? "hidden" : ""
+      }`}
     >
-      {/**bottom-0 */}
       {/* Efecto de degradado de fondo para que no corte el contenido bruscamente */}
       <div className="absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-black/20 dark:from-black/40 to-transparent pointer-events-none" />
 
@@ -83,7 +87,9 @@ const NavigationM = () => {
                 onClick={(e) => handleProtectedNavigation(e, link)}
                 className={({ isActive }) =>
                   `flex flex-col items-center justify-center transition-all ${
-                    isActive ? "text-emerald-500 scale-110" : "text-gray-400"
+                    isActive && link.to !== "#"
+                      ? "text-emerald-500 scale-110"
+                      : "text-gray-400"
                   }`
                 }
               >
@@ -97,12 +103,10 @@ const NavigationM = () => {
 
           {/* Botón Central Flotante */}
           <div className="relative">
-            {/**-mt-10 */}
             <button
               onClick={handleCreatePost}
               className="p-2 bg-linear-to-tr from-emerald-500 to-teal-400 text-white rounded-2xl shadow-lg shadow-emerald-500/40 active:scale-90 transition-transform border-4 border-white dark:border-neutral-900"
             >
-              {/**p-4 */}
               <Plus size={28} strokeWidth={3} />
             </button>
           </div>
@@ -116,7 +120,9 @@ const NavigationM = () => {
                 onClick={(e) => handleProtectedNavigation(e, link)}
                 className={({ isActive }) =>
                   `flex flex-col items-center justify-center transition-all ${
-                    isActive ? "text-emerald-500 scale-110" : "text-gray-400"
+                    isActive && link.to !== "#"
+                      ? "text-emerald-500 scale-110"
+                      : "text-gray-400"
                   }`
                 }
               >

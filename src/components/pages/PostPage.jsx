@@ -58,6 +58,7 @@ const PostPage = () => {
       full_name, 
       avatar, 
       carrera, 
+      username,
       ciclo,
       equipped_badges:user_badges ( 
         is_equipped,
@@ -116,8 +117,6 @@ const PostPage = () => {
   };
 
   if (postLoading) return <SkeletonPost />;
-
-  console.log(selectedGif)
 
   return (
     <div className="bg-white dark:bg-black pb-24 min-h-screen">

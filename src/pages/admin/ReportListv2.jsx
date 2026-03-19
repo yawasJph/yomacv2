@@ -72,23 +72,23 @@ const ReportList = ({ onSelect }) => {
               </div>
 
               {/* Contenido + Indicador de Media */}
-              <p className="text-sm font-bold dark:text-white truncate mt-1 flex items-center gap-1.5">
+              <p className="text-sm font-bold dark:text-white mt-1 flex items-center gap-1.5 line-clamp-2">
                 {hasMedia && <Paperclip size={14} className="text-blue-500 shrink-0" />}
                 {textContent ? (
-                  <span>{textContent}</span>
+                  <span>{textContent} </span>
                 ) : (
                   <span className="text-gray-400 italic font-normal">Solo contenido multimedia</span>
                 )}
               </p>
 
               {/* Autores involucrados */}
-              <p className="text-[10px] text-gray-500 mt-0.5 truncate">
+              <p className="text-[10px] text-gray-500 mt-0.5 line-clamp-2">
                 <span className="font-semibold text-gray-700 dark:text-gray-300">
-                  {report.reporter?.full_name}
+                  {report.reporter?.full_name} {report.reporter?.full_name}
                 </span>
                 {" reportó a "}
                 <span className="font-semibold text-rose-600 dark:text-rose-400">
-                  {targetAuthor || "Usuario desconocido"}
+                  {targetAuthor || "Usuario desconocido"} {targetAuthor || "Usuario desconocido"}
                 </span>
               </p>
             </div>

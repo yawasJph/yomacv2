@@ -80,8 +80,8 @@ const UserSearchCard = ({ profile }) => {
 
   const renderLink = useCallback(
     (children) =>
-      isMe ? children : <Link to={`/profile/${profile.id}`}>{children}</Link>,
-    [isMe, profile.id],
+      isMe ? children : <Link to={`/profile/@${profile.username}`}>{children}</Link>,
+    [isMe, profile.username],
   );
 
   return (

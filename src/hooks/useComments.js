@@ -27,7 +27,8 @@ export const useComments = (id, type = "post") => {
       id, 
       full_name, 
       avatar, 
-      carrera, 
+      carrera,
+      username, 
       ciclo,
       equipped_badges:user_badges ( 
         is_equipped,

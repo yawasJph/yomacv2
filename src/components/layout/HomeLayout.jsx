@@ -1,16 +1,18 @@
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Header from "./Header";
 import LeftSidebar from "./LeftSidebar";
 import RigthSidebar from "./RigthSidebar";
-import NavigationM from "../ui/NavigationM2";
+//import NavigationM from "../ui/NavigationM2";
 import HeaderM from "./HeaderM";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { notify } from "@/utils/toast/notifyv3";
+import NavigationM from "../ui/navigation/NavigationMv2";
 //import NavigationM from "../ui/NavigationM";
 
 const HomeLayout = () => {
   const isMobile = useIsMobile();
+  const location = useLocation();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);

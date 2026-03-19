@@ -77,7 +77,7 @@ export default function UserHoverCard({ user, children }) {
           {/* Header */}
           <div className="flex justify-between items-start mb-3">
             <div className="relative">
-              <Link to={`/profile/${targetUser?.id}`}>
+              <Link to={`/profile/@${targetUser?.username}`}>
                 <img
                   src={
                     optimizeMedia(targetUser?.avatar, "image") ||
@@ -146,7 +146,7 @@ export default function UserHoverCard({ user, children }) {
 
           {/* Información */}
           <div className="space-y-1">
-            <Link to={`/profile/${targetUser?.id}`}>
+            <Link to={`/profile/@${targetUser?.username}`}>
               <h2 className="text-lg font-extrabold leading-tight dark:text-white hover:text-emerald-500 transition-colors">
                 {targetUser?.full_name}
               </h2>

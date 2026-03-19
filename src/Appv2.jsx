@@ -36,7 +36,7 @@ import AdminRoute from "./routes/AdminRoute";
 // --- IMPORTS DINÁMICOS (Lazy Loading) ---
 const CreatePost = lazy(() => import("./components/pages/CreatePost"));
 const SearchPage = lazy(() => import("./components/pages/SearchPage"));
-const UserProfile = lazy(() => import("./components/pages/UserProfile"));
+const UserProfile = lazy(() => import("./components/pages/UserProfilev2"));
 const EditProfile = lazy(() => import("./components/pages/EditProfilev2"));
 const SavedPage = lazy(() => import("./components/pages/SavedPage"));
 const DiscoverPage = lazy(() => import("./components/pages/DiscoverPage"));
@@ -167,7 +167,8 @@ function App() {
 
                 {/* Rutas Públicas dentro del Layout */}
                 <Route path="search" element={<SearchPage />} />
-                <Route path="profile/:userId" element={<UserProfile />} />
+                {/* <Route path="profile/:userId" element={<UserProfile />} /> */}
+                <Route path="profile/:username" element={<UserProfile />} />
                 <Route path="users" element={<DiscoverPage />} />
                 <Route path="post/:postId" element={<PostPage />} />
                 <Route path="blog" element={<BlogFeed />} />

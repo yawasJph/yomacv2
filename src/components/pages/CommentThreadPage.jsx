@@ -21,7 +21,7 @@ const CommentThreadPage = () => {
   const [selectedGif, setSelectedGif] = useState(null);
   const { user } = useAuth();
   const { data: currentUserProfiles } = useProfile(user?.id);
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   // 1. Necesitas un fetch del comentario padre específicamente
   const { data: parentComment, isLoading } = useQuery({
@@ -29,35 +29,36 @@ const CommentThreadPage = () => {
     queryFn: async () => {
       const { data, error } = await supabaseClient
         .from("comments_with_counts")
-      //   .select(
-      //     `
-      //   *,
-      //   profiles:user_id (
-      //     id, 
-      //     full_name, 
-      //     avatar, 
-      //     carrera, 
-      //     ciclo
-      //   )
-      // `
-      //   )
-       .select(
-       `
+        //   .select(
+        //     `
+        //   *,
+        //   profiles:user_id (
+        //     id,
+        //     full_name,
+        //     avatar,
+        //     carrera,
+        //     ciclo
+        //   )
+        // `
+        //   )
+        .select(
+          `
     *,
     profiles:user_id (
       id, 
       full_name, 
       avatar, 
       carrera, 
+      username,
       ciclo,
       equipped_badges:user_badges ( 
         is_equipped,
         badges ( icon, name )
       )
     )
-  `
-      )
-         .filter("profiles.user_badges.is_equipped", "eq", true)
+  `,
+        )
+        .filter("profiles.user_badges.is_equipped", "eq", true)
         .eq("id", commentId)
         .single();
 
@@ -71,7 +72,12 @@ const CommentThreadPage = () => {
   });
 
   // 2. Obtener las respuestas (las tratamos como comentarios de este commentId)
-  const { data: replies, addComment, fetchNextPage, hasNextPage} = useComments(commentId, "comment");
+  const {
+    data: replies,
+    addComment,
+    fetchNextPage,
+    hasNextPage,
+  } = useComments(commentId, "comment");
 
   const handleSendComment = (e) => {
     e.preventDefault();
@@ -100,8 +106,11 @@ const CommentThreadPage = () => {
   if (isLoading) return <div>Cargando hilo...</div>;
   if (!parentComment) return <div>No se encontró el comentario.</div>;
 
+  console.log(replies);
+
   return (
-    <div className="bg-white dark:bg-black pb-20">{/* max-h-screen */}
+    <div className="bg-white dark:bg-black pb-20">
+      {/* max-h-screen */}
       {/* Header Superior */}
       <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 flex items-center gap-6 border-b border-gray-100 dark:border-gray-800">
         <button
@@ -116,7 +125,11 @@ const CommentThreadPage = () => {
       {/* El Comentario Padre destacado */}
       <div className="border-b dark:border-gray-800 bg-emerald-50/30 dark:bg-emerald-500/5">
         {parentComment && (
-          <CommentItem comment={parentComment} isParentView={true} isDetailedView/>
+          <CommentItem
+            comment={parentComment}
+            isParentView={true}
+            isDetailedView
+          />
         )}
       </div>
 
@@ -131,10 +144,7 @@ const CommentThreadPage = () => {
               <p className="text-gray-500 text-sm mb-1">
                 Respondiendo a{" "}
                 <span className="text-emerald-500">
-                  @
-                  {parentComment.profiles?.full_name
-                    .replace(/\s+/g, "")
-                    .toLowerCase()}
+                  @{parentComment.profiles.username}
                 </span>
               </p>
               <textarea
@@ -164,7 +174,7 @@ const CommentThreadPage = () => {
 
               <div className="flex items-center justify-between mt-3">
                 <div className="flex gap-2 text-emerald-500">
-                  <EmojiSelector addEmoji={onEmojiClick}/>
+                  <EmojiSelector addEmoji={onEmojiClick} />
                   <button
                     type="button"
                     onClick={() => setShowGif(true)}
@@ -210,7 +220,7 @@ const CommentThreadPage = () => {
       {/* Lista de respuestas */}
       <div className="divide-y divide-gray-100 dark:divide-gray-600 pb-88">
         {replies?.pages.map((page) =>
-          page.map((reply) => <CommentItem key={reply.id} comment={reply} />)
+          page.map((reply) => <CommentItem key={reply.id} comment={reply} />),
         )}
         {hasNextPage && (
           <button
@@ -221,8 +231,7 @@ const CommentThreadPage = () => {
           </button>
         )}
 
-        {replies?.length == 0 && 
-        (
+        {replies?.length == 0 && (
           <div className="text-center py-6 text-gray-600 dark:text-gray-400 text-sm ">
             No hay comentarios
           </div>

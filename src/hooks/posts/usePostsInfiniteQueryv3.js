@@ -1,7 +1,7 @@
 import { supabaseClient } from "@/supabase/supabaseClient";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-export const usePostsInfiniteQuery = (filterConfig = {}) => {
+export const usePostsInfiniteQuery = (filterConfig = {}, options = {}) => {
   const fetchPosts = async ({ pageParam = null }) => {
     // 1. Identificar si es un filtro basado en una acción (Like, Bookmark, Repost)
     const isActionFilter = ["likes", "bookmarks", "reposts"].includes(filterConfig.type);
@@ -74,7 +74,7 @@ export const usePostsInfiniteQuery = (filterConfig = {}) => {
       .select(`
         *,
         profiles:user_id (
-          id, full_name, avatar, carrera, ciclo,
+          id, full_name, avatar, carrera, ciclo, username,
           equipped_badges:user_badges ( 
             is_equipped,
             badges ( icon, name , category, resource_url)
@@ -115,5 +115,6 @@ export const usePostsInfiniteQuery = (filterConfig = {}) => {
     },
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
+    ...options
   });
 };

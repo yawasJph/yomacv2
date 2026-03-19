@@ -8,7 +8,7 @@ export const useSimpleProfile = (userId) => {
     queryFn: async () => {
       const { data, error } = await supabaseClient
         .from("profiles") // Usamos la tabla base, no la vista
-        .select("id, full_name, avatar, carrera, ciclo, is_admin") // Solo estos campos
+        .select("id, full_name, avatar, carrera, ciclo, is_admin, username") // Solo estos campos
         .eq("id", userId)
         .single();
 

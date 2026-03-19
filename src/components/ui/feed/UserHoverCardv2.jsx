@@ -86,7 +86,7 @@ export default function UserHoverCard({ user, children }) {
       {open && (
         <div
           className="
-            absolute left-0 top-full z-9999 w-72
+            absolute left-0 top-full z-9999999 w-72
             bg-white dark:bg-[#0a0a0a] p-4 rounded-2xl 
             border border-gray-100 dark:border-emerald-500/20
             shadow-2xl animate-in fade-in zoom-in duration-200
@@ -95,7 +95,7 @@ export default function UserHoverCard({ user, children }) {
           {/* Header: Avatar y Botón */}
           <div className="flex justify-between items-start mb-3">
             <div className="relative">
-              <Link to={`/profile/${user.id}`}>
+              <Link to={`/profile/@${user.username}`}>
                <img
                 src={user.avatar || "/default-avatar.jpg"}
                 alt={user.full_name}

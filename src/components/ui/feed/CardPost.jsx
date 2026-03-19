@@ -161,7 +161,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
               loading="lazy"
             />
           ) : (
-            <Link to={`/profile/${post.profiles.id}`}>
+            <Link to={`/profile/@${post.profiles.username}`}>
               <img
                 src={optimizeMedia(post.profiles.avatar, "image") || "/default-avatar.jpg"}
                 alt="avatar"

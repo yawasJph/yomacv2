@@ -11,12 +11,13 @@ import {
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { toast } from "sonner";
 import { notify } from "@/utils/toast/notifyv3";
+import { useSimpleProfile } from "@/hooks/user/useSimpleProfile";
 
 const NavigationD = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const {data} = useSimpleProfile(user?.id)
 
   // Definimos qué rutas requieren login
   const sidebarLinks = [
@@ -28,7 +29,7 @@ const NavigationD = () => {
       private: false,
     },
     {
-      to: `profile/${user?.id}`,
+      to: data?.username ? `profile/@${data.username}` : "#",
       icon: <UserPen size={22} />,
       text: "Perfil",
       private: true,

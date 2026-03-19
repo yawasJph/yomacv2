@@ -137,7 +137,7 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
             loading="lazy"
           />
         ) : (
-          <Link to={`/profile/${comment.profiles.id}`}>
+          <Link to={`/profile/@${comment.profiles.username}`}>
             <img
               src={optimizeMedia(comment.profiles.avatar,"image")}
               className="w-10 h-10 rounded-full object-cover shrink-0 z-10"
@@ -158,11 +158,14 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
                       {isMobile ? (
                         <span>{comment.profiles.full_name}</span>
                       ) : user?.id !== comment.profiles.id ? (
-                        <UserHoverCard user={comment.profiles}>
-                          <span className="hover:underline cursor-pointer">
+                        // <UserHoverCard user={comment.profiles}>
+                        //   <span className="hover:underline cursor-pointer">
+                        //     {comment.profiles.full_name}
+                        //   </span>
+                        // </UserHoverCard>
+                        <span >
                             {comment.profiles.full_name}
                           </span>
-                        </UserHoverCard>
                       ) : (
                         <span>{comment.profiles.full_name}</span>
                       )}
