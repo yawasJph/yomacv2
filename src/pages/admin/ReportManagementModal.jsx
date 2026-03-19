@@ -1,4 +1,5 @@
-import { useBanUser } from "@/hooks/admin/useBanUser";
+
+import { useBanUser } from "@/hooks/admin/useBanUserv2";
 import { useResolveReport } from "@/hooks/admin/useResolveReport";
 import { CheckCircle2, XCircle, Trash2, Ban } from "lucide-react";
 
