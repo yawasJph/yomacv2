@@ -93,9 +93,11 @@ const HeaderM = () => {
                     optimizeMedia(profile?.avatar, "image") ||
                     "/default-avatar.jpg"
                   }
-                  className={`w-9 h-9 rounded-xl object-cover border-2 border-emerald-500/50 shadow-sm `}
+                  className={`w-9 h-9 rounded-xl object-cover border-2 border-emerald-500/50 shadow-sm`}
                   alt="Menu"
                   loading="lazy"
+                  onContextMenu={e => e.preventDefault()}
+                  draggable={false}
                 />
               </button>
             ) : (

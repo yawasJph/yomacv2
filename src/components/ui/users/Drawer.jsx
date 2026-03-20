@@ -47,6 +47,9 @@ const Drawer = ({ onClose, profile, menuItems, signout }) => {
                <img
                 src={optimizeMedia(profile?.avatar,"image") || "/default-avatar.jpg"}
                 className="w-16 h-16 rounded-2xl object-cover border-4 border-white dark:border-neutral-900 shadow-xl"
+                loading="lazy"
+                onContextMenu={e => e.preventDefault()}
+                draggable={false}
               />
               {/* Badge de Admin si aplica */}
               {profile?.is_admin && (

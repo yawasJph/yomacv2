@@ -72,11 +72,13 @@ const UserSuggestions = () => {
                       className="w-10 h-10 rounded-full object-cover border border-emerald-500/10"
                       alt={profile.full_name}
                       loading="lazy"
+                      onContextMenu={(e) => e.preventDefault()}
+                      draggable={false}
                     />
                   </Link>
 
                   <div className="min-w-0 flex-1">
-                    <Link to={`/profile/${profile.username}`}>
+                    <Link to={`/profile/@${profile.username}`}>
                       <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">
                         {profile.full_name}
                       </p>

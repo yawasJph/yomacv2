@@ -80,7 +80,11 @@ const UserSearchCard = ({ profile }) => {
 
   const renderLink = useCallback(
     (children) =>
-      isMe ? children : <Link to={`/profile/@${profile.username}`}>{children}</Link>,
+      isMe ? (
+        children
+      ) : (
+        <Link to={`/profile/@${profile.username}`}>{children}</Link>
+      ),
     [isMe, profile.username],
   );
 
@@ -95,6 +99,9 @@ const UserSearchCard = ({ profile }) => {
             }
             alt={profile.full_name}
             className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border border-emerald-500/10 bg-gray-200 dark:bg-gray-700 transition-transform hover:scale-105"
+            loading="lazy"
+            onContextMenu={(e) => e.preventDefault()}
+            draggable={false}
           />,
         )}
 
@@ -147,7 +154,7 @@ const UserSearchCard = ({ profile }) => {
       {!isMe &&
         (profile.is_banned ? (
           <div className="px-4 py-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full font-bold text-xs uppercase tracking-wider border border-rose-100 dark:border-rose-500/20">
-            {isMobile ? <Ban size={16}/> : "Cuenta Suspendida"}
+            {isMobile ? <Ban size={16} /> : "Cuenta Suspendida"}
           </div>
         ) : (
           <button

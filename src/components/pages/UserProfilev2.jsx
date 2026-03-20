@@ -131,7 +131,11 @@ const UserProfile = () => {
           </div>
           {/* 👈 MOSTRAMOS EL USERNAME EN EL HEADER PARA QUE EL USUARIO LO VEA */}
           <span className="text-xs text-gray-500">
-            @{profile.username} • {allPosts.length} publicaciones
+            @{profile.username} • {allPosts.length}{" "}
+            {activeTab === "posts" && "publicaciones"}
+            {activeTab === "media" && "medias"}
+            {activeTab === "likes" && "likes"}
+            {activeTab === "reposts" && "reposts"}
           </span>
         </div>
       </div>
@@ -147,6 +151,9 @@ const UserProfile = () => {
               src={optimizeMedia(profile.cover, "image")}
               alt="Cover"
               className="w-full h-full object-cover"
+              loading="lazy"
+              onContextMenu={(e) => e.preventDefault()}
+              draggable={false}
             />
           )}
         </div>
@@ -160,6 +167,9 @@ const UserProfile = () => {
               className={`w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white dark:border-black object-cover ${profile?.is_banned ? "grayscale opacity-70" : ""}`}
               alt={profile?.full_name}
               onClick={() => profile?.avatar && setSelectedImg(profile.avatar)}
+              loading="lazy"
+              onContextMenu={(e) => e.preventDefault()}
+              draggable={false}
             />
             {/* Overlay de baneo sobre el avatar */}
             {profile?.is_banned && (
@@ -243,6 +253,8 @@ const UserProfile = () => {
                     alt="Cover"
                     className="object-cover size-8"
                     loading="lazy"
+                    onContextMenu={(e) => e.preventDefault()}
+                    draggable={false}
                   />
                 )}
               </>

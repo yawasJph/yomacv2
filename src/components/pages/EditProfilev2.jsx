@@ -96,6 +96,9 @@ const EditProfile = () => {
             className={`w-full h-full object-cover transition-opacity duration-300 ${
               loading ? "opacity-30" : "opacity-60"
             }`}
+            loading="lazy"
+            onContextMenu={(e) => e.preventDefault()}
+            draggable={false}
           />
           <button
             type="button"
@@ -121,6 +124,9 @@ const EditProfile = () => {
               className={`w-24 h-24 rounded-full border-4 border-white dark:border-black object-cover transition-opacity ${
                 loading ? "opacity-30" : "opacity-80"
               }`}
+              loading="lazy"
+              onContextMenu={(e) => e.preventDefault()}
+              draggable={false}
             />
             <button
               type="button"

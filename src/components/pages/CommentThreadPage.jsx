@@ -106,8 +106,6 @@ const CommentThreadPage = () => {
   if (isLoading) return <div>Cargando hilo...</div>;
   if (!parentComment) return <div>No se encontró el comentario.</div>;
 
-  console.log(replies);
-
   return (
     <div className="bg-white dark:bg-black pb-20">
       {/* max-h-screen */}
@@ -139,6 +137,9 @@ const CommentThreadPage = () => {
             <img
               src={currentUserProfiles?.avatar}
               className="w-10 h-10 rounded-full object-cover"
+              loading="lazy"
+              onContextMenu={(e) => e.preventDefault()}
+              draggable={false}
             />
             <div className="flex-1">
               <p className="text-gray-500 text-sm mb-1">

@@ -64,6 +64,8 @@ const UserSearchCard = ({ profile }) => {
     }
   };
 
+  console.log(profile)
+
   return (
     <div className="p-4 hover:bg-gray-50/50 dark:hover:bg-gray-900/20 transition-colors border-b border-gray-100 dark:border-gray-800 flex items-center justify-between gap-4">
       <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -75,9 +77,11 @@ const UserSearchCard = ({ profile }) => {
             alt={profile.full_name}
             className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 border border-emerald-500/10 cursor-pointer"
             loading="lazy"
+            onContextMenu={(e) => e.preventDefault()}
+            draggable={false}
           />
         ) : (
-          <Link to={`/profile/${profile.id}`}>
+          <Link to={`/profile/@${profile.username}`}>
             <img
               src={
                 optimizeMedia(profile.avatar, "image") || "/default-avatar.jpg"
@@ -85,6 +89,8 @@ const UserSearchCard = ({ profile }) => {
               alt={profile.full_name}
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 border border-emerald-500/10 cursor-pointer"
               loading="lazy"
+              onContextMenu={(e) => e.preventDefault()}
+              draggable={false}
             />
           </Link>
         )}
@@ -117,7 +123,7 @@ const UserSearchCard = ({ profile }) => {
             </>
           ) : (
             <>
-              <Link to={`/profile/${profile.id}`}>
+              <Link to={`/profile/@${profile.username}`}>
                 <h4 className="font-bold text-gray-900 dark:text-white truncate hover:underline cursor-pointer decoration-emerald-500 text-sm sm:text-base">
                   {profile.full_name.length > 20
                     ? profile.full_name.substring(0, 20) + "..."

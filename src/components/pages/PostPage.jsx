@@ -29,7 +29,7 @@ const PostPage = () => {
   const {} = useAuthAction();
   const { executeAction } = useAuthAction();
 
-  const openAuthModalForComment = () => { 
+  const openAuthModalForComment = () => {
     executeAction(
       () => {
         // Si el usuario está autenticado, no hacemos nada
@@ -39,9 +39,9 @@ const PostPage = () => {
         // Si el usuario cancela o cierra el modal, podemos mostrar un mensaje o simplemente no hacer nada
         // Por ejemplo, podríamos mostrar una alerta (aunque lo ideal sería un toast o algo menos intrusivo)
         notify.info("Necesitas iniciar sesión para comentar.");
-      }
-    );  
-  };  
+      },
+    );
+  };
 
   // 1. Cargar el post principal
   const { data: post, isLoading: postLoading } = useQuery({
@@ -109,11 +109,9 @@ const PostPage = () => {
   };
 
   const hanldeNextComments = () => {
-    executeAction(fetchNextPage, "ver mas comentarios",
-      () => { 
-        notify.info("Necesitas iniciar sesión para ver más comentarios.");  
-      }
-    );
+    executeAction(fetchNextPage, "ver mas comentarios", () => {
+      notify.info("Necesitas iniciar sesión para ver más comentarios.");
+    });
   };
 
   if (postLoading) return <SkeletonPost />;
@@ -149,6 +147,8 @@ const PostPage = () => {
                 src={optimizeMedia(data?.avatar, "image")}
                 className="w-10 h-10 rounded-full object-cover"
                 loading="lazy"
+                onContextMenu={(e) => e.preventDefault()}
+                draggable={false}
               />
               <div className="flex-1">
                 <textarea
@@ -179,7 +179,7 @@ const PostPage = () => {
 
                 <div className="flex items-center justify-between mt-3">
                   <div className="flex gap-2 text-emerald-500">
-                    <EmojiSelector addEmoji={onEmojiClick}/>
+                    <EmojiSelector addEmoji={onEmojiClick} />
                     <button
                       type="button"
                       onClick={() => setShowGif(true)}
@@ -213,7 +213,7 @@ const PostPage = () => {
                 </div>
               </div>
             </div>
-           
+
             {showGif && (
               <GifPicker
                 onSelect={(url) => setSelectedGif(url)}

@@ -13,7 +13,7 @@ import {
 import FullscreenModal from "./FullscreenModal";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 import OpenGraphCard from "../openGraph/OpenGraphCard4";
-import PostMedia from "./PostMediav4";
+import PostMedia from "./PostMediav5";
 import MediaModal from "./MediaModalv4";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
@@ -155,18 +155,28 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
         <div onClick={(e) => e.stopPropagation()}>
           {isMe ? (
             <img
-              src={optimizeMedia(post.profiles.avatar, "image") || "/default-avatar.jpg"}
+              src={
+                optimizeMedia(post.profiles.avatar, "image") ||
+                "/default-avatar.jpg"
+              }
               alt="avatar"
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
               loading="lazy"
+              onContextMenu={(e) => e.preventDefault()}
+              draggable={false}
             />
           ) : (
             <Link to={`/profile/@${post.profiles.username}`}>
               <img
-                src={optimizeMedia(post.profiles.avatar, "image") || "/default-avatar.jpg"}
+                src={
+                  optimizeMedia(post.profiles.avatar, "image") ||
+                  "/default-avatar.jpg"
+                }
                 alt="avatar"
                 className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0"
                 loading="lazy"
+                onContextMenu={(e) => e.preventDefault()}
+                draggable={false}
               />
             </Link>
           )}

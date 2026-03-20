@@ -22,7 +22,6 @@ import { useAuthAction } from "../../hooks/useAuthAction";
 import { notify } from "@/utils/toast/notifyv3";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
-
 const CommentItem = ({ comment, postId, isDetailedView = false }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const LIMIT = 250; // Umbral para mostrar el "Ver más"
@@ -132,16 +131,20 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
         )}
         {isMe ? (
           <img
-            src={optimizeMedia(comment.profiles.avatar,"image")}
+            src={optimizeMedia(comment.profiles.avatar, "image")}
             className="w-10 h-10 rounded-full object-cover shrink-0 z-10"
             loading="lazy"
+            onContextMenu={(e) => e.preventDefault()}
+            draggable={false}
           />
         ) : (
           <Link to={`/profile/@${comment.profiles.username}`}>
             <img
-              src={optimizeMedia(comment.profiles.avatar,"image")}
+              src={optimizeMedia(comment.profiles.avatar, "image")}
               className="w-10 h-10 rounded-full object-cover shrink-0 z-10"
               loading="lazy"
+              onContextMenu={(e) => e.preventDefault()}
+              draggable={false}
             />
           </Link>
         )}
@@ -163,9 +166,7 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
                         //     {comment.profiles.full_name}
                         //   </span>
                         // </UserHoverCard>
-                        <span >
-                            {comment.profiles.full_name}
-                          </span>
+                        <span>{comment.profiles.full_name}</span>
                       ) : (
                         <span>{comment.profiles.full_name}</span>
                       )}

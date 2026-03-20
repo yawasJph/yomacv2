@@ -136,7 +136,7 @@ const NotificationsPage = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto border-x border-gray-100 dark:border-gray-800 ">
+    <div className="max-w-2xl mx-auto border-x border-gray-100 dark:border-gray-800 pb-5">
       {/**min-h-screen */}
       <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 flex items-center gap-6 border-b border-gray-100 dark:border-gray-800 justify-between">
         <div className="flex items-center justify-between gap-1">

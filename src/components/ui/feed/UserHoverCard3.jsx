@@ -86,6 +86,8 @@ export default function UserHoverCard({ user, children }) {
                   alt={targetUser?.full_name}
                   className="w-14 h-14 rounded-full object-cover border-2 border-emerald-500/10 shrink-0"
                   loading="lazy"
+                  onContextMenu={e => e.preventDefault()}
+                  draggable={false}
                 />
               </Link>
 

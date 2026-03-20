@@ -7,10 +7,10 @@ import React, {
   useImperativeHandle,
 } from "react";
 import { Play } from "lucide-react";
-import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
+// 🔥 Añadimos isGif por defecto en false
 const UniversalFeedVideo = forwardRef(
-  ({ src, shouldPlay, onEnded, className = "", onClick }, ref) => {
+  ({ src, poster, shouldPlay, onEnded, className = "", onClick, isGif = false }, ref) => {
     const videoRef = useRef(null);
     const containerRef = useRef(null);
 
@@ -20,7 +20,6 @@ const UniversalFeedVideo = forwardRef(
     const [isHover, setIsHover] = useState(false);
     const [isInView, setIsInView] = useState(false);
 
-    // ✅ Exponer métodos al componente padre
     useImperativeHandle(ref, () => ({
       pause: () => {
         if (videoRef.current) {
@@ -38,11 +37,11 @@ const UniversalFeedVideo = forwardRef(
       },
     }));
 
-    // 🎯 IntersectionObserver → pausa fuera de pantalla
+    // 🎯 IntersectionObserver → pausa fuera de pantalla (MÁS SENSIBLE)
     useEffect(() => {
       const observer = new IntersectionObserver(
         ([entry]) => setIsInView(entry.isIntersecting),
-        { threshold: 0.6 },
+        { threshold: 0.2 }, // 👈 Reducido de 0.6 a 0.2 para que funcione perfecto en móvil
       );
 
       if (containerRef.current) observer.observe(containerRef.current);
@@ -50,7 +49,6 @@ const UniversalFeedVideo = forwardRef(
       return () => observer.disconnect();
     }, []);
 
-    // 🎯 Autoplay inteligente
     useEffect(() => {
       const video = videoRef.current;
       if (!video) return;
@@ -66,7 +64,6 @@ const UniversalFeedVideo = forwardRef(
       }
     }, [shouldPlay, isInView]);
 
-    // 🎯 Progress tracking
     const handleTimeUpdate = useCallback(() => {
       const video = videoRef.current;
       if (!video) return;
@@ -74,7 +71,6 @@ const UniversalFeedVideo = forwardRef(
       setProgress((video.currentTime / video.duration) * 100);
     }, []);
 
-    // 🎯 Manejar cuando el video termina
     const handleVideoEnded = useCallback(() => {
       setIsPlaying(false);
       setProgress(0);
@@ -83,7 +79,6 @@ const UniversalFeedVideo = forwardRef(
       }
     }, [onEnded]);
 
-    // 🎯 Toggle Play
     const togglePlay = useCallback((e) => {
       e?.stopPropagation();
       const video = videoRef.current;
@@ -98,7 +93,6 @@ const UniversalFeedVideo = forwardRef(
       }
     }, []);
 
-    // 🎯 Sincronizar estado cuando el video se pausa/reproduce
     useEffect(() => {
       const video = videoRef.current;
       if (!video) return;
@@ -115,8 +109,6 @@ const UniversalFeedVideo = forwardRef(
       };
     }, []);
 
-    console.log(src)
-    
     return (
       <div
         ref={containerRef}
@@ -125,23 +117,23 @@ const UniversalFeedVideo = forwardRef(
         onMouseLeave={() => setIsHover(false)}
         onClick={onClick}
       >
-        {/* VIDEO */}
         <video
           ref={videoRef}
-          //src={src}
-          src={optimizeMedia(src)}
+          src={src} 
+          poster={poster} // 👈 2. Añade esta línea aquí
           muted={muted}
           playsInline
-          preload="metadata"
+          preload={isGif}
           onEnded={handleVideoEnded}
           onTimeUpdate={handleTimeUpdate}
           className="w-full h-full object-cover"
           onContextMenu={(e) => e.preventDefault()}
           onDragStart={(e) => e.preventDefault()}
+          
         />
 
-        {/* CENTER PLAY BUTTON */}
-        {!isPlaying && (
+        {/* 👈 CORRECCIÓN UX: Solo mostramos Play si NO es un GIF */}
+        {!isPlaying && !isGif && (
           <button
             onClick={togglePlay}
             className="absolute inset-0 flex items-center justify-center bg-black/10 transition-all hover:bg-black/20"
@@ -152,8 +144,8 @@ const UniversalFeedVideo = forwardRef(
           </button>
         )}
 
-        {/* PROGRESS BAR */}
-        {isPlaying && (
+        {/* 👈 CORRECCIÓN UX: Solo mostramos progreso si NO es un GIF */}
+        {isPlaying && !isGif && (
           <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
             <div
               className="h-full bg-white transition-all duration-200"
@@ -162,9 +154,9 @@ const UniversalFeedVideo = forwardRef(
           </div>
         )}
 
-        {/* VIDEO TAG */}
+        {/* ETIQUETA DINÁMICA */}
         <div className="absolute top-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full font-bold tracking-wider">
-          VIDEO
+          {isGif ? "GIF" : "VIDEO"}
         </div>
       </div>
     );
