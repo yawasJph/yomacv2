@@ -4,6 +4,11 @@
       "source": "/share/:id",
       "destination": "https://vrbfinqvtyclfmvhheub.supabase.co/functions/v1/share-postv4?id=:id",
       "permanent": true
+    },
+    {
+      "source": "/share-profile/:username",
+      "destination": "https://vrbfinqvtyclfmvhheub.supabase.co/functions/v1/share-profile?username=:username",
+      "permanent": true
     }
   ],
   "rewrites": [

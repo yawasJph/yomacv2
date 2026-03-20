@@ -7,6 +7,7 @@ import {
   Globe,
   Instagram,
   Linkedin,
+  Share,
   ShieldAlert,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
@@ -21,6 +22,7 @@ import { usePostsInfiniteQuery } from "@/hooks/posts/usePostsInfiniteQueryv3";
 import SkeletonPost from "../skeletons/SkeletonPost";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 import { useProfile } from "@/hooks/user/useProfilev2";
+import { handleShareProfile } from "../utils/handleShareProfile";
 
 const UserProfile = () => {
   // 1. Ahora leemos 'username' de la URL, no 'userId'
@@ -107,13 +109,12 @@ const UserProfile = () => {
   if (!profile)
     return <div className="p-10 text-center">Usuario no encontrado</div>;
 
-  //console.log(profile)
 
   return (
     <div className="min-h-screen bg-white dark:bg-black pb-10">
       {/* min-h-screen */}
       {/* HEADER SUPERIOR (Sticky) */}
-      <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-2 flex items-center gap-6 border-b border-transparent">
+      {/* <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-2 flex items-center gap-6 border-b border-transparent">
         <button
           onClick={() => navigate(-1)}
           className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-full transition-colors"
@@ -129,7 +130,6 @@ const UserProfile = () => {
               <ShieldAlert size={16} className="text-rose-500" />
             )}
           </div>
-          {/* 👈 MOSTRAMOS EL USERNAME EN EL HEADER PARA QUE EL USUARIO LO VEA */}
           <span className="text-xs text-gray-500">
             @{profile.username} • {allPosts.length}{" "}
             {activeTab === "posts" && "publicaciones"}
@@ -138,6 +138,44 @@ const UserProfile = () => {
             {activeTab === "reposts" && "reposts"}
           </span>
         </div>
+      </div> */}
+
+      <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-2 flex items-center justify-between border-b border-transparent">
+        {/* IZQUIERDA: Botón atrás e Info */}
+        <div className="flex items-center gap-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-full transition-colors"
+          >
+            <ArrowLeft size={20} className="dark:text-white" />
+          </button>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-bold dark:text-white leading-tight">
+                {profile.full_name}
+              </h1>
+              {profile.is_banned && (
+                <ShieldAlert size={16} className="text-rose-500" />
+              )}
+            </div>
+            <span className="text-xs text-gray-500">
+              @{profile.username} • {allPosts.length}{" "}
+              {activeTab === "posts" && "publicaciones"}
+              {activeTab === "media" && "medias"}
+              {activeTab === "likes" && "likes"}
+              {activeTab === "reposts" && "reposts"}
+            </span>
+          </div>
+        </div>
+
+        {/* DERECHA: Acciones (Compartir) */}
+        <button
+          onClick={() => handleShareProfile(profile)}
+          className="p-2 mr-2 hover:bg-gray-100 dark:hover:bg-gray-900 text-gray-600 dark:text-gray-300 rounded-full transition-colors flex items-center justify-center"
+          title="Compartir perfil"
+        >
+          <Share size={20} />
+        </button>
       </div>
 
       {/* BANNER & AVATAR */}

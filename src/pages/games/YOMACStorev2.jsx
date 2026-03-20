@@ -58,6 +58,8 @@ const StoreItem = memo(
             alt={item.name}
             className="w-24 h-24 object-contain relative z-10 group-hover:scale-110 transition-transform"
             loading="lazy"
+            onContextMenu={(e) => e.preventDefault()}
+            draggable={false}
           />
         )}
       </div>
@@ -313,10 +315,6 @@ const HeaderSection = memo(({ navigate, credits, isLoading }) => {
       )}
     </div>
   );
-});
-
-const SkeletonLoader = memo(() => {
-  return <p>cargando...</p>;
 });
 
 export default YoMACStore;
