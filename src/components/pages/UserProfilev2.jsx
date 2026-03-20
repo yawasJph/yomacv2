@@ -109,7 +109,7 @@ const UserProfile = () => {
   if (!profile)
     return <div className="p-10 text-center">Usuario no encontrado</div>;
 
-
+  
   return (
     <div className="min-h-screen bg-white dark:bg-black pb-10">
       {/* min-h-screen */}

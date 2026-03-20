@@ -1,7 +1,7 @@
 export const handleShareProfile = async (profile) => {
   const shareData = {
     title: `${profile.full_name} (@${profile.username}) en YoMAC`,
-    text: `Mira el perfil de ${profile.full_name} en YoMAC`,
+    //text: `Mira el perfil de ${profile.full_name} en YoMAC`,
     url: `https://yomacv2.vercel.app/share-profile/${profile.username}` // 👈 URL que apuntará a la nueva Edge Function
   };
   
