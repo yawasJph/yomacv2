@@ -81,7 +81,7 @@ export const handleShare = async (post) => {
   // 5. Configuración de datos para compartir
   const shareData = {
     title: `Post de ${post.profiles?.full_name || 'YoMAC'}`,
-    text: finalText || "Mira este post en YoMAC",
+    //text: finalText || "Mira este post en YoMAC",
     url: `https://yomacv2.vercel.app/share/${post.id}` 
   };
 
