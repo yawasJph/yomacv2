@@ -7,12 +7,14 @@ import {
   ArrowLeft,
   Camera,
   Check,
+  Facebook,
   Github,
   Globe,
   Instagram,
   Linkedin,
   Save,
 } from "lucide-react";
+import TiktokIcon from "../icons/TiktokIcon";
 
 const BIO_LIMIT = 250;
 
@@ -35,8 +37,6 @@ const EditProfile = () => {
   } = useEditProfile(user, navigate);
 
   if (initialLoading || !formData) return <ProfileEditSkeleton />;
-
-  console.log(formData.all_user_badges);
 
   return (
     <div className="bg-white dark:bg-black pb-10">
@@ -146,6 +146,29 @@ const EditProfile = () => {
 
       {/* Formulario */}
       <div className="px-6 mt-16 space-y-6">
+        {/* USERNAME (Solo lectura) */}
+        {/* <div className="space-y-2">
+          <label className="text-sm font-bold text-gray-500">
+            Nombre de Usuario
+          </label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">
+              @
+            </span>
+            <input
+              type="text"
+              value={formData.username || ""}
+              disabled
+              className="w-full pl-8 p-3 bg-gray-100/50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 rounded-xl border border-gray-200 dark:border-gray-800 cursor-not-allowed outline-none font-medium"
+              title="El nombre de usuario es generado por la institución y no se puede cambiar."
+            />
+          </div>
+          <p className="text-xs text-gray-400 mt-1">
+            Tu nombre de usuario es único y está vinculado a tu correo
+            institucional.
+          </p>
+        </div> */}
+
         {/* Bio con contador de caracteres */}
         <div className="space-y-2">
           <div className="flex justify-between items-end">
@@ -229,6 +252,17 @@ const EditProfile = () => {
                 icon: <Instagram size={18} />,
                 label: "Instagram",
               },
+              {
+                id: "facebook",
+                icon: <Facebook size={18} />,
+                label: "Facebook",
+              },
+              {
+                id: "tiktok",
+                icon: <TiktokIcon  />,
+                label: "Tiktok",
+              },
+              
             ].map((social) => (
               <div
                 key={social.id}

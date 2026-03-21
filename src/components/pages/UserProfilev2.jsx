@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft,
   Calendar,
+  Facebook,
   Github,
   Globe,
   Instagram,
@@ -23,6 +24,18 @@ import SkeletonPost from "../skeletons/SkeletonPost";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 import { useProfile } from "@/hooks/user/useProfilev2";
 import { handleShareProfile } from "../utils/handleShareProfile";
+import TiktokIcon from "../icons/TiktokIcon";
+import SocialLinks from "../socials/SocialLinks";
+import UserBadges from "../user/UserBadges";
+
+const hoverColors = {
+  github: "hover:text-black dark:hover:text-white",
+  instagram: "hover:text-pink-500",
+  linkedin: "hover:text-blue-500",
+  facebook: "hover:text-blue-600",
+  tiktok: "hover:text-cyan-400",
+  web: "hover:text-emerald-500",
+};
 
 const UserProfile = () => {
   // 1. Ahora leemos 'username' de la URL, no 'userId'
@@ -109,7 +122,6 @@ const UserProfile = () => {
   if (!profile)
     return <div className="p-10 text-center">Usuario no encontrado</div>;
 
-  
   return (
     <div className="min-h-screen bg-white dark:bg-black pb-10">
       {/* min-h-screen */}
@@ -263,9 +275,6 @@ const UserProfile = () => {
       {/* INFORMACIÓN DEL PERFIL */}
       <div className="px-4 mt-5 space-y-3">
         <div>
-          {/* <h2 className="text-xl font-extrabold dark:text-white tracking-tight sm:text-2xl sm:font-black">
-            {profile?.full_name}
-          </h2> */}
           <div className="flex items-center gap-2 flex-wrap">
             <h2 className="text-xl font-extrabold dark:text-white tracking-tight sm:text-2xl sm:font-black">
               {profile?.full_name}
@@ -279,24 +288,7 @@ const UserProfile = () => {
           </div>
           {/* RENDERIZADO DE INSIGNIAS */}
           <div className="flex items-center gap-1">
-            {profile?.equipped_badges?.map((badge) => (
-              <>
-                {badge.category === "badge" ? (
-                  <span key={badge.id} title={badge.name} className={`text-lg`}>
-                    {badge.icon}
-                  </span>
-                ) : (
-                  <img
-                    src={badge.url}
-                    alt="Cover"
-                    className="object-cover size-8"
-                    loading="lazy"
-                    onContextMenu={(e) => e.preventDefault()}
-                    draggable={false}
-                  />
-                )}
-              </>
-            ))}
+            <UserBadges badges={profile?.equipped_badges} />
           </div>
 
           <div className="flex items-center gap-2 mt-1">
@@ -313,28 +305,7 @@ const UserProfile = () => {
 
         {/* REDES SOCIALES ESTILO PREMIUM */}
         {profile?.socials && (
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(profile.socials).map(([platform, url]) => {
-              if (!url) return null;
-              const icons = {
-                github: <Github size={18} />,
-                instagram: <Instagram size={18} />,
-                linkedin: <Linkedin size={18} />,
-                web: <Globe size={18} />,
-              };
-              return (
-                <a
-                  key={platform}
-                  href={url.startsWith("http") ? url : `https://${url}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:border-emerald-200 transition-all shadow-sm"
-                >
-                  {icons[platform] || <Globe size={18} />}
-                </a>
-              );
-            })}
-          </div>
+            <SocialLinks socials={profile.socials}/>
         )}
 
         {profile?.bio && (
