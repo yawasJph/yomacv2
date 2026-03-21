@@ -1,8 +1,7 @@
 import React, { useState, useMemo, useCallback, memo } from "react";
-import { useStoreData } from "../../hooks/useStore"; // El hook que creamos
+import { useStoreData } from "../../hooks/useStore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-// ... (mismos imports de iconos)
 import {
   ShoppingBag,
   Sparkles,
@@ -11,13 +10,13 @@ import {
   Wallet,
   ArrowLeft,
 } from "lucide-react";
-import { toast } from "sonner";
 import { useAuth } from "../../context/AuthContext";
 import { useProfile } from "../../hooks/useProfile";
 import { useNavigate } from "react-router-dom";
 import StoreSkeleton from "../../components/skeletons/StoreSkeleton";
 import { WalletSkeleton } from "@/components/skeletons/WalletSkeleton";
 import { supabaseClient } from "@/supabase/supabaseClient";
+import { notify } from "@/utils/toast/notifyv3";
 
 // 1. Sub-componente Memoizado para las tarjetas
 const StoreItem = memo(
@@ -121,13 +120,15 @@ const YoMACStore = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("¡Adquisición completada!");
+      notify.success("¡Adquisición completada!");
       queryClient.invalidateQueries(["store"]); // Refresca la caché
       queryClient.invalidateQueries(["profile"]); // Refresca los créditos del usuario
       queryClient.invalidateQueries(["profile-edit", currentUser.id]);
       //queryClient.invalidateQueries(["profile", currentUser.id]);
     },
-    onError: (error) => toast.error(error.message),
+    onError: (error) => {
+      notify.error(error.message || "No se pudo completar la compra.");
+    },
   });
 
   // 2. Filtrado Memoizado (No se recalcula si cambias de pestaña a menos que cambien los datos)

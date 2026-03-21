@@ -50,7 +50,7 @@ export default function UserBadgeSelector({
               key={badge.id}
               type="button"
               onClick={() => onToggle(badge.id, isEquipped)}
-              title={badge.name}
+              //title={badge.name}
               className={`group relative flex items-center justify-center
                 w-16 h-16 rounded-2xl border transition-all duration-200
                 active:scale-90
@@ -94,7 +94,7 @@ export default function UserBadgeSelector({
 
               {/* TOOLTIP */}
               <div
-                className="absolute -bottom-8 left-1/2 -translate-x-1/2
+                className="absolute -top-8 left-1/2 -translate-x-1/2
                 opacity-0 group-hover:opacity-100
                 pointer-events-none
                 transition-all duration-200
