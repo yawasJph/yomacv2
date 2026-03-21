@@ -287,9 +287,9 @@ const UserProfile = () => {
             )}
           </div>
           {/* RENDERIZADO DE INSIGNIAS */}
-          <div className="flex items-center gap-1">
-            <UserBadges badges={profile?.equipped_badges} />
-          </div>
+          {profile?.equipped_badges && <div className="flex items-center gap-1">
+            <UserBadges badges={profile.equipped_badges || []} />
+          </div>}
 
           <div className="flex items-center gap-2 mt-1">
             <span className="text-emerald-600 dark:text-emerald-400 font-bold text-sm bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-md">
