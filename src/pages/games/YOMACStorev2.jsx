@@ -124,6 +124,8 @@ const YoMACStore = () => {
       toast.success("¡Adquisición completada!");
       queryClient.invalidateQueries(["store"]); // Refresca la caché
       queryClient.invalidateQueries(["profile"]); // Refresca los créditos del usuario
+      queryClient.invalidateQueries(["profile-edit", currentUser.id]);
+      //queryClient.invalidateQueries(["profile", currentUser.id]);
     },
     onError: (error) => toast.error(error.message),
   });

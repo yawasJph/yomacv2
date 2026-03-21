@@ -15,6 +15,7 @@ import {
   Save,
 } from "lucide-react";
 import TiktokIcon from "../icons/TiktokIcon";
+import UserBadgeSelector from "../user/UserBadgeSelector";
 
 const BIO_LIMIT = 250;
 
@@ -259,10 +260,9 @@ const EditProfile = () => {
               },
               {
                 id: "tiktok",
-                icon: <TiktokIcon  />,
+                icon: <TiktokIcon />,
                 label: "Tiktok",
               },
-              
             ].map((social) => (
               <div
                 key={social.id}
@@ -290,14 +290,14 @@ const EditProfile = () => {
         </div>
         {/* GESTIÓN DE INSIGNIAS */}
 
-        <div className="space-y-4 pt-4">
-          <h3 className="font-bold dark:text-white border-b border-gray-800 pb-2">
-            Mis Insignias (Toca para equipar/desequipar)
-          </h3>
+        {/* {formData.all_user_badges?.length > 0 && (
+          <div className="space-y-4 pt-4">
+            <h3 className="font-bold dark:text-white border-b border-gray-800 pb-2">
+              Mis Insignias (Toca para equipar/desequipar)
+            </h3>
 
-          <div className="flex flex-wrap gap-3">
-            {/* SECCIÓN DE INSIGNIAS */}
-            {formData.all_user_badges?.length > 0 && (
+            <div className="flex flex-wrap gap-3">
+
               <div className="space-y-4 border-gray-100 dark:border-gray-800">
                 <p className="text-xs text-gray-500">
                   Selecciona las que quieres mostrar en tu perfil público
@@ -325,9 +325,13 @@ const EditProfile = () => {
                   ))}
                 </div>
               </div>
-            )}
+            </div>
           </div>
-        </div>
+        )} */}
+        <UserBadgeSelector
+          badges={formData?.all_user_badges || []}
+          onToggle={toggleBadge}
+        />
       </div>
     </div>
   );

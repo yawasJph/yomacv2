@@ -5,7 +5,6 @@ import { uploadToCloudinary } from "../../cloudinary/upToCloudinary";
 import { notify } from "@/utils/toast/notifyv3";
 import { validateSocials } from "@/components/utils/validateSocials";
 
-
 export const useEditProfile = (user, navigate) => {
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState(null);
@@ -16,17 +15,25 @@ export const useEditProfile = (user, navigate) => {
   const { data: profile, isLoading: initialLoading } = useQuery({
     queryKey: ["profile-edit", user?.id],
     queryFn: async () => {
-      const { data: profileData } = await supabaseClient.from("profiles").select("*").eq("id", user.id).single();
-      const { data: badgeData } = await supabaseClient.from("user_badges").select(`is_equipped, badge_id, badges(id, name, icon)`).eq("user_id", user.id);
+      const { data: profileData } = await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+      const { data: badgeData } = await supabaseClient
+        .from("user_badges")
+        .select(`is_equipped, badge_id, badges(id, name, icon)`)
+        .eq("user_id", user.id);
 
       return {
         ...profileData,
-        all_user_badges: badgeData?.map(b => ({
-          id: b.badge_id,
-          is_equipped: b.is_equipped,
-          name: b.badges.name,
-          icon: b.badges.icon,
-        })) || []
+        all_user_badges:
+          badgeData?.map((b) => ({
+            id: b.badge_id,
+            is_equipped: b.is_equipped,
+            name: b.badges.name,
+            icon: b.badges.icon,
+          })) || [],
       };
     },
     enabled: !!user?.id,
@@ -34,12 +41,27 @@ export const useEditProfile = (user, navigate) => {
   });
 
   // Sincronizar estado local con la cache
+  // useEffect(() => {
+  //   if (profile && !formData) {
+  //     setFormData({
+  //       ...profile,
+  //       bio: profile.bio || "",
+  //       socials: { web: "", instagram: "", github: "", linkedin: "", ...profile.socials },
+  //     });
+  //   }
+  // }, [profile]);
   useEffect(() => {
-    if (profile && !formData) {
+    if (profile) {
       setFormData({
         ...profile,
         bio: profile.bio || "",
-        socials: { web: "", instagram: "", github: "", linkedin: "", ...profile.socials },
+        socials: {
+          web: "",
+          instagram: "",
+          github: "",
+          linkedin: "",
+          ...profile.socials,
+        },
       });
     }
   }, [profile]);
@@ -48,8 +70,8 @@ export const useEditProfile = (user, navigate) => {
   const handleFileChange = (file, type) => {
     if (!file) return;
     const previewUrl = URL.createObjectURL(file);
-    setFiles(prev => ({ ...prev, [type]: file }));
-    setPreviews(prev => ({ ...prev, [type]: previewUrl }));
+    setFiles((prev) => ({ ...prev, [type]: file }));
+    setPreviews((prev) => ({ ...prev, [type]: previewUrl }));
   };
 
   // 3. MUTACIÓN PARA GUARDAR
@@ -58,18 +80,23 @@ export const useEditProfile = (user, navigate) => {
       let avatarUrl = formData.avatar;
       let coverUrl = formData.cover;
 
-      if (files.avatar) avatarUrl = (await uploadToCloudinary(files.avatar)).secure_url;
-      if (files.cover) coverUrl = (await uploadToCloudinary(files.cover)).secure_url;
+      if (files.avatar)
+        avatarUrl = (await uploadToCloudinary(files.avatar)).secure_url;
+      if (files.cover)
+        coverUrl = (await uploadToCloudinary(files.cover)).secure_url;
 
-      const { error } = await supabaseClient.from("profiles").update({
-        bio: formData.bio,
-        carrera: formData.carrera || null,
-        ciclo: formData.ciclo || null,
-        avatar: avatarUrl,
-        cover: coverUrl,
-        socials: formData.socials,
-        updated_at: new Date(),
-      }).eq("id", user.id);
+      const { error } = await supabaseClient
+        .from("profiles")
+        .update({
+          bio: formData.bio,
+          carrera: formData.carrera || null,
+          ciclo: formData.ciclo || null,
+          avatar: avatarUrl,
+          cover: coverUrl,
+          socials: formData.socials,
+          updated_at: new Date(),
+        })
+        .eq("id", user.id);
 
       if (error) throw error;
     },
@@ -78,28 +105,32 @@ export const useEditProfile = (user, navigate) => {
       notify.success("Perfil guardado");
       navigate(-1);
     },
-    onError: () => notify.error("Error al guardar")
+    onError: () => notify.error("Error al guardar"),
   });
 
   // 4. TOGGLE DE INSIGNIAS (Optimista)
   const toggleBadge = async (badgeId, currentStatus) => {
     // Actualización local inmediata (UI feels instant)
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      all_user_badges: prev.all_user_badges.map(b => 
-        b.id === badgeId ? { ...b, is_equipped: !currentStatus } : b
-      )
+      all_user_badges: prev.all_user_badges.map((b) =>
+        b.id === badgeId ? { ...b, is_equipped: !currentStatus } : b,
+      ),
     }));
 
-    const { error } = await supabaseClient.from("user_badges").update({ is_equipped: !currentStatus })
-      .eq("user_id", user.id).eq("badge_id", badgeId);
-    
+    const { error } = await supabaseClient
+      .from("user_badges")
+      .update({ is_equipped: !currentStatus })
+      .eq("user_id", user.id)
+      .eq("badge_id", badgeId);
+
     if (error) notify.error("Error al actualizar insignia");
     else queryClient.invalidateQueries(["profile", user.id]);
   };
 
   return {
-    formData, setFormData,
+    formData,
+    setFormData,
     initialLoading,
     isSaving: saveMutation.isLoading,
     previews,
@@ -109,6 +140,6 @@ export const useEditProfile = (user, navigate) => {
       saveMutation.mutate();
     },
     toggleBadge,
-    loading: saveMutation.isPending
+    loading: saveMutation.isPending,
   };
 };
