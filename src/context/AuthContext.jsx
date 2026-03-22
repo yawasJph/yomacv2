@@ -49,15 +49,28 @@ export const AuthContextProvider = ({ children }) => {
         return;
       }
 
+      // const email = session.user.email;
+      // const domain = email?.split("@")[1];
+      // const allowedDomains = ["gmail.com"];
+
+      // if (!allowedDomains.includes(domain)) {
+      //   await supabaseClient.auth.signOut();
+      //   setUser(null);
+      //   setError("Dominio de correo no autorizado.");
+      //   setLoading(false);
+      //   return;
+      // }
       const email = session.user.email;
       const domain = email?.split("@")[1];
-      const allowedDomains = ["gmail.com"];
+      const isInstitutional = domain === "institutomanuelarevalo.drelm.edu.pe";
+      const isAdmin = session.user.email === "joseph@gmail.com";
 
-      // 1. Validar Dominio
-      if (!allowedDomains.includes(domain)) {
+      if (!isInstitutional && !isAdmin) {
         await supabaseClient.auth.signOut();
         setUser(null);
-        setError("Dominio de correo no autorizado.");
+        setError(
+          "Solo se permiten correos institucionales (@institutomanuelarevalo.drelm.edu.pe)",
+        );
         setLoading(false);
         return;
       }
@@ -73,7 +86,9 @@ export const AuthContextProvider = ({ children }) => {
         if (profile?.is_banned) {
           await supabaseClient.auth.signOut();
           setUser(null);
-          setError(`Cuenta suspendida: ${profile.ban_reason || "Infracción de normas"}`);
+          setError(
+            `Cuenta suspendida: ${profile.ban_reason || "Infracción de normas"}`,
+          );
         } else {
           // Si todo está ok, RECIÉN aquí seteamos al usuario
           setUser(session.user);
@@ -94,7 +109,9 @@ export const AuthContextProvider = ({ children }) => {
     });
 
     // Listener para cambios (login, logout, etc)
-    const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabaseClient.auth.onAuthStateChange((_event, session) => {
       // Solo validamos si es un evento distinto a la carga inicial para evitar doble validación
       if (_event === "SIGNED_IN" || _event === "SIGNED_OUT") {
         validateUser(session);
@@ -140,7 +157,7 @@ export const AuthContextProvider = ({ children }) => {
       console.error("Error en login:", err.message);
       localStorage.removeItem("should_play_bgm");
       setError(
-        "Solo se permiten correos institucionales (@institutomanuelarevalo.delm.edu.pe)",
+        "Solo se permiten correos institucionales (@institutomanuelarevalo.drelm.edu.pe)",
       );
     } finally {
       setLoading(false);
