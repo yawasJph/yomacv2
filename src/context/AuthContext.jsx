@@ -63,7 +63,7 @@ export const AuthContextProvider = ({ children }) => {
       const email = session.user.email;
       const domain = email?.split("@")[1];
       const isInstitutional = domain === "institutomanuelarevalo.drelm.edu.pe";
-      const isAdmin = session.user.email === "joseph@gmail.com";
+      const isAdmin = session.user.email === "josephllacuashh@gmail.com";
 
       if (!isInstitutional && !isAdmin) {
         await supabaseClient.auth.signOut();
