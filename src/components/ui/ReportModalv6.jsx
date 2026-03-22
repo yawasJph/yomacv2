@@ -165,20 +165,21 @@ export default function ReportModal({
         ref={modalRef}
         //className="relative w-full sm:max-w-md bg-white dark:bg-neutral-900 rounded-t-2xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in duration-300"
         className="
-          relative w-full sm:max-w-md
-        bg-white dark:bg-neutral-900
-          rounded-t-3xl sm:rounded-2xl
-          shadow-2xl
-          max-h-[90vh] overflow-y-auto
-          animate-in slide-in-from-bottom-8 sm:zoom-in
-          duration-300"
+relative w-full sm:max-w-md
+bg-white dark:bg-neutral-900
+text-gray-900 dark:text-gray-100
+rounded-t-3xl sm:rounded-2xl
+shadow-2xl
+max-h-[90vh] overflow-y-auto
+animate-in slide-in-from-bottom-8 sm:zoom-in
+duration-300"
       >
         <div className="flex justify-center py-2 sm:hidden">
           <div className="w-10 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full" />
         </div>
 
         {/* HEADER */}
-        <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-800">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800">
           <h3 className="flex items-center gap-2 font-semibold text-lg">
             <AlertTriangle className="text-amber-500" size={20} />
             Reportar contenido
@@ -194,7 +195,7 @@ export default function ReportModal({
 
         {/* FORM */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             Selecciona el motivo del reporte:
           </p>
 
@@ -230,7 +231,15 @@ export default function ReportModal({
               value={details}
               onChange={(e) => setDetails(e.target.value)}
               placeholder="Añade detalles adicionales (opcional)"
-              className="w-full p-3 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none transition"
+              // className="w-full p-3 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none transition"
+              className="
+w-full p-3 text-sm rounded-xl
+border border-gray-200 dark:border-gray-700
+bg-gray-50 dark:bg-gray-800
+text-gray-900 dark:text-gray-100
+placeholder-gray-400 dark:placeholder-gray-500
+focus:ring-2 focus:ring-emerald-500
+outline-none transition"
             />
 
             <div className="text-xs text-gray-400 text-right mt-1">
@@ -244,7 +253,11 @@ export default function ReportModal({
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="flex-1 py-2.5 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+              className="
+flex-1 py-2.5 rounded-xl font-medium
+bg-gray-100 dark:bg-gray-800
+hover:bg-gray-200 dark:hover:bg-gray-700
+transition"
             >
               Cancelar
             </button>
