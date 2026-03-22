@@ -145,19 +145,19 @@ const Login = () => {
                 {/* Términos y condiciones */}
                 <p className="text-xs text-center text-gray-500 dark:text-gray-400 leading-relaxed">
                   Al continuar, aceptas nuestros{" "}
-                  <a
-                    href="#"
+                  <Link
+                    to="/terms"
                     className="text-emerald-600 dark:text-emerald-400 hover:underline"
                   >
                     Términos de servicio
-                  </a>{" "}
+                  </Link>{" "}
                   y{" "}
-                  <a
-                    href="#"
+                  <Link
+                    to="/privacy"
                     className="text-emerald-600 dark:text-emerald-400 hover:underline"
                   >
                     Política de privacidad
-                  </a>
+                  </Link>
                 </p>
               </div>
             </div>

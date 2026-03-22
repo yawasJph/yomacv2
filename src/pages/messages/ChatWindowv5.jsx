@@ -349,7 +349,7 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
   }, [mutuals, activeChat.friend_id, loading, onBack]);
 
   // ── Handlers memorizados ──────────────────────────────────────────────────
-  const goToProfile = useCallback((id) => navigate(`/profile/${id}`), [navigate]);
+  const goToProfile = useCallback((id) => navigate(`/profile/@${id}`), [navigate]);
 
   const handleSendMessage = useCallback(() => {
     const cleanMessage = newMessage.trim();
@@ -560,7 +560,7 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
             <div className="w-12 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full mx-auto mb-6" />
             <MenuContent
               goToProfile={goToProfile}
-              mutualId={activeChat.friend_id}
+              mutualId={activeChat.username}
               setShowMenu={setShowMenu}
               setIsBlockConfirmOpen={setIsBlockConfirmOpen}
               unFollowLoading={unFollowLoading}

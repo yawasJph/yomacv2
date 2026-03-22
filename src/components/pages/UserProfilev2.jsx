@@ -10,6 +10,7 @@ import {
   Linkedin,
   Share,
   ShieldAlert,
+  Terminal,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useFollow } from "../../context/FollowContext";
@@ -27,6 +28,7 @@ import { handleShareProfile } from "../utils/handleShareProfile";
 import TiktokIcon from "../icons/TiktokIcon";
 import SocialLinks from "../socials/SocialLinks";
 import UserBadges from "../user/UserBadges";
+import DevBadge from "../ui/userProfile/DevBadge";
 
 const hoverColors = {
   github: "hover:text-black dark:hover:text-white",
@@ -57,6 +59,8 @@ const UserProfile = () => {
   // 4. Hooks que dependen del userId REAL (solo funcionan si userId existe)
   const { executeAction } = useAuthAction();
   const { isFollowing, followUser, unfollowUser } = useFollow();
+
+  const isDev = profile?.username === "jllacuash"
 
   // 5. Cargar posts paginados usando el userId real (habilitado solo si hay userId)
   const {
@@ -277,7 +281,7 @@ const UserProfile = () => {
         <div>
           <div className="flex items-center gap-2 flex-wrap">
             <h2 className="text-xl font-extrabold dark:text-white tracking-tight sm:text-2xl sm:font-black">
-              {profile?.full_name}
+              {profile?.full_name} {isDev && <DevBadge/>}
             </h2>
             {/* Cartel llamativo de baneo */}
             {profile?.is_banned && (

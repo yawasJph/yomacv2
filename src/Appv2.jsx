@@ -24,14 +24,19 @@ import ProtectedRoute from "./components/utils/ProtectedRoute";
 import Feed from "./components/pages/Feed";
 import Login from "./components/pages/Login";
 import BlogFeed from "./pages/blog/BlogFeed";
-import CreateBlog from "./pages/blog/CreateBlog5";
+
 import BlogDetail from "./pages/blog/BlogDetailv5";
 import { ModalProvider } from "./context/ModalContextv3";
 import MyBlogs from "./pages/user-blog/MyBlogs";
 import MessagesPage from "./pages/messages/MessagesPagev2";
-import AdminOverview from "./pages/admin/AdminOverview";
-import AdminUsersManager from "./pages/admin/AdminUsersManager";
 import AdminRoute from "./routes/AdminRoute";
+
+// --- IMPORTS DINÁMICOS (Lazy Loading) ---
+const CreateBlog = lazy(() => import("./pages/blog/CreateBlog5"));
+const AdminOverview = lazy(() => import("./pages/admin/AdminOverview"));
+const AdminUsersManager = lazy(() => import("./pages/admin/AdminUsersManager"));
+const TermsOfService = lazy(() => import("./pages/t&c/TermsOfService"));
+const PrivacyPolicy = lazy(() => import("./pages/t&c/PrivacyPolicy"));
 
 // --- IMPORTS DINÁMICOS (Lazy Loading) ---
 const CreatePost = lazy(() => import("./components/pages/CreatePost"));
@@ -64,6 +69,7 @@ const BuscaMinas = lazy(() => import("./pages/games/BuscaMinasv2"));
 const CodigoMatricula = lazy(() => import("./pages/games/CodigoMatricula3"));
 const Leaderboard = lazy(() => import("./pages/games/LeaderBoard4"));
 const YoMACStore = lazy(() => import("./pages/games/YOMACStorev2"));
+const NotFound = lazy(() => import("./pages/NotFound")); // O la ruta donde lo crees
 
 // Un Loading Spinner Premium para las transiciones
 const PageLoader = () => (
@@ -105,6 +111,8 @@ function App() {
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="login" element={<Login />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
 
               <Route path="/" element={<HomeLayout />}>
                 <Route index element={<Feed />} />
@@ -172,6 +180,8 @@ function App() {
                 <Route path="users" element={<DiscoverPage />} />
                 <Route path="post/:postId" element={<PostPage />} />
                 <Route path="blog" element={<BlogFeed />} />
+                {/* EL GUARDIÁN DEL FINAL (Ruta 404) */}
+                <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
           </Suspense>
