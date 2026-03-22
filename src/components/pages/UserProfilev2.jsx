@@ -281,7 +281,7 @@ const UserProfile = () => {
         <div>
           <div className="flex items-center gap-2 flex-wrap">
             <h2 className="text-xl font-extrabold dark:text-white tracking-tight sm:text-2xl sm:font-black">
-              {profile?.full_name} {isDev && <DevBadge/>}
+              {profile?.full_name} 
             </h2>
             {/* Cartel llamativo de baneo */}
             {profile?.is_banned && (
@@ -295,8 +295,9 @@ const UserProfile = () => {
             <UserBadges badges={profile.equipped_badges || []} />
           </div>}
 
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-emerald-600 dark:text-emerald-400 font-bold text-sm bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-md">
+          <div className="flex justify-between items-center gap-2 mt-1">
+            <div>
+              <span className="text-emerald-600 dark:text-emerald-400 font-bold text-sm bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-md">
               {profile?.carrera || "Estudiante"}
             </span>
             {profile?.ciclo && (
@@ -304,6 +305,8 @@ const UserProfile = () => {
                 Ciclo {profile.ciclo}
               </span>
             )}
+            </div>
+            {isDev && <DevBadge/>}
           </div>
         </div>
 
