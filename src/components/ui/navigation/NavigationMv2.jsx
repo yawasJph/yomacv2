@@ -33,7 +33,7 @@ const NavigationM = () => {
     },
     {
       // 👈 3. Evitar URL rara si no hay datos aún o no hay sesión
-      to: data?.username ? `profile/@${data.username}` : "#",
+      to: data?.username ? `profile/@${data.username}` : "/profile",
       icon: <User size={24} />,
       text: "Perfil",
       private: true,
