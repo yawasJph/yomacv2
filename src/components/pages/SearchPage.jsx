@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Hash, Search } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
@@ -6,15 +6,12 @@ import { useSearch } from "../../hooks/useSearch";
 import { useIsMobile } from "../../hooks/useIsMobile";
 // UI Components
 import CardPost from "../ui/feed/CardPost";
-//import UserSearchCard from "../ui/UserSearchCard2";
 import SearchBar from "../ui/SearchBar";
 import TrendingTopics from "../ui/rigthSidebar/TrendingTopics";
-//import UserSuggestions from "../ui/rigthSidebar/UserSuggestions";
 import NoResultsMessage from "../ui/NoResultsMessage";
 import UserSuggestions from "../ui/rigthSidebar/UserSuggestions2";
 import SkeletonPost from "../skeletons/SkeletonPost";
 import UserSearchCardv2 from "../ui/users/UserSearchCardv2";
-
 
 const SearchPage = () => {
   const { user } = useAuth();

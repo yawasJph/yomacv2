@@ -20,6 +20,7 @@ export const useSearch = (query, currentUserId) => {
       avatar, 
       carrera, 
       ciclo,
+      username,
       equipped_badges:user_badges ( 
         is_equipped,
         badges ( icon, name, category, resource_url )

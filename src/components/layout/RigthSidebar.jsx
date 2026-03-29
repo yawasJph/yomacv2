@@ -1,9 +1,7 @@
-import { NavLink } from "react-router-dom";
+
 import TrendingTopics from "../ui/rigthSidebar/TrendingTopics";
 import UserSuggestions from "../ui/rigthSidebar/UserSuggestions2";
-//import UserSuggestions from "../ui/rigthSidebar/UserSuggestions";
 import SearchBar from "../ui/SearchBar";
-import { Users } from "lucide-react";
 
 const RigthSidebar = () => {
   return (
@@ -14,7 +12,7 @@ const RigthSidebar = () => {
       <UserSuggestions />
       {/* Footer sencillo */}
       <footer className="px-2 text-[10px] text-gray-500 dark:text-gray-600 flex flex-wrap gap-x-3 gap-y-1 uppercase tracking-widest font-bold">
-        <span>© 2025 YoMAC</span>
+        <span>© 2026 YoMAC</span>
       </footer>
     </aside>
   );

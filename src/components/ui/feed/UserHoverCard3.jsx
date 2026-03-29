@@ -8,6 +8,7 @@ import { useAuthAction } from "../../../hooks/useAuthAction";
 import { useProfile } from "../../../hooks/useProfile"; // 👈 Importamos tu hook de caché
 import { useQueryClient } from "@tanstack/react-query";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
+import { notify } from "@/utils/toast/notifyv3";
 
 export default function UserHoverCard({ user, children }) {
   const [open, setOpen] = useState(false);
@@ -61,7 +62,7 @@ export default function UserHoverCard({ user, children }) {
   };
 
   const handleFollowClick = (e) => {
-    executeAction(() => handleAction(e), "seguir a este usuario");
+    executeAction(() => handleAction(e), "seguir a este usuario", () => {notify.info("Inicia sesión para seguir a este usuario")});
   };
 
   return (

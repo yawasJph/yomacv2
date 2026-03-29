@@ -1,42 +1,35 @@
 import { useNavigate } from "react-router-dom";
-import { useAuthAction } from "../../hooks/useAuthAction";
-import { useQueryClient } from "@tanstack/react-query";
-import { useSearch } from "../../context/SearchContext";
-import { useAuth } from "../../context/AuthContext";
+
 const RenderTextWithLinks = ({ text }) => {
   if (!text) return null;
-  const { executeAction } = useAuthAction();
+
   const navigate = useNavigate();
-  const queryClient = useQueryClient()
-  const {queryG} = useSearch()
-  const {user} = useAuth()
-  
+
   const handleSearchTrend = (trendName) => {
     if (!trendName) return;
-   // queryClient.invalidateQueries({  queryKey: ["search", queryG, user.id], });
     navigate(`/search?q=${encodeURIComponent(trendName.trim())}`);
-    
   };
 
-  const handleClick = (trendName) => {
-    executeAction(() => {
-      handleSearchTrend(trendName);
-    }, "buscar trends");
+  const handleMentionClick = (username) => {
+    if (!username) return;
+    navigate(`/profile/@${username}`);
   };
-  // Regex combinada para URLs y Hashtags
-  // Grupo 1: URLs | Grupo 2: Hashtags
-  const combinedRegex = /(https?:\/\/[^\s]+)|(#\w+)/g;
+
+  // 🔥 Ahora incluye menciones
+  // Grupo 1: URLs | Grupo 2: Hashtags | Grupo 3: Mentions
+  const combinedRegex = /(https?:\/\/[^\s]+)|(#\w+)|(@\w+)/g;
 
   return text.split(combinedRegex).map((part, i) => {
     if (!part) return null;
 
-    // ¿Es una URL?
+    // ✅ URL
     if (/(https?:\/\/[^\s]+)/.test(part)) {
       let displayText = part.replace(/(^\w+:|^)\/\/(www\.)?/, "");
 
       if (displayText.length > 30) {
         displayText = displayText.substring(0, 30) + "...";
       }
+
       return (
         <a
           key={i}
@@ -50,13 +43,28 @@ const RenderTextWithLinks = ({ text }) => {
       );
     }
 
-    // ¿Es un Hashtag?
+    // ✅ Hashtag
     if (/#\w+/.test(part)) {
       return (
         <span
           key={i}
           className="text-emerald-600 dark:text-emerald-400 font-semibold cursor-pointer hover:underline"
           onClick={() => handleSearchTrend(part)}
+        >
+          {part}
+        </span>
+      );
+    }
+
+    // ✅ Mention (@usuario)
+    if (/@\w+/.test(part)) {
+      const username = part.replace("@", "");
+
+      return (
+        <span
+          key={i}
+          className="text-indigo-600 dark:text-indigo-400 font-semibold cursor-pointer hover:underline"
+          onClick={() => handleMentionClick(username)}
         >
           {part}
         </span>

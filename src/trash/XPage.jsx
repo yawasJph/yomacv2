@@ -406,6 +406,24 @@ const XPage = () => {
       </aside>
     </div>
   </div>
+ // const { executeAction } = useAuthAction();
+  // const navigate = useNavigate();
+  // const queryClient = useQueryClient()
+  // const {queryG} = useSearch()
+  // const {user} = useAuth()
+  
+  // const handleSearchTrend = (trendName) => {
+  //   if (!trendName) return;
+  //  // queryClient.invalidateQueries({  queryKey: ["search", queryG, user.id], });
+  //   navigate(`/search?q=${encodeURIComponent(trendName.trim())}`);
+    
+  // };
+
+  // const handleClick = (trendName) => {
+  //   executeAction(() => {
+  //     handleSearchTrend(trendName);
+  //   }, "buscar trends");
+  // };
   )
 }
 

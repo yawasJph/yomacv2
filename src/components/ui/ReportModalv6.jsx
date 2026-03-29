@@ -165,14 +165,14 @@ export default function ReportModal({
         ref={modalRef}
         //className="relative w-full sm:max-w-md bg-white dark:bg-neutral-900 rounded-t-2xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in duration-300"
         className="
-relative w-full sm:max-w-md
-bg-white dark:bg-neutral-900
-text-gray-900 dark:text-gray-100
-rounded-t-3xl sm:rounded-2xl
-shadow-2xl
-max-h-[90vh] overflow-y-auto
-animate-in slide-in-from-bottom-8 sm:zoom-in
-duration-300"
+          relative w-full sm:max-w-md
+          bg-white dark:bg-neutral-900
+          text-gray-900 dark:text-gray-100
+          rounded-t-3xl sm:rounded-2xl
+          shadow-2xl
+          max-h-[90vh] overflow-y-auto
+          animate-in slide-in-from-bottom-8 sm:zoom-in
+          duration-300"
       >
         <div className="flex justify-center py-2 sm:hidden">
           <div className="w-10 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full" />
@@ -233,13 +233,13 @@ duration-300"
               placeholder="Añade detalles adicionales (opcional)"
               // className="w-full p-3 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none transition"
               className="
-w-full p-3 text-sm rounded-xl
-border border-gray-200 dark:border-gray-700
-bg-gray-50 dark:bg-gray-800
-text-gray-900 dark:text-gray-100
-placeholder-gray-400 dark:placeholder-gray-500
-focus:ring-2 focus:ring-emerald-500
-outline-none transition"
+              border border-gray-200 dark:border-gray-700
+              w-full p-3 text-sm rounded-xl
+              text-gray-900 dark:text-gray-100
+              placeholder-gray-400 dark:placeholder-gray-500
+              focus:ring-2 focus:ring-emerald-500
+              bg-gray-50 dark:bg-gray-800
+              outline-none transition"
             />
 
             <div className="text-xs text-gray-400 text-right mt-1">
