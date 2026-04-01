@@ -14,12 +14,6 @@ export const useComments = (id, type = "post") => {
     queryFn: async ({ pageParam = 0 }) => {
       let query = supabaseClient
         .from("comments_with_counts")
-        // .select(
-        //   `
-        //   *,
-        //   profiles:user_id (id, full_name, avatar, carrera, ciclo)
-        // `
-        // )
          .select(
        `
     *,
@@ -34,7 +28,8 @@ export const useComments = (id, type = "post") => {
         is_equipped,
         badges ( icon, name, category, resource_url )
       )
-    )
+    ),
+    comment_likes ( user_id )
   `
       )
          .filter("profiles.user_badges.is_equipped", "eq", true)

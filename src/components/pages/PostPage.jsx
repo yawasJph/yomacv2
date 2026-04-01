@@ -116,6 +116,8 @@ const PostPage = () => {
 
   if (postLoading) return <SkeletonPost />;
 
+  
+
   return (
     <div className="bg-white dark:bg-black pb-24 min-h-screen">
       {/* HEADER */}
@@ -242,7 +244,7 @@ const PostPage = () => {
       {/* LISTA DE COMENTARIOS */}
       <div className="divide-y divide-gray-100 dark:divide-gray-800 pb-65">
         {allComments.map((comment) => (
-          <CommentItem key={comment.id} comment={comment} postId={post.id} />
+          <CommentItem key={comment.id} comment={comment} postId={post.id} postAuthor={post.profiles}/>
         ))}
 
         {hasNextPage && (

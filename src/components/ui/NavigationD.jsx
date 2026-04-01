@@ -6,6 +6,7 @@ import {
   Home,
   MessageSquarePlus,
   Plus,
+  Settings,
   UserPen,
   Users,
 } from "lucide-react";

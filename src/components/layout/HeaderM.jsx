@@ -6,6 +6,7 @@ import {
   Bot,
   MessageCircle,
   Trophy,
+  Settings,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
@@ -46,6 +47,12 @@ const HeaderM = () => {
       text: "Mensages",
       path: "/messages",
     },
+    {
+      icon: <Settings size={22} />,
+      text: "Settings",
+      path: "/settings",
+    },
+
   ];
 
   const onViewCredits = ["games"].some((route) =>

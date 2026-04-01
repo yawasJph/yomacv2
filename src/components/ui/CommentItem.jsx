@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import UserHoverCard from "./feed/UserHoverCardv2";
 import { timeAgoTiny } from "../utils/timeagoTiny";
 import { timeAgoLong } from "../utils/timeAgoLong";
 import {
@@ -8,6 +7,7 @@ import {
   Trash2,
   Copy,
   MessageCircle,
+  Heart,
 } from "lucide-react";
 import ImageModal from "./userProfile/ImageModal";
 import { useIsMobile } from "../../hooks/useIsMobile";
@@ -21,10 +21,17 @@ import RenderTextWithLinks from "../utils/RenderTextWithLinks";
 import { useAuthAction } from "../../hooks/useAuthAction";
 import { notify } from "@/utils/toast/notifyv3";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
+import PostAuthorLike from "./badges/PostAuthorLike";
 
-const CommentItem = ({ comment, postId, isDetailedView = false }) => {
+const LIMIT = 250; // Umbral para mostrar el "Ver más"
+
+const CommentItem = ({
+  comment,
+  postId,
+  isDetailedView = false,
+  postAuthor,
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const LIMIT = 250; // Umbral para mostrar el "Ver más"
   const isMobile = useIsMobile();
   const [selectedImg, setSelectedImg] = useState(null);
   const { user } = useAuth();
@@ -119,6 +126,11 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
     }
   }, [comment]);
 
+  // 1. Verificamos si el ID del autor del post original está dentro del arreglo de likes de este comentario
+  const authorLiked = comment.comment_likes?.some(
+    (like) => like.user_id === postAuthor.id,
+  );
+
   return (
     <>
       <div
@@ -161,11 +173,6 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
                       {isMobile ? (
                         <span>{comment.profiles.full_name}</span>
                       ) : user?.id !== comment.profiles.id ? (
-                        // <UserHoverCard user={comment.profiles}>
-                        //   <span className="hover:underline cursor-pointer">
-                        //     {comment.profiles.full_name}
-                        //   </span>
-                        // </UserHoverCard>
                         <span>{comment.profiles.full_name}</span>
                       ) : (
                         <span>{comment.profiles.full_name}</span>
@@ -285,6 +292,10 @@ const CommentItem = ({ comment, postId, isDetailedView = false }) => {
               </div>
               <span className="text-xs">{comment.reply_count}</span>
             </button>
+            {/* 2. AQUÍ ESTÁ LA MAGIA: El badge del "Autor le dio like" */}
+            {authorLiked && (
+              <PostAuthorLike avatar={postAuthor.avatar}/>
+            )}
           </div>
 
           {/* Renderizar el Modal si hay una imagen seleccionada */}

@@ -107,6 +107,14 @@ const UserAvatar = () => {
               <UserPen size={18} /> Perfil
             </NavLink>
 
+             <NavLink
+              to={`/settings`}
+              className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 transition-colors"
+              onClick={() => setMenuOpen(false)}
+            >
+              <Settings size={18} /> Settings
+            </NavLink>
+
             <button
               onClick={signout}
               className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors mt-2 cursor-pointer"

@@ -25,6 +25,12 @@ const HomeLayout = () => {
     }
   }, []);
 
+  const hiddenRightSidebarRoutes = ["/settings"];
+
+  const hideRightSidebar = hiddenRightSidebarRoutes.some((route) =>
+    location.pathname.startsWith(route),
+  );
+
   const hideHeader = ["yawas", "messages"].some((route) =>
     location.pathname.includes(route),
   );
@@ -45,7 +51,14 @@ const HomeLayout = () => {
         <LeftSidebar />
 
         {/* Contenido Principal - Feed */}
-        <main className="flex-1 min-h-[500px] border-x border-emerald-500/10 dark:border-emerald-500/20 max-w-2xl mx-auto lg:mx-0">
+        <main
+          //className="flex-1 min-h-[500px] border-x border-emerald-500/10 dark:border-emerald-500/20 max-w-2xl mx-auto lg:mx-0"
+          className={`
+          flex-1 min-h-[500px] border-x 
+          ${hideRightSidebar ? "w-full max-w-none" : "max-w-2xl mx-auto lg:mx-0"}
+        border-emerald-500/10 dark:border-emerald-500/20
+          `}
+        >
           {/* min-h-[1050px]*/}
           <div className=" sm:px-0 py-0 sm:pt-6">
             {/**py-4 */} {/**px-4 */}
@@ -54,7 +67,7 @@ const HomeLayout = () => {
         </main>
 
         {/* Sidebar Derecho - Desktop */}
-        <RigthSidebar />
+        {!hideRightSidebar && <RigthSidebar />}
       </div>
 
       {/* Navegación Móvil Inferior - Estilo Threads */}

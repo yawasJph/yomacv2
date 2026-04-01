@@ -3,21 +3,14 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft,
   Calendar,
-  Facebook,
-  Github,
-  Globe,
-  Instagram,
-  Linkedin,
   Share,
   ShieldAlert,
-  Terminal,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useFollow } from "../../context/FollowContext";
 import CardPost from "../ui/feed/CardPost";
 import UserProfileSkeleton from "../skeletons/UserProfileSkeleton";
 import ImageModal from "../ui/userProfile/ImageModal";
-
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuthAction } from "../../hooks/useAuthAction";
 import { usePostsInfiniteQuery } from "@/hooks/posts/usePostsInfiniteQueryv3";
@@ -25,7 +18,6 @@ import SkeletonPost from "../skeletons/SkeletonPost";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 import { useProfile } from "@/hooks/user/useProfilev2";
 import { handleShareProfile } from "../utils/handleShareProfile";
-import TiktokIcon from "../icons/TiktokIcon";
 import SocialLinks from "../socials/SocialLinks";
 import UserBadges from "../user/UserBadges";
 import DevBadge from "../ui/userProfile/DevBadge";

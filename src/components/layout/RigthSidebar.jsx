@@ -1,9 +1,8 @@
-
 import TrendingTopics from "../ui/rigthSidebar/TrendingTopics";
 import UserSuggestions from "../ui/rigthSidebar/UserSuggestions2";
 import SearchBar from "../ui/SearchBar";
 
-const RigthSidebar = () => {
+const RigthSidebar = () => { 
   return (
     // <aside className="hidden xl:flex xl:w-80 flex-col h-[calc(100vh-64px)] sticky top-16 px-6 py-4 space-y-6 overflow-y-auto">
     <aside className="hidden xl:flex flex-col w-80 sticky top-16 h-screen py-6 gap-5 overflow-y-auto no-scrollbar px-6 ">

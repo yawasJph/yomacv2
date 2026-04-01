@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import "./App.css";
 
@@ -70,6 +70,9 @@ const CodigoMatricula = lazy(() => import("./pages/games/CodigoMatricula3"));
 const Leaderboard = lazy(() => import("./pages/games/LeaderBoard4"));
 const YoMACStore = lazy(() => import("./pages/games/YOMACStorev2"));
 const NotFound = lazy(() => import("./pages/NotFound")); // O la ruta donde lo crees
+const SettingsLayout = lazy(() => import("./pages/settings/SettingsLayout"));
+const AccountSettings = lazy(() => import("./pages/settings/AccountSettings"));
+const DisplaySettings = lazy(() => import("./pages/settings/DisplaySettings"));
 
 // Un Loading Spinner Premium para las transiciones
 const PageLoader = () => (
@@ -160,6 +163,13 @@ function App() {
                   <Route path="blog/:slug" element={<BlogDetail />} />
                   <Route path="blog/my-blogs" element={<MyBlogs />} />
                   <Route path="messages" element={<MessagesPage />} />
+
+                  <Route path="settings" element={<SettingsLayout />}>
+                    {/* Redirigimos /settings al account por defecto */}
+                    <Route index element={<Navigate to="account" replace />} />
+                    <Route path="account" element={<AccountSettings />} />
+                    <Route path="display" element={<DisplaySettings />} />
+                  </Route>
                 </Route>
 
                 {/* Rutas de Admin Protegidas */}
