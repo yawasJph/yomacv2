@@ -36,7 +36,7 @@ import AdminRoute from "./routes/AdminRoute";
 const CreateBlog = lazy(() => import("./pages/blog/CreateBlog5"));
 const AdminOverview = lazy(() => import("./pages/admin/AdminOverview"));
 const AdminUsersManager = lazy(() => import("./pages/admin/AdminUsersManager"));
-const AdminBugReports = lazy(() => import("./pages/admin/AdminBugReports2"));
+const AdminBugReports = lazy(() => import("./pages/admin/AdminBugReports"));
 const TermsOfService = lazy(() => import("./pages/t&c/TermsOfService"));
 const PrivacyPolicy = lazy(() => import("./pages/t&c/PrivacyPolicy"));
 const ReportBug = lazy(() => import("./pages/settings/ReportBug"));
