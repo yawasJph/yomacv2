@@ -1,6 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { ArrowLeft, User, Palette, Bug, Info, Bell } from "lucide-react";
-import { useIsMobile } from "@/hooks/useIsMobile";
 
 const menuItems = [
   { id: "account", label: "Cuenta", icon: User, path: "/settings/account" },
@@ -33,7 +32,6 @@ const menuItems = [
 
 const SettingsLayout = () => {
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
 
   return (
     <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300">

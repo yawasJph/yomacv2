@@ -8,6 +8,7 @@ import {
   Reply,
   BellOff,
   ArrowLeft,
+  AtSign,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
@@ -15,6 +16,15 @@ import { es } from "date-fns/locale";
 import NotificationSkeleton from "../skeletons/NotificationSkeleton";
 import ConfirmModal from "../modals/ConfirmModalv2";
 import { useNotifications } from "@/hooks/notification/useNotificationsv2";
+const iconConfig = {
+  like: "fill-rose-500 stroke-rose-500 dark:fill-rose-400 dark:stroke-rose-400",
+  comment: "text-blue-500 dark:text-blue-400",
+  repost: "text-emerald-500 dark:text-emerald-400",
+  follow: "text-violet-500 dark:text-violet-400",
+  reply: "text-sky-500 dark:text-sky-400",
+  message: "text-amber-500 dark:text-amber-400",
+  mention: "text-pink-500 dark:text-pink-400",
+};
 
 const NotificationsPage = () => {
   const { notifications, isLoading, clearAll, isDeleting, markAsRead } =
@@ -38,22 +48,91 @@ const NotificationsPage = () => {
     });
   };
 
+  // const getIcon = (type) => {
+  //   switch (type) {
+  //     case "like":
+  //       return <Heart className="fill-red-500 stroke-red-500" size={20} />;
+  //     case "comment":
+  //       return <MessageCircle className="text-blue-500" size={20} />;
+  //     case "repost":
+  //       return <Repeat2 className="text-green-500" size={20} />;
+  //     case "follow":
+  //       return <UserPlus className="text-purple-500" size={20} />;
+  //     case "reply":
+  //       return <Reply className="text-sky-500" size={20} />;
+  //     case "message":
+  //       return <MessageCircle className="text-amber-500" size={20} />;
+  //     case "mention":
+  //       return <AtSign className="text-rose-500" size={20} />;
+  //     default:
+  //       return <BellOff size={20} />;
+  //   }
+  // };
+
   const getIcon = (type) => {
+    const base = "transition-colors";
+
     switch (type) {
       case "like":
-        return <Heart className="fill-red-500 stroke-red-500" size={20} />;
+        return (
+          <Heart
+            className={`${base} ${iconConfig[type]}`}
+            size={20}
+          />
+        );
+
       case "comment":
-        return <MessageCircle className="text-blue-500" size={20} />;
+        return (
+          <MessageCircle
+            className={`${base} ${iconConfig[type]}`}
+            size={20}
+          />
+        );
+
       case "repost":
-        return <Repeat2 className="text-green-500" size={20} />;
+        return (
+          <Repeat2
+            className={`${base} ${iconConfig[type]}`}
+            size={20}
+          />
+        );
+
       case "follow":
-        return <UserPlus className="text-purple-500" size={20} />;
+        return (
+          <UserPlus
+            className={`${base} ${iconConfig[type]}`}
+            size={20}
+          />
+        );
+
       case "reply":
-        return <Reply className="text-sky-500" size={20} />;
+        return (
+          <Reply
+            className={`${base} ${iconConfig[type]}`}
+            size={20}
+          />
+        );
+
       case "message":
-        return <MessageCircle className="text-amber-500" size={20} />;
+        return (
+          <MessageCircle
+            className={`${base} ${iconConfig[type]}`}
+            size={20}
+          />
+        );
+
+      case "mention":
+        return (
+          <AtSign
+            className={`${base} ${iconConfig[type]}`}
+            size={20}
+          />
+        );
+
       default:
-        return <BellOff size={20} />;
+        return (
+          <BellOff className="text-gray-400 dark:text-gray-500" size={20} />
+        );
     }
   };
 
@@ -80,6 +159,8 @@ const NotificationsPage = () => {
         return <>{name} respondió a tu comentario</>;
       case "message":
         return <>{name} te envió un mensage</>;
+      case "mention":
+        return <>{name} te mencionó</>;
       default:
         return <>{name} interactuó contigo</>;
     }
@@ -117,6 +198,16 @@ const NotificationsPage = () => {
       case "message":
         navigate(`/messages`);
         break;
+      case "mention":
+        // Si tienes scroll al comentario, puedes pasar el ID como hash
+        if (notif.post_id) navigate(`/post/${notif.post_id}`);
+        if (notif.post_id && notif.comment_id)
+          navigate(`/post/${notif.post_id}#comment-${notif.comment_id}`);
+        // if (notif.comments?.parent_id)
+        //   navigate(
+        //     `/comment/${notif.comments.parent_id}#comment-${notif.comment_id}`,
+        //   );
+        break;
       default:
         break;
     }
@@ -134,6 +225,8 @@ const NotificationsPage = () => {
       </div>
     );
   }
+
+  console.log(notifications);
 
   return (
     <div className="max-w-2xl mx-auto border-x border-gray-100 dark:border-gray-800 pb-5">

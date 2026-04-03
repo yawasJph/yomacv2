@@ -16,7 +16,6 @@ import "highlight.js/styles/atom-one-dark.css";
 
 // Contextos y Layouts (Importación directa para carga inmediata)
 
-
 import { SearchProvider } from "./context/SearchContext";
 import HomeLayout from "./components/layout/HomeLayout";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
@@ -40,6 +39,9 @@ const AdminBugReports = lazy(() => import("./pages/admin/AdminBugReports"));
 const TermsOfService = lazy(() => import("./pages/t&c/TermsOfService"));
 const PrivacyPolicy = lazy(() => import("./pages/t&c/PrivacyPolicy"));
 const ReportBug = lazy(() => import("./pages/settings/ReportBug"));
+const NotificationSettings = lazy(
+  () => import("./pages/settings/NotificationSettings"),
+);
 
 // --- IMPORTS DINÁMICOS (Lazy Loading) ---
 const CreatePost = lazy(() => import("./components/pages/CreatePost"));
@@ -173,6 +175,10 @@ function App() {
                     <Route path="account" element={<AccountSettings />} />
                     <Route path="display" element={<DisplaySettings />} />
                     <Route path="report" element={<ReportBug />} />
+                    <Route
+                      path="notifications"
+                      element={<NotificationSettings />}
+                    />
                   </Route>
                 </Route>
 

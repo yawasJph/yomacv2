@@ -21,6 +21,7 @@ export const useDeletePost = (post_id) => {
       // 2. IMPORTANTÍSIMO: Invalidamos los hashtags
       // Esto hará que el conteo en el componente TrendingTopics se actualice
       queryClient.invalidateQueries({ queryKey: ["trending_hashtags"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
       notify.success("Publicación eliminada");
     },
     onError: (error) => {

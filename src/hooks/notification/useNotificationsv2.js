@@ -104,9 +104,30 @@ export const useNotifications = () => {
           // Si no es el chat activo, procedemos con audio y refresco
           queryClient.invalidateQueries({ queryKey });
 
-          audioRef.current.play().catch((error) => {
-            console.log("Audio bloqueado por el navegador hasta interacción.");
-          });
+          // audioRef.current.play().catch((error) => {
+          //   console.log("Audio bloqueado por el navegador hasta interacción.");
+          // });
+
+          // console.log("🔔 ¡Nueva notificación procesada!", type);
+          // ---------------------------------------------------------
+          // AQUÍ CONECTAMOS CON LOS SETTINGS DE NOTIFICACIONES
+          // ---------------------------------------------------------
+          // Leemos la preferencia (si no existe, por defecto es true)
+          const isSoundEnabled =
+            localStorage.getItem("yomac_sound") !== "false";
+
+          if (isSoundEnabled) {
+            audioRef.current.play().catch((error) => {
+              console.log(
+                "Audio bloqueado por el navegador hasta interacción.",
+              );
+            });
+            console.log("🔊 Sonido de notificación reproducido para:", type);
+          } else {
+            console.log(
+              "🔕 Sonido silenciado según las preferencias del usuario.",
+            );
+          }
 
           console.log("🔔 ¡Nueva notificación procesada!", type);
         },

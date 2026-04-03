@@ -70,7 +70,8 @@ const PostPage = () => {
         )
         .filter("profiles.user_badges.is_equipped", "eq", true)
         .eq("id", postId)
-        .single();
+        //.single();
+        .maybeSingle();
       if (error) throw error;
       return data;
     },
@@ -89,9 +90,14 @@ const PostPage = () => {
 
   const handleSendComment = (e) => {
     e.preventDefault();
+
+    if (!post) {
+      notify.error("Este post ya no está disponible");
+      return;
+    }
+    
     if (!newComment.trim() && !selectedGif) return;
 
-    console.log("entro")
     addComment({
       content: newComment,
       userId: user.id,
@@ -117,7 +123,44 @@ const PostPage = () => {
 
   if (postLoading) return <SkeletonPost />;
 
-  
+  if (!post) {
+    return (
+      <div className="bg-white dark:bg-black min-h-screen flex flex-col">
+        {/* HEADER */}
+        <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 flex items-center gap-6 border-b border-gray-100 dark:border-gray-800">
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-full"
+          >
+            <ArrowLeft size={20} className="dark:text-white" />
+          </button>
+          <h1 className="text-xl font-bold dark:text-white">Publicación</h1>
+        </div>
+
+        {/* ESTADO VACÍO */}
+        <div className="flex flex-1 flex-col items-center justify-center text-center px-6">
+          <div className="bg-gray-100 dark:bg-neutral-800 p-6 rounded-full mb-6">
+            <X size={40} className="text-gray-500" />
+          </div>
+
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
+            Esta publicación no está disponible
+          </h2>
+
+          <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6">
+            Puede que haya sido eliminada o que no tengas permiso para verla.
+          </p>
+
+          <button
+            onClick={() => navigate("/")}
+            className="px-6 py-2.5 bg-emerald-500 text-white font-medium rounded-full hover:bg-emerald-600 transition"
+          >
+            Ir al inicio
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white dark:bg-black pb-24 min-h-screen">
@@ -245,7 +288,12 @@ const PostPage = () => {
       {/* LISTA DE COMENTARIOS */}
       <div className="divide-y divide-gray-100 dark:divide-gray-800 pb-65">
         {allComments.map((comment) => (
-          <CommentItem key={comment.id} comment={comment} postId={post.id} postAuthor={post.profiles}/>
+          <CommentItem
+            key={comment.id}
+            comment={comment}
+            postId={post.id}
+            postAuthor={post.profiles}
+          />
         ))}
 
         {hasNextPage && (

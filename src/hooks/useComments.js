@@ -4,6 +4,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { supabaseClient } from "../supabase/supabaseClient";
+import { notify } from "@/utils/toast/notifyv3";
 
 export const useComments = (id, type = "post") => {
   const queryClient = useQueryClient();
@@ -14,8 +15,8 @@ export const useComments = (id, type = "post") => {
     queryFn: async ({ pageParam = 0 }) => {
       let query = supabaseClient
         .from("comments_with_counts")
-         .select(
-       `
+        .select(
+          `
     *,
     profiles:user_id (
       id, 
@@ -30,9 +31,9 @@ export const useComments = (id, type = "post") => {
       )
     ),
     comment_likes ( user_id )
-  `
-      )
-         .filter("profiles.user_badges.is_equipped", "eq", true)
+  `,
+        )
+        .filter("profiles.user_badges.is_equipped", "eq", true)
         .is("deleted_at", null)
         // .eq("post_id", postId)
         .order("created_at", { ascending: false })
@@ -63,6 +64,17 @@ export const useComments = (id, type = "post") => {
       parentId = null,
       gifUrl = null,
     }) => {
+      // 🔍 Verificar que el post existe
+      const { data: post } = await supabaseClient
+        .from("posts")
+        .select("id")
+        .eq("id", postId)
+        .maybeSingle();
+
+      if (!post) {
+        throw new Error("POST_NOT_FOUND");
+      }
+
       const { data, error } = await supabaseClient
         .from("comments")
         .insert({
@@ -92,6 +104,11 @@ export const useComments = (id, type = "post") => {
       // 2. Opcional: Invalidar el detalle del comentario padre para que el reply_count suba
       queryClient.invalidateQueries({ queryKey: ["comment_detail", id] });
       queryClient.invalidateQueries({ queryKey: ["post", id] });
+    },
+
+    onError: (error) => {
+      if (error.message === "POST_NOT_FOUND")
+        notify.error("Post no encontrado");
     },
   });
 
