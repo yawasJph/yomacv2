@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { MoveLeft, ShieldQuestion } from "lucide-react";
-import ToggleThemeButton from "@/components/ui/ToggleThemeButton";
 
 const NotFound = () => {
   const navigate = useNavigate();
@@ -19,11 +18,6 @@ const NotFound = () => {
         </button>
       </div>
 
-      {/* Toggle Theme – esquina superior derecha */}
-      <div className="absolute top-4 right-4 z-10">
-        <ToggleThemeButton />
-      </div>
-
       <div className="max-w-xl mx-auto text-center space-y-12">
         
         {/* Sección de la ilustración 404 */}
@@ -32,7 +26,7 @@ const NotFound = () => {
             404
           </h1>
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="p-5 rounded-3xl bg-emerald-50 dark:bg-emerald-950/20 shadow-lg shadow-emerald-500/10">
+            <div className="p-5 rounded-3xl bg-emerald-50/10 dark:bg-emerald-950/20 shadow-lg shadow-emerald-500/10">
               <ShieldQuestion size={80} className="text-emerald-600 dark:text-emerald-400" strokeWidth={1.5}/>
             </div>
           </div>

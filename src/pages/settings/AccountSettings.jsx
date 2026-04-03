@@ -1,13 +1,30 @@
 import { useAuth } from "@/context/AuthContext";
 import { useSimpleProfile } from "@/hooks/user/useSimpleProfile";
-import { supabaseClient } from "@/supabase/supabaseClient";
 import { User, Mail, ShieldAlert, LogOut, Pencil } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const AccountSettings = () => {
-  const { signout, loading, user } = useAuth();
-  const {data: profile} = useSimpleProfile(user?.id);
-  const handleDeleteAccount = () => {};
-  
+  const { user, signout, loading } = useAuth();
+  const { data: profile, isPending: profileLoading } = useSimpleProfile(
+    user?.id,
+  );
+
+  const handleDeleteAccount = () => {
+    alert("muy pronto");
+  };
+
+  if (loading) {
+    return <div className="text-black dark:text-white">Cargando...</div>;
+  }
+
+  if (!user) {
+    return <div className="text-black dark:text-white">No permitido</div>;
+  }
+
+  if (profileLoading || !profile) {
+    return <div className="text-black dark:text-white">Cargando perfil...</div>;
+  }
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Header */}
@@ -21,7 +38,7 @@ const AccountSettings = () => {
       </div>
 
       {/* Card */}
-      <div className="bg-white dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 space-y-6">
+      <div className="bg-white dark:bg-gray-900/30 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 space-y-6">
         {/* USER INFO */}
         <div className="flex items-center gap-4 border-b border-gray-100 dark:border-gray-800 pb-6">
           <img
@@ -56,15 +73,17 @@ const AccountSettings = () => {
 
         {/* EDIT PROFILE */}
         <div className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-xl transition cursor-pointer">
-          <div className="flex items-center gap-3">
-            <Pencil className="text-gray-400" size={20} />
-            <div>
-              <p className="font-medium dark:text-white">Editar perfil</p>
-              <p className="text-sm text-gray-500">
-                Cambia username, bio y más
-              </p>
+          <Link to={`/profile/@${profile.username}`}>
+            <div className="flex items-center gap-3">
+              <Pencil className="text-gray-400" size={20} />
+              <div>
+                <p className="font-medium dark:text-white">Editar perfil</p>
+                <p className="text-sm text-gray-500">
+                  Cambia avatar, bio y más
+                </p>
+              </div>
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* LOGOUT */}

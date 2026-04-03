@@ -63,7 +63,7 @@ const NavigationM = () => {
   };
 
   // 👈 4. Ahora location.pathname sí será reactivo cuando navegues por la app
-  const onViewCredits = ["games", "yawas", "blog", "messages", "admin"].some(
+  const onViewCredits = ["games", "yawas", "blog", "messages", "admin", "settings"].some(
     (route) => location.pathname.includes(route)
   );
 

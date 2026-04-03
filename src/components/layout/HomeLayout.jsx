@@ -25,7 +25,7 @@ const HomeLayout = () => {
     }
   }, []);
 
-  const hiddenRightSidebarRoutes = ["/settings"];
+  const hiddenRightSidebarRoutes = ["/settings", "/admin"];
 
   const hideRightSidebar = hiddenRightSidebarRoutes.some((route) =>
     location.pathname.startsWith(route),

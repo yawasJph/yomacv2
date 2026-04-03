@@ -91,6 +91,7 @@ const PostPage = () => {
     e.preventDefault();
     if (!newComment.trim() && !selectedGif) return;
 
+    console.log("entro")
     addComment({
       content: newComment,
       userId: user.id,

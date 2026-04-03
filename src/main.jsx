@@ -9,6 +9,7 @@ import { AuthModalProvider } from "./context/AuthModalContext.jsx";
 import AuthModal from "./components/ui/AuthModal .jsx";
 import { AudioProvider } from "./context/AudioContext.jsx";
 import App from "./Appv2.jsx";
+import { ThemeProvider } from "./context/ThemeContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,16 +22,17 @@ const queryClient = new QueryClient({
 });
 
 createRoot(document.getElementById("root")).render(
-  <AuthModalProvider>
-    <AuthContextProvider>
-      <FollowProvider>
-        <QueryClientProvider client={queryClient}>
-          {/* <AuthModal /> */}
-          <AudioProvider>
-            <App />
-          </AudioProvider>
-        </QueryClientProvider>
-      </FollowProvider>
-    </AuthContextProvider>
-  </AuthModalProvider>,
+  <ThemeProvider>
+    <AuthModalProvider>
+      <AuthContextProvider>
+        <FollowProvider>
+          <QueryClientProvider client={queryClient}>
+            <AudioProvider>
+              <App />
+            </AudioProvider>
+          </QueryClientProvider>
+        </FollowProvider>
+      </AuthContextProvider>
+    </AuthModalProvider>
+  </ThemeProvider>,
 );

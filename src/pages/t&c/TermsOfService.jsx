@@ -1,7 +1,6 @@
 
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ScrollText, AlertTriangle, ShieldCheck, ServerCrash, Users } from "lucide-react";
-import ToggleThemeButton from "@/components/ui/ToggleThemeButton";
 
 const TermsOfService = () => {
   const navigate = useNavigate();
@@ -18,11 +17,6 @@ const TermsOfService = () => {
         >
           <ArrowLeft size={20} />
         </button>
-      </div>
-
-      {/* Toggle Theme */}
-      <div className="absolute top-4 right-4 z-10">
-        <ToggleThemeButton />
       </div>
 
       <div className="max-w-3xl mx-auto mt-12">

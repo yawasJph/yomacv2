@@ -1,21 +1,11 @@
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
-export default function useDarkMode() {
+const ThemeContext = createContext(null);
+
+export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("theme") || "system";
   });
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem("darkMode") === "true";
-  });
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    localStorage.setItem("darkMode", darkMode);
-  }, [darkMode]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -26,10 +16,7 @@ export default function useDarkMode() {
       } else if (mode === "light") {
         root.classList.remove("dark");
       } else {
-        // system
-        const isDark = window.matchMedia(
-          "(prefers-color-scheme: dark)",
-        ).matches;
+        const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
         root.classList.toggle("dark", isDark);
       }
     };
@@ -37,20 +24,23 @@ export default function useDarkMode() {
     applyTheme(theme);
     localStorage.setItem("theme", theme);
 
-    // Escuchar cambios del sistema
     if (theme === "system") {
       const media = window.matchMedia("(prefers-color-scheme: dark)");
       const listener = () => applyTheme("system");
       media.addEventListener("change", listener);
-
       return () => media.removeEventListener("change", listener);
     }
   }, [theme]);
 
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
 
-
-  const toggleTheme = () => setDarkMode((prev) => !prev);
-
-  return { darkMode, toggleTheme ,theme,
-    setTheme};
-}
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) throw new Error("useTheme must be used within ThemeProvider");
+  return context;
+};

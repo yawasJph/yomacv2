@@ -35,8 +35,10 @@ import AdminRoute from "./routes/AdminRoute";
 const CreateBlog = lazy(() => import("./pages/blog/CreateBlog5"));
 const AdminOverview = lazy(() => import("./pages/admin/AdminOverview"));
 const AdminUsersManager = lazy(() => import("./pages/admin/AdminUsersManager"));
+const AdminBugReports = lazy(() => import("./pages/admin/AdminBugReports2"));
 const TermsOfService = lazy(() => import("./pages/t&c/TermsOfService"));
 const PrivacyPolicy = lazy(() => import("./pages/t&c/PrivacyPolicy"));
+const ReportBug = lazy(() => import("./pages/settings/ReportBug"));
 
 // --- IMPORTS DINÁMICOS (Lazy Loading) ---
 const CreatePost = lazy(() => import("./components/pages/CreatePost"));
@@ -169,6 +171,7 @@ function App() {
                     <Route index element={<Navigate to="account" replace />} />
                     <Route path="account" element={<AccountSettings />} />
                     <Route path="display" element={<DisplaySettings />} />
+                    <Route path="report" element={<ReportBug />} />
                   </Route>
                 </Route>
 
@@ -179,6 +182,10 @@ function App() {
                     <Route
                       path="dashboard/users"
                       element={<AdminUsersManager />}
+                    />
+                    <Route
+                      path="dashboard/bugs"
+                      element={<AdminBugReports />}
                     />
                   </Route>
                 </Route>

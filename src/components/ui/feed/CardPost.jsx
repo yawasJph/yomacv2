@@ -30,6 +30,8 @@ import UserHoverCard from "./UserHoverCard3";
 import useLiveTimeAgo from "@/hooks/useLiveTimeAgo";
 import { notify } from "@/utils/toast/notifyv3";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
+import { useNow } from "@/hooks/useNow";
+import { formatTimeAgo } from "@/utils/timers/formatTimeAgo";
 
 const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -48,7 +50,9 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
-  const time = useLiveTimeAgo(post.created_at, isMobile);
+  const now = useNow(60000); // 1 min
+  const time = formatTimeAgo(post.created_at, now);
+  //const time = useLiveTimeAgo(post.created_at, isMobile)
 
   // Cerrar menú al hacer click fuera
   useEffect(() => {

@@ -20,7 +20,7 @@ export default function EmojiSelector({ addEmoji }) {
     <div className="relative">
       {/* Botón Disparador */}
       <button
-        onClick={() => setShowPicker(!showPicker)}
+        onClick={(e) => {e.preventDefault(), setShowPicker(!showPicker)}}
         className={`p-2 rounded-full transition-colors ${
           showPicker 
             ? "text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10" 

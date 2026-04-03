@@ -20,7 +20,7 @@ const ReportList = ({ onSelect }) => {
       <div className="space-y-3">
         {/* Renderizamos 3 skeletons para simular la lista */}
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-24 bg-gray-100 dark:bg-neutral-800 animate-pulse rounded-3xl" />
+          <div key={i} className="skeleton h-24 bg-gray-100 dark:bg-neutral-800 animate-pulse rounded-3xl" />
         ))}
       </div>
     );
@@ -34,7 +34,7 @@ const ReportList = ({ onSelect }) => {
       </div>
     );
 
-  return (
+  return (    
     <div className="space-y-3">
       {reports.map((report) => {
         // Variables auxiliares para limpiar el JSX
@@ -84,11 +84,11 @@ const ReportList = ({ onSelect }) => {
               {/* Autores involucrados */}
               <p className="text-[10px] text-gray-500 mt-0.5 line-clamp-2">
                 <span className="font-semibold text-gray-700 dark:text-gray-300">
-                  {report.reporter?.full_name} {report.reporter?.full_name}
+                  {report.reporter?.full_name}
                 </span>
                 {" reportó a "}
                 <span className="font-semibold text-rose-600 dark:text-rose-400">
-                  {targetAuthor || "Usuario desconocido"} {targetAuthor || "Usuario desconocido"}
+                  {targetAuthor || "Usuario desconocido"}
                 </span>
               </p>
             </div>
