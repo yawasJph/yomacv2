@@ -16,6 +16,7 @@ import "highlight.js/styles/atom-one-dark.css";
 
 // Contextos y Layouts (Importación directa para carga inmediata)
 
+
 import { SearchProvider } from "./context/SearchContext";
 import HomeLayout from "./components/layout/HomeLayout";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
