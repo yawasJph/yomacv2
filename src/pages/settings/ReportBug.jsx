@@ -2,14 +2,14 @@ import { useState } from "react";
 import { Bug, Send, MessageSquarePlus, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useBugReport } from "@/hooks/bugs-report/useBugReport";
-import { toast } from "sonner";
 import ImageUpload from "@/components/uploads/ImageUpload";
 import { uploadToCloudinary } from "@/cloudinary/upToCloudinary";
 import { getDeviceInfo } from "@/utils/data/getDeviceInfo";
+import { REPORT_BUGS } from "@/consts/bugs";
 
 const ReportBug = () => {
   const { user } = useAuth();
-  const [category, setCategory] = useState("bug");
+  const [category, setCategory] = useState(REPORT_BUGS.category.bug);
   const [description, setDescription] = useState("");
   const { sendReport, reportLoading } = useBugReport();
   const [loading, setLoading] = useState(false)
@@ -18,6 +18,7 @@ const ReportBug = () => {
 
   const userId = user?.id;
   const device_info = getDeviceInfo()
+  const isBug = category === REPORT_BUGS.category.bug
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,35 +69,35 @@ const ReportBug = () => {
         <div className="grid grid-cols-2 gap-4">
           <button
             type="button"
-            onClick={() => setCategory("bug")}
+            onClick={() => setCategory(REPORT_BUGS.category.bug)}
             className={`flex flex-col items-center p-4 border-2 rounded-xl transition gap-2 ${
-              category === "bug"
+              isBug
                 ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400"
                 : "border-gray-200 dark:border-gray-800 text-gray-500 hover:border-emerald-300"
             }`}
           >
             <Bug size={24} />
-            <span className="font-medium">Reportar Error</span>
+            <span className="font-medium">Reportar {REPORT_BUGS.categoryLabels.bug}</span>
           </button>
 
           <button
             type="button"
-            onClick={() => setCategory("suggestion")}
+            onClick={() => setCategory(REPORT_BUGS.category.suggestion)}
             className={`flex flex-col items-center p-4 border-2 rounded-xl transition gap-2 ${
-              category === "suggestion"
+              !isBug
                 ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400"
                 : "border-gray-200 dark:border-gray-800 text-gray-500 hover:border-emerald-300"
             }`}
           >
             <MessageSquarePlus size={24} />
-            <span className="font-medium">Sugerencia</span>
+            <span className="font-medium">{REPORT_BUGS.categoryLabels.suggestion}</span>
           </button>
         </div>
 
         {/* Textarea */}
         <div className="space-y-2">
           <label className="text-sm font-medium dark:text-gray-300">
-            Descripción {category === "bug" ? "del error" : "de tu idea"}
+            Descripción {isBug ? "del error" : "de tu idea"}
           </label>
           <textarea
             required
@@ -104,7 +105,7 @@ const ReportBug = () => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder={
-              category === "bug"
+              isBug
                 ? "¿Qué estabas haciendo cuando ocurrió el error? Sé lo más detallado posible..."
                 : "¿Qué función te gustaría ver en YoMAC?"
             }

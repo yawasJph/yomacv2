@@ -14,13 +14,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReportBugModal from "./ReportBugModal";
 import { useBugReport } from "@/hooks/bugs-report/useBugReport";
+import { REPORT_BUGS } from "@/consts/bugs";
 
 const statusStyles = {
-  pendiente:
+  Pending:
     "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400",
-  en_revision:
+  In_Review:
     "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400",
-  revisado:
+  Resolved:
     "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400",
 };
 
@@ -28,8 +29,8 @@ const AdminBugReports = () => {
   const isMobile = useIsMobile();
   const [selectedReport, setSelectedReport] = useState(null);
   const navigate = useNavigate();
-  const [typeFilter, setTypeFilter] = useState("all"); // all | bug | idea
-  const [statusFilter, setStatusFilter] = useState("all"); // all | open | closed
+  const [typeFilter, setTypeFilter] = useState(REPORT_BUGS.category.default); // all | bug | idea
+  const [statusFilter, setStatusFilter] = useState(REPORT_BUGS.status.default); // all | open | closed
   const { reports, isLoading, isError } = useBugReport({
     category: typeFilter,
     status: statusFilter,
@@ -43,11 +44,11 @@ const AdminBugReports = () => {
   };
 
   const filteredReports = reports?.filter((report) => {
-    if (typeFilter !== "all" && report.category !== typeFilter) {
+    if (typeFilter !== REPORT_BUGS.category.default && report.category !== typeFilter) {
       return false;
     }
 
-    if (statusFilter !== "all" && report.status !== statusFilter) {
+    if (statusFilter !== REPORT_BUGS.status.default && report.status !== statusFilter) {
       return false;
     }
 
@@ -93,9 +94,9 @@ const AdminBugReports = () => {
         {/* CATEGORY */}
         <div className="flex gap-2 flex-wrap">
           {[
-            { key: "all", label: "Todos" },
-            { key: "bug", label: "Bugs" },
-            { key: "suggestion", label: "Sugerencias" },
+            { key: REPORT_BUGS.category.default, label: REPORT_BUGS.categoryLabels.default },
+            { key: REPORT_BUGS.category.bug, label: REPORT_BUGS.categoryLabels.bug },
+            { key: REPORT_BUGS.category.suggestion, label: REPORT_BUGS.categoryLabels.suggestion },
           ].map((item) => (
             <button
               key={item.key}
@@ -114,10 +115,10 @@ const AdminBugReports = () => {
         {/* STATUS */}
         <div className="flex gap-2 flex-wrap">
           {[
-            { key: "all", label: "Todos" },
-            { key: "pendiente", label: "Pendientes" },
-            { key: "en_revision", label: "En revisión" },
-            { key: "revisado", label: "Resueltos" },
+            { key: REPORT_BUGS.status.default, label: REPORT_BUGS.statusLabels.default },
+            { key: REPORT_BUGS.status.pending, label: REPORT_BUGS.statusLabels.pending },
+            { key: REPORT_BUGS.status.in_review, label: REPORT_BUGS.statusLabels.in_review },
+            { key: REPORT_BUGS.status.resolved, label: REPORT_BUGS.statusLabels.resolved },
           ].map((item) => (
             <button
               key={item.key}
@@ -148,9 +149,9 @@ const AdminBugReports = () => {
       ) : (
         filteredReports.map((report) => {
           // Variables auxiliares para limpiar el JSX
-          const isBug = report.category === "bug";
+          const isBug = report.category === REPORT_BUGS.category.bug;
           const hasMedia = !!report.image_url;
-          const isPending = report.status === "pendiente";
+          const isPending = report.status === REPORT_BUGS.status.pending;
 
           return (
             <div
@@ -179,15 +180,15 @@ const AdminBugReports = () => {
                         : "bg-purple-100 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400"
                     }`}
                   >
-                    {isBug ? "Bug" : "Sugerencia"}
+                    {isBug ? REPORT_BUGS.categoryLabels.bug : REPORT_BUGS.categoryLabels.suggestion}
                   </span>
                   {/* STATUS */}
                   <span
                     className={`text-[10px] px-2 py-0.5 rounded-full ${statusStyles[report.status]}`}
                   >
-                    {report.status === "pendiente" && "Pendiente"}
-                    {report.status === "en_revision" && "En revisión"}
-                    {report.status === "revisado" && "Resuelto"}
+                    {report.status === REPORT_BUGS.status.pending && REPORT_BUGS.statusLabels.pending}
+                    {report.status === REPORT_BUGS.status.in_review && REPORT_BUGS.statusLabels.in_review}
+                    {report.status === REPORT_BUGS.status.resolved && REPORT_BUGS.statusLabels.resolved}
                   </span>
                   <span className="text-[10px] text-gray-400 font-medium">
                     {formatDate(report.created_at)}

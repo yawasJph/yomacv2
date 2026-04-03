@@ -1,18 +1,29 @@
-import { X, Eye, Edit } from "lucide-react";
+import { X, Eye, Edit, Clock, Loader2, Trash2 } from "lucide-react";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 import { useBugReport } from "@/hooks/bugs-report/useBugReport";
+import { REPORT_BUGS } from "@/consts/bugs";
 
 const ReportBugModal = ({ report, onClose }) => {
   if (!report) return null;
-  const isBug = report.category === "bug";
-
-  const { updateReport, updateLoading } = useBugReport();
+  const isBug = report.category === REPORT_BUGS.category.bug;
+  const isPending = report.status === REPORT_BUGS.status.in_review;
+  const isResolved = report.status === REPORT_BUGS.status.resolved;
+  const { updateReport, updateLoading, deleteReport, isDeleting } = useBugReport();
 
   const handleAction = (id, newStatus) => {
     updateReport(
       {
         id,
         newStatus,
+      },
+      { onSuccess: () => onClose() },
+    );
+  };
+
+  const handleDelete = (id) => {
+    deleteReport(
+      {
+        id,
       },
       { onSuccess: () => onClose() },
     );
@@ -43,7 +54,7 @@ const ReportBugModal = ({ report, onClose }) => {
               className={`px-3 py-1 text-xs font-black rounded-full uppercase
                 ${isBug ? "bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400" : "bg-purple-100 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400"}`}
             >
-              {isBug ? "Bug" : "Idea"}
+              {isBug ? REPORT_BUGS.categoryLabels.bug : REPORT_BUGS.categoryLabels.suggestion}
             </span>
           </div>
 
@@ -131,22 +142,54 @@ const ReportBugModal = ({ report, onClose }) => {
           </h2>
 
           <button
-            disabled={updateLoading}
-            onClick={() => handleAction(report.id, "revisado")}
+            disabled={updateLoading || isDeleting}
+            onClick={() => handleAction(report.id, REPORT_BUGS.status.resolved)}
             className="flex items-center gap-3 p-4 bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-300 rounded-2xl font-bold transition-all disabled:opacity-50 hover:bg-gray-200 dark:hover:bg-neutral-700"
           >
             <Eye size={20} />
-            <span className="text-sm">Revisado</span>
+            <span className="text-sm">Resuelto</span>
           </button>
 
           <button
-            disabled={updateLoading}
-            onClick={() => handleAction(report.id, "en_revision")}
+            disabled={updateLoading || isDeleting}
+            onClick={() => handleAction(report.id, REPORT_BUGS.status.in_review)}
             className="flex items-center gap-3 p-4 bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded-2xl font-bold transition-all disabled:opacity-50 hover:bg-orange-100"
           >
             <Edit size={20} />
             <span className="text-sm">En revision</span>
           </button>
+
+          {isPending && (
+            <button
+              disabled={updateLoading || isDeleting}
+              onClick={() => handleAction(report.id, REPORT_BUGS.status.pending)}
+              className="flex items-center gap-3 p-4 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-2xl font-bold transition-all disabled:opacity-50 hover:bg-indigo-100"
+            >
+              <Clock size={20} />
+              <span className="text-sm">Pendiente</span>
+            </button>
+          )}
+
+          {isResolved && (
+            <button
+              disabled={updateLoading || isDeleting}
+              onClick={() => handleDelete(report.id)}
+              className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-2xl font-bold transition-all disabled:opacity-50 hover:bg-red-100"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="animate-spin" size={20} />
+                  <span className="text-sm">Eliminando</span>
+                </>
+              ) : (
+                <>
+                  {" "}
+                  <Trash2 size={20} />
+                  <span className="text-sm">Eliminar</span>
+                </>
+              )}
+            </button>
+          )}
 
           <div className="mt-auto pt-4 md:flex justify-end hidden">
             <button
