@@ -135,12 +135,15 @@ const AdminBugReports = () => {
       </div>
 
       {filteredReports.length === 0 ? (
-        <div className="text-center p-12 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl ">
-          <CheckCircle className="mx-auto text-emerald-500 mb-3" size={40} />
-          <p className="text-lg font-medium dark:text-white">¡Todo al día!</p>
-          <p className="text-gray-500">
-            No hay reportes pendientes en este momento.
-          </p>
+        // <div className="text-center p-12 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl ">
+        //   <CheckCircle className="mx-auto text-emerald-500 mb-3" size={40} />
+        //   <p className="text-lg font-medium dark:text-white">¡Todo al día!</p>
+        //   <p className="text-gray-500">
+        //     No hay reportes pendientes en este momento.
+        //   </p>
+        // </div>
+        <div className="text-center p-10 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl">
+          <p className="text-gray-500">No hay reportes con estos filtros.</p>
         </div>
       ) : (
         filteredReports.map((report) => {
@@ -176,7 +179,7 @@ const AdminBugReports = () => {
                         : "bg-purple-100 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400"
                     }`}
                   >
-                    {isBug ? "Error" : "Idea"}
+                    {isBug ? "Bug" : "Sugerencia"}
                   </span>
                   {/* STATUS */}
                   <span
