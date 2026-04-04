@@ -86,10 +86,10 @@ const NotificationSettings = () => {
           </div>
 
           <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-black rounded-xl border border-gray-100 dark:border-gray-800">
-            <div>
+            <div className="flex-1">
               <p className="font-medium dark:text-white">Reproducir sonido</p>
               <p className="text-sm text-gray-500">
-                Al recibir un nuevo mensaje directo o aviso de Yawas.
+                Al recibir un nuevo commentario, reply, like, mencion y repost.
               </p>
             </div>
 
@@ -127,7 +127,7 @@ const NotificationSettings = () => {
           <div className="space-y-2">
             {/* Opción Likes */}
             <div className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-xl transition">
-              <div className="flex items-center gap-3">
+              <div className="flex flex-1 items-center gap-3">
                 <div className="p-2 bg-red-50 dark:bg-red-950/30 text-red-500 rounded-lg">
                   <Heart size={16} />
                 </div>
@@ -147,7 +147,7 @@ const NotificationSettings = () => {
 
             {/* Opción Comentarios */}
             <div className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-xl transition">
-              <div className="flex items-center gap-3">
+              <div className="flex flex-1 items-center gap-3">
                 <div className="p-2 bg-blue-50 dark:bg-blue-950/30 text-blue-500 rounded-lg">
                   <MessageSquare size={16} />
                 </div>

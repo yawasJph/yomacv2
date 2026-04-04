@@ -105,10 +105,11 @@ export const useComments = (id, type = "post") => {
       queryClient.invalidateQueries({ queryKey: ["comment_detail", id] });
       queryClient.invalidateQueries({ queryKey: ["post", id] });
     },
-
     onError: (error) => {
       if (error.message === "POST_NOT_FOUND")
-        notify.error("Post no encontrado");
+        notify.error("Post no encontrado.");
+      if (error.message === "COMMENT_NOT_FOUND")
+        notify.error("Comentario no encontrado.");
     },
   });
 

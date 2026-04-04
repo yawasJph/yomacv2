@@ -1,5 +1,5 @@
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
-import { X} from "lucide-react";
+import { X } from "lucide-react";
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
@@ -13,12 +13,12 @@ const ImageModal = ({ src, onClose }) => {
   if (!src) return null;
 
   return createPortal(
-    <div 
+    <div
       className="fixed inset-0 z-1000 flex items-center justify-center bg-black/90 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={onClose}
     >
       {/* Botón Cerrar */}
-      <button 
+      <button
         className="absolute top-6 right-6 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-110"
         onClick={onClose}
       >
@@ -26,19 +26,21 @@ const ImageModal = ({ src, onClose }) => {
       </button>
 
       {/* Imagen Full Screen */}
-      <div 
+      <div
         className="relative max-w-[95vw] max-h-[90vh] flex items-center justify-center animate-in zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()} // Evita cerrar al hacer clic en la imagen
       >
-        <img 
-          src={optimizeMedia(src)} 
-          alt="Full size view" 
+        <img
+          src={optimizeMedia(src)}
+          alt="Full size view"
           className="rounded-lg shadow-2xl object-contain max-w-full max-h-full"
           loading="lazy"
+          onContextMenu={(e) => e.preventDefault()}
+          draggable={false}
         />
       </div>
     </div>,
-    document.body
+    document.body,
   );
 };
 

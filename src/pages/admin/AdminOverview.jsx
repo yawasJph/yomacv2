@@ -1,4 +1,4 @@
-import { UserPlus, Megaphone, ArrowLeft, Users, Bug } from "lucide-react";
+import { ArrowLeft, Users, Bug, BrushCleaning } from "lucide-react";
 import UserStatCard from "./UserStatCard";
 import ReportStatCard from "./ReportStatCard";
 import ReportList from "./ReportListv2";
@@ -50,7 +50,10 @@ const AdminOverview = () => {
             <QuickActionButton icon={<Bug />} label="Bugs/FeedBack" />
           </Link>
 
-          <QuickActionButton icon={<UserPlus />} label="Verificar" />
+          <Link to={"/admin/dashboard/cleanup"}>
+            <QuickActionButton icon={<BrushCleaning />} label="Limpiar" />
+          </Link>
+
         </div>
       </section>
 

@@ -150,7 +150,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
         <div className="flex items-center gap-2 px-4 sm:px-6 pt-2 pb-1 text-gray-500 dark:text-gray-400">
           <Repeat2 size={14} className="stroke-[3px]" />
           <span className="text-[13px] font-bold hover:underline cursor-default">
-            Repostaste
+            Repost
           </span>
         </div>
       )}

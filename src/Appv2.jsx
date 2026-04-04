@@ -36,9 +36,11 @@ const CreateBlog = lazy(() => import("./pages/blog/CreateBlog5"));
 const AdminOverview = lazy(() => import("./pages/admin/AdminOverview"));
 const AdminUsersManager = lazy(() => import("./pages/admin/AdminUsersManager"));
 const AdminBugReports = lazy(() => import("./pages/admin/AdminBugReports"));
+const AdminTrashCleanup = lazy(() => import("./pages/admin/AdminTrashCleanup"));
 const TermsOfService = lazy(() => import("./pages/t&c/TermsOfService"));
 const PrivacyPolicy = lazy(() => import("./pages/t&c/PrivacyPolicy"));
 const ReportBug = lazy(() => import("./pages/settings/ReportBug"));
+const AboutYoMAC = lazy(() => import("./pages/settings/AboutYoMAC"));
 const NotificationSettings = lazy(
   () => import("./pages/settings/NotificationSettings"),
 );
@@ -175,6 +177,7 @@ function App() {
                     <Route path="account" element={<AccountSettings />} />
                     <Route path="display" element={<DisplaySettings />} />
                     <Route path="report" element={<ReportBug />} />
+                    <Route path="about" element={<AboutYoMAC />} />
                     <Route
                       path="notifications"
                       element={<NotificationSettings />}
@@ -193,6 +196,10 @@ function App() {
                     <Route
                       path="dashboard/bugs"
                       element={<AdminBugReports />}
+                    />
+                    <Route
+                      path="dashboard/cleanup"
+                      element={<AdminTrashCleanup />}
                     />
                   </Route>
                 </Route>

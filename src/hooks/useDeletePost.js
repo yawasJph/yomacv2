@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabaseClient } from "../supabase/supabaseClient";
 import { notify } from "@/utils/toast/notifyv3";
 
-export const useDeletePost = (post_id) => {
+export const useDeletePost = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
