@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { supabaseClient } from "@/supabase/supabaseClient";
 import ReadOnlyEditor from "@/components/tiptap-templates/simple/ReadOnlyEditor";
+import { ArrowLeft } from "lucide-react";
 
 const BlogDetail = () => {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -44,7 +46,7 @@ const BlogDetail = () => {
   if (!post) return <div className="py-20 text-center">Blog no encontrado</div>;
 
   return (
-    <article className="bg-white dark:bg-zinc-950 pb-20">
+    <article className="bg-white dark:bg-zinc-950 pb-20 relative">
       <header className="max-w-4xl mx-auto pt-16 px-6">
         <h1 className="text-4xl md:text-6xl font-black text-zinc-900 dark:text-white mb-8 text-center leading-tight">
           {post.title}
@@ -120,12 +122,29 @@ const BlogDetail = () => {
 
             {/* CTA opcional */}
             <div className="mt-4 flex justify-center md:justify-start gap-3">
-              <Link to={`/profile/@${post.author.username}`} className="text-xs px-4 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 transition">
+              <Link
+                to={`/profile/@${post.author.username}`}
+                className="text-xs px-4 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 transition"
+              >
                 Ver perfil 👀
               </Link>
             </div>
           </div>
         </footer>
+
+        <button
+          onClick={() => {
+            if (window.history.length > 1) navigate(-1);
+            else navigate("/blog");
+          }}
+          className="absolute top-6 left-6 z-30 flex items-center gap-2 px-4 py-2 rounded-xl 
+             bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md 
+             border border-zinc-200 dark:border-zinc-800
+             text-zinc-700 dark:text-zinc-200 
+             hover:scale-105 hover:shadow-lg transition-all"
+        >
+          <ArrowLeft size={18} />
+        </button>
       </div>
     </article>
   );

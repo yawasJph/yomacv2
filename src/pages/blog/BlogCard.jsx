@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const BlogCard = ({ post }) => {
+  console.log(post.profiles.avatar)
   return (
     <div className="group bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl overflow-hidden hover:shadow-lg transition-all">
       {/* Banner */}
@@ -20,7 +21,6 @@ const BlogCard = ({ post }) => {
             {post.reading_time} min lectura
           </span>
           <span className="text-xs text-gray-500">
-            {/* {new Date(post.created_at).toLocaleDateString()} */}
             {new Date(post.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
           </span>
         </div>

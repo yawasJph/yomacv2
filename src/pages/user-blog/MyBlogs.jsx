@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { supabaseClient } from "@/supabase/supabaseClient";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import { Edit3, Eye, Trash2, Plus, FileText } from "lucide-react";
+import { Edit3, Eye, Trash2, Plus, FileText, ChevronLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 const MyBlogs = () => {
@@ -48,7 +48,19 @@ const MyBlogs = () => {
     <div className="max-w-5xl mx-auto px-6 py-10">
       <header className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold dark:text-white">Mis Artículos</h1>
+          <div className="flex gap-3">
+            {isMobile && (
+              <button
+                onClick={() => navigate(-1)}
+                className="p-1 -ml-2 text-zinc-500"
+              >
+                <ChevronLeft size={24} />
+              </button>
+            )}
+            <h1 className="text-3xl font-bold dark:text-white">
+              Mis Artículos
+            </h1>
+          </div>
           <p className="text-zinc-500 text-sm">
             Gestiona tus borradores y publicaciones
           </p>
