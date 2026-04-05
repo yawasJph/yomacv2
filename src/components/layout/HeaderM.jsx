@@ -7,6 +7,7 @@ import {
   MessageCircle,
   Trophy,
   Settings,
+  BlocksIcon,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
@@ -46,6 +47,11 @@ const HeaderM = () => {
       icon: <MessageCircle size={22} />,
       text: "Mensages",
       path: "/messages",
+    },
+    {
+      path: "/blog",
+      icon: <BlocksIcon size={22} />,
+      text: "Blog",
     },
     {
       icon: <Settings size={22} />,

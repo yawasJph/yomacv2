@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import {
-  ArrowLeft,
-  Calendar,
-  Share,
-  ShieldAlert,
-} from "lucide-react";
+import { ArrowLeft, Calendar, Share, ShieldAlert } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useFollow } from "../../context/FollowContext";
 import CardPost from "../ui/feed/CardPost";
@@ -21,15 +16,9 @@ import { handleShareProfile } from "../utils/handleShareProfile";
 import SocialLinks from "../socials/SocialLinks";
 import UserBadges from "../user/UserBadges";
 import DevBadge from "../ui/userProfile/DevBadge";
+import { messages } from "@/consts/notFound/notFoundProfile";
 
-const hoverColors = {
-  github: "hover:text-black dark:hover:text-white",
-  instagram: "hover:text-pink-500",
-  linkedin: "hover:text-blue-500",
-  facebook: "hover:text-blue-600",
-  tiktok: "hover:text-cyan-400",
-  web: "hover:text-emerald-500",
-};
+const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
 const UserProfile = () => {
   // 1. Ahora leemos 'username' de la URL, no 'userId'
@@ -52,7 +41,15 @@ const UserProfile = () => {
   const { executeAction } = useAuthAction();
   const { isFollowing, followUser, unfollowUser } = useFollow();
 
-  const isDev = profile?.username === "jllacuash"
+  const isDev = profile?.username === "jllacuash";
+
+  const trollActions = [
+    () => navigate("/"),
+    () => navigate(-1),
+    () => navigate("/games"),
+    () => navigate("/users"),
+    () => alert("Nada por aquí 👀"),
+  ];
 
   // 5. Cargar posts paginados usando el userId real (habilitado solo si hay userId)
   const {
@@ -115,8 +112,74 @@ const UserProfile = () => {
   if (profileLoading) return <UserProfileSkeleton />;
 
   // Si buscó el username y no existe en la BD
-  if (!profile)
-    return <div className="p-10 text-center">Usuario no encontrado</div>;
+  if (!profile) {
+    return (
+      <div className="min-h-[500px] sm:min-h-screen flex flex-col items-center justify-center text-center px-6">
+        {/* ICONO */}
+        <div className="bg-gray-100 dark:bg-neutral-800 p-6 rounded-full mb-6 cursor-pointer hover:scale-105 transition">
+          🕵️
+        </div>
+
+        {/* TITLE */}
+        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
+          {randomMessage.title}
+        </h2>
+
+        {/* DESC */}
+        <p className="text-gray-500 dark:text-gray-400 max-w-md mb-4">
+          {randomMessage.desc}
+        </p>
+
+        {randomMessage.desc2 && (
+          <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">
+            {randomMessage.desc2}
+          </p>
+        )}
+
+        {/* BUTTONS */}
+        <div className="flex gap-3 flex-wrap justify-center">
+          <button
+            onClick={() => navigate(-1)}
+            className="px-5 py-2 bg-gray-200 dark:bg-neutral-700 rounded-full hover:scale-105 transition dark:text-white"
+          >
+            {randomMessage.btnBack ?? "Volver"}
+          </button>
+
+          <button
+            onClick={() => navigate("/")}
+            className="px-5 py-2 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition"
+          >
+            {randomMessage.btnHome ?? "Inicio"}
+          </button>
+
+          <button
+            onClick={() => navigate("/users")}
+            className="px-5 py-2 bg-purple-500 text-white rounded-full hover:bg-purple-600 transition"
+          >
+            {randomMessage.btnExplore ?? "Explorar 🔍"}
+          </button>
+
+          <button
+            onClick={() => {
+              const action =
+                trollActions[Math.floor(Math.random() * trollActions.length)];
+              action();
+            }}
+            className="px-5 py-2 bg-pink-500 text-white rounded-full hover:scale-105 transition"
+          >
+            {randomMessage.btnTroll ?? "??? 🎲"}
+          </button>
+        </div>
+
+        {/* EXTRA */}
+        {randomMessage.extra && (
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-8">
+            {randomMessage.extra}
+          </p>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white dark:bg-black pb-10">
@@ -273,7 +336,7 @@ const UserProfile = () => {
         <div>
           <div className="flex items-center gap-2 flex-wrap">
             <h2 className="text-xl font-extrabold dark:text-white tracking-tight sm:text-2xl sm:font-black">
-              {profile?.full_name} 
+              {profile?.full_name}
             </h2>
             {/* Cartel llamativo de baneo */}
             {profile?.is_banned && (
@@ -283,29 +346,29 @@ const UserProfile = () => {
             )}
           </div>
           {/* RENDERIZADO DE INSIGNIAS */}
-          {profile?.equipped_badges && <div className="flex items-center gap-1">
-            <UserBadges badges={profile.equipped_badges || []} />
-          </div>}
+          {profile?.equipped_badges && (
+            <div className="flex items-center gap-1">
+              <UserBadges badges={profile.equipped_badges || []} />
+            </div>
+          )}
 
           <div className="flex justify-between items-center gap-2 mt-1">
             <div>
               <span className="text-emerald-600 dark:text-emerald-400 font-bold text-sm bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-md">
-              {profile?.carrera || "Estudiante"}
-            </span>
-            {profile?.ciclo && (
-              <span className="text-gray-500 dark:text-gray-400 text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700">
-                Ciclo {profile.ciclo}
+                {profile?.carrera || "Estudiante"}
               </span>
-            )}
+              {profile?.ciclo && (
+                <span className="text-gray-500 dark:text-gray-400 text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-700">
+                  Ciclo {profile.ciclo}
+                </span>
+              )}
             </div>
-            {isDev && <DevBadge/>}
+            {isDev && <DevBadge />}
           </div>
         </div>
 
         {/* REDES SOCIALES ESTILO PREMIUM */}
-        {profile?.socials && (
-            <SocialLinks socials={profile.socials}/>
-        )}
+        {profile?.socials && <SocialLinks socials={profile.socials} />}
 
         {profile?.bio && (
           <p className="text-gray-800 dark:text-gray-200 text-[15px] leading-[1.6] whitespace-pre-line">

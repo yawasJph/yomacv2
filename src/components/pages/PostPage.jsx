@@ -17,6 +17,7 @@ import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 import { messages } from "@/consts/notFound/noFoundPost";
 
 const MAX_CHARS = 500;
+const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
 const PostPage = () => {
   const { postId } = useParams();
@@ -29,7 +30,6 @@ const PostPage = () => {
   const { data } = useProfile(user?.id);
   const {} = useAuthAction();
   const { executeAction } = useAuthAction();
-  const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
   const trollActions = [
     () => navigate("/"),
@@ -148,11 +148,8 @@ const PostPage = () => {
 
         {/* ESTADO VACÍO */}
         <div className="flex flex-1 flex-col items-center justify-center text-center px-6">
-
           {/* ICONO */}
-          <div
-            className="bg-gray-100 dark:bg-neutral-800 p-6 rounded-full mb-6 cursor-pointer select-none"
-          >
+          <div className="bg-gray-100 dark:bg-neutral-800 p-6 rounded-full mb-6 cursor-pointer select-none">
             <X size={42} className="text-gray-500" />
           </div>
 
@@ -174,7 +171,7 @@ const PostPage = () => {
               onClick={() => navigate(-1)}
               className="px-5 py-2 bg-gray-200 dark:bg-neutral-700 rounded-full hover:scale-105 hover:bg-gray-300 dark:hover:bg-neutral-600 transition-all dark:text-white"
             >
-             {randomMessage.btnBack}
+              {randomMessage.btnBack}
             </button>
 
             <button

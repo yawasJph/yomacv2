@@ -10,6 +10,8 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 import SaveButton from "./SaveButton";
 import PublicButton from "./PublicButton";
 import { ChevronLeft } from "lucide-react";
+import { notify } from "@/utils/toast/notifyv3";
+import { validateTitle } from "@/utils/blog/validations";
 
 const CreateBlog = ({ isEditing = false }) => {
   const { user } = useAuth();
@@ -44,6 +46,8 @@ const CreateBlog = ({ isEditing = false }) => {
         .select("*")
         .eq("id", id)
         .single();
+
+      if (error) throw new Error("ERROR_FETCHING_BLOGS");
 
       if (data && editor) {
         setTitle(data.title);
@@ -125,6 +129,20 @@ const CreateBlog = ({ isEditing = false }) => {
   //   };
 
   const handleSave = async (targetStatus = "published") => {
+    // if (!title || !editor || editor.isEmpty || !imageFile) {
+    //   return notify.error(
+    //     "Por favor completa el título, contenido y selecciona una imagen de portada.",
+    //   );
+    // }
+    const content = editor.getText().trim();
+    const erroTitle = validateTitle(title);
+
+    if (erroTitle) return notify.error(erroTitle);
+
+    // if (!title) return notify.error("Escriba un titulo.");
+    // if (!imageFile) return notify.error("Selecciona una imagen de portada.");
+    // if (!content) return notify.error("Escriba un contenido.");
+
     setLoading(true);
     try {
       let bannerUrl = previewUrl;
@@ -232,6 +250,7 @@ const CreateBlog = ({ isEditing = false }) => {
           onChange={(e) => setTitle(e.target.value)}
           className="text-2xl md:text-5xl font-black bg-transparent border-none outline-none focus:ring-0 dark:text-white placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
         />
+        <p className="text-xs text-end text-zinc-500">{title.trim().length}/100</p>
 
         <div className="relative">
           <input
