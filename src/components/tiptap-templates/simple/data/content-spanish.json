@@ -1,0 +1,121 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "heading",
+      "attrs": { "level": 1 },
+      "content": [
+        { "type": "text", "text": "Empieza a escribir ✍️" }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        { "type": "text", "text": "Bienvenido a tu editor. Aquí puedes escribir ideas, historias o cualquier cosa que tengas en mente. " },
+        { "type": "text", "marks": [{ "type": "bold" }], "text": "Hazlo simple o hazlo increíble." }
+      ]
+    },
+
+    {
+      "type": "heading",
+      "attrs": { "level": 2 },
+      "content": [
+        { "type": "text", "text": "🚀 Cosas que puedes hacer" }
+      ]
+    },
+
+    {
+      "type": "bulletList",
+      "content": [
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                { "type": "text", "text": "Escribir en " },
+                { "type": "text", "marks": [{ "type": "bold" }], "text": "negrita" },
+                { "type": "text", "text": ", " },
+                { "type": "text", "marks": [{ "type": "italic" }], "text": "cursiva" },
+                { "type": "text", "text": " o incluso " },
+                { "type": "text", "marks": [{ "type": "strike" }], "text": "tachado" },
+                { "type": "text", "text": "." }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                { "type": "text", "text": "Agregar enlaces a tus sitios favoritos 🌐." }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                { "type": "text", "text": "Insertar imágenes para que tu post no se vea aburrido 🖼️." }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "type": "blockquote",
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            { "type": "text", "marks": [{ "type": "italic" }], "text": "Tip: Un buen título y una buena portada hacen que tu post destaque más 👀" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "type": "codeBlock",
+      "content": [
+        {
+          "type": "text",
+          "text": "Consejo rápido:\nUsa Ctrl + B para negrita\nUsa Ctrl + I para cursiva"
+        }
+      ]
+    },
+
+    {
+      "type": "heading",
+      "attrs": { "level": 2 },
+      "content": [
+        { "type": "text", "text": "💡 Inspírate" }
+      ]
+    },
+
+    {
+      "type": "paragraph",
+      "content": [
+        { "type": "text", "text": "No tiene que ser perfecto. Empieza escribiendo algo simple como: " },
+        { "type": "text", "marks": [{ "type": "italic" }], "text": "\"Hoy aprendí algo nuevo...\"" }
+      ]
+    },
+
+    {
+      "type": "horizontalRule"
+    },
+
+    {
+      "type": "paragraph",
+      "content": [
+        { "type": "text", "text": "Cuando estés listo, borra este texto y crea algo increíble 🚀" }
+      ]
+    }
+  ]
+}

@@ -22,8 +22,6 @@ import "@/components/tiptap-node/paragraph-node/paragraph-node.scss";
 import { common, createLowlight } from "lowlight";
 import CodeBlockNodev2 from "@/pages/blog/CodeBlockNodev2";
 
-
-
 const ReadOnlyEditor = ({content}) => {
     const lowlight = createLowlight(common);
   const editor = useEditor({
@@ -65,7 +63,7 @@ const ReadOnlyEditor = ({content}) => {
     <EditorContent
       editor={editor}
       role="presentation"
-      className="simple-editor-content"
+      className="simple-editor-content text-zinc-900 dark:text-zinc-100"
     />
   );
 };

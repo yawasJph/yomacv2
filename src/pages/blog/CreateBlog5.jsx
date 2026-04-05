@@ -13,6 +13,32 @@ import { ChevronLeft } from "lucide-react";
 import { notify } from "@/utils/toast/notifyv3";
 import { validateTitle } from "@/utils/blog/validations";
 
+const imageErrors = [
+  "Sin portada esto parece tarea sin nombre 🥲",
+  "Tu post está calato… ponle una imagen 🖼️😳",
+  "Ni Netflix deja contenido sin portada 😤",
+  "Una portada no te cuesta nada… bueno sí, creatividad 😅",
+];
+
+const contentErrors = [
+  "Hermano… tu contenido está más vacío que mi billetera 😭",
+  "Escribe algo pues 😐 aunque sea 'primer blog'",
+  "Contenido no encontrado… pero esta vez es tu culpa 😬",
+  "Contenido 404 , Ni un emoji… ¿todo bien en casa? 😳",
+  "Sin contenido. Esto no es minimalismo, es abandono 🫠",
+];
+
+const random = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+// Función para calcular tiempo de lectura y resumen
+const getMetadata = (html) => {
+  const text = html.replace(/<[^>]*>/g, ""); // Quitar etiquetas HTML
+  const words = text.trim().split(/\s+/).length;
+  const readingTime = Math.ceil(words / 200); // Promedio 200 palabras x min
+  const excerpt = text.substring(0, 150) + "..."; // Primeros 150 caracteres
+  return { readingTime, excerpt };
+};
+
 const CreateBlog = ({ isEditing = false }) => {
   const { user } = useAuth();
   const [editor, setEditor] = useState(null);
@@ -40,22 +66,23 @@ const CreateBlog = ({ isEditing = false }) => {
   }, []);
 
   useEffect(() => {
-    const fetchBlogData = async () => {
-      const { data, error } = await supabaseClient
-        .from("blogs")
-        .select("*")
-        .eq("id", id)
-        .single();
+    if (id) {
+      const fetchBlogData = async () => {
+        const { data } = await supabaseClient
+          .from("blogs")
+          .select("*")
+          .eq("id", id)
+          .single();
 
-      if (error) throw new Error("ERROR_FETCHING_BLOGS");
-
-      if (data && editor) {
-        setTitle(data.title);
-        setPreviewUrl(data.banner_url);
-        editor.commands.setContent(data.content); // Tiptap carga el HTML
-      }
-    };
-    if (editor) fetchBlogData();
+        if (data && editor) {
+          setTitle(data.title);
+          setImageFile(data.banner_url);
+          setPreviewUrl(data.banner_url);
+          editor.commands.setContent(data.content); // Tiptap carga el HTML
+        }
+      };
+      if (editor) fetchBlogData();
+    }
   }, [id, editor]);
 
   // Manejar selección de imagen (Localmente)
@@ -65,15 +92,6 @@ const CreateBlog = ({ isEditing = false }) => {
       setImageFile(file);
       setPreviewUrl(URL.createObjectURL(file)); // Crea una URL temporal para ver la foto
     }
-  };
-
-  // Función para calcular tiempo de lectura y resumen
-  const getMetadata = (html) => {
-    const text = html.replace(/<[^>]*>/g, ""); // Quitar etiquetas HTML
-    const words = text.trim().split(/\s+/).length;
-    const readingTime = Math.ceil(words / 200); // Promedio 200 palabras x min
-    const excerpt = text.substring(0, 150) + "..."; // Primeros 150 caracteres
-    return { readingTime, excerpt };
   };
 
   //   const handlePublish = async (targetStatus = "published") => {
@@ -138,10 +156,12 @@ const CreateBlog = ({ isEditing = false }) => {
     const erroTitle = validateTitle(title);
 
     if (erroTitle) return notify.error(erroTitle);
-
-    // if (!title) return notify.error("Escriba un titulo.");
-    // if (!imageFile) return notify.error("Selecciona una imagen de portada.");
-    // if (!content) return notify.error("Escriba un contenido.");
+    if (!imageFile) {
+      return notify.error(random(imageErrors));
+    }
+    if (!content) {
+      return notify.error(random(contentErrors));
+    }
 
     setLoading(true);
     try {
@@ -206,6 +226,7 @@ const CreateBlog = ({ isEditing = false }) => {
       setLoading(false);
     }
   };
+
   return (
     // Cambiamos p-6 por p-4 en móvil y usamos dvh
     <div className="max-w-5xl mx-auto min-h-screen bg-white dark:bg-zinc-950 p-4 md:p-6 pb-24 md:pb-6">
@@ -250,7 +271,9 @@ const CreateBlog = ({ isEditing = false }) => {
           onChange={(e) => setTitle(e.target.value)}
           className="text-2xl md:text-5xl font-black bg-transparent border-none outline-none focus:ring-0 dark:text-white placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
         />
-        <p className="text-xs text-end text-zinc-500">{title.trim().length}/100</p>
+        <p className="text-xs text-end text-zinc-500">
+          {title.trim().length}/100
+        </p>
 
         <div className="relative">
           <input

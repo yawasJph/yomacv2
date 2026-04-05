@@ -19,47 +19,46 @@ import Drawer from "../ui/users/Drawer";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 import { useSimpleProfile } from "@/hooks/user/useSimpleProfile";
 
+const menuItems = [
+  { icon: <Bookmark size={20} />, text: "Guardados", path: "/savedPost" },
+  {
+    icon: <ShoppingBag size={20} />,
+    text: "YoMAC Store",
+    path: "/games/store",
+  },
+  {
+    icon: <Bot size={20} />,
+    text: "Yawas",
+    path: "/yawas",
+  },
+  {
+    icon: <Trophy size={22} />,
+    text: "Ranking",
+    path: "/games/leaderboard",
+  },
+  {
+    icon: <MessageCircle size={22} />,
+    text: "Mensages",
+    path: "/messages",
+  },
+  {
+    path: "/blog",
+    icon: <BlocksIcon size={22} />,
+    text: "Blog",
+  },
+  {
+    icon: <Settings size={22} />,
+    text: "Settings",
+    path: "/settings",
+  },
+];
+
 const HeaderM = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { user, signout, loading } = useAuth();
   const { data: profile } = useSimpleProfile(user?.id);
   const navigate = useNavigate();
   const location = useLocation();
-
-  const menuItems = [
-    { icon: <Bookmark size={20} />, text: "Guardados", path: "/savedPost" },
-    {
-      icon: <ShoppingBag size={20} />,
-      text: "YoMAC Store",
-      path: "/games/store",
-    },
-    {
-      icon: <Bot size={20} />,
-      text: "Yawas",
-      path: "/yawas",
-    },
-    {
-      icon: <Trophy size={22} />,
-      text: "Ranking",
-      path: "/games/leaderboard",
-    },
-    {
-      icon: <MessageCircle size={22} />,
-      text: "Mensages",
-      path: "/messages",
-    },
-    {
-      path: "/blog",
-      icon: <BlocksIcon size={22} />,
-      text: "Blog",
-    },
-    {
-      icon: <Settings size={22} />,
-      text: "Settings",
-      path: "/settings",
-    },
-
-  ];
 
   const onViewCredits = ["games"].some((route) =>
     location.pathname.includes(route),
@@ -109,7 +108,7 @@ const HeaderM = () => {
                   className={`w-9 h-9 rounded-xl object-cover border-2 border-emerald-500/50 shadow-sm`}
                   alt="Menu"
                   loading="lazy"
-                  onContextMenu={e => e.preventDefault()}
+                  onContextMenu={(e) => e.preventDefault()}
                   draggable={false}
                 />
               </button>

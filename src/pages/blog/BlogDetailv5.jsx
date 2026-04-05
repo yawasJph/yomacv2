@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { supabaseClient } from "@/supabase/supabaseClient";
-import ReadOnlyEditor from "@/components/tiptap-templates/simple/ReadOnlyEditor";   
+import ReadOnlyEditor from "@/components/tiptap-templates/simple/ReadOnlyEditor";
 
 const BlogDetail = () => {
   const { slug } = useParams();
@@ -13,15 +13,19 @@ const BlogDetail = () => {
       try {
         const { data, error } = await supabaseClient
           .from("blogs")
-          .select(`
+          .select(
+            `
             *,
             author:author_id (
               id,
               full_name,
               avatar,
-              carrera
+              carrera,
+              ciclo,
+              username
             )
-          `) // Traemos los datos del autor
+          `,
+          ) // Traemos los datos del autor
           .eq("slug", slug)
           .single();
 
@@ -48,8 +52,8 @@ const BlogDetail = () => {
 
         {/* --- INFO DEL AUTOR SUPERIOR --- */}
         <div className="flex items-center justify-center gap-4 mb-10 border-y border-zinc-100 dark:border-zinc-800 py-6">
-          <img 
-            src={post.author?.avatar || '/default-avatar.png'} 
+          <img
+            src={post.author?.avatar || "/default-avatar.png"}
             className="w-12 h-12 rounded-full object-cover ring-2 ring-emerald-500/20"
             alt={post.author?.full_name}
           />
@@ -73,24 +77,53 @@ const BlogDetail = () => {
       </header>
 
       <div className="max-w-3xl mx-auto px-4 md:px-6 mt-12 w-full">
-        <ReadOnlyEditor content={post.content}/>
-        
-        {/* --- BIO DEL AUTOR AL FINAL --- */}
-        <footer className="mt-10 p-8 rounded-3xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 flex flex-col md:flex-row items-center gap-6">
-          <img 
-            src={post.author?.avatar || '/default-avatar.png'} 
-            className="w-24 h-24 rounded-2xl object-cover"
-            alt={post.author?.full_name}
-          />
-          <div className="text-center md:text-left">
-            <p className="text-xs uppercase tracking-widest text-emerald-600 font-bold mb-1">Escrito por</p>
+        <ReadOnlyEditor content={post.content} />
+
+        <footer className="mt-12 relative overflow-hidden rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 group transition-all hover:shadow-xl hover:shadow-emerald-500/10">
+          {/* Glow decorativo */}
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-linear-to-r from-emerald-500/10 via-transparent to-indigo-500/10 pointer-events-none" />
+
+          {/* Avatar */}
+          <div className="relative">
+            <img
+              src={post.author?.avatar || "/default-avatar.png"}
+              alt={post.author?.full_name}
+              className="w-24 h-24 rounded-2xl object-cover ring-4 ring-white dark:ring-zinc-900 shadow-lg"
+            />
+
+            {/* Badge online / decorativo */}
+            {/* <span className="absolute bottom-1 right-1 w-4 h-4 bg-emerald-500 border-2 border-white dark:border-zinc-900 rounded-full" /> */}
+          </div>
+
+          {/* Info */}
+          <div className="text-center md:text-left flex-1">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-emerald-500 font-bold mb-2">
+              ✍️ Escrito por
+            </p>
+
             <h4 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">
               {post.author?.full_name}
             </h4>
-            <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
-              Estudiante de <span className="text-emerald-500">{post.author?.carrera || 'Arévalo'}</span>. 
-              Apasionado por compartir conocimientos y crear comunidad en el instituto.
-            </p>
+
+            {post.author?.carrera && (
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                Estudiante de{" "}
+                <span className="text-emerald-500 font-medium">
+                  {post.author?.carrera}
+                </span>{" "}
+                • Ciclo{" "}
+                <span className="text-indigo-500 font-medium">
+                  {post.author?.ciclo || "—"}
+                </span>
+              </p>
+            )}
+
+            {/* CTA opcional */}
+            <div className="mt-4 flex justify-center md:justify-start gap-3">
+              <Link to={`/profile/@${post.author.username}`} className="text-xs px-4 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 transition">
+                Ver perfil 👀
+              </Link>
+            </div>
           </div>
         </footer>
       </div>

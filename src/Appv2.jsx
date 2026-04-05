@@ -9,7 +9,7 @@ import "highlight.js/styles/atom-one-dark.css";
 //import 'highlight.js/styles/base16/dracula.css';
 
 // Opción clara (si tu blog es mayormente blanco)
-// import 'highlight.js/styles/github.css';
+//import 'highlight.js/styles/github.css';
 
 // Opción colorida (Monokai)
 //import 'highlight.js/styles/monokai-sublime.css';
