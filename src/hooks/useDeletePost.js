@@ -22,6 +22,7 @@ export const useDeletePost = () => {
       // Esto hará que el conteo en el componente TrendingTopics se actualice
       queryClient.invalidateQueries({ queryKey: ["trending_hashtags"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["admin_trash"] });
       notify.success("Publicación eliminada");
     },
     onError: (error) => {

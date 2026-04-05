@@ -8,116 +8,31 @@ import {
   CornerDownRight,
   Loader2,
   ArrowLeft,
-  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabaseClient } from "../../supabase/supabaseClient"; // Ajusta a tu ruta
 import { useNavigate } from "react-router-dom";
+import { useCleanup } from "@/hooks/admin/useCleanup";
+
+// Renderizado de las Pestañas
+const tabs = [
+  { id: "posts", label: "Posts", icon: FileText },
+  { id: "comments", label: "Comentarios", icon: MessageSquare },
+  { id: "replies", label: "Respuestas", icon: CornerDownRight },
+];
 
 const AdminTrashCleanup = () => {
   const [activeTab, setActiveTab] = useState("posts");
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const {
+    trashedItems,
+    isLoading,
+    restore,
+    isRestoring,
+    delete: deleteTrash,
+    isDeleting,
+  } = useCleanup({ activeTab: activeTab });
 
-  // 1. Fetch de elementos en la papelera según la pestaña
-  const { data: trashedItems, isLoading } = useQuery({
-    queryKey: ["admin_trash", activeTab],
-    queryFn: async () => {
-      let query;
-
-      if (activeTab === "posts") {
-        query = supabaseClient
-          .from("posts")
-          .select(
-            `id, content, deleted_at, profiles:user_id (username, avatar), post_media!left (media_url, media_type)`,
-          )
-          .not("deleted_at", "is", null);
-      } else if (activeTab === "comments") {
-        query = supabaseClient
-          .from("comments")
-          .select(
-            `id, content, deleted_at, profiles:user_id (username, avatar)`,
-          )
-          .not("deleted_at", "is", null)
-          .is("parent_id", null); // Comentarios principales
-      } else {
-        query = supabaseClient
-          .from("comments")
-          .select(
-            `id, content, deleted_at, profiles:user_id (username, avatar)`,
-          )
-          .not("deleted_at", "is", null)
-          .not("parent_id", "is", null); // Respuestas (tienen parent_id)
-      }
-
-      const { data, error } = await query.order("deleted_at", {
-        ascending: false,
-      });
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  // 2. Mutación para Restaurar un elemento individual
-  const restoreMutation = useMutation({
-    mutationFn: async ({ id, type }) => {
-      const table = type === "posts" ? "posts" : "comments";
-      const { error } = await supabaseClient
-        .from(table)
-        .update({ deleted_at: null })
-        .eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("Elemento restaurado con éxito.");
-      queryClient.invalidateQueries({ queryKey: ["admin_trash"] });
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-    },
-  });
-
-  // 3. Mutación para Eliminar Permanentemente (Individual o Todo)
-  const hardDeleteMutation = useMutation({
-    mutationFn: async ({ id, type, isBulk = false }) => {
-      const table = type === "posts" ? "posts" : "comments";
-      let query = supabaseClient.from(table).delete();
-
-      if (isBulk) {
-        // Borrar todo lo de esta pestaña que tenga deleted_at
-        query = query.not("deleted_at", "is", null);
-        if (type === "comments") {
-          // Filtro extra si estamos en la pestaña de comments o replies
-          query =
-            activeTab === "comments"
-              ? query.is("parent_id", null)
-              : query.not("parent_id", "is", null);
-        }
-      } else {
-        // Borrar uno solo
-        query = query.eq("id", id);
-      }
-
-      const { error } = await query;
-      if (error) throw error;
-    },
-    onSuccess: (_, variables) => {
-      toast.success(
-        variables.isBulk
-          ? "Limpieza masiva completada."
-          : "Elemento eliminado permanentemente.",
-      );
-      queryClient.invalidateQueries({ queryKey: ["admin_trash"] });
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-    },
-  });
-
-  // Renderizado de las Pestañas
-  const tabs = [
-    { id: "posts", label: "Posts", icon: FileText },
-    { id: "comments", label: "Comentarios", icon: MessageSquare },
-    { id: "replies", label: "Respuestas", icon: CornerDownRight },
-  ];
-
-  console.log(trashedItems);
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 p-4 ">
       {/* HEADER */}
@@ -175,13 +90,13 @@ const AdminTrashCleanup = () => {
                 `¿Vaciar todos los ${activeTab}? Esta acción es irreversible.`,
               )
             ) {
-              hardDeleteMutation.mutate({
+              deleteTrash({
                 type: activeTab === "posts" ? "posts" : "comments",
                 isBulk: true,
               });
             }
           }}
-          disabled={!trashedItems?.length || hardDeleteMutation.isPending}
+          disabled={!trashedItems?.length || isDeleting}
           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-500 text-white hover:bg-rose-600 transition disabled:opacity-50 shadow-sm"
         >
           <Trash2 size={16} />
@@ -206,7 +121,6 @@ const AdminTrashCleanup = () => {
         ) : (
           trashedItems.map((item) => {
             const hasMedia = item.post_media.length > 0;
-            console.log(item.post_media.media_url);
             return (
               <div
                 key={item.id}
@@ -262,11 +176,12 @@ const AdminTrashCleanup = () => {
                 <div className="flex gap-2 w-full sm:w-auto opacity-80 group-hover:opacity-100 transition">
                   <button
                     onClick={() =>
-                      restoreMutation.mutate({
+                      restore({
                         id: item.id,
                         type: activeTab === "posts" ? "posts" : "comments",
                       })
                     }
+                    disabled={isRestoring}
                     className="flex-1 sm:flex-none px-3 py-2 rounded-lg bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 dark:text-emerald-400 transition"
                   >
                     <RefreshCcw size={18} />
@@ -279,13 +194,14 @@ const AdminTrashCleanup = () => {
                           "¿Eliminar definitivamente? Esta acción es irreversible.",
                         )
                       ) {
-                        hardDeleteMutation.mutate({
+                        deleteTrash({
                           id: item.id,
                           type: activeTab === "posts" ? "posts" : "comments",
                         });
                       }
                     }}
                     className="flex-1 sm:flex-none px-3 py-2 rounded-lg bg-rose-500/10 text-rose-600 hover:bg-rose-500/20 dark:text-rose-400 transition"
+                    disabled={isDeleting}
                   >
                     <Trash2 size={18} />
                   </button>
