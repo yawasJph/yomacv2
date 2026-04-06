@@ -9,6 +9,11 @@
       "source": "/share-profile/:username",
       "destination": "https://vrbfinqvtyclfmvhheub.supabase.co/functions/v1/share-profile?username=:username",
       "permanent": true
+    },
+    {
+      "source": "/share-blog/:slug",
+      "destination": "https://vrbfinqvtyclfmvhheub.supabase.co/functions/v1/share-blog?slug=:slug",
+      "permanent": true
     }
   ],
   "rewrites": [

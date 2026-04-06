@@ -23,16 +23,17 @@ import ProtectedRoute from "./components/utils/ProtectedRoute";
 // Páginas Principales (Carga inmediata para mejor LCP)
 import Feed from "./components/pages/Feed";
 import Login from "./components/pages/Login";
-import BlogFeed from "./pages/blog/BlogFeed";
-
-import BlogDetail from "./pages/blog/BlogDetailv5";
 import { ModalProvider } from "./context/ModalContextv3";
-import MyBlogs from "./pages/user-blog/MyBlogs";
 import MessagesPage from "./pages/messages/MessagesPagev2";
 import AdminRoute from "./routes/AdminRoute";
 
+// Blog (Carga inmediata para mejor LCP)
+import BlogFeed from "./pages/blog/BlogFeedv2";
+import BlogDetail from "./pages/blog/BlogDetailv6";
+import MyBlogs from "./pages/user-blog/MyBlogs2";
+
 // --- IMPORTS DINÁMICOS (Lazy Loading) ---
-const CreateBlog = lazy(() => import("./pages/blog/CreateBlog5"));
+const CreateBlog = lazy(() => import("./pages/blog/CreateBlog6"));
 const AdminOverview = lazy(() => import("./pages/admin/AdminOverview"));
 const AdminUsersManager = lazy(() => import("./pages/admin/AdminUsersManager"));
 const AdminBugReports = lazy(() => import("./pages/admin/AdminBugReports"));

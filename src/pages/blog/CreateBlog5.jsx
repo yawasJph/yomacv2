@@ -12,32 +12,10 @@ import PublicButton from "./PublicButton";
 import { ChevronLeft } from "lucide-react";
 import { notify } from "@/utils/toast/notifyv3";
 import { validateTitle } from "@/utils/blog/validations";
-
-const imageErrors = [
-  "Sin portada esto parece tarea sin nombre 🥲",
-  "Tu post está calato… ponle una imagen 🖼️😳",
-  "Ni Netflix deja contenido sin portada 😤",
-  "Una portada no te cuesta nada… bueno sí, creatividad 😅",
-];
-
-const contentErrors = [
-  "Hermano… tu contenido está más vacío que mi billetera 😭",
-  "Escribe algo pues 😐 aunque sea 'primer blog'",
-  "Contenido no encontrado… pero esta vez es tu culpa 😬",
-  "Contenido 404 , Ni un emoji… ¿todo bien en casa? 😳",
-  "Sin contenido. Esto no es minimalismo, es abandono 🫠",
-];
+import { contentErrors, imageErrors } from "@/consts/blog/errorMesages";
+import { getMetadata } from "@/utils/blog/getMetadata";
 
 const random = (arr) => arr[Math.floor(Math.random() * arr.length)];
-
-// Función para calcular tiempo de lectura y resumen
-const getMetadata = (html) => {
-  const text = html.replace(/<[^>]*>/g, ""); // Quitar etiquetas HTML
-  const words = text.trim().split(/\s+/).length;
-  const readingTime = Math.ceil(words / 200); // Promedio 200 palabras x min
-  const excerpt = text.substring(0, 150) + "..."; // Primeros 150 caracteres
-  return { readingTime, excerpt };
-};
 
 const CreateBlog = ({ isEditing = false }) => {
   const { user } = useAuth();
@@ -94,64 +72,8 @@ const CreateBlog = ({ isEditing = false }) => {
     }
   };
 
-  //   const handlePublish = async (targetStatus = "published") => {
-  //     if (!title || !editor || editor.isEmpty || !imageFile) {
-  //       return alert(
-  //         "Por favor completa el título, contenido y selecciona una imagen de portada.",
-  //       );
-  //     }
-
-  //     setLoading(true);
-  //     setUploadProgress(0);
-
-  //     try {
-  //       const cloudinaryResponse = await uploadToCloudinary(
-  //         imageFile,
-  //         (progress) => {
-  //           setUploadProgress(progress);
-  //         },
-  //       );
-  //       const bannerUrl = cloudinaryResponse.secure_url;
-
-  //       const rawHtml = editor.getHTML();
-  //       const { readingTime, excerpt } = getMetadata(rawHtml);
-  //       const slug = `${generateSlug(title)}-${Math.random().toString(36).substring(2, 7)}`;
-
-  //       const { data, error } = await supabaseClient
-  //         .from("blogs")
-  //         .insert([
-  //           {
-  //             author_id: user?.id,
-  //             title,
-  //             content: rawHtml,
-  //             slug,
-  //             banner_url: bannerUrl,
-  //             status: targetStatus,
-  //             excerpt: excerpt,
-  //             reading_time: readingTime,
-  //           },
-  //         ])
-  //         .select()
-  //         .single();
-
-  //       if (error) throw error;
-
-  //       alert("¡Blog publicado con éxito!");
-  //       navigate(`/blog/${data.slug}`);
-  //     } catch (err) {
-  //       console.error("Error al guardar:", err);
-  //       alert("Hubo un problema al publicar.");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
   const handleSave = async (targetStatus = "published") => {
-    // if (!title || !editor || editor.isEmpty || !imageFile) {
-    //   return notify.error(
-    //     "Por favor completa el título, contenido y selecciona una imagen de portada.",
-    //   );
-    // }
+
     const content = editor.getText().trim();
     const erroTitle = validateTitle(title);
 
