@@ -46,7 +46,7 @@ export const usePostsInfiniteQuery = (filterConfig = {}, options = {}) => {
               badges ( icon, name , category, resource_url)
             )
           ),
-          post_media (id, media_url, media_type)
+          post_media (id, media_url, media_type, aspect_ratio)
         `)
         .in("id", ids)
         .is("deleted_at", null);
@@ -80,7 +80,7 @@ export const usePostsInfiniteQuery = (filterConfig = {}, options = {}) => {
             badges ( icon, name , category, resource_url)
           )
         ),
-        post_media (id, media_url, media_type)
+        post_media (id, media_url, media_type, aspect_ratio)
       `)
       .is("deleted_at", null)
       .order("created_at", { ascending: false })

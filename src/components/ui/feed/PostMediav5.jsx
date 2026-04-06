@@ -122,9 +122,12 @@ const PostMedia = ({ media = [], onOpen }) => {
 
   // ... (TODA TU LÓGICA DE GRID QUEDA EXACTAMENTE IGUAL) ...
   if (media.length === 1) {
+    const mediaItem = media[0];
+    const isVertical = mediaItem.aspect_ratio < 1 && mediaItem.aspect_ratio != null;
+    const ratio_class = isVertical ? "max-h-[500px]" : "aspect-7/5 sm:aspect-16/9"
     return (
       <div ref={ref} className="mb-3 mt-3">
-        {renderItem(media[0], 0, "aspect-7/5 sm:aspect-16/9")}
+        {renderItem(media[0], 0, ratio_class)}
       </div>
     );
   }

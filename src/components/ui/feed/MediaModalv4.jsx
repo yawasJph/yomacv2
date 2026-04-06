@@ -130,7 +130,6 @@ const MediaModal = ({ media, closeModal, initialIndex }) => {
             <CustomVideoPlayer src={optimizeMedia(currentItem.media_url, currentItem.media_type)} />
           ) : (
             <img
-              //src={currentItem.media_url} // Soporte para diferentes formatos de mediaItem  
               src={optimizeMedia(currentItem.media_url, currentItem.media_type)}
               className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl animate-scaleIn"
               alt="Media"

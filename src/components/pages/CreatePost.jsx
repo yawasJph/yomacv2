@@ -1,24 +1,30 @@
 // 📄 components/CreatePost.jsx (Refactorizado)
-import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Image, ImagePlay, Smile, Video } from "lucide-react";
+import { useEffect, useRef } from "react";
+import {
+  ArrowLeft,
+  Image,
+  ImagePlay,
+  Loader2,
+  Video,
+} from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import GifPicker from "../utils/GifPickerv8";
 import { usePostState } from "../../hooks/usePostState"; // 👈 Nuevo Hook de Estado
 import { useLinkPreview } from "../../hooks/useLinkPreview2"; // 👈 Nuevo Hook de Preview
 import LinkPreviewCard from "../ui/createPost/LinkPreviewCard"; // 👈 Nuevo Componente
 import PostMediaGrid from "../ui/createPost/PostMediaGridv2"; // 👈 Nuevo Componente
-import { usePostCreation } from "../../hooks/usePostCreation2";
+import { usePostCreation } from "../../hooks/usePostCreation3";
 import { useProfile } from "../../hooks/useProfile";
 import { notify } from "@/utils/toast/notifyv3";
 import EmojiSelector from "../emoji/EmojiSelectorv2";
+import { UploadLoader } from "../ui/createPost/UploadLoader";
 
 const MAX_SIZE = 100 * 1024 * 1024; // 100MB
 
 const CreatePost = () => {
   const { user } = useAuth();
   const { data: profile } = useProfile(user.id);
-  const { createPost } = usePostCreation();
-
+  const { createPost, uploadProgress } = usePostCreation();
 
   // 1. Lógica de Estado (del formulario)
   const {
@@ -191,7 +197,7 @@ const CreatePost = () => {
             <div className="flex items-center gap-2">
               <label
                 className={`text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer p-2 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950/20 ${
-                  previews.length >= 4 || linkPreview
+                  previews.length >= 4 || linkPreview || loading
                     ? "opacity-50 cursor-not-allowed"
                     : ""
                 }`}
@@ -206,14 +212,14 @@ const CreatePost = () => {
                   className="hidden"
                   onChange={handleFileChange}
                   multiple
-                  disabled={previews.length >= 4 || linkPreview}
+                  disabled={previews.length >= 4 || linkPreview || loading}
                 />
               </label>
 
               {/* 2. ✨ Botón VIDEO (Nuevo) */}
               <label
                 className={`text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition cursor-pointer p-2 rounded-full hover:bg-blue-50 dark:hover:bg-blue-950/20 ${
-                  previews.length >= 4 || linkPreview
+                  previews.length >= 4 || linkPreview || loading
                     ? "opacity-50 cursor-not-allowed"
                     : ""
                 }`}
@@ -226,15 +232,13 @@ const CreatePost = () => {
                   accept="video/mp4,video/webm,video/ogg"
                   className="hidden"
                   onChange={onVideoSelect}
-                  disabled={previews.length >= 4 || linkPreview} // Generalmente 1 video excluye fotos
+                  disabled={previews.length >= 4 || linkPreview || loading} // Generalmente 1 video excluye fotos
                 />
               </label>
 
               <button
-                // Lógica de GIF
-                // ... (similar al input de archivo, pero llama a setShowGifPicker) ...
                 className={`text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer p-2 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950/20 ${
-                  previews.length >= 4 || linkPreview
+                  previews.length >= 4 || linkPreview || loading
                     ? "opacity-50 cursor-not-allowed"
                     : ""
                 }`}
@@ -242,6 +246,7 @@ const CreatePost = () => {
                   if (previews.length >= 4 || linkPreview) return;
                   setShowGifPicker(true);
                 }}
+                disabled={loading}
               >
                 <ImagePlay size={20} />
               </button>
@@ -253,8 +258,6 @@ const CreatePost = () => {
                 />
               )}
 
-              {/* Botón y Picker de Emoji */}
-              {/* ... (Tu JSX de EmojiPicker) ... */}
               <EmojiSelector addEmoji={addEmoji} />
             </div>
 
@@ -263,11 +266,13 @@ const CreatePost = () => {
               disabled={isSubmitDisabled}
               className="px-5 py-2 bg-emerald-600 dark:bg-emerald-500 text-white rounded-full hover:bg-emerald-700 dark:hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium text-sm"
             >
-              {loading ? "Publicando..." : "Publicar"}
+              {loading ? <Loader2 className="animate-spin" /> : "Publicar"}
             </button>
           </div>
         </div>
       </div>
+
+      <UploadLoader progress={uploadProgress} />
 
       {/* Tarjeta de Preview */}
       <LinkPreviewCard
@@ -282,7 +287,6 @@ const CreatePost = () => {
         removeFileOrGif={removeFileOrGif}
         removeAllImages={resetForm} // Reusa resetForm si quieres que también limpie el texto
       />
-
     </div>
   );
 };
