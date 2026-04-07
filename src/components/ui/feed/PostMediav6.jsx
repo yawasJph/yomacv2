@@ -20,7 +20,6 @@ const PostMedia = ({ media = [], onOpen }) => {
     if (inView) setHasEntered(true);
   }, [inView]);
 
-  // 🔥 MEJORA: Detectar tanto Videos como GIFs
   const animatedIndexes = useMemo(
     () =>
       media.reduce((acc, item, i) => {
@@ -60,35 +59,33 @@ const PostMedia = ({ media = [], onOpen }) => {
     [onOpen],
   );
 
+  // 🔥 MEJORA: renderItem ahora acepta un parámetro extra "customStyle"
   const renderItem = useCallback(
-    (item, index, ratioClass = "aspect-[6/4]") => {
+    (item, index, ratioClass = "aspect-[6/4]", customStyle = {}) => {
       const isOriginalVideo = item.media_type === "video";
       const isGif =
         item.media_type === "gif" ||
         item.media_url?.toLowerCase().endsWith(".gif");
       const isAnimated = isOriginalVideo || isGif;
 
-      // 🔥 Generamos el video y la portada
       let finalSrc = item.media_url;
       let posterSrc = undefined;
 
       if (isGif) {
-        // Obligamos a Cloudinary a darnos un MP4 real
         finalSrc = item.media_url.replace(/\.gif$/i, ".mp4");
-        // Sacamos el primer frame en JPG para usarlo de portada y evitar pantallas negras
         posterSrc = item.media_url.replace(/\.gif$/i, ".jpg");
       }
 
       return (
         <div
+          style={customStyle} // 👈 Inyectamos el aspect_ratio aquí
           className={`relative w-full overflow-hidden rounded-xl bg-muted ${ratioClass} transition-transform duration-300 hover:scale-[1.02]`}
         >
           {isAnimated ? (
             <UniversalFeedVideo
               ref={(el) => (videoRefs.current[index] = el)}
-              // 🚨 CLAVE: Si es GIF pasamos la URL pura para que f_auto no lo rompa
               src={isGif ? finalSrc : optimizeMedia(item.media_url, "video")}
-              poster={isGif ? posterSrc : undefined} // 👈 Pasamos la portada
+              poster={isGif ? posterSrc : undefined}
               isGif={isGif}
               className="absolute inset-0 w-full h-full object-cover"
               shouldPlay={hasEntered && activeAnimatedIndex === index}
@@ -120,15 +117,33 @@ const PostMedia = ({ media = [], onOpen }) => {
 
   if (!media.length) return null;
 
-  // ... (TODA TU LÓGICA DE GRID QUEDA EXACTAMENTE IGUAL) ...
+  // 🔥 MEJORA: Lógica de renderizado para 1 solo item (soporta dynamic aspect ratio)
   if (media.length === 1) {
+    const item = media[0];
+    
+    // Obtenemos el ratio directamente, o lo calculamos si por alguna razón solo vinieron width y height
+    const dynamicRatio = item.aspect_ratio || (item.width && item.height ? item.width / item.height : null);
+    const hasDynamicRatio = dynamicRatio && !isNaN(dynamicRatio);
+
+    // Si tenemos ratio real, quitamos la clase de Tailwind y usamos estilos en línea. Si es GIF, usamos el default.
+    const ratioClass = hasDynamicRatio ? "" : "aspect-[7/5] sm:aspect-[16/9]";
+    const customStyle = hasDynamicRatio ? { aspectRatio: dynamicRatio } : {};
+
+    // UX Tip: Si es un formato muy vertical (Reel 9:16 o retrato), en PC no queremos que ocupe todo el ancho 
+    // porque se vería exageradamente alto. Lo centramos y le damos un max-width moderado.
+    const isPortrait = hasDynamicRatio && dynamicRatio < 0.85;
+
     return (
-      <div ref={ref} className="mb-3 mt-3">
-        {renderItem(media[0], 0, "aspect-7/5 sm:aspect-16/9")}
+      <div 
+        ref={ref} 
+        className={`mb-3 mt-3 w-full ${isPortrait ? "sm:max-w-sm md:max-w-md sm:mx-auto" : ""}`}
+      >
+        {renderItem(item, 0, ratioClass, customStyle)}
       </div>
     );
   }
 
+  // --- EL RESTO QUEDA EXACTAMENTE IGUAL ---
   const displayMedia = media.slice(0, 4);
   const extraCount = media.length - 4;
   const isThreeLayout = media.length === 3;
