@@ -17,6 +17,7 @@ import confetti from "canvas-confetti";
 import ResultsView from "../../components/games/trivia/ResultViewv3";
 import { useAudio } from "../../context/AudioContext";
 import { useQueryClient } from "@tanstack/react-query";
+import ResultsSheet from "@/components/games/trivia/ResultsSheet";
 //import ResultsView from "../../components/games/trivia/ResultViewv2";
 
 const TriviaGame = () => {
@@ -39,7 +40,7 @@ const TriviaGame = () => {
   const [activeCategory, setActiveCategory] = useState(null);
   const [countdown, setCountdown] = useState(3);
   //const [isMuted, setIsMuted] = useState(false);
-  const {isMuted , setIsMuted, playWithCheck} = useAudio()
+  const { isMuted, setIsMuted, playWithCheck } = useAudio();
   const queryClient = useQueryClient();
 
   // Configuramos los sonidos
@@ -275,20 +276,19 @@ const TriviaGame = () => {
 
   const saveResults = async (finalPoints, finalScore, finalTime) => {
     try {
-
-    const { error } = await supabaseClient.rpc("submit_trivia_score", {
-      p_points: finalPoints, // El estado 'points' con el Time-Bonus
-      p_accuracy: finalScore, // El estado 'score' con los aciertos (0-10)
-      p_time_seconds: finalTime, // Opcional: tiempo total
-    });
-
-     if (!error) {
-      queryClient.invalidateQueries({ 
-        queryKey: ["leaderboard", "trivia"] 
+      const { error } = await supabaseClient.rpc("submit_trivia_score", {
+        p_points: finalPoints, // El estado 'points' con el Time-Bonus
+        p_accuracy: finalScore, // El estado 'score' con los aciertos (0-10)
+        p_time_seconds: finalTime, // Opcional: tiempo total
       });
-    } else {
-      console.error("Error en RPC:", error);
-    } 
+
+      if (!error) {
+        queryClient.invalidateQueries({
+          queryKey: ["leaderboard", "trivia"],
+        });
+      } else {
+        console.error("Error en RPC:", error);
+      }
     } catch (error) {
       console.error("Error guardando resultados:", error);
     }
@@ -334,18 +334,7 @@ const TriviaGame = () => {
           </motion.p>
         </motion.div>
 
-        {/* <button
-          onClick={() => setIsMuted(!isMuted)}
-          className={`p-3 sm:p-4 rounded-xl transition-colors absolute top-1/4 right-1/5 ${
-            isMuted
-              ? "text-red-500 bg-red-50 dark:bg-red-500/10"
-              : "text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10"
-          }`}
-        >
-          {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-        </button> */}
-
-         <button
+        <button
           onClick={() => {
             (setIsMuted(!isMuted), stopTick());
           }}
@@ -376,11 +365,20 @@ const TriviaGame = () => {
 
   if (gameState === "finished") {
     return (
-      <ResultsView
+      // <ResultsView
+      //   points={points}
+      //   accuracy={score}
+      //   totalQuestions={questions.length}
+      //   earnedCredits={score * 2} // Asegúrate que coincida con tu lógica de SQL
+      //   onReset={handleReset}
+      // />
+      <ResultsSheet
+        //open={showResults}
+        onClose={() => setShowResults(false)}
         points={points}
         accuracy={score}
         totalQuestions={questions.length}
-        earnedCredits={score * 2} // Asegúrate que coincida con tu lógica de SQL
+        earnedCredits={score * 2}
         onReset={handleReset}
       />
     );

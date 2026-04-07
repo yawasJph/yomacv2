@@ -13,7 +13,7 @@ export const usePostCreation = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const mutation = useMutation({
-    mutationFn: async ({ user, content, files, gifUrls, linkPreview, onGame= null }) => {
+    mutationFn: async ({ user, content, files, gifUrls, linkPreview }) => {
       // 1️⃣ Extraer hashtags
       const hashtags = extractHashtags(content);
 
@@ -111,7 +111,7 @@ export const usePostCreation = () => {
         variables.onGame()
       }
 
-      
+
     },
     onError: (error) => {
       console.error("Error creating post:", error);
