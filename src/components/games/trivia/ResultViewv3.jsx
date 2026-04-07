@@ -134,7 +134,7 @@ const ResultsView = ({
           </div>
 
           {/* ===== STATS ===== */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mt-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mt-3 sm:mt-8">
             <StatCard
               icon={<Target size={18} />}
               label="Precisión"
@@ -162,7 +162,7 @@ const ResultsView = ({
           </div>
 
           {/* ===== ACTIONS ===== */}
-          <div className="flex flex-col md:flex-row gap-3 mt-8">
+          <div className="flex flex-col md:flex-row gap-3 mt-3 sm:mt-8">
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
@@ -184,11 +184,11 @@ const ResultsView = ({
 
             {/* 🚀 SHARE */}
             <motion.button
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               //onClick={handleShare}
               className="
-                w-full mt-3 py-4 rounded-2xl
+                w-full py-4 rounded-2xl
                 bg-linear-to-r from-emerald-500 to-teal-400
                 text-white font-black uppercase tracking-wider
                 flex items-center justify-center gap-2
