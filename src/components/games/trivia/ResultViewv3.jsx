@@ -93,7 +93,7 @@ const ResultsView = ({
 
   return (
     <div
-      className={`flex items-center justify-center ${isMobile ? "pt-3 px-0" : "pt-20 px-4"} `}
+      className={`flex items-center justify-center ${isMobile ? "pt-0 px-0" : "pt-20 px-4"} `}
     >
       <div className="w-full max-w-4xl">
         {/* ===== CONTENEDOR PRINCIPAL ===== */}
@@ -167,7 +167,7 @@ const ResultsView = ({
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               onClick={onReset}
-              className={`flex-1 py-4 rounded-2xl text-white font-black uppercase tracking-wider shadow-lg
+              className={`flex-1 py-3 rounded-2xl text-white font-black uppercase tracking-wider shadow-lg
              ${rank.button} flex items-center justify-center gap-2`}
             >
               <Zap size={18} fill="currentColor" /> Reintentar
@@ -177,7 +177,7 @@ const ResultsView = ({
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => navigate("/games")}
-              className="flex-1 py-4 rounded-2xl bg-gray-100 dark:bg-neutral-900 dark:text-white font-black uppercase tracking-wider flex items-center justify-center gap-2"
+              className="flex-1 py-3 rounded-2xl bg-gray-100 dark:bg-neutral-900 dark:text-white font-black uppercase tracking-wider flex items-center justify-center gap-2"
             >
               Volver al Arcade <ArrowRight size={18} />
             </motion.button>
@@ -188,14 +188,14 @@ const ResultsView = ({
               whileTap={{ scale: 0.97 }}
               //onClick={handleShare}
               className="
-                w-full py-4 rounded-2xl
+                w-full py-3 rounded-2xl
                 bg-linear-to-r from-emerald-500 to-teal-400
                 text-white font-black uppercase tracking-wider
                 flex items-center justify-center gap-2
                 shadow-lg shadow-emerald-500/20
               "
             >
-              <Share2 size={18}/> Compartir resultado
+              <Share2 size={18}/> Publicar resultado
             </motion.button>
           </div>
         </motion.div>
