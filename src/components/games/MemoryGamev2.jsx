@@ -3,7 +3,8 @@ import { useMemoryGame } from "../../hooks/memorama/useMemoryGame";
 import HudSection from "./memory-game/HudSectionv2";
 import MemoryCard from "./memory-game/MemoryCardv2";
 import ActionButtons from "./memory-game/ActionButtonsv2";
-import VictoryModal from "./memory-game/VictoryModalv4";
+import VictoryModal from "./memory-game/VictoryModalv6";
+
 
 // Definimos los estilos fuera del componente para que no estorben
 const STYLES = {
@@ -26,8 +27,6 @@ const MemoryGame = () => {
   useEffect(() => {
     resetGame();
   }, [resetGame]);
-
-  
 
   if (!selectedBaraja) return null;
 

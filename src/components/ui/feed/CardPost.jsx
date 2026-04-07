@@ -32,6 +32,7 @@ import { notify } from "@/utils/toast/notifyv3";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 import { useNow } from "@/hooks/useNow";
 import { formatTimeAgo } from "@/utils/timers/formatTimeAgo";
+import { GameScoreCard } from "@/components/socials/GameScoreCard";
 
 const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -328,7 +329,9 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
           )}
           <div onClick={(e) => e.stopPropagation()}>
             {/* LINK PREVIEW CARD */}
-            {post.og_data && <OpenGraphCard og_data={post.og_data} />}
+
+            {post.og_data?.type === "game_score" ? <GameScoreCard data={post.og_data} /> : <OpenGraphCard og_data={post.og_data} />}
+            {/* {post.og_data && <OpenGraphCard og_data={post.og_data} />} */}
 
             <PostMedia media={media} onOpen={openVideoModal} />
           </div>
