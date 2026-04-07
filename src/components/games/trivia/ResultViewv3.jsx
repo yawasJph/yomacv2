@@ -7,6 +7,7 @@ import {
   Zap,
   Target,
   CheckCircle,
+  Share2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "../../../hooks/useIsMobile";
@@ -19,7 +20,7 @@ const ResultsView = ({
   onReset,
 }) => {
   const navigate = useNavigate();
-  const isMobile = useIsMobile()
+  const isMobile = useIsMobile();
 
   /* ===== Animación de puntos ===== */
   const springPoints = useSpring(0, { stiffness: 50, damping: 18 });
@@ -91,7 +92,9 @@ const ResultsView = ({
   const rank = getRank();
 
   return (
-    <div className={`flex items-center justify-center ${isMobile ? "pt-3 px-0" : "pt-20 px-4"} `}>
+    <div
+      className={`flex items-center justify-center ${isMobile ? "pt-3 px-0" : "pt-20 px-4"} `}
+    >
       <div className="w-full max-w-4xl">
         {/* ===== CONTENEDOR PRINCIPAL ===== */}
         <motion.div
@@ -136,25 +139,25 @@ const ResultsView = ({
               icon={<Target size={18} />}
               label="Precisión"
               value={`${accuracy}/${totalQuestions}`}
-               color={rank.icon}
+              color={rank.icon}
             />
             <StatCard
               icon={<CheckCircle size={18} />}
               label="Exactitud"
               value={`${Math.round((accuracy / totalQuestions) * 100)}%`}
-               color={rank.icon}
+              color={rank.icon}
             />
             <StatCard
               icon={<Coins size={18} />}
               label="Créditos"
               value={`+${earnedCredits}`}
-               color={rank.icon}
+              color={rank.icon}
             />
             <StatCard
               icon={<Zap size={18} />}
               label="Bonus"
               value={earnedCredits > 0 ? "ACTIVO" : "—"}
-               color={rank.icon}
+              color={rank.icon}
             />
           </div>
 
@@ -178,6 +181,22 @@ const ResultsView = ({
             >
               Volver al Arcade <ArrowRight size={18} />
             </motion.button>
+
+            {/* 🚀 SHARE */}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              //onClick={handleShare}
+              className="
+                w-full mt-3 py-4 rounded-2xl
+                bg-linear-to-r from-emerald-500 to-teal-400
+                text-white font-black uppercase tracking-wider
+                flex items-center justify-center gap-2
+                shadow-lg shadow-emerald-500/20
+              "
+            >
+              <Share2 size={18}/> Compartir resultado
+            </motion.button>
           </div>
         </motion.div>
       </div>
@@ -190,8 +209,12 @@ const ResultsView = ({
 const StatCard = ({ icon, label, value, color }) => (
   <div className="flex flex-col items-center justify-center bg-gray-50 dark:bg-neutral-900 rounded-2xl p-3 md:p-5 border border-gray-100 dark:border-neutral-800">
     <div className={`mb-1 ${color}`}>{icon}</div>
-    <span className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">{label}</span>
-    <span className="text-base md:text-lg font-black dark:text-white">{value}</span>
+    <span className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">
+      {label}
+    </span>
+    <span className="text-base md:text-lg font-black dark:text-white">
+      {value}
+    </span>
   </div>
 );
 
