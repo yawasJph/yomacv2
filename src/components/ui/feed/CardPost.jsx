@@ -13,7 +13,7 @@ import {
 import FullscreenModal from "./FullscreenModal";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 import OpenGraphCard from "../openGraph/OpenGraphCard4";
-import PostMedia from "./PostMediav6";
+import PostMedia from "./PostMediav7";
 import MediaModal from "./MediaModalv4";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
