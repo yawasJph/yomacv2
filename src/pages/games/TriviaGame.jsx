@@ -365,19 +365,12 @@ const TriviaGame = () => {
 
   if (gameState === "finished") {
     return (
-      // <ResultsView
-      //   points={points}
-      //   accuracy={score}
-      //   totalQuestions={questions.length}
-      //   earnedCredits={score * 2} // Asegúrate que coincida con tu lógica de SQL
-      //   onReset={handleReset}
-      // />
       <ResultsSheet
-        //open={showResults}
         onClose={() => setShowResults(false)}
         points={points}
         accuracy={score}
         totalQuestions={questions.length}
+        totalTime={totalTimeUsed}
         earnedCredits={score * 2}
         onReset={handleReset}
       />

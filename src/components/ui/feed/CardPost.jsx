@@ -32,7 +32,7 @@ import { notify } from "@/utils/toast/notifyv3";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 import { useNow } from "@/hooks/useNow";
 import { formatTimeAgo } from "@/utils/timers/formatTimeAgo";
-import { GameScoreCard } from "@/components/socials/GameScoreCard";
+import { GameScoreCard } from "@/components/socials/GameScoreCard2";
 
 const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);

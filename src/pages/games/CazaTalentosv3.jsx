@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabaseClient } from "../../supabase/supabaseClient";
+
 import {
   Timer,
   Target,
@@ -15,6 +16,9 @@ import DECKS_DATA from "../../assets/data-game/barajas.json";
 import { useAudio } from "../../context/AudioContext";
 import useSound from "use-sound";
 import { useQueryClient } from "@tanstack/react-query";
+import { ResultsSheet } from "@/components/games/caza-talento/Caza-d";
+
+
 
 // --- COMPONENTE TARGET (Separado para evitar re-renders del grid) ---
 
@@ -23,7 +27,7 @@ const Particles = memo(({ x, y, color }) => {
   return (
     <div className="absolute inset-0 pointer-events-none z-50">
       {particles.map((_, i) => {
-        const angle = i * 36 * (Math.PI / 180); 
+        const angle = i * 36 * (Math.PI / 180);
         const velocity = 20 + Math.random() * 20;
         const targetX = Math.cos(angle) * velocity;
         const targetY = Math.sin(angle) * velocity;
@@ -69,7 +73,6 @@ const GameTarget = memo(({ t, onHit }) => (
       width: t.size,
       height: t.size,
     }}
-    
   >
     {t.clicked && t.type === "time" && (
       <span className="text-xs font-black text-amber-600">+5s</span>
@@ -309,29 +312,29 @@ const CazaTalentos = () => {
   );
 
   const endGame = async () => {
-  setGameState("ended");
-  setTargets([]);
-  playWithCheck(playWin);
+    setGameState("ended");
+    setTargets([]);
+    playWithCheck(playWin);
 
-  try {
-    // 1. Enviamos el puntaje
-    const { error } = await supabaseClient.rpc("submit_game_score", {
-      p_game_id: "hunter-talents",
-      p_score: score,
-      p_moves: 0,
-      p_time_seconds: 0,
-    });
-
-    // 2. Si no hay error, invalidamos específicamente este juego
-    if (!error) {
-      queryClient.invalidateQueries({ 
-        queryKey: ["leaderboard", "hunter-talents"] 
+    try {
+      // 1. Enviamos el puntaje
+      const { error } = await supabaseClient.rpc("submit_game_score", {
+        p_game_id: "hunter-talents",
+        p_score: score,
+        p_moves: 0,
+        p_time_seconds: 0,
       });
+
+      // 2. Si no hay error, invalidamos específicamente este juego
+      if (!error) {
+        queryClient.invalidateQueries({
+          queryKey: ["leaderboard", "hunter-talents"],
+        });
+      }
+    } catch (err) {
+      console.error("Error al guardar puntaje:", err);
     }
-  } catch (err) {
-    console.error("Error al guardar puntaje:", err);
-  }
-};
+  };
 
   // Botón de sonido reutilizable
   const SoundToggle = (
@@ -354,54 +357,52 @@ const CazaTalentos = () => {
   );
 
   return (
-
     <div className="relative w-full max-w-md mx-auto h-dvh max-h-[700px] bg-neutral-50 dark:bg-neutral-950 overflow-hidden flex flex-col sm:rounded-[3rem] sm:mt-5 border-4 border-white dark:border-neutral-900 shadow-2xl">
       {/* 1. HEADER & PROGRESS BAR */}
-      
-        <div className="relative pt-6 px-6 pb-2 z-20">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex gap-10">
-              <button
-                onClick={() => navigate(-1)}
-                className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-full active:scale-90 transition-transform"
-              >
-                <ArrowLeft size={20} className="dark:text-white" />
-              </button>
-              {SoundToggle}
-            </div>
 
-            <div className="flex gap-3">
-              {timeLeft > 30 && (
-                <div className="bg-emerald-600 text-white px-4 py-1.5 rounded-2xl font-black flex items-center gap-2 shadow-lg italic">
-                  <Timer size={16} /> {timeLeft}s
-                </div>
-              )}
-              <div className="bg-blue-600 text-white px-4 py-1.5 rounded-2xl font-black flex items-center gap-2 shadow-lg italic">
-                <Target size={16} /> {score}
-              </div>
-            </div>
+      <div className="relative pt-6 px-6 pb-2 z-20">
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex gap-10">
+            <button
+              onClick={() => navigate(-1)}
+              className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-full active:scale-90 transition-transform"
+            >
+              <ArrowLeft size={20} className="dark:text-white" />
+            </button>
+            {SoundToggle}
           </div>
 
-          {/* Barra de Tiempo Estilizada */}
-          <div className="relative h-4 w-full bg-gray-100 dark:bg-neutral-900 rounded-full p-1 border border-neutral-200 dark:border-neutral-800 overflow-hidden">
-            <motion.div
-              className={`h-full rounded-full ${
-                timeLeft > 15
-                  ? "bg-emerald-500"
-                  : timeLeft > 7
-                    ? "bg-amber-500"
-                    : "bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]"
-              }`}
-              animate={{ width: `${(timeLeft / GAME_DURATION) * 100}%` }}
-              transition={{ duration: 1, ease: "linear" }}
-            />
-            <Timer
-              className="absolute -right-1 -top-1 text-neutral-400 bg-white dark:bg-neutral-950 rounded-full p-0.5"
-              size={18}
-            />
+          <div className="flex gap-3">
+            {timeLeft > 30 && (
+              <div className="bg-emerald-600 text-white px-4 py-1.5 rounded-2xl font-black flex items-center gap-2 shadow-lg italic">
+                <Timer size={16} /> {timeLeft}s
+              </div>
+            )}
+            <div className="bg-blue-600 text-white px-4 py-1.5 rounded-2xl font-black flex items-center gap-2 shadow-lg italic">
+              <Target size={16} /> {score}
+            </div>
           </div>
         </div>
-      
+
+        {/* Barra de Tiempo Estilizada */}
+        <div className="relative h-4 w-full bg-gray-100 dark:bg-neutral-900 rounded-full p-1 border border-neutral-200 dark:border-neutral-800 overflow-hidden">
+          <motion.div
+            className={`h-full rounded-full ${
+              timeLeft > 15
+                ? "bg-emerald-500"
+                : timeLeft > 7
+                  ? "bg-amber-500"
+                  : "bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]"
+            }`}
+            animate={{ width: `${(timeLeft / GAME_DURATION) * 100}%` }}
+            transition={{ duration: 1, ease: "linear" }}
+          />
+          <Timer
+            className="absolute -right-1 -top-1 text-neutral-400 bg-white dark:bg-neutral-950 rounded-full p-0.5"
+            size={18}
+          />
+        </div>
+      </div>
 
       <div className="flex-1 relative overflow-hidden">
         {/* Fondo con patrón de puntos (Grid) */}
@@ -454,109 +455,17 @@ const CazaTalentos = () => {
             </motion.div>
           )}
 
-          {true && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-neutral-950/98 backdrop-blur-2xl z-60 text-center"
+          {gameState === "ended" && (
+            <ResultsSheet
+              open={gameState === "ended"}
+              onClose={() => setGameState("idle")}
+              score={score}
+              onExit={() => navigate(-1)}
+             // onReset={handleRestart}
+              //onShare={handleShare}
             >
-              {/* Icono Central con Brillo Radial */}
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", bounce: 0.5 }}
-                className="relative mb-8"
-              >
-                <div
-                  className={`absolute inset-0 ${getRank(score).bg} blur-[60px] opacity-30 rounded-full animate-pulse`}
-                />
-                <div
-                  className={`relative bg-linear-to-br ${getRank(score).gradient} p-7 rounded-[2.5rem] shadow-2xl `}
-                >
-                  <Trophy className="text-white w-14 h-14" />
-                </div>
-
-                {/* Badge de Rango Dinámico */}
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className={`absolute -bottom-4 left-1/2 -translate-x-1/2 px-5 py-1.5 rounded-full border border-white/10 shadow-2xl ${getRank(score).bg} backdrop-blur-md whitespace-nowrap`}
-                >
-                  <span
-                    className={`text-[10px] font-black tracking-[0.2em] ${getRank(score).color}`}
-                  >
-                    RANGO {getRank(score).label}
-                  </span>
-                </motion.div>
-              </motion.div>
-
-              {/* Contador de Puntos con Estilo Arcade */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="text-center mb-10"
-              >
-                <h2 className="text-7xl font-black text-white tracking-tighter italic">
-                  {score}
-                </h2>
-                <p className="text-neutral-500 font-bold uppercase tracking-[0.3em] text-[10px] mt-2">
-                  Puntos Totales
-                </p>
-              </motion.div>
-
-              {/* Grid de Estadísticas con los rangos */}
-              <div className="grid grid-cols-2 gap-4 w-full max-w-sm mb-10">
-                <div className="bg-neutral-900/50 p-4 rounded-3xl border border-neutral-800 flex flex-col items-center">
-                  <Target className="text-blue-500 mb-2" size={20} />
-                  <span className="text-[10px] font-bold text-neutral-500 uppercase">
-                    Estado
-                  </span>
-                  <span className="text-lg font-black text-white">
-                    {getRank(score).icon}
-                  </span>
-                </div>
-                <div className="bg-neutral-900/50 p-4 rounded-3xl border border-neutral-800 flex flex-col items-center">
-                  <Zap className="text-amber-500 mb-2" size={20} />
-                  <span className="text-[10px] font-bold text-neutral-500 uppercase">
-                    Bonos
-                  </span>
-                  <span className="text-lg font-black text-white">
-                    +{Math.floor(score / 100)}
-                  </span>
-                </div>
-              </div>
-
-              {/* Botones de Acción */}
-              <div className="flex flex-col gap-3 w-full max-w-xs">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => {
-                    setScore(0);
-                    setTimeLeft(30);
-                    setGameState("playing");
-                    const deck =
-                      DECKS_DATA[Math.floor(Math.random() * DECKS_DATA.length)];
-                    setCurrentDeck(deck);
-                    spawnTarget(deck);
-                  }}
-                  className="py-4 bg-emerald-500 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2"
-                >
-                  <Zap size={18} fill="currentColor" /> Reintentar
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => navigate(-1)}
-                  className="py-4 bg-neutral-900 text-neutral-400 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-neutral-800"
-                >
-                  Menu Principal
-                </motion.button>
-              </div>
-            </motion.div>
+             
+            </ResultsSheet>
           )}
         </AnimatePresence>
       </div>

@@ -3,7 +3,7 @@ import { Trophy, Clock, Hash, Star, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 /* 🏆 Ranking visual */
-const getRank = ({score}) => {
+const getRank = ({ score }) => {
   if (score >= 800)
     return {
       label: "ORO",
@@ -27,12 +27,14 @@ export function GameScoreCard({ data }) {
   const navigate = useNavigate();
   const { score, moves, time_seconds, game_id } = data;
 
-  const rank = getRank({score});
+  const rank = getRank({ score });
 
   const getTitleGame = (game_id) => {
     switch (game_id) {
       case "memory":
         return "Memorama";
+      case "trivia":
+        return "Trivia";
       default:
         return "Desconocido";
     }
@@ -70,7 +72,9 @@ export function GameScoreCard({ data }) {
           {/* <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">
             Nuevo récord
           </p> */}
-          <span className="text-[10px] text-gray-400 font-bold">{rank.label}</span>
+          <span className="text-[10px] text-gray-400 font-bold">
+            {rank.label}
+          </span>
         </div>
 
         {/* 🎮 etiqueta juego */}

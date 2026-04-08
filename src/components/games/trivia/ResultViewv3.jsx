@@ -8,9 +8,12 @@ import {
   Target,
   CheckCircle,
   Share2,
+  Loader2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "../../../hooks/useIsMobile";
+import { usePostCreation } from "@/hooks/usePostCreation3";
+import { useAuth } from "@/context/AuthContext";
 
 const ResultsView = ({
   points,
@@ -18,9 +21,12 @@ const ResultsView = ({
   totalQuestions,
   earnedCredits,
   onReset,
+  totalTime
 }) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const {createPost, isPending} = usePostCreation()
+  const {user} = useAuth()
 
   /* ===== Animación de puntos ===== */
   const springPoints = useSpring(0, { stiffness: 50, damping: 18 });
@@ -87,6 +93,31 @@ const ResultsView = ({
       button: "bg-orange-500 shadow-orange-500/30",
       icon: "text-orange-500",
     };
+  };
+
+  const handleShare = () => {
+    createPost({
+      user,
+      files: [],
+      gifUrls: [],
+      content: "🎮 Resultado del juego",
+      linkPreview: {
+        type: "game_score",
+        game_id: "trivia",
+        score: points,
+        extra: {
+          accuracy,
+          totalQuestions,
+          earnedCredits,
+          totalTime
+        },
+      },
+      setLoading: () => {},
+      resetForm: () => {},
+      onGame: () => {
+        navigate("/games");
+      },
+    });
   };
 
   const rank = getRank();
@@ -162,13 +193,14 @@ const ResultsView = ({
           </div>
 
           {/* ===== ACTIONS ===== */}
-          <div className="flex flex-col md:flex-row gap-3 mt-3 sm:mt-8">
+          <div className="flex flex-col  gap-3 mt-3 sm:mt-8">
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               onClick={onReset}
               className={`flex-1 py-3 rounded-2xl text-white font-black uppercase tracking-wider shadow-lg
              ${rank.button} flex items-center justify-center gap-2`}
+             disabled={isPending}
             >
               <Zap size={18} fill="currentColor" /> Reintentar
             </motion.button>
@@ -178,6 +210,7 @@ const ResultsView = ({
               whileTap={{ scale: 0.97 }}
               onClick={() => navigate("/games")}
               className="flex-1 py-3 rounded-2xl bg-gray-100 dark:bg-neutral-900 dark:text-white font-black uppercase tracking-wider flex items-center justify-center gap-2"
+              disabled={isPending}
             >
               Volver al Arcade <ArrowRight size={18} />
             </motion.button>
@@ -186,7 +219,7 @@ const ResultsView = ({
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              //onClick={handleShare}
+              onClick={handleShare}
               className="
                 w-full py-3 rounded-2xl
                 bg-linear-to-r from-emerald-500 to-teal-400
@@ -194,8 +227,10 @@ const ResultsView = ({
                 flex items-center justify-center gap-2
                 shadow-lg shadow-emerald-500/20
               "
+              disabled={isPending}
             >
-              <Share2 size={18}/> Publicar resultado
+              {isPending ? <Loader2 size={18} className="animate-spin"/> : <><Share2 size={18} /> Publicar resultado</>}
+              
             </motion.button>
           </div>
         </motion.div>

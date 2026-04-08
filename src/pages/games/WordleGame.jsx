@@ -5,7 +5,6 @@ import { supabaseClient } from "../../supabase/supabaseClient";
 import { ArrowLeft, HelpCircle, Volume2, VolumeX } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import confetti from "canvas-confetti";
-import { toast } from "sonner";
 import filteredWords from "../../../scripts/filtered_words.json";
 import { useAudio } from "../../context/AudioContext";
 import useSound from "use-sound";
