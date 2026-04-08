@@ -7,7 +7,6 @@ import {
   Star,
   Brain,
   LayoutGrid,
-  Clock,
   Swords,
   MessageSquareText,
   Target,
@@ -406,11 +405,11 @@ const LeaderItem = memo(({ entry, isMe, isMichi }) => {
           </span>
         </div>
 
-        <div className="text-[10px] font-bold text-gray-400 flex items-center justify-end gap-1">
+        {/* <div className="text-[10px] font-bold text-gray-400 flex items-center justify-end gap-1">
           {!isMichi && <Clock size={10} className={currentStyle.iconColor} />}
           {entry.time_seconds}
           {!isMichi && "s"}
-        </div>
+        </div> */}
       </div>
     </motion.div>
   );

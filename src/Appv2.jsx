@@ -84,7 +84,7 @@ const WordleGame = lazy(() => import("./pages/games/WordleGame"));
 const ConectorRedes = lazy(() => import("./pages/games/ConectorRedes"));
 const MemoryGame = lazy(() => import("./components/games/MemoryGamev2"));
 const MichiGame = lazy(() => import("./pages/games/MichiGamev2"));
-const CazaTalentos = lazy(() => import("./pages/games/CazaTalentosv2"));
+const CazaTalentos = lazy(() => import("./pages/games/CazaTalentosv3"));
 const BuscaMinas = lazy(() => import("./pages/games/BuscaMinasv2"));
 const CodigoMatricula = lazy(() => import("./pages/games/CodigoMatricula3"));
 const Leaderboard = lazy(() => import("./pages/games/LeaderBoard4"));

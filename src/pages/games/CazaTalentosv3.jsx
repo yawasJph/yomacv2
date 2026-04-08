@@ -1,24 +1,14 @@
 import { useState, useEffect, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabaseClient } from "../../supabase/supabaseClient";
-
-import {
-  Timer,
-  Target,
-  Zap,
-  ArrowLeft,
-  Trophy,
-  VolumeX,
-  Volume2,
-} from "lucide-react";
+import { Timer, Target, ArrowLeft, VolumeX, Volume2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import DECKS_DATA from "../../assets/data-game/barajas.json";
 import { useAudio } from "../../context/AudioContext";
 import useSound from "use-sound";
 import { useQueryClient } from "@tanstack/react-query";
-import { ResultsSheet } from "@/components/games/caza-talento/Caza-d";
-
-
+import Sheet from "@/components/games/utils/Sheet";
+import CazaTalentosResults from "@/components/games/caza-talento/CazaTalentosResults";
 
 // --- COMPONENTE TARGET (Separado para evitar re-renders del grid) ---
 
@@ -158,11 +148,16 @@ const CazaTalentos = () => {
   const { isMuted, setIsMuted, playWithCheck } = useAudio();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [talentsHit, setTalentsHit] = useState(0);
+  const [bombHits, setBombHits] = useState(0);
+  const [extraTimeGained, setExtraTimeGained] = useState(0);
 
   const [playClick] = useSound("/sounds/click.mp3", { volume: 0.5 });
   const [playTime] = useSound("/sounds/time.mp3", { volume: 0.5 });
   const [playBomb] = useSound("/sounds/bombv2.mp3", { volume: 0.5 });
   const [playWin] = useSound("/sounds/win.mp3", { volume: 0.5 });
+
+  const totalTimePlayed = GAME_DURATION + extraTimeGained
 
   // Función para limpiar efectos viejos
   const addEffect = (x, y, type) => {
@@ -281,14 +276,17 @@ const CazaTalentos = () => {
             addEffect(t.x + 5, t.y + 5, t.type);
 
             if (t.type === "bomb") {
+              setBombHits((b) => b + 1);
               playWithCheck(playBomb);
               setScore((s) => Math.max(0, s - 50));
               if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
             } else if (t.type === "time") {
+              setExtraTimeGained((t) => t + 5);
               //setTimeLeft(s => Math.min(30, s + 5));
               playWithCheck(playTime);
               setTimeLeft((s) => s + 5);
             } else {
+              setTalentsHit((t) => t + 1);
               playWithCheck(playClick);
               setScore((s) => s + 10);
             }
@@ -334,6 +332,15 @@ const CazaTalentos = () => {
     } catch (err) {
       console.error("Error al guardar puntaje:", err);
     }
+  };
+
+  const handleReset = () => {
+    setScore(0);
+    setTimeLeft(30);
+    setGameState("playing");
+    const deck = DECKS_DATA[Math.floor(Math.random() * DECKS_DATA.length)];
+    setCurrentDeck(deck);
+    spawnTarget(deck);
   };
 
   // Botón de sonido reutilizable
@@ -456,16 +463,18 @@ const CazaTalentos = () => {
           )}
 
           {gameState === "ended" && (
-            <ResultsSheet
-              open={gameState === "ended"}
+            <Sheet
+              isOpen={gameState === "ended"}
               onClose={() => setGameState("idle")}
-              score={score}
-              onExit={() => navigate(-1)}
-             // onReset={handleRestart}
-              //onShare={handleShare}
             >
-             
-            </ResultsSheet>
+              <CazaTalentosResults
+                onReset={() => handleReset}
+                score={score}
+                time={totalTimePlayed}
+                talent={talentsHit}
+                bomb={bombHits}
+              />
+            </Sheet>
           )}
         </AnimatePresence>
       </div>

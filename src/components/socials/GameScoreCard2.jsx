@@ -76,12 +76,60 @@ const getRank = ({ score, game_id }) => {
       button: "bg-orange-500 shadow-orange-500/30",
       icon: "text-orange-500",
     };
+  } else if (game_id === "caza_talentos") {
+    if (score >= 2500)
+      return {
+        label: "ZAFIRO",
+        color: "text-indigo-400",
+        gradient: "from-indigo-500 to-cyan-400",
+        bg: "bg-indigo-500/10",
+        icon: "💎",
+      };
+    if (score >= 2000)
+      return {
+        label: "RUBÍ",
+        color: "text-red-400",
+        gradient: "from-red-500 to-pink-400",
+        bg: "bg-red-500/10",
+        icon: "🌹",
+      };
+    if (score >= 1500)
+      return {
+        label: "DIAMANTE",
+        color: "text-cyan-400",
+        gradient: "from-cyan-500 to-sky-400",
+        bg: "bg-cyan-500/10",
+        icon: "✨",
+      };
+    if (score >= 1000)
+      return {
+        label: "ORO",
+        color: "text-amber-400",
+        gradient: "from-amber-500 to-yellow-400",
+        bg: "bg-amber-500/10",
+        icon: "👑",
+      };
+    if (score >= 500)
+      return {
+        label: "PLATA",
+        color: "text-slate-400",
+        gradient: "from-slate-400 to-gray-300",
+        bg: "bg-slate-500/10",
+        icon: "🥈",
+      };
+    return {
+      label: "BRONCE",
+      color: "text-orange-600",
+      gradient: "from-orange-500 to-red-400",
+      bg: "bg-orange-500/10",
+      icon: "🥉",
+    };
   }
 };
 
 export function GameScoreCard({ data }) {
   const navigate = useNavigate();
-  const { score, moves, time_seconds, game_id } = data;
+  const { score, game_id } = data;
 
   const rank = getRank({ score, game_id });
   const Renderer = gameRenderers[data.game_id];
@@ -95,13 +143,17 @@ export function GameScoreCard({ data }) {
         return "Memorama";
       case "trivia":
         return "Trivia";
+      case "caza_talentos":
+        return "Caza Talentos";
       default:
         return "Desconocido";
     }
   };
 
   const handleNavigate = () => {
-    navigate(`/games/${game_id}`);
+    let gameId = game_id;
+    if (game_id === "caza_talentos") gameId = "caza-talentos";
+    navigate(`/games/${gameId}`);
   };
 
   const getMessage = () => {
@@ -223,7 +275,7 @@ const gameRenderers = {
         label="Precisión"
         value={`${Math.round((data.extra?.accuracy / data.extra?.totalQuestions) * 100)}%`}
       />
-      <Stat label="Tiempo" value={`${data.extra?.totalTime}`} />
+      <Stat label="Tiempo" value={`${data.extra?.totalTime}s`} />
     </div>
   ),
 
@@ -231,6 +283,14 @@ const gameRenderers = {
     <div className="grid grid-cols-3 gap-2 text-center p-3">
       <Stat label="Movimientos" value={data.moves} />
       <Stat label="Tiempo" value={`${data.time_seconds}s`} />
+    </div>
+  ),
+
+  caza_talentos: (data) => (
+    <div className="grid grid-cols-3 gap-2 text-center p-3">
+      <Stat label="Talentos" value={data.extra?.talent} />
+      <Stat label="Bombas" value={data.extra?.bomb} />
+      <Stat label="Tiempo" value={`${data.extra?.time}s`} />
     </div>
   ),
 };
