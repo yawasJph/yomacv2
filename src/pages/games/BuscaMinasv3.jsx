@@ -4,7 +4,6 @@ import { supabaseClient } from "../../supabase/supabaseClient";
 import useSound from "use-sound";
 import {
   ArrowLeft,
-  GraduationCap,
   Clock,
   RotateCcw,
   FileX2,
@@ -15,6 +14,40 @@ import { useNavigate } from "react-router-dom";
 import { useAudio } from "../../context/AudioContext";
 import { notify } from "@/utils/toast/notifyv3";
 import { useQueryClient } from "@tanstack/react-query";
+import BuscaMinasResults from "@/components/games/minas/BuscaMinasResults";
+
+const calculateScore = ({ timer, flagsUsed, minesCount, isWin }) => {
+  if (!isWin) return 0;
+  let score = 1000;
+
+  // ⏱️ TIEMPO (importante pero no dominante)
+  score -= timer * 5;
+
+  // 🚩 EFICIENCIA DE FLAGS
+  // ideal = usar pocas flags (skill alto)
+  const flagRatio = flagsUsed / minesCount;
+
+  // mientras menos uses, mejor
+  const efficiencyBonus = (1 - flagRatio) * 300;
+  score += efficiencyBonus;
+
+  // 💣 USO EXCESIVO (castigo si usa todas)
+  if (flagsUsed === minesCount) {
+    score -= 100;
+  }
+
+  // 🧠 BONUS PRO (casi sin flags)
+  if (flagsUsed <= 3) {
+    score += 150;
+  }
+
+  // 💎 PERFECT RUN (rápido + pocas flags)
+  if (timer < 60 && flagsUsed <= 5) {
+    score += 150;
+  }
+
+  return Math.max(Math.floor(score), 100);
+};
 
 // --- Constantes y Utilidades Externas ---
 const GRID_SIZE = 8;
@@ -107,6 +140,7 @@ const BuscaMinas = () => {
   const [firstClick, setFirstClick] = useState(true);
   const { isMuted, setIsMuted, playWithCheck } = useAudio();
   const queryClient = useQueryClient();
+  const [clicks, setClicks] = useState(0);
 
   const navigate = useNavigate();
 
@@ -116,6 +150,13 @@ const BuscaMinas = () => {
   const [playLose] = useSound("/sounds/lose.mp3", { volume: 0.6 });
   const [playWin] = useSound("/sounds/win.mp3", { volume: 0.7 });
 
+  const flagsUsed = board.flat().filter((cell) => cell.flagged).length;
+
+  const correctFlags = board
+    .flat()
+    .filter((cell) => cell.flagged && cell.isMine).length;
+
+  const flagEfficiency = Math.max(0, 100 - (flagsUsed - correctFlags) * 10);
 
   // Lógica para plantar minas DESPUÉS del primer clic (para no perder al inicio)
   const plantMines = (initialBoard, firstR, firstC) => {
@@ -151,6 +192,7 @@ const BuscaMinas = () => {
     setTimer(0);
     setFlagsCount(0);
     setFirstClick(true);
+    setClicks(0);
   }, []);
 
   const revealCell = useCallback(
@@ -161,6 +203,8 @@ const BuscaMinas = () => {
         board[r][c].flagged
       )
         return;
+
+      setClicks((prev) => prev + 1); // 👈 AQUÍ
 
       let newBoard = board.map((row) => row.map((cell) => ({ ...cell })));
 
@@ -246,13 +290,13 @@ const BuscaMinas = () => {
   }, [gameState, firstClick]);
 
   const saveScore = async (isWin) => {
-    const score = isWin ? Math.max(1000 - timer, 100) : 0;
+    const score2 = calculateScore({ timer: timer, flagsUsed: flagsCount, minesCount:MINES_COUNT, isWin: isWin });
 
     try {
       const { error } = await supabaseClient.rpc("submit_game_score", {
         p_game_id: "buscaminas",
-        p_score: score,
-        p_moves: 0,
+        p_score: score2,
+        p_moves: clicks,
         p_time_seconds: timer,
       });
       if (!error) {
@@ -338,58 +382,14 @@ const BuscaMinas = () => {
       {/* Modales de Victoria/Derrota */}
       <AnimatePresence>
         {gameState !== "playing" && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
-          >
-            <div className="max-w-md w-full p-6 rounded-[2.5rem] text-center bg-white dark:bg-neutral-900 shadow-2xl border-2 border-gray-100 dark:border-neutral-800 relative overflow-hidden">
-              {/* Adorno de fondo */}
-              <div
-                className={`absolute top-0 left-0 w-full h-1.5 ${
-                  gameState === "won" ? "bg-emerald-500" : "bg-red-500"
-                }`}
-              />
-
-              <div
-                className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${
-                  gameState === "won" ? "bg-emerald-100" : "bg-red-100"
-                }`}
-              >
-                {gameState === "won" ? (
-                  <GraduationCap size={32} className="text-emerald-600" />
-                ) : (
-                  <span className="text-2xl font-black text-red-600 italic">
-                    05
-                  </span>
-                )}
-              </div>
-
-              <h3 className="text-2xl font-black uppercase dark:text-white tracking-tighter leading-tight">
-                {gameState === "won" ? "¡Semestre Invicto!" : "¡Examen Jalado!"}
-              </h3>
-
-              <p className="text-[10px] font-black text-gray-400 mt-2 uppercase tracking-[0.2em]">
-                {gameState === "won"
-                  ? `Aprobaste en solo ${timer} segundos`
-                  : "Te descuidaste y te mandaron a la bica"}
-              </p>
-
-              <button
-                onClick={initGame}
-                className="mt-6 w-full bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-emerald-500/30 active:scale-95 transition-all"
-              >
-                Volver a Matricularme
-              </button>
-              <button
-                onClick={() => navigate(-1)}
-                className="mt-3 w-full bg-neutral-900 dark:bg-white text-white dark:text-black py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-transform active:scale-95"
-              >
-                Volver al Arcade
-              </button>
-            </div>
-          </motion.div>
+          <BuscaMinasResults
+            gameState={gameState}
+            timer={timer}
+            flagsUsed={flagsCount}
+            minesCount={MINES_COUNT}
+            clicks={clicks}    
+            onReset={initGame}
+          />
         )}
       </AnimatePresence>
     </div>

@@ -82,6 +82,7 @@ const getRank = ({ score, game_id }) => {
         label: "ZAFIRO",
         color: "text-indigo-400",
         gradient: "from-indigo-500 to-cyan-400",
+        glow: "from-indigo-500/40 to-cyan-400/40",
         bg: "bg-indigo-500/10",
         icon: "💎",
       };
@@ -90,6 +91,7 @@ const getRank = ({ score, game_id }) => {
         label: "RUBÍ",
         color: "text-red-400",
         gradient: "from-red-500 to-pink-400",
+        glow: "from-red-500/40 to-pink-400/40",
         bg: "bg-red-500/10",
         icon: "🌹",
       };
@@ -98,6 +100,7 @@ const getRank = ({ score, game_id }) => {
         label: "DIAMANTE",
         color: "text-cyan-400",
         gradient: "from-cyan-500 to-sky-400",
+        glow: "from-cyan-500/40 to-sky-400/40",
         bg: "bg-cyan-500/10",
         icon: "✨",
       };
@@ -106,6 +109,7 @@ const getRank = ({ score, game_id }) => {
         label: "ORO",
         color: "text-amber-400",
         gradient: "from-amber-500 to-yellow-400",
+        glow: "from-amber-500/40 to-yellow-400/40",
         bg: "bg-amber-500/10",
         icon: "👑",
       };
@@ -114,6 +118,7 @@ const getRank = ({ score, game_id }) => {
         label: "PLATA",
         color: "text-slate-400",
         gradient: "from-slate-400 to-gray-300",
+        glow: "from-slate-400/40 to-gray-300/40",
         bg: "bg-slate-500/10",
         icon: "🥈",
       };
@@ -121,8 +126,45 @@ const getRank = ({ score, game_id }) => {
       label: "BRONCE",
       color: "text-orange-600",
       gradient: "from-orange-500 to-red-400",
+      glow: "from-orange-500/40 to-red-400/40",
       bg: "bg-orange-500/10",
       icon: "🥉",
+    };
+  } else if (game_id === "busca_minas") {
+    if (score >= 900)
+      return {
+        label: "DIAMANTE",
+        text: "text-cyan-400",
+        gradient: "from-cyan-500 to-sky-400",
+        glow: "from-cyan-500/40 to-sky-400/40",
+        button: "bg-cyan-500 shadow-cyan-500/30",
+        icon: "text-cyan-500",
+      };
+    if (score >= 700)
+      return {
+        label: "ORO",
+        text: "text-amber-400",
+        gradient: "from-amber-500 to-yellow-400",
+        glow: "from-amber-500/40 to-yellow-400/40",
+        button: "bg-amber-500 shadow-amber-500/30",
+        icon: "text-amber-500",
+      };
+    if (score >= 500)
+      return {
+        label: "PLATA",
+        text: "text-slate-400",
+        gradient: "from-slate-400 to-gray-300",
+        glow: "from-slate-400/40 to-gray-300/40",
+        button: "bg-slate-500 shadow-slate-500/30",
+        icon: "text-slate-500",
+      };
+    return {
+      label: "BRONCE",
+      text: "text-orange-500",
+      gradient: "from-orange-500 to-red-400",
+      glow: "from-orange-500/40 to-red-400/40",
+      button: "bg-orange-500 shadow-orange-500/30",
+      icon: "text-orange-500",
     };
   }
 };
@@ -145,6 +187,8 @@ export function GameScoreCard({ data }) {
         return "Trivia";
       case "caza_talentos":
         return "Caza Talentos";
+      case "busca_minas":
+        return "Busca Minas";
       default:
         return "Desconocido";
     }
@@ -153,6 +197,7 @@ export function GameScoreCard({ data }) {
   const handleNavigate = () => {
     let gameId = game_id;
     if (game_id === "caza_talentos") gameId = "caza-talentos";
+    if (game_id === "busca_minas") gameId = "busca-minas";
     navigate(`/games/${gameId}`);
   };
 
@@ -283,6 +328,7 @@ const gameRenderers = {
     <div className="grid grid-cols-3 gap-2 text-center p-3">
       <Stat label="Movimientos" value={data.moves} />
       <Stat label="Tiempo" value={`${data.time_seconds}s`} />
+      <Stat label="Precisión" value={`${data.accuracy}%`} />
     </div>
   ),
 
@@ -291,6 +337,14 @@ const gameRenderers = {
       <Stat label="Talentos" value={data.extra?.talent} />
       <Stat label="Bombas" value={data.extra?.bomb} />
       <Stat label="Tiempo" value={`${data.extra?.time}s`} />
+    </div>
+  ),
+
+  busca_minas: (data) => (
+    <div className="grid grid-cols-3 gap-2 text-center p-3">
+      <Stat label="Clicks" value={data.extra?.clicks} />
+      <Stat label="Banderas" value={data.extra?.flags} />
+      <Stat label="Tiempo" value={`${data.extra?.timer}s`} />
     </div>
   ),
 };

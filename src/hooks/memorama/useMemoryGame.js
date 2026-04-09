@@ -20,6 +20,10 @@ export const useMemoryGame = () => {
   const { isMuted, setIsMuted, playWithCheck } = useAudio();
   const queryClient = useQueryClient();
 
+  const totalPairs = cards.length / 2;
+  const accuracy = totalPairs / moves;
+  const accuracyPercent = Math.round(accuracy * 100);
+
   // Sonidos
   const [playFip] = useSound("/sounds/click.mp3", { volume: 0.5 });
   const [playMatched] = useSound("/sounds/matched.mp3", { volume: 0.5 });
@@ -41,18 +45,18 @@ export const useMemoryGame = () => {
 
   const saveGameResult = async (score, steps, time) => {
     try {
-     const {error} =  await supabaseClient.rpc("submit_game_score", {
+      const { error } = await supabaseClient.rpc("submit_game_score", {
         p_game_id: "memory",
         p_score: score,
         p_moves: steps,
         p_time_seconds: time,
       });
-      if(!error){ 
+      if (!error) {
         console.log("Resultado guardado exitosamente");
-        queryClient.invalidateQueries({ 
-        queryKey: ["leaderboard", "memory"] 
-      });
-      } else {  
+        queryClient.invalidateQueries({
+          queryKey: ["leaderboard", "memory"],
+        });
+      } else {
         console.error("Error al guardar resultado:", error);
       }
     } catch (error) {
@@ -141,5 +145,6 @@ export const useMemoryGame = () => {
     setIsMuted,
     handleFlip,
     resetGame,
+    accuracyPercent
   };
 };

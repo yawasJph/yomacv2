@@ -11,15 +11,15 @@ import {
   Share2,
   Clock,
   Hash,
-  User,
   Loader2,
+  Target,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { memo, useEffect, useState } from "react";
 import { usePostCreation } from "@/hooks/usePostCreation3";
 import { useAuth } from "@/context/AuthContext";
 
-const VictoryModal = memo(({ isOpen, score, time, moves, onReset }) => {
+const VictoryModal = memo(({ isOpen, score, time, moves, onReset, accuracy }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -43,6 +43,7 @@ const VictoryModal = memo(({ isOpen, score, time, moves, onReset }) => {
         score,
         moves,
         time_seconds: time,
+        accuracy
       },
       resetForm: () => {},
       setLoading,
@@ -143,6 +144,12 @@ const VictoryModal = memo(({ isOpen, score, time, moves, onReset }) => {
                 value={moves}
                 iconColor={"text-purple-500 dark:text-purple-400"}
                 gradient={"grand-purple"}
+              />
+               <Stat
+                icon={Target}
+                value={`${accuracy}%`}
+                iconColor={"text-amber-500 dark:text-amber-400"}
+                gradient={"grand-yellow"}
               />
             </div>
 

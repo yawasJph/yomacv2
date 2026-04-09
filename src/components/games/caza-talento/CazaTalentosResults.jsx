@@ -1,4 +1,13 @@
-import { Bomb, Coins, Home, Share2, Target, Trophy, Zap } from "lucide-react";
+import {
+  Bomb,
+  Coins,
+  Home,
+  Loader2,
+  Share2,
+  Target,
+  Trophy,
+  Zap,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useNavigate } from "react-router-dom";
@@ -55,18 +64,12 @@ const getRank = (points) => {
   };
 };
 
-const CazaTalentosResults = ({
-  score,
-  onReset,
-  time,
-  talent,
-  bomb,
-}) => {
+const CazaTalentosResults = ({ score, onReset, time, talent, bomb }) => {
   const rank = getRank(score);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
-  const { createPost } = usePostCreation();
-  const {user} = useAuth()
+  const { createPost, isPending } = usePostCreation();
+  const { user } = useAuth();
 
   const handleShare = () => {
     createPost({
@@ -96,7 +99,7 @@ const CazaTalentosResults = ({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="absolute inset-0 flex flex-col items-center justify-center p-0 dark:bg-neutral-950/98 bg-white backdrop-blur-2xl z-60 text-center"
+      className="absolute inset-0 flex flex-col items-center justify-center p-3 dark:bg-neutral-950/98 bg-white backdrop-blur-2xl z-60 text-center"
     >
       {/* Icono Central con Brillo Radial */}
       <motion.div
@@ -196,6 +199,7 @@ const CazaTalentosResults = ({
           whileTap={{ scale: 0.98 }}
           onClick={onReset}
           className="py-4 bg-emerald-500 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2"
+          disabled={isPending}
         >
           <Zap size={18} fill="currentColor" /> Reintentar
         </motion.button>
@@ -205,6 +209,7 @@ const CazaTalentosResults = ({
           whileTap={{ scale: 0.98 }}
           onClick={() => navigate("/games")}
           className="py-4 bg-neutral-900/80 text-neutral-400 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-neutral-800"
+          disabled={isPending}
         >
           <Home size={18} /> Menu Principal
         </motion.button>
@@ -213,8 +218,16 @@ const CazaTalentosResults = ({
           whileTap={{ scale: 0.98 }}
           onClick={handleShare}
           className="py-4 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 border border-neutral-800"
+          disabled={isPending}
         >
-          <Share2 size={18} /> Publicar
+          {isPending ? (
+            <Loader2 size={18} />
+          ) : (
+            <>
+              {" "}
+              <Share2 size={18} /> Publicar
+            </>
+          )}
         </motion.button>
       </div>
     </motion.div>

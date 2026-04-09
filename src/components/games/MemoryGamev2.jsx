@@ -20,7 +20,7 @@ const STYLES2 = {
 const MemoryGame = () => {
   const {
     cards, flippedCards, matched, moves, seconds, showVictory,
-    finalScore, selectedBaraja, isMuted, setIsMuted,
+    finalScore, selectedBaraja, isMuted, setIsMuted, accuracyPercent,
     handleFlip, resetGame
   } = useMemoryGame();
 
@@ -54,6 +54,7 @@ const MemoryGame = () => {
         score={finalScore}
         time={seconds}
         moves={moves}
+        accuracy={accuracyPercent}
         onReset={resetGame}
       />
     </div>
