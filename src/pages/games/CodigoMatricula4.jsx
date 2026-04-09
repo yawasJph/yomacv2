@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback, useMemo, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import { ArrowLeft, RefreshCw, Clock, VolumeX, Volume2 } from "lucide-react";
+import { ArrowLeft, RefreshCw, Clock, VolumeX, Volume2, Share2, Gamepad2, Swords, Zap, ArrowRight, Loader2 } from "lucide-react";
 import useSound from "use-sound";
 import { useNavigate } from "react-router-dom";
 import { useAudio } from "../../context/AudioContext";
 import { useQueryClient } from "@tanstack/react-query";
+import { usePostCreation } from "@/hooks/usePostCreation3";
+import { useAuth } from "@/context/AuthContext";
 
 // --- COMPONENTES ATÓMICOS MEMORIZADOS ---
 
@@ -90,7 +92,6 @@ const GAME_THEMES = [
 
 const CodigoMatricula = () => {
   const navigate = useNavigate();
-
   const [currentTheme, setCurrentTheme] = useState(GAME_THEMES[0]);
   const [secretCode, setSecretCode] = useState([]);
   const [currentGuess, setCurrentGuess] = useState([]);
@@ -99,10 +100,63 @@ const CodigoMatricula = () => {
   const [timer, setTimer] = useState(0);
   const { isMuted, setIsMuted, playWithCheck } = useAudio();
   const queryClient = useQueryClient();
+  const {createPost, isPending} = usePostCreation()
+  const {user}= useAuth()
 
   const [playPop] = useSound("/sounds/click.mp3", { volume: 0.5 });
   const [playWin] = useSound("/sounds/win.mp3", { volume: 0.7 });
   const [playLose] = useSound("/sounds/lose.mp3", { volume: 0.6 });
+
+  const handleShare = () => {
+    createPost({
+      user,
+      files: [],
+      gifUrls: [],
+      content: "🎮 Resultado del juego",
+      linkPreview: {
+        type: "game_score",
+        game_id: "codigo_matricula",
+        score: score,
+        extra: {
+          slots: `${attempts}/${MAX_ATTEMPTS}`,
+          timer: timer,
+          effectiveness: effectiveness,
+        },
+      },
+      resetForm: () => {},
+      setLoading: () => {},
+      onGame: () => navigate("/games"),
+    });
+  };
+
+  // ===== METRICAS MEJORADAS =====
+  const attempts = history.length;
+  const totalSlots = attempts * CODE_LENGTH;
+  const totalCorrect = history.reduce((acc, h) => acc + h.result.correct, 0);
+
+  // 1. Efectividad: Qué porcentaje de los colores elegidos en toda la partida pertenecían al código secreto (sin importar el orden)
+  const totalClues = history.reduce(
+    (acc, h) => acc + h.result.correct + h.result.almost,
+    0,
+  );
+  const effectiveness =
+    totalSlots > 0 ? Math.round((totalClues / totalSlots) * 100) : 0;
+
+  // 2. Velocidad Media: Segundos promedio que el jugador tardó por intento
+  const avgSpeed = attempts > 0 ? (timer / attempts).toFixed(1) : 0;
+
+  const avgCorrect = attempts > 0 ? totalCorrect / attempts : 0;
+
+  // ===== SCORE COMPETITIVO =====
+  const base = 1500;
+  const attemptPenalty = attempts * 120;
+  const timePenalty = timer * 2;
+  const qualityBonus = avgCorrect * 50;
+
+  const score =
+    gameState === "won"
+      ? Math.max(base - attemptPenalty - timePenalty + qualityBonus, 100)
+      : 0;
 
   // 1. Memorizar inicio del juego
   const initGame = useCallback(() => {
@@ -155,18 +209,18 @@ const CodigoMatricula = () => {
     setCurrentGuess((curr) => curr.slice(0, -1));
   }, []);
 
-  const saveScore = useCallback(async (attempts, currentTime) => {
-    const score = Math.max(1200 - attempts * 100, 200);
+  const saveScore = useCallback(async (score, currentTime) => {
+    //const score = Math.max(1200 - attempts * 100, 200);
     try {
       const { error } = await supabaseClient.rpc("submit_game_score", {
         p_game_id: "mastermind",
-        p_score: score,
+        p_score: Math.floor(score),
         p_moves: attempts,
         p_time_seconds: currentTime,
       });
       if (!error) {
-        console.log("Puntaje guardado exitosamente"); 
-         queryClient.invalidateQueries({
+        console.log("Puntaje guardado exitosamente");
+        queryClient.invalidateQueries({
           queryKey: ["leaderboard", "mastermind"],
         });
       }
@@ -211,7 +265,7 @@ const CodigoMatricula = () => {
       if (correct === CODE_LENGTH) {
         setGameState("won");
         playWithCheck(playWin);
-        saveScore(updatedHistory.length, timer);
+        saveScore(score, timer);
       } else if (updatedHistory.length >= MAX_ATTEMPTS) {
         setGameState("lost");
         playWithCheck(playLose);
@@ -229,6 +283,8 @@ const CodigoMatricula = () => {
     timer,
     playWithCheck,
   ]);
+
+  console.log(secretCode);
 
   const SoundToggle = (
     <motion.button
@@ -374,36 +430,189 @@ const CodigoMatricula = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-6 rounded-[2.5rem]"
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm max-sm:w-full"
           >
-            <div
-              className={`bg-neutral-900 border-2 ${currentTheme.border} p-8 rounded-[3rem] text-center w-full max-w-xs transition-colors duration-500`}
+            <motion.div
+              initial={{ y: "100%", scale: 0.9 }}
+              animate={{ y: 0, scale: 1 }}
+              exit={{ y: "100%", scale: 0.9 }}
+              transition={{ type: "spring", damping: 25, stiffness: 180 }}
+              className="
+          w-full max-w-md
+          bg-white dark:bg-neutral-950
+          rounded-t-4xl sm:rounded-4xl
+          p-6
+          border border-neutral-200 dark:border-neutral-800
+          shadow-2xl
+        "
             >
-              <div className="text-5xl mb-4">
-                {gameState === "won" ? "🏆" : "🛰️"}
+              {/* HANDLE (mobile UX) */}
+              <div className="w-12 h-1.5 bg-gray-300 dark:bg-neutral-700 rounded-full mx-auto mb-4" />
+
+              {/* HERO */}
+              <div className="text-center mb-6">
+                <div className="text-5xl mb-2">
+                  {gameState === "won" ? "🏆" : "💀"}
+                </div>
+
+                <h2 className="text-2xl font-black uppercase dark:text-white">
+                  {gameState === "won"
+                    ? "Código Descifrado"
+                    : "Acceso Denegado"}
+                </h2>
+
+                <p className="text-xs text-gray-400 mt-1 uppercase tracking-widest">
+                  {currentTheme.name}
+                </p>
               </div>
-              <h3 className="text-xl font-black uppercase mb-2">
-                {gameState === "won" ? "¡HACK COMPLETADO!" : "ACCESO DENEGADO"}
-              </h3>
-              <p className="text-neutral-400 text-[10px] font-bold uppercase tracking-widest mb-6 leading-relaxed">
-                {gameState === "won"
-                  ? `Descifraste el código de ${currentTheme.name.toLowerCase()} en ${
-                      history.length
-                    } pasos.`
-                  : "El sistema ha rotado las llaves de acceso."}
-              </p>
-              <button
-                onClick={initGame}
-                className={`w-full ${currentTheme.btn} text-black py-4 rounded-2xl font-black uppercase text-sm`}
+
+              {/* SCORE */}
+              <div className="text-center mb-6">
+                <div className="text-5xl font-black dark:text-white">
+                  {Math.floor(score)}
+                </div>
+                <span className="text-xs text-gray-400 uppercase tracking-widest">
+                  Score Final
+                </span>
+              </div>
+
+              {/* STATS */}
+              {gameState === "won" && (
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  <Stat
+                    label="Intentos"
+                    value={`${attempts}/${MAX_ATTEMPTS}`}
+                  />
+                  <Stat label="Tiempo Total" value={`${timer}s`} />
+                  {/* <Stat label="Efectividad" value={`${effectiveness}%`} />
+                  <Stat label="Velocidad" value={`${avgSpeed}s / int`} /> */}
+                </div>
+              )}
+
+              {/* EXTRA INFO (cuando pierde) */}
+              {gameState === "lost" && (
+                <div className="text-center text-xs text-gray-400 mb-6">
+                  El código era:
+                  <div className="flex justify-center gap-2 mt-2">
+                    {secretCode.map((c, i) => {
+                      const color = currentTheme.options.find(
+                        (o) => o.id === c,
+                      );
+                      return (
+                        <div
+                          key={i}
+                          className={`w-10 h-10 rounded-xl flex items-center justify-center ${color?.bg}`}
+                        >
+                          {color?.icon}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* ACTIONS */}
+              {/* <div className="flex flex-col gap-3">
+                <button
+                  onClick={initGame}
+                  className={`
+              ${currentTheme.btn}
+              text-black py-4 rounded-2xl
+              font-black uppercase tracking-wider
+              shadow-lg active:scale-95 transition-all
+            `}
+                >
+                  <Swords size={18}/> Reintentar
+                </button>
+
+                <button
+                  onClick={() => navigate("/games")}
+                  className="
+              bg-neutral-900 dark:bg-white
+              text-white dark:text-black
+              py-4 rounded-2xl
+              font-black uppercase tracking-wider
+              active:scale-95 transition-all
+            "
+                >
+                  <Gamepad2 size={18}/> Arcade
+                </button>
+                <button
+                  onClick={() => navigate("/games")}
+                  className="
+              bg-indigo-600 dark:bg-indigo-400
+              text-white 
+              py-4 rounded-2xl
+              font-black uppercase tracking-wider
+              active:scale-95 transition-all
+            "
+                >
+                  <Share2 size={18}/> Publicar
+                </button>
+              </div> */}
+              <div className="flex flex-col  gap-3 mt-3 sm:mt-8">
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={initGame}
+              className={`flex-1 py-3 rounded-2xl text-white font-black uppercase tracking-wider shadow-lg
+             ${currentTheme.btn} flex items-center justify-center gap-2`}
+              disabled={isPending}
+            >
+              <Zap size={18} fill="currentColor" /> Reintentar
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => navigate("/games")}
+              className="flex-1 py-3 rounded-2xl bg-gray-100 dark:bg-neutral-900 dark:text-white font-black uppercase tracking-wider flex items-center justify-center gap-2"
+              disabled={isPending}
+            >
+              Volver al Arcade <ArrowRight size={18} />
+            </motion.button>
+
+            {/* 🚀 SHARE */}
+            {gameState === "won" && (
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={handleShare}
+                className="
+                w-full py-3 rounded-2xl
+                bg-linear-to-r from-emerald-500 to-teal-400
+                text-white font-black uppercase tracking-wider
+                flex items-center justify-center gap-2
+                shadow-lg shadow-emerald-500/20
+              "
+                disabled={isPending}
               >
-                Siguiente Desafío
-              </button>
-            </div>
+                {isPending ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : (
+                  <>
+                    <Share2 size={18} /> Publicar resultado
+                  </>
+                )}
+              </motion.button>
+            )}
+          </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
   );
 };
+
+const Stat = ({ label, value }) => (
+  <div className="bg-gray-50 dark:bg-neutral-900 p-3 rounded-2xl text-center border border-gray-100 dark:border-neutral-800">
+    <span className="text-[10px] uppercase text-gray-400 font-bold tracking-widest">
+      {label}
+    </span>
+    <div className="text-lg font-black dark:text-white">{value}</div>
+  </div>
+);
 
 export default CodigoMatricula;

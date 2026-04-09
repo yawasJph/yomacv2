@@ -166,6 +166,42 @@ const getRank = ({ score, game_id }) => {
       button: "bg-orange-500 shadow-orange-500/30",
       icon: "text-orange-500",
     };
+  } else if (game_id === "codigo_matricula") {
+    if (score >= 900)
+      return {
+        label: "DIAMANTE",
+        text: "text-cyan-400",
+        gradient: "from-cyan-500 to-sky-400",
+        glow: "from-cyan-500/40 to-sky-400/40",
+        button: "bg-cyan-500 shadow-cyan-500/30",
+        icon: "text-cyan-500",
+      };
+    if (score >= 700)
+      return {
+        label: "ORO",
+        text: "text-amber-400",
+        gradient: "from-amber-500 to-yellow-400",
+        glow: "from-amber-500/40 to-yellow-400/40",
+        button: "bg-amber-500 shadow-amber-500/30",
+        icon: "text-amber-500",
+      };
+    if (score >= 500)
+      return {
+        label: "PLATA",
+        text: "text-slate-400",
+        gradient: "from-slate-400 to-gray-300",
+        glow: "from-slate-400/40 to-gray-300/40",
+        button: "bg-slate-500 shadow-slate-500/30",
+        icon: "text-slate-500",
+      };
+    return {
+      label: "BRONCE",
+      text: "text-orange-500",
+      gradient: "from-orange-500 to-red-400",
+      glow: "from-orange-500/40 to-red-400/40",
+      button: "bg-orange-500 shadow-orange-500/30",
+      icon: "text-orange-500",
+    };
   }
 };
 
@@ -189,6 +225,8 @@ export function GameScoreCard({ data }) {
         return "Caza Talentos";
       case "busca_minas":
         return "Busca Minas";
+      case "codigo_matricula":
+        return "Código Matricula";
       default:
         return "Desconocido";
     }
@@ -198,6 +236,7 @@ export function GameScoreCard({ data }) {
     let gameId = game_id;
     if (game_id === "caza_talentos") gameId = "caza-talentos";
     if (game_id === "busca_minas") gameId = "busca-minas";
+    if (game_id === "codigo_matricula") gameId = "codigo-matricula";
     navigate(`/games/${gameId}`);
   };
 
@@ -344,6 +383,14 @@ const gameRenderers = {
     <div className="grid grid-cols-3 gap-2 text-center p-3">
       <Stat label="Clicks" value={data.extra?.clicks} />
       <Stat label="Banderas" value={data.extra?.flags} />
+      <Stat label="Tiempo" value={`${data.extra?.timer}s`} />
+    </div>
+  ),
+
+  codigo_matricula: (data) => (
+    <div className="grid grid-cols-3 gap-2 text-center p-3">
+      <Stat label="Intentos" value={data.extra?.slots} />
+      <Stat label="Eficiencia" value={`${data.extra?.effectiveness}%`} />
       <Stat label="Tiempo" value={`${data.extra?.timer}s`} />
     </div>
   ),
