@@ -209,13 +209,12 @@ const CodigoMatricula = () => {
     setCurrentGuess((curr) => curr.slice(0, -1));
   }, []);
 
-  const saveScore = useCallback(async (score, currentTime) => {
-    //const score = Math.max(1200 - attempts * 100, 200);
+  const saveScore = useCallback(async (finalScore, finalAttempts, currentTime) => {
     try {
       const { error } = await supabaseClient.rpc("submit_game_score", {
         p_game_id: "mastermind",
-        p_score: Math.floor(score),
-        p_moves: attempts,
+        p_score: Math.round(finalScore), // Redondeamos para evitar decimales en la BD
+        p_moves: finalAttempts,
         p_time_seconds: currentTime,
       });
       if (!error) {
@@ -227,7 +226,7 @@ const CodigoMatricula = () => {
     } catch (error) {
       console.error(error);
     }
-  }, []);
+  }, [queryClient]);
 
   const submitGuess = useCallback(() => {
     if (currentGuess.length !== CODE_LENGTH) return;
@@ -265,7 +264,20 @@ const CodigoMatricula = () => {
       if (correct === CODE_LENGTH) {
         setGameState("won");
         playWithCheck(playWin);
-        saveScore(score, timer);
+        // --- CÁLCULO SÍNCRONO DEL SCORE EXACTO ---
+        const finalAttempts = updatedHistory.length;
+        const finalTotalCorrect = updatedHistory.reduce((acc, h) => acc + h.result.correct, 0);
+        const finalAvgCorrect = finalTotalCorrect / finalAttempts;
+        
+        const base = 1500;
+        const attemptPenalty = finalAttempts * 120;
+        const timePenalty = timer * 2;
+        const qualityBonus = finalAvgCorrect * 50;
+        
+        const finalScore = Math.max(base - attemptPenalty - timePenalty + qualityBonus, 100);
+        
+        // Enviamos el score correcto calculado
+        saveScore(finalScore, finalAttempts, timer);
       } else if (updatedHistory.length >= MAX_ATTEMPTS) {
         setGameState("lost");
         playWithCheck(playLose);
