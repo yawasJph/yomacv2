@@ -80,7 +80,7 @@ const CampusAI = lazy(() => import("./pages/chat/CampusAI2"));
 // Juegos (Lazy Loading)
 const GameCenter = lazy(() => import("./pages/games/GameCenter"));
 const TriviaGame = lazy(() => import("./pages/games/TriviaGame"));
-const WordleGame = lazy(() => import("./pages/games/WordleGame"));
+const WordleGame = lazy(() => import("./pages/games/WordleGame2"));
 const ConectorRedes = lazy(() => import("./pages/games/ConectorRedes"));
 const MemoryGame = lazy(() => import("./components/games/MemoryGamev2"));
 const MichiGame = lazy(() => import("./pages/games/MichiGamev2"));

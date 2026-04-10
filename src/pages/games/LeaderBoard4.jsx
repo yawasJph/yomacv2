@@ -36,7 +36,7 @@ const fetchGameLeaders = async (activeGame, user) => {
         rank_position: parseInt(row.rank_position),
         user_id: row.user_id,
         score: row.total_score,
-        time_seconds: `${row.games_won} Retos`,
+        time_seconds: `${row.games_won} ${row.games_won > 1 ? "Retos": "Reto"}`,
         profiles: {
           full_name: row.full_name,
           avatar: row.avatar,
@@ -55,7 +55,7 @@ const fetchGameLeaders = async (activeGame, user) => {
           ...myWordle,
           score: myWordle.total_score,
           rank_position: parseInt(myWordle.rank_position),
-          time_seconds: `${myWordle.games_won} Retos`,
+          time_seconds: `${myWordle.games_won} ${myWordle.games_won > 1 ? "Retos": "Reto"}`,
           profiles: {
             full_name: myWordle.full_name,
             avatar: myWordle.avatar,
@@ -72,7 +72,7 @@ const fetchGameLeaders = async (activeGame, user) => {
       michiTop?.map((row) => ({
         rank_position: parseInt(row.rank_position),
         user_id: row.user_id,
-        score: row.total_wins,
+        score: `${row.total_wins} ${row.total_wins > 1 ? "wins": "win"}`,
         time_seconds: "Victorias",
         profiles: {
           full_name: row.full_name,
@@ -91,7 +91,7 @@ const fetchGameLeaders = async (activeGame, user) => {
         myData = {
           ...myMichi,
           rank_position: parseInt(myMichi.rank_position),
-          score: myMichi.total_wins,
+          score: `${myMichi.total_wins} ${myMichi.total_wins ? "wins": "win"}`,
           time_seconds: "Victorias",
           profiles: {
             full_name: myMichi.full_name,
@@ -291,7 +291,7 @@ const Leaderboard = () => {
                 <LeaderItem
                   key={entry.user_id}
                   entry={entry}
-                  isMichi={activeGame === "michi_online"}
+                  isMichi={activeGame === "wordle"}
                 />
               ))}
 
@@ -301,7 +301,7 @@ const Leaderboard = () => {
                   <LeaderItem
                     entry={data.userStats}
                     isMe
-                    isMichi={activeGame === "michi_online"}
+                    isMichi={activeGame === "wordle"}
                   />
                 </>
               )}
@@ -405,11 +405,10 @@ const LeaderItem = memo(({ entry, isMe, isMichi }) => {
           </span>
         </div>
 
-        {/* <div className="text-[10px] font-bold text-gray-400 flex items-center justify-end gap-1">
-          {!isMichi && <Clock size={10} className={currentStyle.iconColor} />}
-          {entry.time_seconds}
-          {!isMichi && "s"}
-        </div> */}
+        <div className="text-[10px] font-bold text-gray-400 flex items-center justify-end gap-1">
+          {isMichi && <Target size={10} className={currentStyle.iconColor} />}
+          {isMichi && entry.time_seconds}
+        </div>
       </div>
     </motion.div>
   );

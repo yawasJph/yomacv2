@@ -1,9 +1,11 @@
+import { useAuthAction } from "@/hooks/useAuthAction";
+import { notify } from "@/utils/toast/notifyv3";
 import { motion } from "framer-motion";
-import { Trophy, Clock, Hash, Star, Zap } from "lucide-react";
+import { Trophy, Star, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 /* 🏆 Ranking visual */
-const getRank = ({ score, game_id }) => {
+const getRank = ({ score, game_id, attempts }) => {
   if (game_id === "memory") {
     if (score >= 800)
       return {
@@ -202,35 +204,89 @@ const getRank = ({ score, game_id }) => {
       button: "bg-orange-500 shadow-orange-500/30",
       icon: "text-orange-500",
     };
+  } else if (game_id === "wordle") {
+    if (attempts === 1)
+      return {
+        label: "ZAFIRO",
+        color: "text-indigo-400",
+        gradient: "from-indigo-500 to-cyan-400",
+        glow: "from-indigo-500/40 to-cyan-400/40",
+        bg: "bg-indigo-500/10",
+        icon: "💎",
+      };
+    if (attempts === 2)
+      return {
+        label: "RUBÍ",
+        color: "text-red-400",
+        gradient: "from-red-500 to-pink-400",
+        glow: "from-red-500/40 to-pink-400/40",
+        bg: "bg-red-500/10",
+        icon: "🌹",
+      };
+    if (attempts === 3)
+      return {
+        label: "DIAMANTE",
+        color: "text-cyan-400",
+        gradient: "from-cyan-500 to-sky-400",
+        glow: "from-cyan-500/40 to-sky-400/40",
+        bg: "bg-cyan-500/10",
+        icon: "✨",
+      };
+    if (attempts === 4)
+      return {
+        label: "ORO",
+        color: "text-amber-400",
+        gradient: "from-amber-500 to-yellow-400",
+        glow: "from-amber-500/40 to-yellow-400/40",
+        bg: "bg-amber-500/10",
+        icon: "👑",
+      };
+    if (attempts === 5)
+      return {
+        label: "PLATA",
+        color: "text-slate-400",
+        gradient: "from-slate-400 to-gray-300",
+        glow: "from-slate-400/40 to-gray-300/40",
+        bg: "bg-slate-500/10",
+        icon: "🥈",
+      };
+    return {
+      label: "BRONCE",
+      color: "text-orange-600",
+      gradient: "from-orange-500 to-red-400",
+      glow: "from-orange-500/40 to-red-400/40",
+      bg: "bg-orange-500/10",
+      icon: "🥉",
+    };
+  }
+};
+
+const getTitleGame = (game_id) => {
+  switch (game_id) {
+    case "memory":
+      return "Memorama";
+    case "trivia":
+      return "Trivia";
+    case "caza_talentos":
+      return "Caza Talentos";
+    case "busca_minas":
+      return "Busca Minas";
+    case "codigo_matricula":
+      return "Código Matricula";
+    case "wordle":
+      return "Palabra Diaria";
+    default:
+      return "Desconocido";
   }
 };
 
 export function GameScoreCard({ data }) {
   const navigate = useNavigate();
   const { score, game_id } = data;
+  const { executeAction } = useAuthAction();
 
-  const rank = getRank({ score, game_id });
+  const rank = getRank({ score, game_id, attempts: data?.attempts });
   const Renderer = gameRenderers[data.game_id];
-
-  const isTrivia = data.game_id === "trivia";
-  const isMemorama = data.game_id === "memory";
-
-  const getTitleGame = (game_id) => {
-    switch (game_id) {
-      case "memory":
-        return "Memorama";
-      case "trivia":
-        return "Trivia";
-      case "caza_talentos":
-        return "Caza Talentos";
-      case "busca_minas":
-        return "Busca Minas";
-      case "codigo_matricula":
-        return "Código Matricula";
-      default:
-        return "Desconocido";
-    }
-  };
 
   const handleNavigate = () => {
     let gameId = game_id;
@@ -240,14 +296,21 @@ export function GameScoreCard({ data }) {
     navigate(`/games/${gameId}`);
   };
 
-  const getMessage = () => {
-    if (isTrivia) {
-      return `Respondió ${data.extra?.accuracy} de ${data.extra?.totalQuestions}`;
-    }
-    if (isMemorama) {
-      return `Completado en ${data.time_seconds}s`;
-    }
+  const handleGameNavigate = () => {
+    // 1. Bajamos el volumen preventivamente
+    executeAction(
+      () => {
+        // 2. Si hay éxito (usuario logueado)
+        handleNavigate();
+      },
+      "para jugar",
+      () => {
+        // 3. Si cancela o cierra el modal
+        notify.info("Necesitas iniciar sesión para jugar.");
+      },
+    );
   };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -298,12 +361,12 @@ export function GameScoreCard({ data }) {
       </div>
 
       {/* 📊 STATS */}
-      {Renderer ? Renderer(data) : <div>Juego no soportado</div>}
+      {Renderer ? Renderer(data) : <div></div>}
 
       {/* ⚡ ACTIONS */}
       <div className="flex border-t border-gray-100 dark:border-neutral-800">
         <button
-          onClick={handleNavigate}
+          onClick={handleGameNavigate}
           className="
             flex-1 py-3 text-sm font-bold
             flex items-center justify-center gap-2
