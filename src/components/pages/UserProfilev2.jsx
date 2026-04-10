@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Calendar, Share, ShieldAlert } from "lucide-react";
+import {
+  ArrowLeft,
+  Calendar,
+  Flag,
+  MoreVertical,
+  Share,
+  ShieldAlert,
+} from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useFollow } from "../../context/FollowContext";
 import CardPost from "../ui/feed/CardPost";
@@ -17,6 +24,7 @@ import SocialLinks from "../socials/SocialLinks";
 import UserBadges from "../user/UserBadges";
 import DevBadge from "../ui/userProfile/DevBadge";
 import { messages } from "@/consts/notFound/notFoundProfile";
+import ReportModal from "../ui/ReportModalv6";
 
 const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
@@ -40,8 +48,29 @@ const UserProfile = () => {
   // 4. Hooks que dependen del userId REAL (solo funcionan si userId existe)
   const { executeAction } = useAuthAction();
   const { isFollowing, followUser, unfollowUser } = useFollow();
+  const [reportUserId, setReportUserId] = useState(null);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
 
   const isDev = profile?.username === "jllacuash";
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  /* Cerrar al hacer click fuera */
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const openReportModal = (userId) => {
+    setReportUserId(userId);
+    setReportModalOpen(true);
+  };
 
   const trollActions = [
     () => navigate("/"),
@@ -211,8 +240,7 @@ const UserProfile = () => {
         </div>
       </div> */}
 
-      <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-2 flex items-center justify-between border-b border-transparent">
-        {/* IZQUIERDA: Botón atrás e Info */}
+      {/* <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-2 flex items-center justify-between border-b border-transparent">
         <div className="flex items-center gap-6">
           <button
             onClick={() => navigate(-1)}
@@ -239,7 +267,6 @@ const UserProfile = () => {
           </div>
         </div>
 
-        {/* DERECHA: Acciones (Compartir) */}
         <button
           onClick={() => handleShareProfile(profile)}
           className="p-2 mr-2 hover:bg-gray-100 dark:hover:bg-gray-900 text-gray-600 dark:text-gray-300 rounded-full transition-colors flex items-center justify-center"
@@ -247,9 +274,79 @@ const UserProfile = () => {
         >
           <Share size={20} />
         </button>
+      </div> */}
+      <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-2 flex items-center justify-between border-b border-transparent">
+        {/* IZQUIERDA */}
+        <div className="flex items-center gap-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-full transition-colors"
+          >
+            <ArrowLeft size={20} className="dark:text-white" />
+          </button>
+
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-bold dark:text-white leading-tight">
+                {profile.full_name}
+              </h1>
+
+              {profile.is_banned && (
+                <ShieldAlert size={16} className="text-rose-500" />
+              )}
+            </div>
+
+            <span className="text-xs text-gray-500">
+              @{profile.username} • {allPosts.length}{" "}
+              {activeTab === "posts" && "publicaciones"}
+              {activeTab === "media" && "medias"}
+              {activeTab === "likes" && "likes"}
+              {activeTab === "reposts" && "reposts"}
+            </span>
+          </div>
+        </div>
+
+        {/* DERECHA: MENÚ */}
+        <div className="relative mr-2" ref={menuRef}>
+          <button
+            onClick={() => setMenuOpen((prev) => !prev)}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 text-gray-600 dark:text-gray-300 rounded-full transition-colors"
+          >
+            <MoreVertical size={20} />
+          </button>
+
+          {menuOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg overflow-hidden animate-in fade-in zoom-in-95">
+              {/* Compartir */}
+              <button
+                onClick={() => {
+                  handleShareProfile(profile);
+                  setMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition dark:text-white"
+              >
+                <Share size={16} />
+                Compartir perfil
+              </button>
+
+              {/* Reportar */}
+              {!isMe && (
+                <button
+                  onClick={() => {
+                    openReportModal(profile.id); // 👈 aquí llamas tu modal
+                    setMenuOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
+                >
+                  <Flag size={16} />
+                  Reportar usuario
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* BANNER & AVATAR */}
       <div className="relative">
         <div
           className="h-32 md:h-48 bg-gray-200 dark:bg-gray-800 cursor-zoom-in"
@@ -485,6 +582,12 @@ const UserProfile = () => {
           No hay contenido para mostrar.
         </div>
       )}
+
+      <ReportModal
+        isOpen={reportModalOpen}
+        onClose={() => setReportModalOpen(false)}
+        userId={reportUserId}
+      />
     </div>
   );
 };

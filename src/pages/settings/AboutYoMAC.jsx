@@ -80,7 +80,7 @@ const AboutYoMAC = () => {
           </a>
 
           {/* Link: GitHub */}
-          <a 
+          {/* <a 
             href="https://github.com/Jph-y" 
             target="_blank" 
             rel="noopener noreferrer"
@@ -93,7 +93,7 @@ const AboutYoMAC = () => {
               <span className="font-medium text-gray-700 dark:text-gray-200">Código Fuente (GitHub)</span>
             </div>
             <ChevronRight size={18} className="text-gray-400 group-hover:text-emerald-500 transition-transform group-hover:translate-x-1" />
-          </a>
+          </a> */}
 
         </div>
 

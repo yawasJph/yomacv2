@@ -16,7 +16,8 @@ export const useUrgentReports = () => {
           status,
           reporter:reporter_id (full_name, avatar),
           post:post_id (id, content, author:profiles(id, full_name, avatar), post_media(media_url, media_type)),
-          comment:comment_id (id, content, author:profiles(id, full_name, avatar))
+          comment:comment_id (id, content, author:profiles(id, full_name, avatar)),
+          reported_user:reported_user_id (id, full_name, avatar, username)
         `,
         )
         .eq("status", "pending")

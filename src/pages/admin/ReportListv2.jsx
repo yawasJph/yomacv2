@@ -1,4 +1,9 @@
-import { ChevronRight, MessageSquare, LayoutList, Paperclip } from "lucide-react";
+import {
+  ChevronRight,
+  MessageSquare,
+  LayoutList,
+  Paperclip,
+} from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { useUrgentReports } from "@/hooks/admin/useUrgentReports";
@@ -20,7 +25,10 @@ const ReportList = ({ onSelect }) => {
       <div className="space-y-3">
         {/* Renderizamos 3 skeletons para simular la lista */}
         {[1, 2, 3].map((i) => (
-          <div key={i} className="skeleton h-24 bg-gray-100 dark:bg-neutral-800 animate-pulse rounded-3xl" />
+          <div
+            key={i}
+            className="skeleton h-24 bg-gray-100 dark:bg-neutral-800 animate-pulse rounded-3xl"
+          />
         ))}
       </div>
     );
@@ -34,12 +42,16 @@ const ReportList = ({ onSelect }) => {
       </div>
     );
 
-  return (    
+  console.log(reports);
+  return (
     <div className="space-y-3">
       {reports.map((report) => {
         // Variables auxiliares para limpiar el JSX
         const isPost = !!report.post_id;
-        const targetAuthor = report.post?.author?.full_name || report.comment?.author?.full_name;
+        const targetAuthor =
+          report.post?.author?.full_name ||
+          report.comment?.author?.full_name ||
+          report.reported_user.full_name;
         const textContent = report.post?.content || report.comment?.content;
         const hasMedia = report.post?.post_media?.length > 0;
 
@@ -73,12 +85,15 @@ const ReportList = ({ onSelect }) => {
 
               {/* Contenido + Indicador de Media */}
               <p className="text-sm font-bold dark:text-white mt-1 flex items-center gap-1.5 line-clamp-2">
-                {hasMedia && <Paperclip size={14} className="text-blue-500 shrink-0" />}
-                {textContent ? (
-                  <span>{textContent} </span>
-                ) : (
-                  <span className="text-gray-400 italic font-normal">Solo contenido multimedia</span>
+                {hasMedia && (
+                  <>
+                    <Paperclip size={14} className="text-blue-500 shrink-0" />
+                    <span className="text-gray-400 italic font-normal">
+                      Solo contenido multimedia
+                    </span>
+                  </>
                 )}
+                {textContent ? <span>{textContent} </span> : <span>sin detalles </span>}
               </p>
 
               {/* Autores involucrados */}

@@ -21,6 +21,7 @@ export default function ReportModal({
   onClose,
   postId = null,
   commentId = null,
+  userId = null, // 👈 nuevo
 }) {
   const { user } = useAuth();
 
@@ -125,13 +126,18 @@ export default function ReportModal({
         reporter_id: user?.id,
         post_id: postId,
         comment_id: commentId,
+        reported_user_id: userId,
         reason,
         details,
       });
 
       if (error) {
         if (error.code === "23505") {
-          notify.info("Ya reportaste este contenido");
+          if(userId){
+            notify.info("Ya reportaste este usuario");
+          }else{
+            notify.info("Ya reportaste este contenido");
+          }
           onClose();
           return;
         }
@@ -223,7 +229,7 @@ export default function ReportModal({
           </div>
 
           {/* TEXTAREA */}
-          <div>
+          {reason === "Otro" &&<div>
             <textarea
               ref={textareaRef}
               rows="3"
@@ -245,7 +251,7 @@ export default function ReportModal({
             <div className="text-xs text-gray-400 text-right mt-1">
               {details.length}/{MAX_CHARS}
             </div>
-          </div>
+          </div>}
 
           {/* BUTTONS */}
           <div className="flex gap-3 pt-2">
@@ -254,10 +260,10 @@ export default function ReportModal({
               onClick={onClose}
               disabled={loading}
               className="
-flex-1 py-2.5 rounded-xl font-medium
-bg-gray-100 dark:bg-gray-800
-hover:bg-gray-200 dark:hover:bg-gray-700
-transition"
+              flex-1 py-2.5 rounded-xl font-medium
+              bg-gray-100 dark:bg-gray-800
+              hover:bg-gray-200 dark:hover:bg-gray-700
+              transition"
             >
               Cancelar
             </button>

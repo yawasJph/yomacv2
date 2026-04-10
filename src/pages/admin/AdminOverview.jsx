@@ -2,7 +2,7 @@ import { ArrowLeft, Users, Bug, BrushCleaning } from "lucide-react";
 import UserStatCard from "./UserStatCard";
 import ReportStatCard from "./ReportStatCard";
 import ReportList from "./ReportListv2";
-import ReportManagementModal from "./ReportManagementModalv3";
+import ReportManagementModal from "./ReportManagementModalv4";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
