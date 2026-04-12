@@ -1,15 +1,13 @@
-import React, { useEffect } from "react";
+import React, {  useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, NotebookTabs, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { useInView } from "react-intersection-observer";
-
 import BlogCard from "./BlogCardv3";
-import { useIsMobile } from "@/hooks/useIsMobile";
 import { useBlogsInfinite } from "@/hooks/blog/useBlogsInfinite"; // Ajusta la ruta a tu hook
+import { BlogFeedButton } from "@/components/blog/BlogFeedButton";
 
 const BlogFeed = () => {
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
   
   // Hook para detectar cuándo el usuario scrollea hasta el final
   const { ref, inView } = useInView({
@@ -27,7 +25,9 @@ const BlogFeed = () => {
 
   // Aplanar el arreglo de páginas que devuelve React Query
   // React query devuelve: { pages: [ {data: [...]}, {data: [...]} ] }
-  const posts = data?.pages.flatMap((page) => page.data) || [];
+  const posts =  data?.pages.flatMap((page) => page.data) || [];
+
+
 
   // Disparar la carga de la siguiente página cuando 'ref' sea visible
   useEffect(() => {
@@ -52,6 +52,7 @@ const BlogFeed = () => {
     );
   }
 
+  console.log("feed")
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <header className="mb-12">
@@ -68,14 +69,8 @@ const BlogFeed = () => {
             </h1>
           </div>
 
-          {!isMobile && (
-            <button
-              onClick={() => navigate("/blog/my-blogs")}
-              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-indigo-500/20"
-            >
-              <NotebookTabs size={20} /> Mis Blogs
-            </button>
-          )}
+          <BlogFeedButton/>
+
         </div>
         <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-3">
           Explora las últimas historias, tutoriales y noticias de nuestra comunidad.

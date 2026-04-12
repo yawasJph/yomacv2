@@ -4,7 +4,7 @@ import { Clock, ArrowRight } from "lucide-react";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 const BlogCard = ({ post }) => {
-    console.log(post.profiles.full_name)
+  console.log("card")
   return (
     <article className="group relative rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-xl overflow-hidden transition-all hover:shadow-xl hover:shadow-indigo-500/10">
 
