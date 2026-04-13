@@ -2,51 +2,42 @@ import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useSimpleProfile } from "@/hooks/user/useSimpleProfile";
 import { User, Mail, ShieldAlert, LogOut, Pencil, Loader2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { supabaseClient } from "@/supabase/supabaseClient"; // Ajusta esta ruta a tu cliente
-import { notify } from "@/utils/toast/notifyv3"; // Opcional: si usas un sistema de notificaciones
+import { Link } from "react-router-dom";
 import ConfirmModal from "@/components/modals/ConfirmModalv2";
+import { useDeleteUser } from "@/hooks/user/useDeleteUser";
 
 const AccountSettings = () => {
   const { user, signout, loading } = useAuth();
   const { data: profile, isPending: profileLoading } = useSimpleProfile(
     user?.id,
   );
-  const [isDeleting, setIsDeleting] = useState(false);
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
-  const navigate = useNavigate();
+  const { deleteUser, isDeleting } = useDeleteUser();
 
-  const handleDeleteAccount = async () => {
-    const confirmDelete = window.confirm(
-      "¿Estás completamente seguro de que deseas eliminar tu cuenta? Todos tus datos se perderán y esta acción no se puede deshacer.",
-    );
+  // const handleDeleteAccount = async () => {
+  //   const confirmDelete = window.confirm(
+  //     "¿Estás completamente seguro de que deseas eliminar tu cuenta? Todos tus datos se perderán y esta acción no se puede deshacer.",
+  //   );
 
-    if (!confirmDelete) return;
+  //   if (!confirmDelete) return;
 
-    setIsDeleting(true);
+  //   setIsDeleting(true);
 
-    try {
-      // Invocamos la Edge Function
-      const { error } = await supabaseClient.functions.invoke(
-        "delete-user-account",
-      );
-
-      if (error) throw error;
-
-      // Si tienes un sistema de notificaciones
-      if (notify) notify.success("Cuenta eliminada exitosamente");
-
-      // Cerramos sesión localmente y redirigimos
-      await signout();
-      navigate("/");
-    } catch (error) {
-      console.error("Error al eliminar la cuenta:", error);
-      if (notify) notify.error("Hubo un problema al eliminar la cuenta.");
-      else alert("Hubo un problema al eliminar la cuenta.");
-    } finally {
-      setIsDeleting(false);
-    }
-  };
+  //   try {
+  //     const { error } = await supabaseClient.functions.invoke(
+  //       "delete-user-account",
+  //     );
+  //     if (error) throw error;
+  //     notify.success("Cuenta eliminada exitosamente");
+  //     await signout();
+  //     navigate("/");
+  //   } catch (error) {
+  //     console.error("Error al eliminar la cuenta:", error);
+  //     notify.error("Hubo un problema al eliminar la cuenta.");
+  //   } finally {
+  //     setIsDeleting(false);
+  //   }
+  // };
 
   if (loading) {
     return <div className="text-black dark:text-white">Cargando...</div>;
@@ -134,7 +125,7 @@ const AccountSettings = () => {
 
         {/* DELETE ACCOUNT */}
         <button
-          onClick={()=>setOpenConfirmModal(true)}
+          onClick={() => setOpenConfirmModal(true)}
           disabled={loading || isDeleting}
           className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/20 transition group disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -163,11 +154,10 @@ const AccountSettings = () => {
         message={
           "¿Estás completamente seguro de que deseas eliminar tu cuenta? Todos tus datos se perderán y esta acción no se puede deshacer."
         }
-        onClose={()=> setOpenConfirmModal(false)}
+        onClose={() => setOpenConfirmModal(false)}
         isLoading={isDeleting}
-        onConfirm={handleDeleteAccount}
+        onConfirm={deleteUser}
       />
-
     </div>
   );
 };
