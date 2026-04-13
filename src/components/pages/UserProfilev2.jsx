@@ -460,7 +460,7 @@ const UserProfile = () => {
                 </span>
               )}
             </div>
-            {isDev && <DevBadge />}
+            {/* {isDev && <DevBadge />} */}
           </div>
         </div>
 

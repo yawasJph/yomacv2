@@ -8,6 +8,9 @@ import { useIsMobile } from "../../hooks/useIsMobile";
 import { notify } from "@/utils/toast/notifyv3";
 import NavigationM from "../ui/navigation/NavigationMv2";
 
+const HIDDEN_RIGHT_SIDEBAR_ROUTES = ["/settings", "/admin"];
+const HIDE_HEADER_ROUTES = ["yawas", "messages"];
+
 const HomeLayout = () => {
   const isMobile = useIsMobile();
   const location = useLocation();
@@ -25,13 +28,11 @@ const HomeLayout = () => {
     }
   }, []);
 
-  const hiddenRightSidebarRoutes = ["/settings", "/admin"];
-
-  const hideRightSidebar = hiddenRightSidebarRoutes.some((route) =>
+  const hideRightSidebar = HIDDEN_RIGHT_SIDEBAR_ROUTES.some((route) =>
     location.pathname.startsWith(route),
   );
 
-  const hideHeader = ["yawas", "messages"].some((route) =>
+  const hideHeader = HIDE_HEADER_ROUTES.some((route) =>
     location.pathname.includes(route),
   );
 

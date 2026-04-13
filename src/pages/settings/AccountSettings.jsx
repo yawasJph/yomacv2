@@ -1,16 +1,51 @@
+import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useSimpleProfile } from "@/hooks/user/useSimpleProfile";
-import { User, Mail, ShieldAlert, LogOut, Pencil } from "lucide-react";
-import { Link } from "react-router-dom";
+import { User, Mail, ShieldAlert, LogOut, Pencil, Loader2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { supabaseClient } from "@/supabase/supabaseClient"; // Ajusta esta ruta a tu cliente
+import { notify } from "@/utils/toast/notifyv3"; // Opcional: si usas un sistema de notificaciones
+import ConfirmModal from "@/components/modals/ConfirmModalv2";
 
 const AccountSettings = () => {
   const { user, signout, loading } = useAuth();
   const { data: profile, isPending: profileLoading } = useSimpleProfile(
     user?.id,
   );
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [openConfirmModal, setOpenConfirmModal] = useState(false);
+  const navigate = useNavigate();
 
-  const handleDeleteAccount = () => {
-    alert("muy pronto");
+  const handleDeleteAccount = async () => {
+    const confirmDelete = window.confirm(
+      "¿Estás completamente seguro de que deseas eliminar tu cuenta? Todos tus datos se perderán y esta acción no se puede deshacer.",
+    );
+
+    if (!confirmDelete) return;
+
+    setIsDeleting(true);
+
+    try {
+      // Invocamos la Edge Function
+      const { error } = await supabaseClient.functions.invoke(
+        "delete-user-account",
+      );
+
+      if (error) throw error;
+
+      // Si tienes un sistema de notificaciones
+      if (notify) notify.success("Cuenta eliminada exitosamente");
+
+      // Cerramos sesión localmente y redirigimos
+      await signout();
+      navigate("/");
+    } catch (error) {
+      console.error("Error al eliminar la cuenta:", error);
+      if (notify) notify.error("Hubo un problema al eliminar la cuenta.");
+      else alert("Hubo un problema al eliminar la cuenta.");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   if (loading) {
@@ -44,6 +79,7 @@ const AccountSettings = () => {
           <img
             src={profile?.avatar || "/avatar.png"}
             className="w-16 h-16 rounded-full object-cover"
+            alt="Avatar"
           />
           <div>
             <h3 className="font-bold text-lg dark:text-white">
@@ -72,8 +108,8 @@ const AccountSettings = () => {
         </div>
 
         {/* EDIT PROFILE */}
-        <div className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-xl transition cursor-pointer">
-          <Link to={`/profile/@${profile.username}`}>
+        <Link to={`/profile/@${profile.username}`}>
+          <div className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-xl transition cursor-pointer">
             <div className="flex items-center gap-3">
               <Pencil className="text-gray-400" size={20} />
               <div>
@@ -83,14 +119,14 @@ const AccountSettings = () => {
                 </p>
               </div>
             </div>
-          </Link>
-        </div>
+          </div>
+        </Link>
 
         {/* LOGOUT */}
         <button
           onClick={signout}
-          disabled={loading}
-          className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900 transition"
+          disabled={loading || isDeleting}
+          className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900 transition disabled:opacity-50"
         >
           <LogOut className="text-gray-400" size={20} />
           <span className="font-medium dark:text-white">Cerrar sesión</span>
@@ -98,22 +134,40 @@ const AccountSettings = () => {
 
         {/* DELETE ACCOUNT */}
         <button
-          onClick={handleDeleteAccount}
-          disabled={loading}
-          className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/20 transition group"
+          onClick={()=>setOpenConfirmModal(true)}
+          disabled={loading || isDeleting}
+          className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/20 transition group disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <ShieldAlert
-            className="text-red-400 group-hover:text-red-500"
-            size={20}
-          />
+          {isDeleting ? (
+            <Loader2 className="text-red-400 animate-spin" size={20} />
+          ) : (
+            <ShieldAlert
+              className="text-red-400 group-hover:text-red-500"
+              size={20}
+            />
+          )}
           <div className="text-left">
-            <p className="font-medium text-red-500">Eliminar cuenta</p>
+            <p className="font-medium text-red-500">
+              {isDeleting ? "Eliminando..." : "Eliminar cuenta"}
+            </p>
             <p className="text-sm text-red-400/80">
               Esta acción es irreversible
             </p>
           </div>
         </button>
       </div>
+
+      <ConfirmModal
+        isOpen={openConfirmModal}
+        title={"YoMAC"}
+        message={
+          "¿Estás completamente seguro de que deseas eliminar tu cuenta? Todos tus datos se perderán y esta acción no se puede deshacer."
+        }
+        onClose={()=> setOpenConfirmModal(false)}
+        isLoading={isDeleting}
+        onConfirm={handleDeleteAccount}
+      />
+
     </div>
   );
 };

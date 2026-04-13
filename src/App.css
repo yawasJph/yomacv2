@@ -485,3 +485,16 @@ ul[data-type="taskList"] input[type="checkbox"] {
 .animate-fade-in-up {
   animation: fadeInSlideUp 0.4s ease-out forwards;
 }
+
+@keyframes gradientMove {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.animate-gradient {
+  animation: gradientMove 3s linear infinite;
+}
