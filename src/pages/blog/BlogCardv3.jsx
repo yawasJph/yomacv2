@@ -4,17 +4,13 @@ import { Clock, ArrowRight } from "lucide-react";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 const BlogCard = ({ post }) => {
-  console.log("card")
   return (
     <article className="group relative rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-xl overflow-hidden transition-all hover:shadow-xl hover:shadow-indigo-500/10">
-
-      {/* Glow hover */}
-      {/* <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-linear-to-tr from-emerald-500/10 via-transparent to-indigo-500/10 pointer-events-none" /> */}
 
       {/* Banner */}
       <div className="relative aspect-video overflow-hidden">
         <img
-          src={post.banner_url || "/placeholder.jpg"}
+          src={optimizeMedia(post.banner_url, "image") || "/logo.png"}
           alt={post.title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />

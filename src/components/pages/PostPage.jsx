@@ -14,29 +14,19 @@ import { useAuthAction } from "../../hooks/useAuthAction";
 import { notify } from "@/utils/toast/notifyv3";
 import EmojiSelector from "../emoji/EmojiSelector";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
-import { messages } from "@/consts/notFound/noFoundPost";
+import { PostNotFound } from "../fallback/PostNotFound";
 
 const MAX_CHARS = 500;
-const randomMessage = messages[Math.floor(Math.random() * messages.length)];
 
 const PostPage = () => {
   const { postId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [newComment, setNewComment] = useState("");
-  const [showEmoji, setShowEmoji] = useState(false);
   const [showGif, setShowGif] = useState(false);
   const [selectedGif, setSelectedGif] = useState(null);
   const { data } = useProfile(user?.id);
-  const {} = useAuthAction();
   const { executeAction } = useAuthAction();
-
-  const trollActions = [
-    () => navigate("/"),
-    () => navigate(-1),
-    () => navigate("/games"),
-    () => alert("Nada por aquí 👀"),
-  ];
 
   const openAuthModalForComment = () => {
     executeAction(
@@ -61,21 +51,21 @@ const PostPage = () => {
         //.select("*, profiles:user_id(*,equpipped_badges:user_badges(is_equipped,badges(icon,name))), post_media(*)")
         .select(
           `
-    *,
-    profiles:user_id (
-      id, 
-      full_name, 
-      avatar, 
-      carrera, 
-      username,
-      ciclo,
-      equipped_badges:user_badges ( 
-        is_equipped,
-        badges ( icon, name, category, resource_url )
-      )
-    ),
-    post_media (id, media_url, media_type)
-  `,
+          *,
+          profiles:user_id (
+            id, 
+            full_name, 
+            avatar, 
+            carrera, 
+            username,
+            ciclo,
+            equipped_badges:user_badges ( 
+              is_equipped,
+              badges ( icon, name, category, resource_url )
+            )
+          ),
+          post_media (id, media_url, media_type)
+        `,
         )
         .filter("profiles.user_badges.is_equipped", "eq", true)
         .eq("id", postId)
@@ -134,78 +124,7 @@ const PostPage = () => {
 
   if (!post) {
     return (
-      <div className="bg-white dark:bg-black min-h-[500px] md:min-h-dvh flex flex-col">
-        {/* HEADER */}
-        {/* <div className="sticky top-[57px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md p-4 flex items-center gap-6 border-b border-gray-100 dark:border-gray-800">
-          <button
-            onClick={() => navigate(-1)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-full transition"
-          >
-            <ArrowLeft size={20} className="dark:text-white" />
-          </button>
-          <h1 className="text-xl font-bold dark:text-white">Publicación</h1>
-        </div> */}
-
-        {/* ESTADO VACÍO */}
-        <div className="flex flex-1 flex-col items-center justify-center text-center px-6">
-          {/* ICONO */}
-          <div className="bg-gray-100 dark:bg-neutral-800 p-6 rounded-full mb-6 cursor-pointer select-none">
-            <X size={42} className="text-gray-500" />
-          </div>
-
-          {/* TITULO */}
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
-            {randomMessage.title}
-          </h2>
-
-          {/* DESCRIPCIÓN */}
-          <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6 leading-relaxed">
-            {randomMessage.desc}
-            <br />
-            <span className="text-sm opacity-70">{randomMessage.desc2}</span>
-          </p>
-
-          {/* BOTONES */}
-          <div className="flex gap-3 flex-wrap justify-center">
-            <button
-              onClick={() => navigate(-1)}
-              className="px-5 py-2 bg-gray-200 dark:bg-neutral-700 rounded-full hover:scale-105 hover:bg-gray-300 dark:hover:bg-neutral-600 transition-all dark:text-white"
-            >
-              {randomMessage.btnBack}
-            </button>
-
-            <button
-              onClick={() => navigate("/")}
-              className="px-5 py-2 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 hover:scale-105 transition-all shadow-sm"
-            >
-              {randomMessage.btnHome}
-            </button>
-
-            <button
-              onClick={() => navigate("/games")}
-              className="px-5 py-2 bg-purple-500 text-white rounded-full hover:bg-purple-600 hover:scale-105 transition-all shadow-sm"
-            >
-              {randomMessage.btnGame}
-            </button>
-
-            <button
-              onClick={() => {
-                const action =
-                  trollActions[Math.floor(Math.random() * trollActions.length)];
-                action();
-              }}
-              className="px-5 py-2 bg-pink-500 text-white rounded-full hover:scale-105 transition"
-            >
-              {randomMessage.btnTroll}
-            </button>
-          </div>
-
-          {/* EXTRA DETALLE */}
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-8">
-            {randomMessage.extra}
-          </p>
-        </div>
-      </div>
+      <PostNotFound/>
     );
   }
 

@@ -1,14 +1,17 @@
-import React, {  useEffect } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import BlogCard from "./BlogCardv3";
-import { useBlogsInfinite } from "@/hooks/blog/useBlogsInfinite"; // Ajusta la ruta a tu hook
+import { useBlogsInfinite } from "@/hooks/blog/useBlogsInfinite";
 import { BlogFeedButton } from "@/components/blog/BlogFeedButton";
+import { BlogCardSkeleton } from "@/components/skeletons/BlogCardSkeleton";
+import { getInitSkeletons } from "@/utils/blog/initSkeletonsRender";
 
 const BlogFeed = () => {
   const navigate = useNavigate();
-  
+  const arraySkeleton = getInitSkeletons();
+
   // Hook para detectar cuándo el usuario scrollea hasta el final
   const { ref, inView } = useInView({
     threshold: 0.5, // Se activa cuando el 50% del elemento invisible entra en pantalla
@@ -25,9 +28,7 @@ const BlogFeed = () => {
 
   // Aplanar el arreglo de páginas que devuelve React Query
   // React query devuelve: { pages: [ {data: [...]}, {data: [...]} ] }
-  const posts =  data?.pages.flatMap((page) => page.data) || [];
-
-
+  const posts = data?.pages.flatMap((page) => page.data) || [];
 
   // Disparar la carga de la siguiente página cuando 'ref' sea visible
   useEffect(() => {
@@ -35,14 +36,6 @@ const BlogFeed = () => {
       fetchNextPage();
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <Loader2 className="animate-spin text-indigo-600" size={48} />
-      </div>
-    );
-  }
 
   if (isError) {
     return (
@@ -52,9 +45,8 @@ const BlogFeed = () => {
     );
   }
 
-  console.log("feed")
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
+    <div className="max-w-7xl mx-auto px-4 py-5">
       <header className="mb-12">
         <div className="flex justify-between mx-3 items-center">
           <div className="flex items-center gap-4">
@@ -69,17 +61,25 @@ const BlogFeed = () => {
             </h1>
           </div>
 
-          <BlogFeedButton/>
-
+          <BlogFeedButton />
         </div>
         <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-3">
-          Explora las últimas historias, tutoriales y noticias de nuestra comunidad.
+          Explora las últimas historias, tutoriales y noticias de nuestra
+          comunidad.
         </p>
       </header>
 
-      {posts.length === 0 ? (
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5 md:gap-3">
+          {arraySkeleton.map((_, i) => (
+            <BlogCardSkeleton key={i} />
+          ))}
+        </div>
+      ) : posts.length === 0 ? (
         <div className="text-center py-20 border-2 border-dashed border-gray-300 dark:border-gray-800 rounded-xl">
-          <p className="text-gray-500 text-lg">No hay blogs publicados todavía.</p>
+          <p className="text-gray-500 text-lg">
+            No hay blogs publicados todavía.
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5 md:gap-3">
@@ -90,15 +90,21 @@ const BlogFeed = () => {
       )}
 
       {/* Observador invisible al final de la lista */}
-      <div ref={ref} className="w-full flex justify-center py-10 mt-4">
-        {isFetchingNextPage ? (
-          <Loader2 className="animate-spin text-indigo-500" size={32} />
-        ) : hasNextPage ? (
-          <span className="text-gray-400 text-sm">Desplázate para cargar más...</span>
-        ) : posts.length > 0 ? (
-          <span className="text-gray-400 text-sm font-medium">No hay más blogs</span>
-        ) : null}
-      </div>
+      {!isLoading && (
+        <div ref={ref} className="w-full flex justify-center py-10 mt-4">
+          {isFetchingNextPage ? (
+            <Loader2 className="animate-spin text-indigo-500" size={32} />
+          ) : hasNextPage ? (
+            <span className="text-gray-400 text-sm">
+              Desplázate para cargar más...
+            </span>
+          ) : posts.length > 0 ? (
+            <span className="text-gray-400 text-sm font-medium">
+              No hay más blogs
+            </span>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 };

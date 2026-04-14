@@ -9,7 +9,7 @@ import { notify } from "@/utils/toast/notifyv3";
 import NavigationM from "../ui/navigation/NavigationMv2";
 
 const HIDDEN_RIGHT_SIDEBAR_ROUTES = ["/settings", "/admin"];
-const HIDE_HEADER_ROUTES = ["yawas", "messages"];
+const HIDE_HEADER_ROUTES = ["yawas", "messages", "blog"];
 
 const HomeLayout = () => {
   const isMobile = useIsMobile();

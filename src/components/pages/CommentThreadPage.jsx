@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Smile, X, ImageIcon } from "lucide-react";
+import { ArrowLeft, X, ImageIcon } from "lucide-react";
 import CommentItem from "../ui/CommentItem";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useComments } from "../../hooks/useComments";
 import { useState } from "react";
 import { supabaseClient } from "../../supabase/supabaseClient";
@@ -9,19 +9,17 @@ import GifPicker from "../utils/GifPickerv8";
 import { useAuth } from "../../context/AuthContext";
 import { useProfile } from "../../hooks/useProfile";
 import EmojiSelector from "../emoji/EmojiSelector";
-// Importa tus componentes...
+import { CommentNotFound } from "../fallback/CommentNotFound";
 
+const MAX_CHARS = 500;
 const CommentThreadPage = () => {
-  const MAX_CHARS = 500;
   const { commentId } = useParams();
   const navigate = useNavigate();
   const [newComment, setNewComment] = useState("");
-  const [showEmoji, setShowEmoji] = useState(false);
   const [showGif, setShowGif] = useState(false);
   const [selectedGif, setSelectedGif] = useState(null);
   const { user } = useAuth();
   const { data: currentUserProfiles } = useProfile(user?.id);
-  const queryClient = useQueryClient();
 
   // 1. Necesitas un fetch del comentario padre específicamente
   const { data: parentComment, isLoading } = useQuery({
@@ -29,34 +27,22 @@ const CommentThreadPage = () => {
     queryFn: async () => {
       const { data, error } = await supabaseClient
         .from("comments_with_counts")
-        //   .select(
-        //     `
-        //   *,
-        //   profiles:user_id (
-        //     id,
-        //     full_name,
-        //     avatar,
-        //     carrera,
-        //     ciclo
-        //   )
-        // `
-        //   )
         .select(
           `
-    *,
-    profiles:user_id (
-      id, 
-      full_name, 
-      avatar, 
-      carrera, 
-      username,
-      ciclo,
-      equipped_badges:user_badges ( 
-        is_equipped,
-        badges ( icon, name )
-      )
-    )
-  `,
+            *,
+            profiles:user_id (
+              id, 
+              full_name, 
+              avatar, 
+              carrera, 
+              username,
+              ciclo,
+              equipped_badges:user_badges ( 
+                is_equipped,
+                badges ( icon, name )
+              )
+            )
+          `,
         )
         .filter("profiles.user_badges.is_equipped", "eq", true)
         .eq("id", commentId)
@@ -104,7 +90,7 @@ const CommentThreadPage = () => {
   };
 
   if (isLoading) return <div>Cargando hilo...</div>;
-  if (!parentComment) return <div>No se encontró el comentario.</div>;
+  if (!parentComment) return <CommentNotFound/>;
 
   return (
     <div className="bg-white dark:bg-black pb-20">
