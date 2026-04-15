@@ -1,12 +1,12 @@
-import { Edit3, Eye, Loader2, Trash2 } from "lucide-react";
+import { Edit3, Eye, Trash2 } from "lucide-react";
 import React from "react";
 import { Link } from "react-router-dom";
 
-export const MyBlogCard = ({ blog, isDeletingThis, onDelete }) => {
+export const MyBlogCard = React.memo(({ blog, onActionDelete }) => {
   return (
     <div
       className={`group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between hover:border-emerald-500/50 transition-all gap-4 ${
-        isDeletingThis ? "opacity-50 pointer-events-none" : ""
+        false ? "opacity-50 pointer-events-none" : ""
       }`}
     >
       {/* LEFT */}
@@ -55,18 +55,13 @@ export const MyBlogCard = ({ blog, isDeletingThis, onDelete }) => {
         </Link>
 
         <button
-          onClick={onDelete}
-          disabled={isDeletingThis}
+          onClick={() => onActionDelete(blog)}
           className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all disabled:opacity-50"
           title="Eliminar"
         >
-          {isDeletingThis ? (
-            <Loader2 size={18} className="animate-spin" />
-          ) : (
-            <Trash2 size={18} />
-          )}
+          <Trash2 size={18} />
         </button>
       </div>
     </div>
   );
-};
+});
