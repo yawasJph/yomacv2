@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // 1. Extraemos la lógica de fetch para React Query
 const fetchGameLeaders = async (activeGame, user) => {
@@ -28,7 +28,7 @@ const fetchGameLeaders = async (activeGame, user) => {
   if (activeGame === "wordle") {
     const { data: wordleTop } = await supabaseClient
       .from("wordle_weekly_ranking")
-      .select("*")
+      .select("*, profiles!inner (username)")
       .limit(10);
 
     topData =
@@ -36,30 +36,33 @@ const fetchGameLeaders = async (activeGame, user) => {
         rank_position: parseInt(row.rank_position),
         user_id: row.user_id,
         score: row.total_score,
-        time_seconds: `${row.games_won} ${row.games_won > 1 ? "Retos": "Reto"}`,
+        time_seconds: `${row.games_won} ${row.games_won > 1 ? "Retos" : "Reto"}`,
         profiles: {
           full_name: row.full_name,
           avatar: row.avatar,
           carrera: row.carrera,
+          username: row.profiles?.username,
         },
       })) || [];
 
     if (user) {
       const { data: myWordle } = await supabaseClient
         .from("wordle_weekly_ranking")
-        .select("*")
+        .select("*,profiles!inner (username)")
         .eq("user_id", user.id)
         .maybeSingle();
+
       if (myWordle)
         myData = {
           ...myWordle,
           score: myWordle.total_score,
           rank_position: parseInt(myWordle.rank_position),
-          time_seconds: `${myWordle.games_won} ${myWordle.games_won > 1 ? "Retos": "Reto"}`,
+          time_seconds: `${myWordle.games_won} ${myWordle.games_won > 1 ? "Retos" : "Reto"}`,
           profiles: {
             full_name: myWordle.full_name,
             avatar: myWordle.avatar,
             carrera: myWordle.carrera,
+            username: myWordle.profiles?.username,
           },
         };
     }
@@ -72,12 +75,13 @@ const fetchGameLeaders = async (activeGame, user) => {
       michiTop?.map((row) => ({
         rank_position: parseInt(row.rank_position),
         user_id: row.user_id,
-        score: `${row.total_wins} ${row.total_wins > 1 ? "wins": "win"}`,
+        score: `${row.total_wins} ${row.total_wins > 1 ? "wins" : "win"}`,
         time_seconds: "Victorias",
         profiles: {
           full_name: row.full_name,
           avatar: row.avatar,
           carrera: row.carrera,
+          username: row.username,
         },
       })) || [];
 
@@ -91,12 +95,13 @@ const fetchGameLeaders = async (activeGame, user) => {
         myData = {
           ...myMichi,
           rank_position: parseInt(myMichi.rank_position),
-          score: `${myMichi.total_wins} ${myMichi.total_wins ? "wins": "win"}`,
+          score: `${myMichi.total_wins} ${myMichi.total_wins ? "wins" : "win"}`,
           time_seconds: "Victorias",
           profiles: {
             full_name: myMichi.full_name,
             avatar: myMichi.avatar,
             carrera: myMichi.carrera,
+            username: myMichi.username,
           },
         };
     }
@@ -104,7 +109,7 @@ const fetchGameLeaders = async (activeGame, user) => {
     const { data: genericTop } = await supabaseClient
       .from("generic_weekly_ranking")
       .select(
-        `rank_position, user_id, score:max_score, time_seconds:best_time, profiles!inner (full_name, avatar, carrera)`,
+        `rank_position, user_id, score:max_score, time_seconds:best_time, profiles!inner (full_name, avatar, carrera, username)`,
       )
       .eq("game_id", activeGame)
       .order("rank_position", { ascending: true })
@@ -115,7 +120,7 @@ const fetchGameLeaders = async (activeGame, user) => {
       const { data: myGeneric } = await supabaseClient
         .from("generic_weekly_ranking")
         .select(
-          `rank_position, user_id, score:max_score, time_seconds:best_time, profiles!inner (full_name, avatar, carrera)`,
+          `rank_position, user_id, score:max_score, time_seconds:best_time, profiles!inner (full_name, avatar, carrera, username)`,
         )
         .eq("game_id", activeGame)
         .eq("user_id", user.id)
@@ -165,7 +170,6 @@ const Leaderboard = () => {
 
   return (
     <div className="max-w-xl max-sm:max-w-sm mx-auto bg-gray-50/50 dark:bg-white/2 pb-2 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden mt-2 ms:mt-5">
-        
       <div className="relative p-8 pb-4">
         {/* Botón Volver - Minimalista y funcional */}
         <button
@@ -213,9 +217,9 @@ const Leaderboard = () => {
 
         <div
           className="flex overflow-x-auto gap-2 py-2 no-scrollbar scroll-smooth snap-x bg-white dark:bg-black/20 rounded-4xl border border-gray-200/50 dark:border-white/5 mt-5"
-            
           ref={scrollRef}
-        >{/* gap-4 mx-4 mb-6 */}
+        >
+          {/* gap-4 mx-4 mb-6 */}
           {/* Contenedor interno con padding extra para que el scroll no choque con los bordes */}
           <div className="flex gap-2 mx-2 ">
             <TabButton
@@ -230,12 +234,12 @@ const Leaderboard = () => {
               icon={<Brain size={16} />}
               label="Trivia"
             />
-            <TabButton
+            {/* <TabButton
               active={activeGame === "wordle"}
               onClick={() => handleTabClick("wordle")}
               icon={<MessageSquareText size={16} />}
               label="Wordle"
-            />
+            /> */}
             <TabButton
               active={activeGame === "michi_online"}
               onClick={() => handleTabClick("michi_online")}
@@ -311,7 +315,6 @@ const Leaderboard = () => {
           )}
         </AnimatePresence>
       </div>
-      
     </div>
   );
 };
@@ -345,6 +348,8 @@ const LeaderItem = memo(({ entry, isMe, isMichi }) => {
     iconColor: "text-emerald-500",
   };
 
+  console.log(entry);
+
   return (
     <motion.div
       layout
@@ -375,21 +380,21 @@ const LeaderItem = memo(({ entry, isMe, isMichi }) => {
       </div>
 
       {/* Avatar con borde de color sutil si es podio */}
-      <div className="relative">
+      <Link className="relative" to={`/profile/@${entry.profiles?.username}`}>
         <img
           src={entry.profiles?.avatar}
           className={`w-12 h-12 rounded-[1.2rem] object-cover transition-all duration-500
             ${rank <= 3 ? "p-0.5 border-2" : "border-0"}
             ${rank === 1 ? "border-yellow-400" : rank === 2 ? "border-slate-300" : rank === 3 ? "border-orange-300" : ""}`}
         />
-      </div>
+      </Link>
 
       <div className="flex-1 min-w-0">
         <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100 truncate tracking-tight">
           {entry.profiles?.full_name}
         </h3>
         <p className="text-[9px] font-semibold text-gray-400 uppercase tracking-[0.15em] mt-0.5">
-          {entry.profiles?.carrera}
+          {entry.profiles?.carrera} {entry.profiles?.username}
         </p>
       </div>
 
@@ -428,15 +433,17 @@ const TabButton = memo(({ active, onClick, icon, label }) => (
     `}
   >
     {/* Icono con un toque de color solo si está activo */}
-    <span className={`transition-all duration-500 ${active ? "text-emerald-500 scale-110" : "text-gray-400"}`}>
+    <span
+      className={`transition-all duration-500 ${active ? "text-emerald-500 scale-110" : "text-gray-400"}`}
+    >
       {React.cloneElement(icon, { size: 14, strokeWidth: 3 })}
     </span>
-    
+
     <span className="whitespace-nowrap italic">{label}</span>
 
     {/* El único elemento de color sólido es una barra minúscula vertical */}
     {active && (
-      <motion.div 
+      <motion.div
         layoutId="tabAccent"
         className="absolute left-2 w-1 h-3 rounded-full bg-emerald-500"
       />

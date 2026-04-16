@@ -178,13 +178,15 @@ const CreateBlog = ({ isEditing = false }) => {
           <div className="flex gap-2">
             <SaveButton
               isMobile={isMobile}
-              loading={saveMutation.isPending}
+              loading={saveMutation.isPending && saveMutation.variables.targetStatus === "draft"}
               onSave={() => handleSave("draft")}
+              onDisable={saveMutation.isPending}
             />
             <PublicButton
               isMobile={isMobile}
-              loading={saveMutation.isPending}
+              loading={saveMutation.isPending && saveMutation.variables.targetStatus === "published"}
               onPublic={() => handleSave("published")}
+              onDisable={saveMutation.isPending}
             />
           </div>
         </div>

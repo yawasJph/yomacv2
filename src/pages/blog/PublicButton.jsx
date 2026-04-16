@@ -1,11 +1,11 @@
 import { Send } from "lucide-react";
 import React from "react";
 
-const PublicButton = ({loading, isMobile , onPublic }) => {
+const PublicButton = ({loading, isMobile , onPublic, onDisable }) => {
   return (
     <button
       onClick={onPublic}
-      disabled={loading}
+      disabled={onDisable}
       className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-zinc-700 text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-indigo-500/20"
     >
        {loading ? (

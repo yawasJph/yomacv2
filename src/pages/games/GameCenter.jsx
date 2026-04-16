@@ -7,7 +7,8 @@ import useSound from "use-sound"; // 1. Importar la librería
 import { useEffect, useState } from "react";
 import { useAudio } from "../../context/AudioContext";
 import { notify } from "@/utils/toast/notifyv3";
-
+import ComingSoonWordleCard from "@/components/games/comingsoon/ComingSoonWordleCard";
+import { Divider } from "@/components/games/utils/Divider";
 
 const GameCenter = () => {
   const navigate = useNavigate();
@@ -73,10 +74,16 @@ const GameCenter = () => {
       </div>
 
       {/* Sección de "Próximamente" o Stats rápidas */}
-      <div className="mt-8 p-6 bg-gray-50 dark:bg-gray-900/50 rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 text-center">
+      {/* <div className="mt-8 p-6 bg-gray-50 dark:bg-gray-900/50 rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 text-center">
         <p className="text-gray-500 text-sm italic">
           Nuevos desafíos cada semana. ¡Mantente atento!
         </p>
+      </div> */}
+
+      {<Divider.Gamer/>}
+
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <ComingSoonWordleCard />
       </div>
     </div>
   );
