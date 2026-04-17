@@ -24,7 +24,7 @@ export const useMemoryGame = () => {
   const queryClient = useQueryClient();
   const {user} = useAuth()
   // Obtenemos el mejor puntaje semanal del usuario (si no tiene, devuelve null)
-  const { data: bestWeeklyScore } = useWeeklyBestScore(user?.id);
+  const { data: bestWeeklyScore } = useWeeklyBestScore(user?.id, "memory");
 
   const totalPairs = cards.length / 2;
   const accuracy = totalPairs / moves;
@@ -64,7 +64,7 @@ export const useMemoryGame = () => {
         queryClient.invalidateQueries({
           queryKey: ["leaderboard", "memory"],
         });
-        queryClient.invalidateQueries(["weekly-best-score", user?.id]);
+        queryClient.invalidateQueries(["weekly-best-score", user?.id, "memory"]);
       } else {
         console.error("Error al guardar resultado:", error);
       }

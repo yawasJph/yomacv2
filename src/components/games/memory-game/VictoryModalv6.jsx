@@ -24,7 +24,7 @@ import { supabaseClient } from "@/supabase/supabaseClient";
 const VictoryModal = memo(
   ({ isOpen, score, time, moves, onReset, accuracy, isNewRecord }) => {
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
 
     /* 🔢 Animación del score */
     const springScore = useSpring(0, { stiffness: 50, damping: 18 });
@@ -32,10 +32,10 @@ const VictoryModal = memo(
       Math.floor(v).toLocaleString(),
     );
     const { user } = useAuth();
-    const { createPost, isPending } = usePostCreation();
+    const { createPost } = usePostCreation();
 
     const handleShare = async () => {
-      setLoading(true)
+      setLoading(true);
       createPost({
         user,
         files: [],
@@ -59,7 +59,7 @@ const VictoryModal = memo(
         user_id: user.id,
         amount: 20,
       });
-      setLoading(false)
+      setLoading(false);
     };
 
     useEffect(() => {
@@ -171,20 +171,24 @@ const VictoryModal = memo(
                   <button
                     onClick={handleShare}
                     disabled={loading}
-                    className="
-                    relative w-full py-3 rounded-xl font-bold
+                    className={`
+                       relative w-full py-3 rounded-xl font-bold
                     flex items-center justify-center gap-2
                     text-white overflow-hidden
                     bg-linear-to-r from-cyan-500 via-indigo-500 to-violet-600
                     shadow-lg shadow-indigo-500/30
-                    active:scale-95 transition
-                    hover:scale-[1.02]
-                  "
+                     transition-all duration-200
+                      ${
+                        loading
+                          ? "opacity-70 cursor-not-allowed scale-[0.98] saturate-50"
+                          : "active:scale-95 hover:brightness-110"
+                      }
+                      `}
                   >
                     {/* Glow animado */}
                     <span className="absolute inset-0 bg-white/10 animate-pulse" />
 
-                    {isPending ? (
+                    {loading ? (
                       <Loader2 size={18} className="animate-spin z-10" />
                     ) : (
                       <span className="flex items-center gap-2 z-10">
@@ -222,9 +226,14 @@ const VictoryModal = memo(
                   className={`
                   w-full py-3 rounded-xl text-white font-bold
                   flex items-center justify-center gap-2
-                  active:scale-95 transition
+                   transition-all duration-200
                   ${rank.button}
-                  hover:scale-[1.02]
+
+                  ${
+                    loading
+                      ? "opacity-70 cursor-not-allowed scale-[0.98] saturate-50"
+                      : "active:scale-95 hover:brightness-110"
+                  }
                 `}
                   disabled={loading}
                 >
@@ -235,13 +244,18 @@ const VictoryModal = memo(
                 {/* 🏠 EXIT */}
                 <button
                   onClick={() => navigate("/games")}
-                  className="
-                  w-full py-3 rounded-xl
+                  className={`
+                     w-full py-3 rounded-xl
                   bg-gray-100 dark:bg-neutral-900
                   text-gray-600 dark:text-gray-300
                   font-bold flex items-center justify-center gap-2
-                  hover:scale-[1.02]
-                "
+                   transition-all duration-200
+                    ${
+                      loading
+                        ? "opacity-70 cursor-not-allowed scale-[0.98] saturate-50"
+                        : "active:scale-95 hover:brightness-110"
+                    }
+                    `}
                   disabled={loading}
                 >
                   <Home size={18} />
