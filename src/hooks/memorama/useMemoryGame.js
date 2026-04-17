@@ -5,6 +5,8 @@ import { supabaseClient } from "../../supabase/supabaseClient";
 import { prepararTablero } from "../../components/games/utils/memoryHelpers";
 import { useAudio } from "../../context/AudioContext";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/context/AuthContext";
+import { useWeeklyBestScore } from "../games/useWeeklyBestScore";
 
 export const useMemoryGame = () => {
   const [cards, setCards] = useState([]);
@@ -16,9 +18,13 @@ export const useMemoryGame = () => {
   const [showVictory, setShowVictory] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [selectedBaraja, setSelectedBaraja] = useState(null);
+  const [isNewRecord, setIsNewRecord] = useState(false);
   //const [isMuted, setIsMuted] = useState(false);
   const { isMuted, setIsMuted, playWithCheck } = useAudio();
   const queryClient = useQueryClient();
+  const {user} = useAuth()
+  // Obtenemos el mejor puntaje semanal del usuario (si no tiene, devuelve null)
+  const { data: bestWeeklyScore } = useWeeklyBestScore(user?.id);
 
   const totalPairs = cards.length / 2;
   const accuracy = totalPairs / moves;
@@ -40,7 +46,9 @@ export const useMemoryGame = () => {
     setMoves(0);
     setSeconds(0);
     setIsActive(false);
+    setIsNewRecord(false);
     setShowVictory(false);
+    
   }, [prepararTablero]);
 
   const saveGameResult = async (score, steps, time) => {
@@ -56,6 +64,7 @@ export const useMemoryGame = () => {
         queryClient.invalidateQueries({
           queryKey: ["leaderboard", "memory"],
         });
+        queryClient.invalidateQueries(["weekly-best-score", user?.id]);
       } else {
         console.error("Error al guardar resultado:", error);
       }
@@ -126,11 +135,18 @@ export const useMemoryGame = () => {
       confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
 
       const score = Math.max(0, 1000 - moves * 10 - seconds * 2);
+
+      // Lógica de Récord
+      // Si el mejor puntaje es null (primer juego de la semana) o el score actual es mayor, es récord.
+      if (bestWeeklyScore === null || score > bestWeeklyScore) {
+        setIsNewRecord(true);
+      }
+
       setFinalScore(score);
       saveGameResult(score, moves, seconds);
       setTimeout(() => setShowVictory(true), 1000);
     }
-  }, [matched.length, cards.length, playWithCheck, playWin, moves, seconds]);
+  }, [matched.length, cards.length, playWithCheck, playWin, moves, seconds, bestWeeklyScore]);
 
   return {
     cards,
@@ -145,6 +161,7 @@ export const useMemoryGame = () => {
     setIsMuted,
     handleFlip,
     resetGame,
-    accuracyPercent
+    accuracyPercent,
+    isNewRecord
   };
 };

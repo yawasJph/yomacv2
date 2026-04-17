@@ -5,7 +5,6 @@ import MemoryCard from "./memory-game/MemoryCardv2";
 import ActionButtons from "./memory-game/ActionButtonsv2";
 import VictoryModal from "./memory-game/VictoryModalv6";
 
-
 // Definimos los estilos fuera del componente para que no estorben
 const STYLES = {
   container: "relative max-w-2xl mx-auto p-4 select-none min-h-screen",
@@ -21,7 +20,7 @@ const MemoryGame = () => {
   const {
     cards, flippedCards, matched, moves, seconds, showVictory,
     finalScore, selectedBaraja, isMuted, setIsMuted, accuracyPercent,
-    handleFlip, resetGame
+    handleFlip, resetGame, isNewRecord
   } = useMemoryGame();
 
   useEffect(() => {
@@ -56,6 +55,7 @@ const MemoryGame = () => {
         moves={moves}
         accuracy={accuracyPercent}
         onReset={resetGame}
+        isNewRecord={isNewRecord}
       />
     </div>
   );
