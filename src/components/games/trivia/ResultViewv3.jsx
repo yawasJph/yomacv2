@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, useSpring, useTransform } from "framer-motion";
 import {
   Trophy,
@@ -14,6 +14,8 @@ import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 import { usePostCreation } from "@/hooks/usePostCreation3";
 import { useAuth } from "@/context/AuthContext";
+import { ShareButtonGame } from "../utils/ShareButtonGame";
+import { supabaseClient } from "@/supabase/supabaseClient";
 
 const ResultsView = ({
   points,
@@ -21,12 +23,14 @@ const ResultsView = ({
   totalQuestions,
   earnedCredits,
   onReset,
-  totalTime
+  totalTime,
+  isNewRecord,
 }) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const {createPost, isPending} = usePostCreation()
-  const {user} = useAuth()
+  const { createPost, isPending } = usePostCreation();
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   /* ===== Animación de puntos ===== */
   const springPoints = useSpring(0, { stiffness: 50, damping: 18 });
@@ -95,12 +99,13 @@ const ResultsView = ({
     };
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
+    setIsLoading(true)
     createPost({
       user,
       files: [],
       gifUrls: [],
-      content: "🎮 Resultado del juego",
+      content: "🎉 Mi nuevo récord semanal en Trivia!",
       linkPreview: {
         type: "game_score",
         game_id: "trivia",
@@ -109,7 +114,7 @@ const ResultsView = ({
           accuracy,
           totalQuestions,
           earnedCredits,
-          totalTime
+          totalTime,
         },
       },
       setLoading: () => {},
@@ -118,6 +123,13 @@ const ResultsView = ({
         navigate("/games");
       },
     });
+
+    await supabaseClient.rpc("increment_credits", {
+      user_id: user.id,
+      amount: 20,
+    });
+
+    setIsLoading(false)
   };
 
   const rank = getRank();
@@ -194,13 +206,42 @@ const ResultsView = ({
 
           {/* ===== ACTIONS ===== */}
           <div className="flex flex-col  gap-3 mt-3 sm:mt-8">
+            {/* 🚀 SHARE */}
+            {/* {true && (
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={handleShare}
+                className="
+                w-full py-3 rounded-2xl
+                bg-linear-to-r from-emerald-500 to-teal-400
+                text-white font-black uppercase tracking-wider
+                flex items-center justify-center gap-2
+                shadow-lg shadow-emerald-500/20
+              "
+                disabled={isPending}
+              >
+                {isPending ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : (
+                  <>
+                    <Share2 size={18} /> Publicar resultado
+                  </>
+                )}
+              </motion.button>
+            )} */}
+
+            {isNewRecord && (
+              <ShareButtonGame onLoading={isLoading} onShare={() => handleShare()} />
+            )}
+
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               onClick={onReset}
               className={`flex-1 py-3 rounded-2xl text-white font-black uppercase tracking-wider shadow-lg
              ${rank.button} flex items-center justify-center gap-2`}
-             disabled={isPending}
+              disabled={isLoading}
             >
               <Zap size={18} fill="currentColor" /> Reintentar
             </motion.button>
@@ -210,27 +251,9 @@ const ResultsView = ({
               whileTap={{ scale: 0.97 }}
               onClick={() => navigate("/games")}
               className="flex-1 py-3 rounded-2xl bg-gray-100 dark:bg-neutral-900 dark:text-white font-black uppercase tracking-wider flex items-center justify-center gap-2"
-              disabled={isPending}
+              disabled={isLoading}
             >
               Volver al Arcade <ArrowRight size={18} />
-            </motion.button>
-
-            {/* 🚀 SHARE */}
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={handleShare}
-              className="
-                w-full py-3 rounded-2xl
-                bg-linear-to-r from-emerald-500 to-teal-400
-                text-white font-black uppercase tracking-wider
-                flex items-center justify-center gap-2
-                shadow-lg shadow-emerald-500/20
-              "
-              disabled={isPending}
-            >
-              {isPending ? <Loader2 size={18} className="animate-spin"/> : <><Share2 size={18} /> Publicar resultado</>}
-              
             </motion.button>
           </div>
         </motion.div>

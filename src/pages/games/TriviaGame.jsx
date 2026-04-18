@@ -18,7 +18,9 @@ import ResultsView from "../../components/games/trivia/ResultViewv3";
 import { useAudio } from "../../context/AudioContext";
 import { useQueryClient } from "@tanstack/react-query";
 import ResultsSheet from "@/components/games/trivia/ResultsSheet";
+import { useWeeklyBestScore } from "@/hooks/games/useWeeklyBestScore";
 //import ResultsView from "../../components/games/trivia/ResultViewv2";
+
 
 const TriviaGame = () => {
   const { user } = useAuth();
@@ -39,9 +41,13 @@ const TriviaGame = () => {
   const [showBoost, setShowBoost] = useState(false); // Estado para feedback visual del boost
   const [activeCategory, setActiveCategory] = useState(null);
   const [countdown, setCountdown] = useState(3);
+  const [isNewRecord, setIsNewRecord] = useState(false);
   //const [isMuted, setIsMuted] = useState(false);
   const { isMuted, setIsMuted, playWithCheck } = useAudio();
   const queryClient = useQueryClient();
+
+  // <-- Obtenemos el mejor puntaje semanal de Trivia
+  const { data: bestWeeklyScore } = useWeeklyBestScore(user?.id, "trivia");
 
   // Configuramos los sonidos
   const [playCorrect] = useSound("/sounds/correct.mp3", { volume: 0.5 });
@@ -234,6 +240,15 @@ const TriviaGame = () => {
       } else {
         setGameState("finished");
         // Si hizo más de 7 aciertos, sonido de victoria, si no, de derrota
+        const finalTotalPoints = points + roundPoints;
+        // <-- Lógica de Récord
+        if (bestWeeklyScore === null || finalTotalPoints > bestWeeklyScore) {
+          setIsNewRecord(true);
+        }
+
+        console.log(bestWeeklyScore)
+        console.log(finalTotalPoints)
+
         if (score >= 7) {
           confetti({
             particleCount: 150,
@@ -285,6 +300,9 @@ const TriviaGame = () => {
       if (!error) {
         queryClient.invalidateQueries({
           queryKey: ["leaderboard", "trivia"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["weekly-best-score", user?.id, "trivia"]
         });
       } else {
         console.error("Error en RPC:", error);
@@ -373,6 +391,7 @@ const TriviaGame = () => {
         totalTime={totalTimeUsed}
         earnedCredits={score * 2}
         onReset={handleReset}
+        isNewRecord={isNewRecord}
       />
     );
   }
