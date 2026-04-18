@@ -234,12 +234,12 @@ const Leaderboard = () => {
               icon={<Brain size={16} />}
               label="Trivia"
             />
-            <TabButton
+            {/* <TabButton
               active={activeGame === "wordle"}
               onClick={() => handleTabClick("wordle")}
               icon={<MessageSquareText size={16} />}
               label="Wordle"
-            />
+            /> */}
             <TabButton
               active={activeGame === "michi_online"}
               onClick={() => handleTabClick("michi_online")}
