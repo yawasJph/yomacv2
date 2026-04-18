@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 export const useWeeklyBestScore = (userId, gameId) => {
   return useQuery({
     queryKey: ["weekly-best-score", userId, gameId],
-    enabled: !!userId,
+    enabled: !!userId && !!gameId,
     queryFn: async () => {
       const { data, error } = await supabaseClient
         .from("generic_weekly_ranking")

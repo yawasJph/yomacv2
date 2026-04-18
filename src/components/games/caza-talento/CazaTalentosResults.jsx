@@ -1,6 +1,5 @@
 import {
   Bomb,
-  Coins,
   Home,
   Loader2,
   Share2,
@@ -9,7 +8,6 @@ import {
   Zap,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useIsMobile } from "@/hooks/useIsMobile";
 import { useNavigate } from "react-router-dom";
 import { usePostCreation } from "@/hooks/usePostCreation3";
 import { useAuth } from "@/context/AuthContext";
@@ -65,8 +63,6 @@ const getRank = (points) => {
 };
 
 const CazaTalentosResults = ({ score, onReset, time, talent, bomb }) => {
-  const rank = getRank(score);
-  const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { createPost, isPending } = usePostCreation();
   const { user } = useAuth();

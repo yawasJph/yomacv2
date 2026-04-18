@@ -15,6 +15,9 @@ import { useAudio } from "../../context/AudioContext";
 import { notify } from "@/utils/toast/notifyv3";
 import { useQueryClient } from "@tanstack/react-query";
 import BuscaMinasResults from "@/components/games/minas/BuscaMinasResults";
+import { useAuth } from "@/context/AuthContext";
+import { useWeeklyBestScore } from "@/hooks/games/useWeeklyBestScore";
+
 
 const calculateScore = ({ timer, flagsUsed, minesCount, isWin }) => {
   if (!isWin) return 0;
@@ -132,6 +135,7 @@ const Cell = memo(({ r, c, cell, onClick, onContextMenu }) => {
 
 // --- Componente Principal ---
 const BuscaMinas = () => {
+  const { user } = useAuth();
   const [board, setBoard] = useState(createEmptyBoard());
   const [gameState, setGameState] = useState("playing");
   const [timer, setTimer] = useState(0);
@@ -141,8 +145,12 @@ const BuscaMinas = () => {
   const { isMuted, setIsMuted, playWithCheck } = useAudio();
   const queryClient = useQueryClient();
   const [clicks, setClicks] = useState(0);
+  const [isNewRecord, setIsNewRecord] = useState(false);
 
   const navigate = useNavigate();
+
+  // <-- Obtenemos el mejor puntaje semanal de Buscaminas
+  const { data: bestWeeklyScore } = useWeeklyBestScore(user?.id, "buscaminas");
 
   // Sonidos
   const [playClick] = useSound("/sounds/click.mp3", { volume: 0.5 });
@@ -193,6 +201,7 @@ const BuscaMinas = () => {
     setFlagsCount(0);
     setFirstClick(true);
     setClicks(0);
+    setIsNewRecord(false);
   }, []);
 
   const revealCell = useCallback(
@@ -290,7 +299,17 @@ const BuscaMinas = () => {
   }, [gameState, firstClick]);
 
   const saveScore = async (isWin) => {
-    const score2 = calculateScore({ timer: timer, flagsUsed: flagsCount, minesCount:MINES_COUNT, isWin: isWin });
+    const score2 = calculateScore({
+      timer: timer,
+      flagsUsed: flagsCount,
+      minesCount: MINES_COUNT,
+      isWin: isWin,
+    });
+
+    // <-- Lógica de Récord
+    if (isWin && (bestWeeklyScore === null || score2 > bestWeeklyScore)) {
+      setIsNewRecord(true);
+    }
 
     try {
       const { error } = await supabaseClient.rpc("submit_game_score", {
@@ -303,6 +322,10 @@ const BuscaMinas = () => {
         console.log("Puntaje guardado exitosamente");
         queryClient.invalidateQueries({
           queryKey: ["leaderboard", "buscaminas"],
+        });
+        // <-- Invalidamos también el caché del récord
+        queryClient.invalidateQueries({
+          queryKey: ["weekly-best-score", user?.id, "buscaminas"],
         });
       }
     } catch (error) {
@@ -387,8 +410,9 @@ const BuscaMinas = () => {
             timer={timer}
             flagsUsed={flagsCount}
             minesCount={MINES_COUNT}
-            clicks={clicks}    
+            clicks={clicks}
             onReset={initGame}
+            isNewRecord={isNewRecord}
           />
         )}
       </AnimatePresence>

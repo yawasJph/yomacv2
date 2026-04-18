@@ -10,8 +10,13 @@ import {
   ArrowRight,
   Share2,
   Loader2,
+  XCircle,
+  FileX2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { ShareButtonGame } from "../utils/ShareButtonGame";
+import { useState } from "react";
+import { supabaseClient } from "@/supabase/supabaseClient";
 
 const getRank = (points) => {
   if (points >= 900)
@@ -91,16 +96,18 @@ const BuscaMinasResults = ({
   minesCount = 0,
   clicks = 0,
   onReset,
+  isNewRecord,
 }) => {
   const isWin = gameState === "won";
   const score2 = calculateScore({ timer, flagsUsed, minesCount, isWin });
+  const [isLoading, setIsLoading] = useState(false);
   const { createPost, isPending } = usePostCreation();
   const { user } = useAuth();
   const rank = getRank(score2);
   const navigate = useNavigate();
 
-
-  const handleShare = () => {
+  const handleShare = async () => {
+    setIsLoading(true);
     createPost({
       user,
       files: [],
@@ -120,6 +127,12 @@ const BuscaMinasResults = ({
       setLoading: () => {},
       onGame: () => navigate("/games"),
     });
+    // 💰 Dar recompensa
+    await supabaseClient.rpc("increment_credits", {
+      user_id: user.id,
+      amount: 20,
+    });
+    setIsLoading(false);
   };
 
   return (
@@ -138,7 +151,7 @@ const BuscaMinasResults = ({
         >
           {/* ===== HERO ===== */}
           <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="relative">
+            {/* <div className="relative">
               <div
                 className={`absolute -inset-4 rounded-full blur-3xl bg-linear-to-br ${rank.glow}`}
               />
@@ -152,18 +165,56 @@ const BuscaMinasResults = ({
               >
                 {rank.label}
               </span>
+            </div> */}
+            <div className="relative">
+              {/* Glow */}
+              <div
+                className={`absolute -inset-4 rounded-full blur-3xl bg-linear-to-br ${
+                  isWin ? rank.glow : "from-red-500/30 to-gray-500/20"
+                }`}
+              />
+
+              {/* Icon container */}
+              <div
+                className={`relative p-6 rounded-4xl shadow-2xl bg-linear-to-br ${
+                  isWin ? rank.gradient : "from-gray-700 to-gray-900"
+                }`}
+              >
+                {isWin ? (
+                  <Trophy className="w-12 h-12 text-white" />
+                ) : (
+                  <FileX2 className="w-12 h-12 text-red-400" />
+                )}
+              </div>
+
+              {/* Label */}
+              <span
+                className={`
+                absolute -bottom-3 left-1/2 -translate-x-1/2
+                px-4 py-1 rounded-full text-[10px] font-black tracking-widest
+                backdrop-blur-md border border-white/20
+                ${isWin ? rank.text : "text-red-300"}
+                bg-black/30
+              `}
+              >
+                {isWin ? rank.label : "05"}
+              </span>
             </div>
 
             <div className="flex-1 text-center md:text-left">
               <h2 className="text-sm uppercase tracking-widest text-gray-400 font-bold">
-                Resultado Final
+                {isWin ? "Resultado Final" : "Jalado"}
               </h2>
-              <motion.div className="text-5xl md:text-7xl font-black tracking-tight dark:text-white mt-2">
-                {score2}
-              </motion.div>
-              <p className="text-xs uppercase tracking-widest text-gray-400 mt-1">
-                Puntos Totales
-              </p>
+              {isWin && (
+                <>
+                  <motion.div className="text-5xl md:text-7xl font-black tracking-tight dark:text-white mt-2">
+                    {score2}
+                  </motion.div>
+                  <p className="text-xs uppercase tracking-widest text-gray-400 mt-1">
+                    Puntos Totales
+                  </p>
+                </>
+              )}
             </div>
           </div>
 
@@ -199,13 +250,20 @@ const BuscaMinasResults = ({
 
           {/* ===== ACTIONS ===== */}
           <div className="flex flex-col  gap-3 mt-3 sm:mt-8">
+            {isNewRecord && gameState === "won" && (
+              <ShareButtonGame
+                onLoading={isLoading}
+                onShare={() => handleShare()}
+              />
+            )}
+
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               onClick={onReset}
               className={`flex-1 py-3 rounded-2xl text-white font-black uppercase tracking-wider shadow-lg
              ${rank.button} flex items-center justify-center gap-2`}
-              disabled={isPending}
+              disabled={isLoading}
             >
               <Zap size={18} fill="currentColor" /> Reintentar
             </motion.button>
@@ -215,13 +273,13 @@ const BuscaMinasResults = ({
               whileTap={{ scale: 0.97 }}
               onClick={() => navigate("/games")}
               className="flex-1 py-3 rounded-2xl bg-gray-100 dark:bg-neutral-900 dark:text-white font-black uppercase tracking-wider flex items-center justify-center gap-2"
-              disabled={isPending}
+              disabled={isLoading}
             >
               Volver al Arcade <ArrowRight size={18} />
             </motion.button>
 
             {/* 🚀 SHARE */}
-            {gameState === "won" && (
+            {/* {gameState === "won" && (
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
@@ -243,7 +301,7 @@ const BuscaMinasResults = ({
                   </>
                 )}
               </motion.button>
-            )}
+            )} */}
           </div>
         </motion.div>
       </div>
