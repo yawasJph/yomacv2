@@ -1,13 +1,27 @@
 import React, { useState, useEffect, useCallback, useMemo, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import { ArrowLeft, RefreshCw, Clock, VolumeX, Volume2, Share2, Gamepad2, Swords, Zap, ArrowRight, Loader2 } from "lucide-react";
+import {
+  ArrowLeft,
+  RefreshCw,
+  Clock,
+  VolumeX,
+  Volume2,
+  Share2,
+  Gamepad2,
+  Swords,
+  Zap,
+  ArrowRight,
+  Loader2,
+} from "lucide-react";
 import useSound from "use-sound";
 import { useNavigate } from "react-router-dom";
 import { useAudio } from "../../context/AudioContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePostCreation } from "@/hooks/usePostCreation3";
 import { useAuth } from "@/context/AuthContext";
+import { useWeeklyBestScore } from "@/hooks/games/useWeeklyBestScore";
+import { ShareButtonGame } from "@/components/games/utils/ShareButtonGame";
 
 // --- COMPONENTES ATÓMICOS MEMORIZADOS ---
 
@@ -91,6 +105,7 @@ const GAME_THEMES = [
 ];
 
 const CodigoMatricula = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [currentTheme, setCurrentTheme] = useState(GAME_THEMES[0]);
   const [secretCode, setSecretCode] = useState([]);
@@ -100,19 +115,24 @@ const CodigoMatricula = () => {
   const [timer, setTimer] = useState(0);
   const { isMuted, setIsMuted, playWithCheck } = useAudio();
   const queryClient = useQueryClient();
-  const {createPost, isPending} = usePostCreation()
-  const {user}= useAuth()
+  const { createPost, isPending } = usePostCreation();
+  const [isNewRecord, setIsNewRecord] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // <-- Obtenemos el mejor puntaje semanal de Mastermind
+  const { data: bestWeeklyScore } = useWeeklyBestScore(user?.id, "mastermind");
 
   const [playPop] = useSound("/sounds/click.mp3", { volume: 0.5 });
   const [playWin] = useSound("/sounds/win.mp3", { volume: 0.7 });
   const [playLose] = useSound("/sounds/lose.mp3", { volume: 0.6 });
 
-  const handleShare = () => {
+  const handleShare = async () => {
+    setIsLoading(true);
     createPost({
       user,
       files: [],
       gifUrls: [],
-      content: "🎮 Resultado del juego",
+      content: "🎉 Mi nuevo récord semanal en Código Matrícula!",
       linkPreview: {
         type: "game_score",
         game_id: "codigo_matricula",
@@ -127,6 +147,13 @@ const CodigoMatricula = () => {
       setLoading: () => {},
       onGame: () => navigate("/games"),
     });
+    // 💰 Dar recompensa
+    await supabaseClient.rpc("increment_credits", {
+      user_id: user.id,
+      amount: 20,
+    });
+
+    setIsLoading(false);
   };
 
   // ===== METRICAS MEJORADAS =====
@@ -175,6 +202,7 @@ const CodigoMatricula = () => {
     setCurrentGuess([]);
     setGameState("playing");
     setTimer(0);
+    setIsNewRecord(false);
   }, []);
 
   useEffect(() => {
@@ -209,24 +237,31 @@ const CodigoMatricula = () => {
     setCurrentGuess((curr) => curr.slice(0, -1));
   }, []);
 
-  const saveScore = useCallback(async (finalScore, finalAttempts, currentTime) => {
-    try {
-      const { error } = await supabaseClient.rpc("submit_game_score", {
-        p_game_id: "mastermind",
-        p_score: Math.round(finalScore), // Redondeamos para evitar decimales en la BD
-        p_moves: finalAttempts,
-        p_time_seconds: currentTime,
-      });
-      if (!error) {
-        console.log("Puntaje guardado exitosamente");
-        queryClient.invalidateQueries({
-          queryKey: ["leaderboard", "mastermind"],
+  const saveScore = useCallback(
+    async (finalScore, finalAttempts, currentTime) => {
+      try {
+        const { error } = await supabaseClient.rpc("submit_game_score", {
+          p_game_id: "mastermind",
+          p_score: Math.round(finalScore), // Redondeamos para evitar decimales en la BD
+          p_moves: finalAttempts,
+          p_time_seconds: currentTime,
         });
+        if (!error) {
+          console.log("Puntaje guardado exitosamente");
+          queryClient.invalidateQueries({
+            queryKey: ["leaderboard", "mastermind"],
+          });
+          // <-- Invalidamos también el caché del récord
+          queryClient.invalidateQueries({
+            queryKey: ["weekly-best-score", user?.id, "mastermind"],
+          });
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    }
-  }, [queryClient]);
+    },
+    [queryClient, user?.id],
+  );
 
   const submitGuess = useCallback(() => {
     if (currentGuess.length !== CODE_LENGTH) return;
@@ -266,16 +301,27 @@ const CodigoMatricula = () => {
         playWithCheck(playWin);
         // --- CÁLCULO SÍNCRONO DEL SCORE EXACTO ---
         const finalAttempts = updatedHistory.length;
-        const finalTotalCorrect = updatedHistory.reduce((acc, h) => acc + h.result.correct, 0);
+        const finalTotalCorrect = updatedHistory.reduce(
+          (acc, h) => acc + h.result.correct,
+          0,
+        );
         const finalAvgCorrect = finalTotalCorrect / finalAttempts;
-        
+
         const base = 1500;
         const attemptPenalty = finalAttempts * 120;
         const timePenalty = timer * 2;
         const qualityBonus = finalAvgCorrect * 50;
-        
-        const finalScore = Math.max(base - attemptPenalty - timePenalty + qualityBonus, 100);
-        
+
+        const finalScore = Math.max(
+          base - attemptPenalty - timePenalty + qualityBonus,
+          100,
+        );
+
+        // <-- Lógica de Récord
+        if (bestWeeklyScore === null || finalScore > bestWeeklyScore) {
+          setIsNewRecord(true);
+        }
+
         // Enviamos el score correcto calculado
         saveScore(finalScore, finalAttempts, timer);
       } else if (updatedHistory.length >= MAX_ATTEMPTS) {
@@ -294,9 +340,9 @@ const CodigoMatricula = () => {
     saveScore,
     timer,
     playWithCheck,
+    bestWeeklyScore,
   ]);
 
-  console.log(secretCode);
 
   const SoundToggle = (
     <motion.button
@@ -451,13 +497,13 @@ const CodigoMatricula = () => {
               exit={{ y: "100%", scale: 0.9 }}
               transition={{ type: "spring", damping: 25, stiffness: 180 }}
               className="
-          w-full max-w-md
-          bg-white dark:bg-neutral-950
-          rounded-t-4xl sm:rounded-4xl
-          p-6
-          border border-neutral-200 dark:border-neutral-800
-          shadow-2xl
-        "
+                w-full max-w-md
+                bg-white dark:bg-neutral-950
+                rounded-t-4xl sm:rounded-4xl
+                p-6
+                border border-neutral-200 dark:border-neutral-800
+                shadow-2xl
+              "
             >
               {/* HANDLE (mobile UX) */}
               <div className="w-12 h-1.5 bg-gray-300 dark:bg-neutral-700 rounded-full mx-auto mb-4" />
@@ -480,13 +526,24 @@ const CodigoMatricula = () => {
               </div>
 
               {/* SCORE */}
-              <div className="text-center mb-6">
+              <div className="text-center mb-6 flex flex-col items-center">
                 <div className="text-5xl font-black dark:text-white">
                   {Math.floor(score)}
                 </div>
-                <span className="text-xs text-gray-400 uppercase tracking-widest">
+                <span className="text-xs text-gray-400 uppercase tracking-widest mt-1">
                   Score Final
                 </span>
+
+                {/* <-- UI DEL RÉCORD SEMANAL AQUÍ --> */}
+                {isNewRecord && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="mt-3 bg-amber-400 text-amber-950 text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-amber-400/20"
+                  >
+                    ¡Nuevo Récord Semanal!
+                  </motion.div>
+                )}
               </div>
 
               {/* STATS */}
@@ -525,91 +582,60 @@ const CodigoMatricula = () => {
               )}
 
               {/* ACTIONS */}
-              {/* <div className="flex flex-col gap-3">
-                <button
-                  onClick={initGame}
-                  className={`
-              ${currentTheme.btn}
-              text-black py-4 rounded-2xl
-              font-black uppercase tracking-wider
-              shadow-lg active:scale-95 transition-all
-            `}
-                >
-                  <Swords size={18}/> Reintentar
-                </button>
-
-                <button
-                  onClick={() => navigate("/games")}
-                  className="
-              bg-neutral-900 dark:bg-white
-              text-white dark:text-black
-              py-4 rounded-2xl
-              font-black uppercase tracking-wider
-              active:scale-95 transition-all
-            "
-                >
-                  <Gamepad2 size={18}/> Arcade
-                </button>
-                <button
-                  onClick={() => navigate("/games")}
-                  className="
-              bg-indigo-600 dark:bg-indigo-400
-              text-white 
-              py-4 rounded-2xl
-              font-black uppercase tracking-wider
-              active:scale-95 transition-all
-            "
-                >
-                  <Share2 size={18}/> Publicar
-                </button>
-              </div> */}
               <div className="flex flex-col  gap-3 mt-3 sm:mt-8">
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={initGame}
-              className={`flex-1 py-3 rounded-2xl text-white font-black uppercase tracking-wider shadow-lg
-             ${currentTheme.btn} flex items-center justify-center gap-2`}
-              disabled={isPending}
-            >
-              <Zap size={18} fill="currentColor" /> Reintentar
-            </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => navigate("/games")}
-              className="flex-1 py-3 rounded-2xl bg-gray-100 dark:bg-neutral-900 dark:text-white font-black uppercase tracking-wider flex items-center justify-center gap-2"
-              disabled={isPending}
-            >
-              Volver al Arcade <ArrowRight size={18} />
-            </motion.button>
-
-            {/* 🚀 SHARE */}
-            {gameState === "won" && (
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={handleShare}
-                className="
-                w-full py-3 rounded-2xl
-                bg-linear-to-r from-emerald-500 to-teal-400
-                text-white font-black uppercase tracking-wider
-                flex items-center justify-center gap-2
-                shadow-lg shadow-emerald-500/20
-              "
-                disabled={isPending}
-              >
-                {isPending ? (
-                  <Loader2 size={18} className="animate-spin" />
-                ) : (
-                  <>
-                    <Share2 size={18} /> Publicar resultado
-                  </>
+                {isNewRecord && gameState === "won" && (
+                  <ShareButtonGame
+                    onLoading={isLoading}
+                    onShare={() => handleShare()}
+                  />
                 )}
-              </motion.button>
-            )}
-          </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={initGame}
+                  className={`flex-1 py-3 rounded-2xl text-white font-black uppercase tracking-wider shadow-lg
+                    ${currentTheme.btn} flex items-center justify-center gap-2`}
+                  disabled={isLoading}
+                >
+                  <Zap size={18} fill="currentColor" /> Reintentar
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => navigate("/games")}
+                  className="flex-1 py-3 rounded-2xl bg-gray-100 dark:bg-neutral-900 dark:text-white font-black uppercase tracking-wider flex items-center justify-center gap-2"
+                  disabled={isLoading}
+                >
+                  Volver al Arcade <ArrowRight size={18} />
+                </motion.button>
+
+                {/* 🚀 SHARE */}
+                {/* {gameState === "won" && (
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={handleShare}
+                    className="
+                      w-full py-3 rounded-2xl
+                      bg-linear-to-r from-emerald-500 to-teal-400
+                      text-white font-black uppercase tracking-wider
+                      flex items-center justify-center gap-2
+                      shadow-lg shadow-emerald-500/20
+                    "
+                    disabled={isPending}
+                  >
+                    {isPending ? (
+                      <Loader2 size={18} className="animate-spin" />
+                    ) : (
+                      <>
+                        <Share2 size={18} /> Publicar resultado
+                      </>
+                    )}
+                  </motion.button>
+                )} */}
+              </div>
             </motion.div>
           </motion.div>
         )}

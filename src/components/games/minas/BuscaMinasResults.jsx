@@ -8,9 +8,6 @@ import {
   Coins,
   Zap,
   ArrowRight,
-  Share2,
-  Loader2,
-  XCircle,
   FileX2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -101,7 +98,7 @@ const BuscaMinasResults = ({
   const isWin = gameState === "won";
   const score2 = calculateScore({ timer, flagsUsed, minesCount, isWin });
   const [isLoading, setIsLoading] = useState(false);
-  const { createPost, isPending } = usePostCreation();
+  const { createPost } = usePostCreation();
   const { user } = useAuth();
   const rank = getRank(score2);
   const navigate = useNavigate();
@@ -112,7 +109,7 @@ const BuscaMinasResults = ({
       user,
       files: [],
       gifUrls: [],
-      content: "🎮 Resultado del juego",
+      content: "🎉 Mi nuevo récord semanal en Busca Minas!",
       linkPreview: {
         type: "game_score",
         game_id: "busca_minas",
