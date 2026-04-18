@@ -5,14 +5,44 @@ import { useAuth } from "../../context/AuthContext";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import { notify } from "@/utils/toast/notifyv3";
 
-const REPORT_REASONS = [
-  "Contenido inapropiado",
-  "Acoso o incitación al odio",
-  "Spam o contenido engañoso",
-  "Información falsa",
-  "Infracción de derechos de autor",
-  "Otro",
-];
+// const REPORT_REASONS = [
+//   "Contenido inapropiado",
+//   "Acoso o incitación al odio",
+//   "Spam o contenido engañoso",
+//   "Información falsa",
+//   "Infracción de derechos de autor",
+//   "Otro",
+// ];
+
+const REPORT_REASONS_MAP = {
+  post: [
+    "Contenido inapropiado",
+    "Spam o contenido engañoso",
+    "Información falsa",
+    "Infracción de derechos de autor",
+    "Otro",
+  ],
+  comment: ["Acoso o incitación al odio", "Lenguaje ofensivo", "Spam", "Otro"],
+  user: [
+    "Suplantación de identidad",
+    "Perfil falso",
+    "Acoso",
+    "Actividad sospechosa",
+    "Otro",
+  ],
+};
+
+const titleMap = {
+  post: "Reportar publicación",
+  comment: "Reportar comentario",
+  user: "Reportar usuario",
+};
+
+const errorMap = {
+  post: "Ya reportaste esta publicación",
+  comment: "Ya reportaste este comentario",
+  user: "Ya reportaste este usuario",
+};
 
 const MAX_CHARS = 500;
 
@@ -31,6 +61,14 @@ export default function ReportModal({
   const [reason, setReason] = useState("");
   const [details, setDetails] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const reportType = userId
+  ? "user"
+  : commentId
+  ? "comment"
+  : "post";
+
+  const REPORT_REASONS = REPORT_REASONS_MAP[reportType];
 
   /* =========================
      SCROLL LOCK PROFESIONAL
@@ -133,11 +171,12 @@ export default function ReportModal({
 
       if (error) {
         if (error.code === "23505") {
-          if(userId){
-            notify.info("Ya reportaste este usuario");
-          }else{
-            notify.info("Ya reportaste este contenido");
-          }
+          // if (userId) {
+          //   notify.info("Ya reportaste este usuario");
+          // } else {
+          //   notify.info("Ya reportaste este contenido");
+          // }
+          notify.info(errorMap[reportType] || "Reportado")
           onClose();
           return;
         }
@@ -188,7 +227,7 @@ export default function ReportModal({
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800">
           <h3 className="flex items-center gap-2 font-semibold text-lg">
             <AlertTriangle className="text-amber-500" size={20} />
-            Reportar contenido
+            {titleMap[reportType]}
           </h3>
 
           <button
@@ -229,16 +268,17 @@ export default function ReportModal({
           </div>
 
           {/* TEXTAREA */}
-          {reason === "Otro" &&<div>
-            <textarea
-              ref={textareaRef}
-              rows="3"
-              maxLength={MAX_CHARS}
-              value={details}
-              onChange={(e) => setDetails(e.target.value)}
-              placeholder="Añade detalles adicionales (opcional)"
-              // className="w-full p-3 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none transition"
-              className="
+          {reason === "Otro" && (
+            <div>
+              <textarea
+                ref={textareaRef}
+                rows="3"
+                maxLength={MAX_CHARS}
+                value={details}
+                onChange={(e) => setDetails(e.target.value)}
+                placeholder="Añade detalles adicionales"
+                // className="w-full p-3 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none transition"
+                className="
               border border-gray-200 dark:border-gray-700
               w-full p-3 text-sm rounded-xl
               text-gray-900 dark:text-gray-100
@@ -246,12 +286,13 @@ export default function ReportModal({
               focus:ring-2 focus:ring-emerald-500
               bg-gray-50 dark:bg-gray-800
               outline-none transition"
-            />
+              />
 
-            <div className="text-xs text-gray-400 text-right mt-1">
-              {details.length}/{MAX_CHARS}
+              <div className="text-xs text-gray-400 text-right mt-1">
+                {details.length}/{MAX_CHARS}
+              </div>
             </div>
-          </div>}
+          )}
 
           {/* BUTTONS */}
           <div className="flex gap-3 pt-2">
