@@ -18,6 +18,7 @@ import useSound from "use-sound";
 import { notify } from "@/utils/toast/notifyv3";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePostCreation } from "@/hooks/usePostCreation3";
+import { ShareButtonGame } from "@/components/games/utils/ShareButtonGame";
 
 // Configuración de colores
 const COLORS = {
@@ -98,6 +99,7 @@ const WordleGame = () => {
   const navigate = useNavigate();
   const { isMuted, setIsMuted, playWithCheck } = useAudio();
   const queryClient = useQueryClient();
+  const [hasShared, setHasShared] = useState(false);
   const { createPost, isPending } = usePostCreation();
 
   const [playClick] = useSound("/sounds/click.mp3", { volume: 0.5 });
@@ -111,6 +113,7 @@ const WordleGame = () => {
     const content = shareResults();
     const finalAttempts = guesses.filter((g) => g !== "").length;
     const finalScore = gameState === "won" ? (7 - finalAttempts) * 100 : 0;
+    const today = new Date().toISOString().split("T")[0];
 
     createPost({
       user,
@@ -125,7 +128,39 @@ const WordleGame = () => {
       },
       setLoading: () => {},
       resetForm: () => {},
-      onGame: () => {
+      onGame: async () => {
+        // 1. Actualizamos la base de datos indicando que ya se compartió
+        const { error: updateError } = await supabaseClient
+          .from("wordle_attempts")
+          .update({ is_shared: true })
+          .eq("user_id", user.id)
+          .eq("game_date", today);
+
+        if (!updateError) {
+          setHasShared(true); // Oculta el botón
+
+          // 2. Otorgar el incentivo de 20 monedas
+          const { error: rpcError } = await supabaseClient.rpc(
+            "increment_credits",
+            {
+              user_id: user.id,
+              amount: 20,
+            },
+          );
+
+          if (!rpcError) {
+            // Notificamos al usuario de su recompensa
+            //notify.success("¡Resultado publicado! Ganaste +20 monedas 🪙");
+            // Opcional: Si tienes una query de React Query que maneja las monedas
+            // en el Navbar o Perfil, puedes invalidarla aquí para que se actualice al instante:
+            // queryClient.invalidateQueries({ queryKey: ["user_profile"] });
+          } else {
+            console.error("Error al otorgar monedas:", rpcError);
+          }
+        } else {
+          console.error("Error actualizando is_shared:", updateError);
+        }
+
         navigate("/games");
       },
     });
@@ -168,6 +203,9 @@ const WordleGame = () => {
           );
           setCurrentRow(savedGuesses.length);
           setGameState(attemptRes.data.status);
+
+          // NUEVA LÍNEA: Guardar si ya compartió
+          setHasShared(attemptRes.data.is_shared || false);
 
           // Reconstruir teclado (Usamos un reducer para que sea más limpio)
           const used = savedGuesses.reduce((acc, guess) => {
@@ -316,9 +354,32 @@ const WordleGame = () => {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [handleEnter, handleDelete, handleChar]);
 
+  // const shareResults = () => {
+  //   const emojiGrid = guesses
+  //     .filter((g) => g !== "")
+  //     .map((guess) => {
+  //       return guess
+  //         .split("")
+  //         .map((char, i) => {
+  //           if (char === targetWord[i]) return "🟩";
+  //           if (targetWord.includes(char)) return "🟨";
+  //           return "⬜";
+  //         })
+  //         .join("");
+  //     })
+  //     .join("\n");
+
+  //   const text = `Palabra del Día #wordle\n${currentRow + 1}/6\n\n${emojiGrid}`;
+  //   return text;
+  // };
+
   const shareResults = () => {
-    const emojiGrid = guesses
-      .filter((g) => g !== "")
+    // 1. Filtramos las palabras vacías para saber exactamente cuántos intentos hizo
+    const validGuesses = guesses.filter((g) => g !== "");
+    const finalAttempts = validGuesses.length;
+
+    // 2. Construimos la cuadrícula basándonos en validGuesses
+    const emojiGrid = validGuesses
       .map((guess) => {
         return guess
           .split("")
@@ -331,13 +392,14 @@ const WordleGame = () => {
       })
       .join("\n");
 
-    const text = `Palabra del Día #wordle\n${currentRow + 1}/6\n\n${emojiGrid}`;
+    // 3. Usamos finalAttempts en lugar de currentRow + 1
+    // Si perdió, en lugar de poner 6/6, en Wordle tradicional se pone X/6
+    const attemptText = gameState === "won" ? finalAttempts : "X";
+    const text = `Palabra del Día #wordle\n${attemptText}/6\n\n${emojiGrid}`;
 
-    // navigator.clipboard.writeText(text);
-    // notify.info("¡Resultados copiados al portapapeles!");
     return text;
   };
-
+  
   const triggerConfetti = () => {
     const duration = 3 * 1000;
     const animationEnd = Date.now() + duration;
@@ -575,21 +637,25 @@ const WordleGame = () => {
 
                   {/* Botones de Acción */}
                   <div className="w-full flex flex-col gap-3">
-                    {gameState === "won" && (
-                      <button
-                        onClick={handleShare}
-                        className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-2xl font-black text-[12px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-emerald-500/30"
-                        disabled={isPending}
-                      >
-                        {isPending ? (
-                          <Loader2 className="animate-spin" />
-                        ) : (
-                          <>
-                            <Share2 size={18} strokeWidth={3} />
-                            Publicar
-                          </>
-                        )}
-                      </button>
+                    {gameState === "won" && !hasShared && (
+                      // <button
+                      //   onClick={handleShare}
+                      //   className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-2xl font-black text-[12px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-emerald-500/30"
+                      //   disabled={isPending}
+                      // >
+                      //   {isPending ? (
+                      //     <Loader2 className="animate-spin" />
+                      //   ) : (
+                      //     <>
+                      //       <Share2 size={18} strokeWidth={3} />
+                      //       Publicar
+                      //     </>
+                      //   )}
+                      // </button>
+                      <ShareButtonGame
+                        onLoading={isPending}
+                        onShare={() => handleShare()}
+                      />
                     )}
 
                     <button

@@ -7,12 +7,9 @@ import {
   Clock,
   VolumeX,
   Volume2,
-  Share2,
-  Gamepad2,
-  Swords,
   Zap,
   ArrowRight,
-  Loader2,
+
 } from "lucide-react";
 import useSound from "use-sound";
 import { useNavigate } from "react-router-dom";

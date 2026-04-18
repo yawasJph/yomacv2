@@ -47,22 +47,22 @@ export const GAMES_LIST = [
         "Si se llenan todas las casillas sin un ganador, se declara empate."
       ]
     },
-    // {
-    //   id: "wordle",
-    //   title: "Palabra Diaria",
-    //   description: "Adivina la palabra del día relacionada al campus.",
-    //   icon: <Type className="text-orange-500" size={32} />,
-    //   color: "from-orange-500/20 to-orange-500/5",
-    //   path: "/games/wordle",
-    //   difficulty: "Difícil",
-    //   howToPlay: [
-    //     "Adivina una palabra de 5 letras del dia.",
-    //     "Tienes 6 intentos. Los colores te darán pistas sobre las letras.",
-    //     "Verde: Letra correcta en el lugar correcto.",
-    //     "Naranja: La letra está en la palabra, pero en otra posición.",
-    //     "Gris: La letra no forma parte de la palabra."
-    //   ]
-    // },
+    {
+      id: "wordle",
+      title: "Palabra Diaria",
+      description: "Adivina la palabra del día.",
+      icon: <Type className="text-orange-500" size={32} />,
+      color: "from-orange-500/20 to-orange-500/5",
+      path: "/games/wordle",
+      difficulty: "Difícil",
+      howToPlay: [
+        "Adivina una palabra de 5 letras del dia.",
+        "Tienes 6 intentos. Los colores te darán pistas sobre las letras.",
+        "Verde: Letra correcta en el lugar correcto.",
+        "Naranja: La letra está en la palabra, pero en otra posición.",
+        "Gris: La letra no forma parte de la palabra."
+      ]
+    },
     {
       id: "caza-talentos",
       title: "Caza Talentos",
