@@ -25,6 +25,7 @@ import UserBadges from "../user/UserBadges";
 import DevBadge from "../ui/userProfile/DevBadge";
 import ReportModal from "../ui/ReportModalv6";
 import { ProfileNotFound } from "../fallback/ProfileNotFound";
+import { notify } from "@/utils/toast/notifyv3";
 
 
 const UserProfile = () => {
@@ -70,6 +71,13 @@ const UserProfile = () => {
     setReportUserId(userId);
     setReportModalOpen(true);
   };
+
+   const handleReportAction = (userId) => {
+      setMenuOpen(false)
+      executeAction(() => openReportModal(userId), "para reportar", () => {
+        notify.info("Necesitas iniciar sesión para reportar este usuario.");
+      });
+    };
 
   // 5. Cargar posts paginados usando el userId real (habilitado solo si hay userId)
   const {
@@ -260,10 +268,7 @@ const UserProfile = () => {
               {/* Reportar */}
               {!isMe && (
                 <button
-                  onClick={() => {
-                    openReportModal(profile.id); // 👈 aquí llamas tu modal
-                    setMenuOpen(false);
-                  }}
+                  onClick={()=>handleReportAction(profile.id)}
                   className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
                 >
                   <Flag size={16} />
