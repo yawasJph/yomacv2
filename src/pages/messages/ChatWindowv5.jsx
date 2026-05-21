@@ -108,7 +108,7 @@ const ChatHeader = React.memo(({
         <div className="absolute top-12 right-0 w-56 bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-gray-100 dark:border-zinc-800 p-2 z-60 animate-in fade-in zoom-in-95 origin-top-right">
           <MenuContent
             goToProfile={goToProfile}
-            mutualId={activeChat.friend_id}
+            mutualId={activeChat.full_name}
             setShowMenu={onToggleMenu}
             setIsBlockConfirmOpen={setIsBlockConfirmOpen}
             unFollowLoading={unFollowLoading}
@@ -316,6 +316,8 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
 
   const { unfollowUser, loading: unFollowLoading } = useFollow();
   const { data: mutuals } = useQuery({ queryKey: ["mutuals", user.id] });
+
+  console.log(activeChat)
 
   const {
     messages,

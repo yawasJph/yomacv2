@@ -169,7 +169,7 @@ const NotificationsPage = () => {
   const handleNotificationClick = (notif) => {
     switch (notif.type) {
       case "follow":
-        navigate(`/profile/${notif.sender_id}`);
+        navigate(`/profile/${notif.sender.username}`);
         break;
       case "like":
         if (!notif.comments?.parent_id) {
@@ -226,7 +226,7 @@ const NotificationsPage = () => {
     );
   }
 
-  console.log(notifications);
+  console.log("the noti", notifications);
 
   return (
     <div className="max-w-2xl mx-auto border-x border-gray-100 dark:border-gray-800 pb-5">

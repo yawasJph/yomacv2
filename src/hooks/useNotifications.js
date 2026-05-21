@@ -4,6 +4,8 @@ import { supabaseClient } from "../supabase/supabaseClient";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
 
+console.log("HOOK V1");
+
 export const useNotifications = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -21,7 +23,7 @@ export const useNotifications = () => {
         .select(
           `
           *,
-          sender:sender_id (full_name, avatar, id),
+          sender:sender_id (full_name, avatar, id, username),
           post:post_id (content),
           comments:comment_id (content, parent_id)
         `,

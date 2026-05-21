@@ -27,7 +27,7 @@ export const useNotifications = () => {
         .select(
           `
           *,
-          sender:sender_id (full_name, avatar, id),
+          sender:sender_id (full_name, avatar, id, username),
           post:post_id (content),
           comments:comment_id (content, parent_id)
         `,
