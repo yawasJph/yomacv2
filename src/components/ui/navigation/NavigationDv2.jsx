@@ -33,7 +33,7 @@ const NavigationD = () => {
       end: true,
     },
     {
-      to: data?.username ? `/profile/@${data.username}` : null,
+      to: data?.username ? `/profile/@${data.username}` : undefined,
       icon: <UserPen size={22} />,
       text: "Perfil",
       private: true,

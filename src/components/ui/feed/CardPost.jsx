@@ -1,12 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import {
   MessageCircle,
-  MoreHorizontal,
   ChevronDown,
   ChevronUp,
-  AlertCircle,
-  Flag,
-  Trash2,
   Share,
   Repeat2,
 } from "lucide-react";
@@ -384,7 +380,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
             time={time}
           />
           {/* Texto del Post */}
-          <p
+          {displayContent && <p
             ref={textRef}
             className={`text-base text-gray-900 dark:text-gray-100 mb-2 whitespace-pre-wrap wrap-break-word ${
               expanded || isDetailedView ? "line-clamp-none" : "line-clamp-6"
@@ -392,7 +388,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
             onClick={(e) => e.stopPropagation()}
           >
             <RenderTextWithLinks text={displayContent} />
-          </p>
+          </p>}
 
           {isTruncated && (
             <button

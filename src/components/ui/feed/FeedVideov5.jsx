@@ -10,7 +10,18 @@ import { Play } from "lucide-react";
 
 // 🔥 Añadimos isGif por defecto en false
 const UniversalFeedVideo = forwardRef(
-  ({ src, poster, shouldPlay, onEnded, className = "", onClick, isGif = false }, ref) => {
+  (
+    {
+      src,
+      poster,
+      shouldPlay,
+      onEnded,
+      className = "",
+      onClick,
+      isGif = false,
+    },
+    ref,
+  ) => {
     const videoRef = useRef(null);
     const containerRef = useRef(null);
 
@@ -117,9 +128,9 @@ const UniversalFeedVideo = forwardRef(
         onMouseLeave={() => setIsHover(false)}
         onClick={onClick}
       >
-        <video
+        {/* <video
           ref={videoRef}
-          src={src} 
+          src={src}
           poster={poster} // 👈 2. Añade esta línea aquí
           muted={muted}
           playsInline
@@ -129,7 +140,21 @@ const UniversalFeedVideo = forwardRef(
           className="w-full h-full object-cover"
           onContextMenu={(e) => e.preventDefault()}
           onDragStart={(e) => e.preventDefault()}
-          
+        /> */}
+        <video
+          ref={videoRef}
+          src={src}
+          poster={poster}
+          muted={muted}
+          playsInline
+          preload={isGif ? "auto" : "metadata"}
+          disablePictureInPicture
+          controlsList="nodownload"
+          onEnded={handleVideoEnded}
+          onTimeUpdate={handleTimeUpdate}
+          className="w-full h-full object-cover"
+          onContextMenu={(e) => e.preventDefault()}
+          onDragStart={(e) => e.preventDefault()}
         />
 
         {/* 👈 CORRECCIÓN UX: Solo mostramos Play si NO es un GIF */}
