@@ -8,7 +8,6 @@ import {
   Brain,
   LayoutGrid,
   Swords,
-  MessageSquareText,
   Target,
   Bomb,
   ChevronRight,
@@ -25,91 +24,204 @@ const fetchGameLeaders = async (activeGame, user) => {
   let topData = [];
   let myData = null;
 
+  // if (activeGame === "wordle") {
+  //   const { data: wordleTop } = await supabaseClient
+  //     .from("wordle_weekly_ranking")
+  //     .select("*, profiles!inner (username)")
+  //     .limit(10);
+
+  //   topData =
+  //     wordleTop?.map((row) => ({
+  //       rank_position: parseInt(row.rank_position),
+  //       user_id: row.user_id,
+  //       score: row.total_score,
+  //       time_seconds: `${row.games_won} ${row.games_won > 1 ? "Retos" : "Reto"}`,
+  //       profiles: {
+  //         full_name: row.full_name,
+  //         avatar: row.avatar,
+  //         carrera: row.carrera,
+  //         username: row.profiles?.username,
+  //       },
+  //     })) || [];
+
+  //   if (user) {
+  //     const { data: myWordle } = await supabaseClient
+  //       .from("wordle_weekly_ranking")
+  //       .select("*,profiles!inner (username)")
+  //       .eq("user_id", user.id)
+  //       .maybeSingle();
+
+  //     if (myWordle)
+  //       myData = {
+  //         ...myWordle,
+  //         score: myWordle.total_score,
+  //         rank_position: parseInt(myWordle.rank_position),
+  //         time_seconds: `${myWordle.games_won} ${myWordle.games_won > 1 ? "Retos" : "Reto"}`,
+  //         profiles: {
+  //           full_name: myWordle.full_name,
+  //           avatar: myWordle.avatar,
+  //           carrera: myWordle.carrera,
+  //           username: myWordle.profiles?.username,
+  //         },
+  //       };
+  //   }
+  // }
   if (activeGame === "wordle") {
     const { data: wordleTop } = await supabaseClient
       .from("wordle_weekly_ranking")
-      .select("*, profiles!inner (username)")
+      .select(
+        `
+      rank_position,
+      user_id,
+      total_score,
+      games_won,
+      full_name,
+      alias,
+      username,
+      avatar,
+      carrera
+    `,
+      )
+      .order("rank_position", { ascending: true })
       .limit(10);
 
     topData =
       wordleTop?.map((row) => ({
-        rank_position: parseInt(row.rank_position),
-        user_id: row.user_id,
+        ...row,
         score: row.total_score,
-        time_seconds: `${row.games_won} ${row.games_won > 1 ? "Retos" : "Reto"}`,
-        profiles: {
-          full_name: row.full_name,
-          avatar: row.avatar,
-          carrera: row.carrera,
-          username: row.profiles?.username,
-        },
+        secondary_stat: row.games_won,
+        secondary_label: row.games_won === 1 ? "Reto ganado" : "Retos ganados",
+        is_wordle: true,
       })) || [];
 
     if (user) {
       const { data: myWordle } = await supabaseClient
         .from("wordle_weekly_ranking")
-        .select("*,profiles!inner (username)")
+        .select(
+          `
+        rank_position,
+        user_id,
+        total_score,
+        games_won,
+        full_name,
+        alias,
+        username,
+        avatar,
+        carrera
+      `,
+        )
         .eq("user_id", user.id)
         .maybeSingle();
 
-      if (myWordle)
+      if (myWordle) {
         myData = {
           ...myWordle,
           score: myWordle.total_score,
-          rank_position: parseInt(myWordle.rank_position),
-          time_seconds: `${myWordle.games_won} ${myWordle.games_won > 1 ? "Retos" : "Reto"}`,
-          profiles: {
-            full_name: myWordle.full_name,
-            avatar: myWordle.avatar,
-            carrera: myWordle.carrera,
-            username: myWordle.profiles?.username,
-          },
+          secondary_stat: myWordle.games_won,
+          secondary_label:
+            myWordle.games_won === 1 ? "Reto ganado" : "Retos ganados",
+          is_wordle: true,
         };
+      }
     }
-  } else if (activeGame === "michi_online") {
+  }
+  //  else if (activeGame === "michi_online") {
+  //   const { data: michiTop } = await supabaseClient
+  //     .from("michi_weekly_ranking")
+  //     .select("*")
+  //     .limit(10);
+  //   topData =
+  //     michiTop?.map((row) => ({
+  //       rank_position: parseInt(row.rank_position),
+  //       user_id: row.user_id,
+  //       score: `${row.total_wins} ${row.total_wins > 1 ? "wins" : "win"}`,
+  //       time_seconds: "Victorias",
+  //       profiles: {
+  //         full_name: row.full_name,
+  //         avatar: row.avatar,
+  //         carrera: row.carrera,
+  //         username: row.username,
+  //       },
+  //     })) || [];
+
+  //   if (user) {
+  //     const { data: myMichi } = await supabaseClient
+  //       .from("michi_weekly_ranking")
+  //       .select("*")
+  //       .eq("user_id", user.id)
+  //       .maybeSingle();
+  //     if (myMichi)
+  //       myData = {
+  //         ...myMichi,
+  //         rank_position: parseInt(myMichi.rank_position),
+  //         score: `${myMichi.total_wins} ${myMichi.total_wins ? "wins" : "win"}`,
+  //         time_seconds: "Victorias",
+  //         profiles: {
+  //           full_name: myMichi.full_name,
+  //           avatar: myMichi.avatar,
+  //           carrera: myMichi.carrera,
+  //           username: myMichi.username,
+  //         },
+  //       };
+  //   }
+  else if (activeGame === "michi_online") {
     const { data: michiTop } = await supabaseClient
       .from("michi_weekly_ranking")
-      .select("*")
+      .select(
+        `
+      rank_position,
+      user_id,
+      total_wins,
+      full_name,
+      alias,
+      username,
+      avatar,
+      carrera
+    `,
+      )
+      .order("rank_position", { ascending: true })
       .limit(10);
+
     topData =
       michiTop?.map((row) => ({
-        rank_position: parseInt(row.rank_position),
-        user_id: row.user_id,
-        score: `${row.total_wins} ${row.total_wins > 1 ? "wins" : "win"}`,
-        time_seconds: "Victorias",
-        profiles: {
-          full_name: row.full_name,
-          avatar: row.avatar,
-          carrera: row.carrera,
-          username: row.username,
-        },
+        ...row,
+        score: row.total_wins,
+        score_label: row.total_wins === 1 ? "Victoria" : "Victorias",
+        is_michi: true,
       })) || [];
 
     if (user) {
       const { data: myMichi } = await supabaseClient
         .from("michi_weekly_ranking")
-        .select("*")
+        .select(
+          `
+        rank_position,
+        user_id,
+        total_wins,
+        full_name,
+        alias,
+        username,
+        avatar,
+        carrera
+      `,
+        )
         .eq("user_id", user.id)
         .maybeSingle();
-      if (myMichi)
+
+      if (myMichi) {
         myData = {
           ...myMichi,
-          rank_position: parseInt(myMichi.rank_position),
-          score: `${myMichi.total_wins} ${myMichi.total_wins ? "wins" : "win"}`,
-          time_seconds: "Victorias",
-          profiles: {
-            full_name: myMichi.full_name,
-            avatar: myMichi.avatar,
-            carrera: myMichi.carrera,
-            username: myMichi.username,
-          },
+          score: myMichi.total_wins,
+          score_label: myMichi.total_wins === 1 ? "Victoria" : "Victorias",
+          is_michi: true,
         };
+      }
     }
   } else {
     const { data: genericTop } = await supabaseClient
       .from("generic_weekly_ranking")
       .select(
-        `rank_position, user_id, score:max_score, time_seconds:best_time, profiles!inner (full_name, avatar, carrera, username)`,
+        `rank_position, user_id, score:max_score, time_seconds:best_time, full_name, alias, username, avatar, carrera`,
       )
       .eq("game_id", activeGame)
       .order("rank_position", { ascending: true })
@@ -120,7 +232,7 @@ const fetchGameLeaders = async (activeGame, user) => {
       const { data: myGeneric } = await supabaseClient
         .from("generic_weekly_ranking")
         .select(
-          `rank_position, user_id, score:max_score, time_seconds:best_time, profiles!inner (full_name, avatar, carrera, username)`,
+          `rank_position, user_id, score:max_score, time_seconds:best_time, full_name, alias, username, avatar, carrera`,
         )
         .eq("game_id", activeGame)
         .eq("user_id", user.id)
@@ -351,8 +463,8 @@ const LeaderItem = memo(({ entry, isMe, isMichi }) => {
   return (
     <motion.div
       layout
-      whileHover={{ x: 5 }}
-      className={`relative group flex items-center gap-4 p-4 rounded-4xl transition-all duration-700 border
+      whileHover={{ scale: 1.015 }}
+      className={`relative group flex items-center gap-4 p-3 rounded-3xl transition-all duration-700 border
         ${currentStyle.glow}
         ${
           isMe
@@ -378,9 +490,9 @@ const LeaderItem = memo(({ entry, isMe, isMichi }) => {
       </div>
 
       {/* Avatar con borde de color sutil si es podio */}
-      <Link className="relative" to={`/profile/@${entry.profiles?.username}`}>
+      <Link className="relative" to={`/profile/@${entry.username}`}>
         <img
-          src={entry.profiles?.avatar}
+          src={entry.avatar}
           className={`w-12 h-12 rounded-[1.2rem] object-cover transition-all duration-500
             ${rank <= 3 ? "p-0.5 border-2" : "border-0"}
             ${rank === 1 ? "border-yellow-400" : rank === 2 ? "border-slate-300" : rank === 3 ? "border-orange-300" : ""}`}
@@ -388,11 +500,12 @@ const LeaderItem = memo(({ entry, isMe, isMichi }) => {
       </Link>
 
       <div className="flex-1 min-w-0">
-        <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100 truncate tracking-tight">
-          {entry.profiles?.full_name}
+        <h3 className="text-sm sm:text-base font-bold text-gray-800 dark:text-gray-100 truncate">
+          {entry.alias || entry.full_name}
         </h3>
-        <p className="text-[9px] font-semibold text-gray-400 uppercase tracking-[0.15em] mt-0.5">
-          {entry.profiles?.carrera} {entry.profiles?.username}
+        <p className="text-xs sm:text-sm text-gray-400 font-medium truncate">
+          @{entry.username}
+          {entry.carrera && ` · ${entry.carrera}`}
         </p>
       </div>
 
@@ -404,7 +517,10 @@ const LeaderItem = memo(({ entry, isMe, isMichi }) => {
             className={`fill-current ${currentStyle.iconColor}`}
           />
           <span className="bg-linear-to-b from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 bg-clip-text text-transparent">
-            {entry.score.toLocaleString()}
+            {/* {entry.score.toLocaleString()} */}
+            <span>
+              {entry.score} {entry.score_label}
+            </span>
           </span>
         </div>
 

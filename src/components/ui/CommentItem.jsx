@@ -225,7 +225,7 @@ const CommentItem = ({
                   </div>
 
                   {/* Badges */}
-                  {(comment.profiles.carrera || comment.profiles.ciclo) && (
+                  {/* {(comment.profiles.carrera || comment.profiles.ciclo) && (
                     <div className="flex gap-1.5 mt-1 flex-wrap">
                       {comment.profiles.carrera && (
                         <span
@@ -260,7 +260,7 @@ const CommentItem = ({
                         </span>
                       )}
                     </div>
-                  )}
+                  )} */}
                 </div>
 
                 {/* Opciones */}

@@ -77,7 +77,7 @@ const CardPosHeader = ({
             </div>
 
             {/* Badges */}
-            {(post.profiles.carrera || post.profiles.ciclo) && (
+            {/* {(post.profiles.carrera || post.profiles.ciclo) && (
               <div className="flex gap-1.5 mt-1 flex-wrap">
                 {post.profiles.carrera && (
                   <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
@@ -91,7 +91,7 @@ const CardPosHeader = ({
                   </span>
                 )}
               </div>
-            )}
+            )} */}
           </div>
 
           {/* Opciones */}
