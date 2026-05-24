@@ -26,13 +26,12 @@ import ReportModal from "../ReportModalv6";
 import { handleShare } from "../../utils/sharePost";
 import RenderTextWithLinks from "../../utils/RenderTextWithLinks";
 import RepostButton from "../RepostButton";
-import UserHoverCard from "./UserHoverCard3";
-import useLiveTimeAgo from "@/hooks/useLiveTimeAgo";
 import { notify } from "@/utils/toast/notifyv3";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 import { useNow } from "@/hooks/useNow";
 import { formatTimeAgo } from "@/utils/timers/formatTimeAgo";
 import { GameScoreCard } from "@/components/socials/GameScoreCard2";
+import CardPosHeader from "./CardPosHeader";
 
 const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -56,15 +55,15 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
   //const time = useLiveTimeAgo(post.created_at, isMobile)
 
   // Cerrar menú al hacer click fuera
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (optionsRef.current && !optionsRef.current.contains(e.target)) {
-        setShowOptions(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  // useEffect(() => {
+  //   const handleClickOutside = (e) => {
+  //     if (optionsRef.current && !optionsRef.current.contains(e.target)) {
+  //       setShowOptions(false);
+  //     }
+  //   };
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => document.removeEventListener("mousedown", handleClickOutside);
+  // }, []);
 
   const handleReport = () => {
     setShowOptions(false);
@@ -136,6 +135,9 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
     ? post.content.replace(post.og_data.url, "").trim()
     : post.content;
 
+  // const displayName =
+  //   post.profiles.alias || post.profiles.full_name || "Usuario";
+
   return (
     <article
       onClick={goToPost}
@@ -188,15 +190,11 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
         </div>
 
         {/* Contenido */}
-        <div className="flex-1 min-w-0 w-0">
-          {/* Header */}
-          {/* Header del Post */}
+        {/* <div className="flex-1 min-w-0 w-0">
           <div className="flex flex-col mb-2">
             <div className="flex justify-between items-start">
-              {/* Columna 1: Nombre, carrera y ciclo */}
               <div className="flex flex-col flex-1 min-w-0 pr-2">
                 <div className="flex items-start justify-between min-w-0">
-                  {/* Contenedor del nombre que puede crecer */}
                   <div
                     className="flex-1 min-w-0 pr-2"
                     onClick={(e) => e.stopPropagation()}
@@ -207,15 +205,9 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                           <span className="hover:underline">
                             {post.profiles.alias || post.profiles.full_name}
                           </span>
-
-                          {/* {post.profiles.alias && (
-                            <span className="text-xs font-medium text-gray-500">
-                              @{post.profiles.username}
-                            </span>
-                          )} */}
                           <span className="text-xs font-medium text-gray-500">
-                              @{post.profiles.username}
-                            </span>
+                            @{post.profiles.username}
+                          </span>
                         </div>
                       ) : !isMe ? (
                         <UserHoverCard user={post.profiles}>
@@ -226,12 +218,6 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                             <span className="text-xs font-medium text-gray-500">
                               @{post.profiles.username}
                             </span>
-
-                            {/* {post.profiles.alias && (
-                              <span className="text-xs font-medium text-gray-500">
-                                @{post.profiles.username}
-                              </span>
-                            )} */}
                           </div>
                         </UserHoverCard>
                       ) : (
@@ -240,14 +226,8 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                             {post.profiles.alias || post.profiles.full_name}
                           </span>
                           <span className="text-xs font-medium text-gray-500">
-                              @{post.profiles.username}
-                            </span>
-
-                          {/* {post.profiles.alias && (
-                            <span className="text-xs font-medium text-gray-500">
-                              @{post.profiles.username}
-                            </span>
-                          )} */}
+                            @{post.profiles.username}
+                          </span>
                         </div>
                       )}
                     </h3>
@@ -259,9 +239,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                     {time}
                   </span>
                 </div>
-
-                {/* Carrera y ciclo */}
-                {/* <div className="flex gap-1 items-center">
+                <div className="flex gap-1 items-center">
                   {post.profiles.carrera && (
                     <span className="text-xs px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider">
                       {post.profiles.carrera}
@@ -272,9 +250,8 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                       Ciclo {post.profiles.ciclo}
                     </span>
                   )}
-                </div> */}
+                </div>
               </div>
-
               <div
                 onClick={(e) => e.stopPropagation()}
                 className="relative"
@@ -288,7 +265,6 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                 >
                   <MoreHorizontal size={18} />
                 </button>
-
                 {showOptions && (
                   <div
                     className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in duration-100"
@@ -297,10 +273,8 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                     {isMe ? (
                       <button
                         onClick={() => {
-                          setIsDeleteModalOpen(true); // Abrimos el modal en vez de usar confirm()
+                          setIsDeleteModalOpen(true);
                           setShowOptions(false);
-
-                          //onDeletModalConfirm();
                         }}
                         className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                       >
@@ -316,8 +290,6 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                         <span className="font-medium">Reportar contenido</span>
                       </button>
                     )}
-
-                    {/* Botón extra que siempre es útil */}
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(
@@ -336,7 +308,6 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
               </div>
             </div>
           </div>
-          {/* Texto del Post */}
           <p
             ref={textRef}
             className={`text-base text-gray-900 dark:text-gray-100 mb-2 whitespace-pre-wrap wrap-break-word ${
@@ -363,14 +334,90 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
             </button>
           )}
           <div onClick={(e) => e.stopPropagation()}>
-            {/* LINK PREVIEW CARD */}
-
             {post.og_data?.type === "game_score" ? (
               <GameScoreCard data={post.og_data} />
             ) : (
               <OpenGraphCard og_data={post.og_data} />
             )}
-            {/* {post.og_data && <OpenGraphCard og_data={post.og_data} />} */}
+            <PostMedia media={media} onOpen={openVideoModal} />
+          </div>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-6 text-gray-500 dark:text-gray-400 mt-3"
+          >
+            <LikeButton
+              postId={post.id}
+              initialCount={post.like_count}
+              query={query}
+            />
+            <button
+              className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+              onClick={handleComment}
+            >
+              <MessageCircle size={20} />
+              <span className="text-sm">{post.comment_count || 0}</span>
+            </button>
+            <RepostButton postId={post.id} initialReposts={post.repost_count} />
+            <BookmarkButton postId={post.id} />
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleShare(post);
+              }}
+              className="flex items-center gap-2 hover:text-emerald-500 transition-colors group"
+            >
+              <div className="p-2 group-hover:bg-emerald-500/10 rounded-full">
+                <Share size={19} />
+              </div>
+            </button>
+          </div>
+        </div> */}
+        {/* Contenido */}
+        <div className="flex-1 min-w-0 w-0">
+          {/* Header */}
+          <CardPosHeader
+            handleReportAction={() => handleReportAction()}
+            isMe={isMe}
+            isMobile={isMobile}
+            post={post}
+            setIsDeleteModalOpen={setIsDeleteModalOpen}
+            time={time}
+          />
+          {/* Texto del Post */}
+          <p
+            ref={textRef}
+            className={`text-base text-gray-900 dark:text-gray-100 mb-2 whitespace-pre-wrap wrap-break-word ${
+              expanded || isDetailedView ? "line-clamp-none" : "line-clamp-6"
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <RenderTextWithLinks text={displayContent} />
+          </p>
+
+          {isTruncated && (
+            <button
+              onClick={c}
+              className="flex items-center gap-1 text-blue-500 dark:text-blue-400 hover:underline font-medium pb-2 text-sm"
+            >
+              {expanded ? (
+                <>
+                  Ver menos <ChevronUp size={16} />
+                </>
+              ) : (
+                <>
+                  Ver más <ChevronDown size={16} />
+                </>
+              )}
+            </button>
+          )}
+
+          <div onClick={(e) => e.stopPropagation()}>
+            {/* LINK PREVIEW CARD */}
+            {post.og_data?.type === "game_score" ? (
+              <GameScoreCard data={post.og_data} />
+            ) : (
+              <OpenGraphCard og_data={post.og_data} />
+            )}
 
             <PostMedia media={media} onOpen={openVideoModal} />
           </div>
