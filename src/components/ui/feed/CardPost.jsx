@@ -208,11 +208,14 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                             {post.profiles.alias || post.profiles.full_name}
                           </span>
 
-                          {post.profiles.alias && (
+                          {/* {post.profiles.alias && (
                             <span className="text-xs font-medium text-gray-500">
                               @{post.profiles.username}
                             </span>
-                          )}
+                          )} */}
+                          <span className="text-xs font-medium text-gray-500">
+                              @{post.profiles.username}
+                            </span>
                         </div>
                       ) : !isMe ? (
                         <UserHoverCard user={post.profiles}>
@@ -220,12 +223,15 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                             <span className="hover:underline">
                               {post.profiles.alias || post.profiles.full_name}
                             </span>
+                            <span className="text-xs font-medium text-gray-500">
+                              @{post.profiles.username}
+                            </span>
 
-                            {post.profiles.alias && (
+                            {/* {post.profiles.alias && (
                               <span className="text-xs font-medium text-gray-500">
                                 @{post.profiles.username}
                               </span>
-                            )}
+                            )} */}
                           </div>
                         </UserHoverCard>
                       ) : (
@@ -233,12 +239,15 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                           <span>
                             {post.profiles.alias || post.profiles.full_name}
                           </span>
+                          <span className="text-xs font-medium text-gray-500">
+                              @{post.profiles.username}
+                            </span>
 
-                          {post.profiles.alias && (
+                          {/* {post.profiles.alias && (
                             <span className="text-xs font-medium text-gray-500">
                               @{post.profiles.username}
                             </span>
-                          )}
+                          )} */}
                         </div>
                       )}
                     </h3>
