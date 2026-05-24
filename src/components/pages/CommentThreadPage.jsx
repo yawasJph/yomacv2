@@ -37,6 +37,7 @@ const CommentThreadPage = () => {
               carrera, 
               username,
               ciclo,
+              alias,
               equipped_badges:user_badges ( 
                 is_equipped,
                 badges ( icon, name )

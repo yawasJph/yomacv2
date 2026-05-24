@@ -22,6 +22,8 @@ import { useAuthAction } from "../../hooks/useAuthAction";
 import { notify } from "@/utils/toast/notifyv3";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 import PostAuthorLike from "./badges/PostAuthorLike";
+import { useNow } from "@/hooks/useNow";
+import { formatTimeAgo } from "@/utils/timers/formatTimeAgo";
 
 const LIMIT = 250; // Umbral para mostrar el "Ver más"
 
@@ -44,6 +46,8 @@ const CommentItem = ({
   const navigate = useNavigate();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const now = useNow(60000); // 1 min
+  const time = formatTimeAgo(comment.created_at, now);
   const {
     mutate: deleteComment,
     isLoading: isDeleting,
@@ -162,93 +166,186 @@ const CommentItem = ({
         )}
 
         <div className="flex-1">
-          <div className="flex flex-col mb-2">
-            <div className="flex justify-between items-start">
-              {/* Columna 1: Nombre, carrera y ciclo */}
-              <div className="flex flex-col flex-1 min-w-0 pr-2">
-                <div className="flex items-start justify-between min-w-0">
-                  {/* Contenedor del nombre que puede crecer */}
-                  <div className="flex-1 min-w-0 pr-2 mb-2">
-                    <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base wrap-break-word">
-                      {isMobile ? (
-                        <span>{comment.profiles.full_name}</span>
-                      ) : user?.id !== comment.profiles.id ? (
-                        <span>{comment.profiles.full_name}</span>
-                      ) : (
-                        <span>{comment.profiles.full_name}</span>
-                      )}
-                    </h3>
-                  </div>
-
-                  {/* Columna 2: Tiempo del post - se mueve según el largo del nombre */}
-                  <span
-                    className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-500 font-medium whitespace-nowrap p-1.5 shrink-0"
-                    title={new Date(comment.created_at).toLocaleString("es-PE")}
-                  >
-                    {isMobile
-                      ? timeAgoTiny(comment.created_at)
-                      : timeAgoLong(comment.created_at)}
-                  </span>
-                </div>
-
-                {/* Carrera y ciclo */}
-                <div className="flex gap-1 items-center">
-                  {comment.profiles.carrera && (
-                    <span className="text-xs px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider">
-                      {comment.profiles.carrera}
-                    </span>
-                  )}
-                  {comment.profiles.ciclo && (
-                    <span className="text-xs px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400 font-bold border border-gray-200 dark:border-gray-700">
-                      Ciclo {comment.profiles.ciclo}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="relative" ref={optionsRef}>
-                <button
-                  onClick={() => {
-                    setShowOptions(!showOptions);
-                  }}
-                  className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors shrink-0 ml-2"
-                >
-                  <MoreHorizontal size={18} />
-                </button>
-
-                {showOptions && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in duration-100">
-                    <button
-                      onClick={handleCopy}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+          <div className="flex items-start gap-3 mb-2">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-2">
+                {/* Info usuario */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-1.5 min-w-0">
+                    {/* Nombre */}
+                    <span
+                      className="
+              text-sm sm:text-base
+              font-bold
+              text-gray-900 dark:text-gray-100
+              hover:underline
+              cursor-pointer
+              truncate
+              max-w-[140px] sm:max-w-[220px] md:max-w-none
+            "
                     >
-                      <Copy size={14} /> Copiar texto
-                    </button>
-                    {isMe ? (
-                      <button
-                        onClick={() => {
-                          setIsDeleteModalOpen(true); // Abrimos el modal en vez de usar confirm()
-                          setShowOptions(false);
-                        }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
-                      >
-                        <Trash2 size={16} />
-                        <span className="font-medium">Eliminar</span>
-                      </button>
-                    ) : (
-                      <button
-                        onClick={handleReportAction}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                      >
-                        <Flag size={16} />
-                        <span className="font-medium">Reportar contenido</span>
-                      </button>
+                      {comment.profiles.alias || comment.profiles.full_name}
+                    </span>
+
+                    {/* Username */}
+                    {comment.profiles.username && (
+                      <span className="text-xs text-gray-400 dark:text-gray-500 truncate">
+                        @{comment.profiles.username}
+                      </span>
                     )}
+
+                    {/* Punto */}
+                    <span className="text-xs text-gray-300 dark:text-gray-600">
+                      ·
+                    </span>
+
+                    {/* Tiempo */}
+                    {/* <span
+                      className="
+              text-xs
+              text-gray-400 dark:text-gray-500
+              whitespace-nowrap
+            "
+                      title={new Date(comment.created_at).toLocaleString(
+                        "es-PE",
+                      )}
+                    >
+                      {isMobile
+                        ? timeAgoTiny(comment.created_at)
+                        : timeAgoLong(comment.created_at)}
+                    </span> */}
+                    <span
+                      className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap"
+                      title={new Date(comment.created_at).toLocaleString(
+                        "es-PE",
+                      )}
+                    >
+                      {time}
+                    </span>
                   </div>
-                )}
+
+                  {/* Badges */}
+                  {(comment.profiles.carrera || comment.profiles.ciclo) && (
+                    <div className="flex gap-1.5 mt-1 flex-wrap">
+                      {comment.profiles.carrera && (
+                        <span
+                          className="
+                  text-[11px]
+                  font-medium
+                  px-2 py-0.5
+                  rounded-full
+                  bg-emerald-100
+                  dark:bg-emerald-500/10
+                  text-emerald-700
+                  dark:text-emerald-400
+                "
+                        >
+                          {comment.profiles.carrera}
+                        </span>
+                      )}
+
+                      {comment.profiles.ciclo && (
+                        <span
+                          className="
+                  text-[11px]
+                  font-medium
+                  px-2 py-0.5
+                  rounded-full
+                  bg-gray-100 dark:bg-gray-800
+                  text-gray-500 dark:text-gray-400
+                  border border-gray-200 dark:border-gray-700
+                "
+                        >
+                          Ciclo {comment.profiles.ciclo}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Opciones */}
+                <div className="relative shrink-0" ref={optionsRef}>
+                  <button
+                    onClick={() => {
+                      setShowOptions(!showOptions);
+                    }}
+                    className="
+            w-8 h-8
+            flex items-center justify-center
+            rounded-full
+            text-gray-400
+            hover:bg-gray-100 dark:hover:bg-gray-800
+            transition-colors
+          "
+                  >
+                    <MoreHorizontal size={16} />
+                  </button>
+
+                  {showOptions && (
+                    <div
+                      className="
+              absolute right-0 mt-2 w-48
+              bg-white dark:bg-neutral-900
+              border border-gray-100 dark:border-gray-800
+              rounded-xl shadow-xl
+              z-50 overflow-hidden
+              animate-in fade-in zoom-in duration-100
+            "
+                    >
+                      <button
+                        onClick={handleCopy}
+                        className="
+                w-full flex items-center gap-3
+                px-4 py-2.5 text-sm
+                text-gray-600 dark:text-gray-300
+                hover:bg-gray-50 dark:hover:bg-gray-800
+              "
+                      >
+                        <Copy size={14} />
+                        Copiar texto
+                      </button>
+
+                      {isMe ? (
+                        <button
+                          onClick={() => {
+                            setIsDeleteModalOpen(true);
+                            setShowOptions(false);
+                          }}
+                          className="
+                  w-full flex items-center gap-3
+                  px-4 py-3 text-sm
+                  text-red-500
+                  hover:bg-red-50 dark:hover:bg-red-500/10
+                  transition-colors
+                "
+                        >
+                          <Trash2 size={16} />
+                          <span className="font-medium">Eliminar</span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={handleReportAction}
+                          className="
+                  w-full flex items-center gap-3
+                  px-4 py-3 text-sm
+                  text-gray-700 dark:text-gray-300
+                  hover:bg-gray-50 dark:hover:bg-gray-800
+                  transition-colors
+                "
+                        >
+                          <Flag size={16} />
+                          <span className="font-medium">
+                            Reportar contenido
+                          </span>
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
+
           <div className="text-gray-800 dark:text-gray-200 mt-1 text-[15px] whitespace-pre-wrap wrap-break-word overflow-hidden">
             <RenderTextWithLinks text={displayedText} />
             {/* {displayedText} */}
@@ -293,9 +390,7 @@ const CommentItem = ({
               <span className="text-xs">{comment.reply_count}</span>
             </button>
             {/* 2. AQUÍ ESTÁ LA MAGIA: El badge del "Autor le dio like" */}
-            {authorLiked && (
-              <PostAuthorLike avatar={postAuthor.avatar}/>
-            )}
+            {authorLiked && <PostAuthorLike avatar={postAuthor.avatar} />}
           </div>
 
           {/* Renderizar el Modal si hay una imagen seleccionada */}
