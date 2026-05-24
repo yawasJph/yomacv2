@@ -54,6 +54,7 @@ export const useEditProfile = (user, navigate) => {
     if (profile) {
       setFormData({
         ...profile,
+        alias: profile.alias || "",
         bio: profile.bio || "",
         socials: {
           web: "",
@@ -91,6 +92,7 @@ export const useEditProfile = (user, navigate) => {
           bio: formData.bio,
           carrera: formData.carrera || null,
           ciclo: formData.ciclo || null,
+          alias: formData.alias || null,
           avatar: avatarUrl,
           cover: coverUrl,
           socials: formData.socials,

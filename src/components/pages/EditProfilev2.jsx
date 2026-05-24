@@ -6,7 +6,6 @@ import ProfileEditSkeleton from "../skeletons/ProfileEditSkeleton";
 import {
   ArrowLeft,
   Camera,
-  Check,
   Facebook,
   Github,
   Globe,
@@ -148,27 +147,30 @@ const EditProfile = () => {
       {/* Formulario */}
       <div className="px-6 mt-16 space-y-6">
         {/* USERNAME (Solo lectura) */}
-        {/* <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-500">
-            Nombre de Usuario
-          </label>
+        {/* ALIAS */}
+        <div className="space-y-2">
+          <label className="text-sm font-bold text-gray-500">Alias</label>
+
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">
-              @
-            </span>
             <input
               type="text"
-              value={formData.username || ""}
-              disabled
-              className="w-full pl-8 p-3 bg-gray-100/50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 rounded-xl border border-gray-200 dark:border-gray-800 cursor-not-allowed outline-none font-medium"
-              title="El nombre de usuario es generado por la institución y no se puede cambiar."
+              value={formData.alias || ""}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  alias: e.target.value,
+                })
+              }
+              maxLength={30}
+              placeholder="Tu alias"
+              className="w-full p-3 bg-gray-50 dark:bg-gray-900 dark:text-white rounded-xl border border-gray-100 dark:border-gray-800 outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
             />
           </div>
+
           <p className="text-xs text-gray-400 mt-1">
-            Tu nombre de usuario es único y está vinculado a tu correo
-            institucional.
+            Este nombre se mostrará públicamente.
           </p>
-        </div> */}
+        </div>
 
         {/* Bio con contador de caracteres */}
         <div className="space-y-2">

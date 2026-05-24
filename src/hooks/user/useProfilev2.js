@@ -14,7 +14,7 @@ export const useProfile = (usernameParam) => {
 
       const { data, error } = await supabaseClient
         .from("profiles_with_stats")
-        .select("id, full_name, avatar, ciclo, cover, carrera, socials, credits, email, bio, created_at, username, is_banned, equipped_badges, followers_count, following_count")
+        .select("id, full_name, avatar, ciclo, cover, carrera, socials, credits, email, bio, created_at, username, is_banned, equipped_badges, followers_count, following_count, alias")
         .eq("username", cleanUsername) // 👈 Buscamos por username
         .single();
         

@@ -203,17 +203,43 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                   >
                     <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base wrap-break-word">
                       {isMobile ? (
-                        <span className="hover:underline">
-                          {post.profiles.full_name}
-                        </span>
+                        <div className="flex flex-wrap items-center gap-1">
+                          <span className="hover:underline">
+                            {post.profiles.alias || post.profiles.full_name}
+                          </span>
+
+                          {post.profiles.alias && (
+                            <span className="text-xs font-medium text-gray-500">
+                              @{post.profiles.username}
+                            </span>
+                          )}
+                        </div>
                       ) : !isMe ? (
                         <UserHoverCard user={post.profiles}>
-                          <span className="hover:underline cursor-pointer">
-                            {post.profiles.full_name}
-                          </span>
+                          <div className="flex flex-wrap items-center gap-1 cursor-pointer">
+                            <span className="hover:underline">
+                              {post.profiles.alias || post.profiles.full_name}
+                            </span>
+
+                            {post.profiles.alias && (
+                              <span className="text-xs font-medium text-gray-500">
+                                @{post.profiles.username}
+                              </span>
+                            )}
+                          </div>
                         </UserHoverCard>
                       ) : (
-                        <span>{post.profiles.full_name}</span>
+                        <div className="flex flex-wrap items-center gap-1">
+                          <span>
+                            {post.profiles.alias || post.profiles.full_name}
+                          </span>
+
+                          {post.profiles.alias && (
+                            <span className="text-xs font-medium text-gray-500">
+                              @{post.profiles.username}
+                            </span>
+                          )}
+                        </div>
                       )}
                     </h3>
                   </div>
@@ -226,7 +252,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                 </div>
 
                 {/* Carrera y ciclo */}
-                <div className="flex gap-1 items-center">
+                {/* <div className="flex gap-1 items-center">
                   {post.profiles.carrera && (
                     <span className="text-xs px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider">
                       {post.profiles.carrera}
@@ -237,7 +263,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
                       Ciclo {post.profiles.ciclo}
                     </span>
                   )}
-                </div>
+                </div> */}
               </div>
 
               <div
@@ -330,7 +356,11 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
           <div onClick={(e) => e.stopPropagation()}>
             {/* LINK PREVIEW CARD */}
 
-            {post.og_data?.type === "game_score" ? <GameScoreCard data={post.og_data} /> : <OpenGraphCard og_data={post.og_data} />}
+            {post.og_data?.type === "game_score" ? (
+              <GameScoreCard data={post.og_data} />
+            ) : (
+              <OpenGraphCard og_data={post.og_data} />
+            )}
             {/* {post.og_data && <OpenGraphCard og_data={post.og_data} />} */}
 
             <PostMedia media={media} onOpen={openVideoModal} />

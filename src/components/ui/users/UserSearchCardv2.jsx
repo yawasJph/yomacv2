@@ -107,9 +107,17 @@ const UserSearchCard = ({ profile }) => {
 
         <div className="min-w-0 flex-1">
           {renderLink(
-            <h4 className="font-bold text-gray-900 dark:text-white truncate text-sm sm:text-base hover:underline decoration-emerald-500">
-              {profile.full_name}
-            </h4>,
+            <div className="flex items-center gap-1 min-w-0">
+              <h4 className="font-bold text-gray-900 dark:text-white truncate text-sm sm:text-base hover:underline decoration-emerald-500">
+                {profile.alias || profile.full_name}
+              </h4>
+
+              {profile.alias && (
+                <span className="text-xs text-gray-500 font-medium shrink-0">
+                  @{profile.username}
+                </span>
+              )}
+            </div>,
           )}
 
           {/* BADGES */}

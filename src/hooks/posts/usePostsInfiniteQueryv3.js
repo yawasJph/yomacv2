@@ -40,7 +40,7 @@ export const usePostsInfiniteQuery = (filterConfig = {}, options = {}) => {
         .select(`
           *,
           profiles:user_id (
-            id, full_name, avatar, carrera, ciclo,
+            id, full_name, avatar, carrera, ciclo, alias, 
             equipped_badges:user_badges ( 
               is_equipped,
               badges ( icon, name , category, resource_url)
@@ -74,7 +74,7 @@ export const usePostsInfiniteQuery = (filterConfig = {}, options = {}) => {
       .select(`
         *,
         profiles:user_id (
-          id, full_name, avatar, carrera, ciclo, username,
+          id, full_name, avatar, carrera, ciclo, username, alias, alias,
           equipped_badges:user_badges ( 
             is_equipped,
             badges ( icon, name , category, resource_url)

@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft,
   Calendar,
+  CircleHelp,
   Flag,
   MoreVertical,
   Share,
@@ -27,7 +28,6 @@ import ReportModal from "../ui/ReportModalv6";
 import { ProfileNotFound } from "../fallback/ProfileNotFound";
 import { notify } from "@/utils/toast/notifyv3";
 
-
 const UserProfile = () => {
   // 1. Ahora leemos 'username' de la URL, no 'userId'
   const { username } = useParams();
@@ -50,6 +50,7 @@ const UserProfile = () => {
   const { isFollowing, followUser, unfollowUser } = useFollow();
   const [reportUserId, setReportUserId] = useState(null);
   const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [showRealName, setShowRealName] = useState(false);
 
   const isDev = profile?.username === "jllacuash";
 
@@ -72,12 +73,16 @@ const UserProfile = () => {
     setReportModalOpen(true);
   };
 
-   const handleReportAction = (userId) => {
-      setMenuOpen(false)
-      executeAction(() => openReportModal(userId), "para reportar", () => {
+  const handleReportAction = (userId) => {
+    setMenuOpen(false);
+    executeAction(
+      () => openReportModal(userId),
+      "para reportar",
+      () => {
         notify.info("Necesitas iniciar sesión para reportar este usuario.");
-      });
-    };
+      },
+    );
+  };
 
   // 5. Cargar posts paginados usando el userId real (habilitado solo si hay userId)
   const {
@@ -141,9 +146,7 @@ const UserProfile = () => {
 
   // Si buscó el username y no existe en la BD
   if (!profile) {
-    return (
-      <ProfileNotFound/>
-    );
+    return <ProfileNotFound />;
   }
 
   return (
@@ -224,7 +227,7 @@ const UserProfile = () => {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-bold dark:text-white leading-tight">
-                {profile.full_name}
+                {profile.alias || profile.full_name}
               </h1>
 
               {profile.is_banned && (
@@ -268,7 +271,7 @@ const UserProfile = () => {
               {/* Reportar */}
               {!isMe && (
                 <button
-                  onClick={()=>handleReportAction(profile.id)}
+                  onClick={() => handleReportAction(profile.id)}
                   className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
                 >
                   <Flag size={16} />
@@ -364,17 +367,58 @@ const UserProfile = () => {
       {/* INFORMACIÓN DEL PERFIL */}
       <div className="px-4 mt-5 space-y-3">
         <div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <h2 className="text-xl font-extrabold dark:text-white tracking-tight sm:text-2xl sm:font-black">
-              {profile?.full_name}
-            </h2>
-            {/* Cartel llamativo de baneo */}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <div className="flex items-center gap-2 min-w-0">
+              <h2 className="text-xl font-extrabold dark:text-white tracking-tight sm:text-2xl sm:font-black truncate">
+                {profile?.alias || profile?.full_name}
+              </h2>
+
+              {profile?.alias && (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowRealName(!showRealName)}
+                    className="
+                      group
+                      flex items-center justify-center
+                      w-5 h-5
+                      rounded-full
+                      bg-gray-100 dark:bg-gray-800
+                      hover:bg-emerald-100 dark:hover:bg-emerald-500/20
+                      transition-all duration-200
+                      shrink-0
+                    "
+                  >
+                    <CircleHelp
+                      size={12}
+                      className="
+                      text-gray-500 dark:text-gray-400
+                      group-hover:text-emerald-500
+                      transition-colors
+                    "
+                    />
+                  </button>
+                  
+
+                  {showRealName && (
+                    <div className="absolute top-6 left-0 z-50 bg-black text-white text-xs px-3 py-2 rounded-xl shadow-xl whitespace-nowrap">
+                      {profile?.full_name}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <span className="text-sm text-gray-500 font-medium break-all">
+              @{profile?.username}
+            </span>
+
             {profile?.is_banned && (
-              <span className="bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full font-black uppercase">
+              <span className="bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full font-black uppercase whitespace-nowrap">
                 Baneado
               </span>
             )}
           </div>
+
           {/* RENDERIZADO DE INSIGNIAS */}
           {profile?.equipped_badges && (
             <div className="flex items-center gap-1">
