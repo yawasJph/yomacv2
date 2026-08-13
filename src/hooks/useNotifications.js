@@ -4,8 +4,6 @@ import { supabaseClient } from "../supabase/supabaseClient";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
 
-console.log("HOOK V1");
-
 export const useNotifications = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();

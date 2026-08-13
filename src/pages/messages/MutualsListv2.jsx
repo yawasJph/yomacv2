@@ -88,7 +88,6 @@ const MutualsList = ({
           {filteredMutuals.length > 0 ? (
             filteredMutuals.map((friend) => {
               const isOnline = !!onlineUsers[friend.friend_id];
-              console.log(friend.last_message);
               return (
                 <button
                   key={friend.friend_id}

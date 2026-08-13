@@ -69,7 +69,7 @@ const GameCenter = () => {
       {/* grid game cards*/}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {GAMES_LIST.map((game, index) => (
-          <GameCard game={game} index={index} onPath={handleGameNavigate} />
+          <GameCard key={index} game={game} index={index} onPath={handleGameNavigate} />
         ))}
       </div>
 
