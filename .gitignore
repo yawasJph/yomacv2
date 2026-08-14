@@ -24,8 +24,9 @@ dist-ssr
 *.sw?
 
 .env
-
 .agents/
+
+supabase/.temp/
 
 # Herramientas de IA y configuraciones locales
 opencode.json
