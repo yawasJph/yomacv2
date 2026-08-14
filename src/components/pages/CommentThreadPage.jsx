@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useComments } from "../../hooks/useComments";
 import { useState } from "react";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import GifPicker from "../utils/GifPickerv8";
+import GifPicker from "../utils/GifPickerv9";
 import { useAuth } from "../../context/AuthContext";
 import { useProfile } from "../../hooks/useProfile";
 import EmojiSelector from "../emoji/EmojiSelector";
@@ -159,12 +159,12 @@ const CommentThreadPage = () => {
               )}
 
               <div className="flex items-center justify-between mt-3">
-                <div className="flex gap-2 text-emerald-500">
+                <div className="flex gap-2 dark:text-gray-400 text-gray-500">
                   <EmojiSelector addEmoji={onEmojiClick} />
                   <button
                     type="button"
                     onClick={() => setShowGif(true)}
-                    className="p-2 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-full"
+                    className="p-2 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-full hover:text-emerald-500 hover:dark:text-emerald-400"
                   >
                     <ImageIcon size={20} />
                   </button>

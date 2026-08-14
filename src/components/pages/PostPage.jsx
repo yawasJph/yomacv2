@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, ImageIcon, Smile, X } from "lucide-react";
+import { ArrowLeft, ImageIcon, X } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useComments } from "../../hooks/useComments";
@@ -8,7 +8,7 @@ import { supabaseClient } from "../../supabase/supabaseClient";
 import CardPost from "../ui/feed/CardPost";
 import SkeletonPost from "../skeletons/SkeletonPost";
 import { useProfile } from "../../hooks/useProfile";
-import GifPicker from "../utils/GifPickerv8";
+import GifPicker from "../utils/GifPickerv9";
 import CommentItem from "../ui/CommentItem";
 import { useAuthAction } from "../../hooks/useAuthAction";
 import { notify } from "@/utils/toast/notifyv3";
@@ -187,12 +187,12 @@ const PostPage = () => {
                 )}
 
                 <div className="flex items-center justify-between mt-3">
-                  <div className="flex gap-2 text-emerald-500">
+                  <div className="flex gap-2 dark:text-gray-400 text-gray-500">
                     <EmojiSelector addEmoji={onEmojiClick} />
                     <button
                       type="button"
                       onClick={() => setShowGif(true)}
-                      className="p-2 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-full"
+                      className="p-2 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-full hover:text-emerald-500 hover:dark:text-emerald-400"
                     >
                       <ImageIcon size={20} />
                     </button>
