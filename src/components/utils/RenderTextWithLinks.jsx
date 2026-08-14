@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 
 const RenderTextWithLinks = ({ text }) => {
-  if (!text) return null;
-
   const navigate = useNavigate();
+
+  if (!text) return null;
 
   const handleSearchTrend = (trendName) => {
     if (!trendName) return;

@@ -5,9 +5,10 @@ import { useRef, useEffect } from "react"
  *
  * @param callback Function to be called on component unmount
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const useUnmount = (callback) => {
   const ref = useRef(callback)
+  // Latest-ref pattern durante render (patrón documentado de React)
+  // eslint-disable-next-line react-hooks/refs
   ref.current = callback
 
   useEffect(() => () => {

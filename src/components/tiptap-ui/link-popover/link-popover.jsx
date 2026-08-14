@@ -197,6 +197,7 @@ export const LinkPopover = forwardRef((
 
   useEffect(() => {
     if (autoOpenOnLinkActive && isActive) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsOpen(true)
     }
   }, [autoOpenOnLinkActive, isActive])

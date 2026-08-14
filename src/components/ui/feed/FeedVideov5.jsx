@@ -26,9 +26,9 @@ const UniversalFeedVideo = forwardRef(
     const containerRef = useRef(null);
 
     const [isPlaying, setIsPlaying] = useState(false);
-    const [muted, setMuted] = useState(true);
+    const [muted] = useState(true);
     const [progress, setProgress] = useState(0);
-    const [isHover, setIsHover] = useState(false);
+    const [, setIsHover] = useState(false);
     const [isInView, setIsInView] = useState(false);
 
     useImperativeHandle(ref, () => ({
@@ -71,6 +71,7 @@ const UniversalFeedVideo = forwardRef(
           .catch(() => {});
       } else {
         video.pause();
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsPlaying(false);
       }
     }, [shouldPlay, isInView]);

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { supabaseClient } from '../../supabase/supabaseClient';
 import { Zap, Flame, Swords } from 'lucide-react';
 
-const MichiVersus = ({ roomData, currentUser, onComplete }) => {
+const MichiVersus = ({ roomData, onComplete }) => {
   const [player1, setPlayer1] = useState(null);
   const [player2, setPlayer2] = useState(null);
   useEffect(() => {
@@ -26,7 +26,7 @@ const MichiVersus = ({ roomData, currentUser, onComplete }) => {
     }, 3500);
 
     return () => clearTimeout(timer);
-  }, [roomData]);
+  }, [roomData, onComplete]);
 
   if (!player1 || !player2) return null;
 

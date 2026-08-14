@@ -3,8 +3,8 @@ import { useLike } from "../../../hooks/useLike";
 import { useAuthAction } from "../../../hooks/useAuthAction";
 import { notify } from "@/utils/toast/notifyv3";
 
-const LikeButton = ({ postId, initialCount = 0, query = "" }) => {
-  const { isLiked, toggleLike, isLoading } = useLike(postId, query);
+const LikeButton = ({ postId, initialCount = 0 }) => {
+  const { isLiked, toggleLike, isLoading } = useLike(postId);
   const { executeAction } = useAuthAction();
 
   return (

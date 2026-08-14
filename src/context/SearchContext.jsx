@@ -7,8 +7,9 @@ export const SearchProvider = ({ children }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [queryG, setQuery] = useState(searchParams.get("q") || "");
 
-  // 🔄 sincroniza URL → estado
+  // 🔄 sincroniza URL → estado (suscripción a sistema externo: searchParams)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setQuery(searchParams.get("q") || "");
   }, [searchParams]);
 

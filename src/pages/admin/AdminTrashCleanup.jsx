@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Trash2,
   RefreshCcw,
@@ -9,8 +8,8 @@ import {
   Loader2,
   ArrowLeft,
 } from "lucide-react";
-import { toast } from "sonner";
-import { supabaseClient } from "../../supabase/supabaseClient"; // Ajusta a tu ruta
+
+
 import { useNavigate } from "react-router-dom";
 import { useCleanup } from "@/hooks/admin/useCleanup";
 

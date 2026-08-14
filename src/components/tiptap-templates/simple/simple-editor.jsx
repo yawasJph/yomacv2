@@ -13,7 +13,7 @@ import { Highlight } from "@tiptap/extension-highlight";
 import { Subscript } from "@tiptap/extension-subscript";
 import { Superscript } from "@tiptap/extension-superscript";
 import { Selection } from "@tiptap/extensions";
-import { common, createLowlight, all } from "lowlight";
+import { common, createLowlight } from "lowlight";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import pgsql from "highlight.js/lib/languages/pgsql";
@@ -242,6 +242,7 @@ export function SimpleEditor({ onEditorReady }) {
 
   const rect = useCursorVisibility({
     editor,
+    // eslint-disable-next-line react-hooks/refs
     overlayHeight: toolbarRef.current?.getBoundingClientRect().height ?? 0,
   });
 

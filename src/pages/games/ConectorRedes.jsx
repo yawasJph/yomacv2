@@ -114,6 +114,8 @@ const ConectorRedes = ({ onBack }) => {
         color: p.color,
       };
     });
+    // Reset del grid al cambiar de nivel (reset-on-prop keyed pattern)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setGrid(newGrid);
     setPaths(level.pairs.reduce((acc, p) => ({ ...acc, [p.id]: [] }), {}));
     setTimer(0);
@@ -214,6 +216,28 @@ const ConectorRedes = ({ onBack }) => {
     setCurrentColor(null);
   };
 
+  const saveScore = useCallback(async () => {
+    // Cálculo: Base según tamaño del tablero - tiempo empleado
+    const basePoints = level.size * 200;
+    const timePenalty = timer * 2;
+    const levelScore = Math.max(basePoints - timePenalty, 100);
+
+    const newTotal = totalScore + levelScore;
+    setTotalScore(newTotal);
+
+    // Si es el último nivel, guardamos en la DB el total
+    const currentIndex = LEVELS.findIndex((l) => l.id === level.id);
+    if (currentIndex === LEVELS.length - 1) {
+      await supabaseClient.from("leaderboards").insert({
+        user_id: user.id,
+        game_id: "redes_campus",
+        score: newTotal,
+      });
+      toast.info(newTotal)
+      setGameFinished(true); // Activamos pantalla final
+    }
+  }, [level, timer, totalScore, user.id]);
+
   // Validación de victoria mejorada
   useEffect(() => {
     const checkWin = () => {
@@ -246,29 +270,7 @@ const ConectorRedes = ({ onBack }) => {
       }
     };
     checkWin();
-  }, [paths]);
-
-  const saveScore = async () => {
-    // Cálculo: Base según tamaño del tablero - tiempo empleado
-    const basePoints = level.size * 200;
-    const timePenalty = timer * 2;
-    const levelScore = Math.max(basePoints - timePenalty, 100);
-
-    const newTotal = totalScore + levelScore;
-    setTotalScore(newTotal);
-
-    // Si es el último nivel, guardamos en la DB el total
-    const currentIndex = LEVELS.findIndex((l) => l.id === level.id);
-    if (currentIndex === LEVELS.length - 1) {
-      await supabaseClient.from("leaderboards").insert({
-        user_id: user.id,
-        game_id: "redes_campus",
-        score: newTotal,
-      });
-      toast.info(newTotal)
-      setGameFinished(true); // Activamos pantalla final
-    }
-  };
+  }, [paths, level, completed, saveScore]);
 
   const isConnected = (colorId, r, c, tr, tc) => {
     const path = paths[colorId] || [];
@@ -371,7 +373,7 @@ const ConectorRedes = ({ onBack }) => {
                 data-cell={`${r}-${c}`} // <--- IDENTIFICADOR PARA document.elementFromPoint
                 onMouseDown={() => startDrawing(r, c, cell)}
                 onMouseEnter={() => draw(r, c)}
-                onTouchStart={(e) => {
+                onTouchStart={() => {
                   // Prevenir comportamientos extraños en móvil
                   startDrawing(r, c, cell);
                 }}

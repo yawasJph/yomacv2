@@ -23,7 +23,6 @@ import { useProfile } from "@/hooks/user/useProfilev2";
 import { handleShareProfile } from "../utils/handleShareProfile";
 import SocialLinks from "../socials/SocialLinks";
 import UserBadges from "../user/UserBadges";
-import DevBadge from "../ui/userProfile/DevBadge";
 import ReportModal from "../ui/ReportModalv6";
 import { ProfileNotFound } from "../fallback/ProfileNotFound";
 import { notify } from "@/utils/toast/notifyv3";
@@ -51,8 +50,6 @@ const UserProfile = () => {
   const [reportUserId, setReportUserId] = useState(null);
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [showRealName, setShowRealName] = useState(false);
-
-  const isDev = profile?.username === "jllacuash";
 
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -115,7 +112,7 @@ const UserProfile = () => {
       } else {
         await followUser(userId);
       }
-      queryClient.invalidateQueries({ queryKey: ["profile", username] }); // Refrescar por username
+      queryClient.invalidateQueries({ queryKey: ["profile-by-username", username] }); // Refrescar por username
       queryClient.invalidateQueries({ queryKey: ["profile", currentUser?.id] });
       queryClient.invalidateQueries({ queryKey: ["user_suggestions"] });
       queryClient.invalidateQueries({ queryKey: ["connections", userId] });

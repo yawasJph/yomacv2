@@ -24,7 +24,7 @@ export const useAdminStatus = () => {
 
         if (error) throw error;
         setIsAdmin(data?.is_admin || false);
-      } catch (err) {
+      } catch (_err) {
         setIsAdmin(false);
       } finally {
         setAdminLoading(false);

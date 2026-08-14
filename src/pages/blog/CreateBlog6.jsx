@@ -12,12 +12,12 @@ import SaveButton from "./SaveButton";
 import PublicButton from "./PublicButton";
 import { notify } from "@/utils/toast/notifyv3";
 import { validateTitle } from "@/utils/blog/validations";
-import { contentErrors, imageErrors } from "@/consts/blog/errorMesages";
+import { contentErrors, imageErrors } from "@/consts/blog/errorMessages";
 import { getMetadata } from "@/utils/blog/getMetadata";
 
 const random = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-const CreateBlog = ({ isEditing = false }) => {
+const CreateBlog = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -29,8 +29,8 @@ const CreateBlog = ({ isEditing = false }) => {
   const [title, setTitle] = useState("");
   const [imageFile, setImageFile] = useState(null); // File (nuevo) o String (URL existente)
   const [previewUrl, setPreviewUrl] = useState("");
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [, setUploadProgress] = useState(0);
+  const [, setIsScrolled] = useState(false);
 
   // Scroll handler (modo compacto)
   useEffect(() => {
@@ -57,6 +57,8 @@ const CreateBlog = ({ isEditing = false }) => {
   // Sincronizar los datos del Query con el estado local y el editor
   useEffect(() => {
     if (blogData && editor) {
+      // Sync query-data → estado local/editor al cargar blog (reset-on-prop)
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTitle(blogData.title);
       setImageFile(blogData.banner_url);
       setPreviewUrl(blogData.banner_url);

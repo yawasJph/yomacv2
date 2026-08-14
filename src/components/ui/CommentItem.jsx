@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { timeAgoTiny } from "../utils/timeagoTiny";
-import { timeAgoLong } from "../utils/timeAgoLong";
+
+
 import {
   Flag,
   MoreHorizontal,
@@ -10,7 +10,6 @@ import {
   Heart,
 } from "lucide-react";
 import ImageModal from "./userProfile/ImageModal";
-import { useIsMobile } from "../../hooks/useIsMobile";
 import { useAuth } from "../../context/AuthContext";
 import ConfirmModal from "@/components/modals/ConfirmModalv2";
 import { useDeleteComment } from "../../hooks/useDeleteComment";
@@ -34,7 +33,6 @@ const CommentItem = ({
   postAuthor,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const isMobile = useIsMobile();
   const [selectedImg, setSelectedImg] = useState(null);
   const { user } = useAuth();
   const [showOptions, setShowOptions] = useState(false);
@@ -50,7 +48,6 @@ const CommentItem = ({
   const time = formatTimeAgo(comment.created_at, now);
   const {
     mutate: deleteComment,
-    isLoading: isDeleting,
     isPending,
   } = useDeleteComment(comment.post_id);
 

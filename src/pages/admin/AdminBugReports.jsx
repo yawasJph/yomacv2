@@ -151,7 +151,6 @@ const AdminBugReports = () => {
           // Variables auxiliares para limpiar el JSX
           const isBug = report.category === REPORT_BUGS.category.bug;
           const hasMedia = !!report.image_url;
-          const isPending = report.status === REPORT_BUGS.status.pending;
 
           return (
             <div

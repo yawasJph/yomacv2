@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import { Smile, X } from "lucide-react";
-import useDarkMode from "@/hooks/useDarkMode";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function EmojiSelector({ addEmoji }) {
   const [showPicker, setShowPicker] = useState(false);
-  const {darkMode} = useDarkMode()
+  const { isDark } = useTheme()
 
   // Bloquear scroll en móvil cuando el picker está abierto
   useEffect(() => {
@@ -59,7 +59,7 @@ export default function EmojiSelector({ addEmoji }) {
                   // En móvil es mejor no cerrarlo para que sigan eligiendo, 
                   // pero si prefieres cerrar: if(window.innerWidth < 640) setShowPicker(false)
                 }}
-                theme={darkMode ? Theme.DARK : Theme.LIGHT}
+                theme={isDark ? Theme.DARK : Theme.LIGHT}
                 lazyLoadEmojis={true}
                 // Ajustamos el ancho para que en móvil sea 100%
                 width="100%"

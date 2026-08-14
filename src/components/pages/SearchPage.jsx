@@ -7,9 +7,9 @@ import { useIsMobile } from "../../hooks/useIsMobile";
 // UI Components
 import CardPost from "../ui/feed/CardPost";
 import SearchBar from "../ui/SearchBar";
-import TrendingTopics from "../ui/rigthSidebar/TrendingTopics";
+import TrendingTopics from "../ui/rightSidebar/TrendingTopics";
 import NoResultsMessage from "../ui/NoResultsMessage";
-import UserSuggestions from "../ui/rigthSidebar/UserSuggestions2";
+import UserSuggestions from "../ui/rightSidebar/UserSuggestions2";
 import SkeletonPost from "../skeletons/SkeletonPost";
 import UserSearchCardv2 from "../ui/users/UserSearchCardv2";
 
@@ -90,7 +90,7 @@ const SearchPage = () => {
             <div className="divide-y divide-gray-50 dark:divide-gray-900">
               {activeTab === "posts" ? (
                 results.posts.length > 0 ? (
-                  results.posts.map((post) => <CardPost key={post.id} post={post} media={post.post_media} query={query}/>)
+                  results.posts.map((post) => <CardPost key={post.id} post={post} media={post.post_media} />)
                 ) : <NoResultsMessage query={query} />
               ) : (
                 results.users.length > 0 ? (

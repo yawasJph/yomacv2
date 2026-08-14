@@ -4,11 +4,12 @@ import { useBugReport } from "@/hooks/bugs-report/useBugReport";
 import { REPORT_BUGS } from "@/consts/bugs";
 
 const ReportBugModal = ({ report, onClose }) => {
+  const { updateReport, updateLoading, deleteReport, isDeleting } = useBugReport();
+
   if (!report) return null;
   const isBug = report.category === REPORT_BUGS.category.bug;
   const isPending = report.status === REPORT_BUGS.status.in_review;
   const isResolved = report.status === REPORT_BUGS.status.resolved;
-  const { updateReport, updateLoading, deleteReport, isDeleting } = useBugReport();
 
   const handleAction = (id, newStatus) => {
     updateReport(

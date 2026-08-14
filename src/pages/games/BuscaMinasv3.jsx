@@ -158,14 +158,6 @@ const BuscaMinas = () => {
   const [playLose] = useSound("/sounds/lose.mp3", { volume: 0.6 });
   const [playWin] = useSound("/sounds/win.mp3", { volume: 0.7 });
 
-  const flagsUsed = board.flat().filter((cell) => cell.flagged).length;
-
-  const correctFlags = board
-    .flat()
-    .filter((cell) => cell.flagged && cell.isMine).length;
-
-  const flagEfficiency = Math.max(0, 100 - (flagsUsed - correctFlags) * 10);
-
   // Lógica para plantar minas DESPUÉS del primer clic (para no perder al inicio)
   const plantMines = (initialBoard, firstR, firstC) => {
     let minesPlaced = 0;
@@ -203,6 +195,45 @@ const BuscaMinas = () => {
     setClicks(0);
     setIsNewRecord(false);
   }, []);
+
+  const saveScore = useCallback(
+    async (isWin) => {
+      const score2 = calculateScore({
+        timer: timer,
+        flagsUsed: flagsCount,
+        minesCount: MINES_COUNT,
+        isWin: isWin,
+      });
+
+      // <-- Lógica de Récord
+      if (isWin && (bestWeeklyScore === null || score2 > bestWeeklyScore)) {
+        setIsNewRecord(true);
+      }
+
+      try {
+        const { error } = await supabaseClient.rpc("submit_game_score", {
+          p_game_id: "buscaminas",
+          p_score: score2,
+          p_moves: clicks,
+          p_time_seconds: timer,
+        });
+        if (!error) {
+          console.log("Puntaje guardado exitosamente");
+          queryClient.invalidateQueries({
+            queryKey: ["leaderboard", "buscaminas"],
+          });
+          // <-- Invalidamos también el caché del récord
+          queryClient.invalidateQueries({
+            queryKey: ["weekly-best-score", user?.id, "buscaminas"],
+          });
+        }
+      } catch (error) {
+        console.error("Error al guardar el puntaje:", error);
+        notify.error("Error al guardar el puntaje");
+      }
+    },
+    [timer, flagsCount, bestWeeklyScore, clicks, queryClient, user?.id],
+  );
 
   const revealCell = useCallback(
     (r, c) => {
@@ -266,7 +297,7 @@ const BuscaMinas = () => {
         saveScore(true);
       }
     },
-    [board, gameState, firstClick, playClick, playLose, playWin, playWithCheck],
+    [board, gameState, firstClick, playClick, playLose, playWin, playWithCheck, saveScore],
   );
 
   const toggleFlag = useCallback(
@@ -297,42 +328,6 @@ const BuscaMinas = () => {
     }
     return () => clearInterval(interval);
   }, [gameState, firstClick]);
-
-  const saveScore = async (isWin) => {
-    const score2 = calculateScore({
-      timer: timer,
-      flagsUsed: flagsCount,
-      minesCount: MINES_COUNT,
-      isWin: isWin,
-    });
-
-    // <-- Lógica de Récord
-    if (isWin && (bestWeeklyScore === null || score2 > bestWeeklyScore)) {
-      setIsNewRecord(true);
-    }
-
-    try {
-      const { error } = await supabaseClient.rpc("submit_game_score", {
-        p_game_id: "buscaminas",
-        p_score: score2,
-        p_moves: clicks,
-        p_time_seconds: timer,
-      });
-      if (!error) {
-        console.log("Puntaje guardado exitosamente");
-        queryClient.invalidateQueries({
-          queryKey: ["leaderboard", "buscaminas"],
-        });
-        // <-- Invalidamos también el caché del récord
-        queryClient.invalidateQueries({
-          queryKey: ["weekly-best-score", user?.id, "buscaminas"],
-        });
-      }
-    } catch (error) {
-      console.error("Error al guardar el puntaje:", error);
-      notify.error("Error al guardar el puntaje");
-    }
-  };
 
   const SoundToggle = (
     <motion.button

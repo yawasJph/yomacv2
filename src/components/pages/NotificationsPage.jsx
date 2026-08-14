@@ -15,7 +15,7 @@ import { es } from "date-fns/locale";
 //import { useNotifications } from "../../hooks/useNotifications";
 import NotificationSkeleton from "../skeletons/NotificationSkeleton";
 import ConfirmModal from "../modals/ConfirmModalv2";
-import { useNotifications } from "@/hooks/notification/useNotificationsv2";
+import { useNotifications } from "@/hooks/notification/useNotifications";
 const iconConfig = {
   like: "fill-rose-500 stroke-rose-500 dark:fill-rose-400 dark:stroke-rose-400",
   comment: "text-blue-500 dark:text-blue-400",

@@ -29,7 +29,7 @@ import { formatTimeAgo } from "@/utils/timers/formatTimeAgo";
 import { GameScoreCard } from "@/components/socials/GameScoreCard2";
 import CardPosHeader from "./CardPosHeader";
 
-const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
+const CardPost = ({ post, media, isDetailedView = false, tab }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const textRef = useRef(null);
@@ -40,9 +40,7 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
   const { user: currentUser } = useAuth();
   const isMe = currentUser?.id === post.profiles.id;
   const navigate = useNavigate();
-  const [showOptions, setShowOptions] = useState(false);
   const { mutate: deletePost, isPending: isDeleting } = useDeletePost();
-  const optionsRef = useRef(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
@@ -62,12 +60,10 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
   // }, []);
 
   const handleReport = () => {
-    setShowOptions(false);
     setIsReportModalOpen(true);
   };
 
   const handleReportAction = () => {
-    setShowOptions(false);
     executeAction(handleReport, "para reportar", () => {
       notify.info("Necesitas iniciar sesión para reportar este contenido.");
     });
@@ -344,7 +340,6 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
             <LikeButton
               postId={post.id}
               initialCount={post.like_count}
-              query={query}
             />
             <button
               className="flex items-center gap-2 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
@@ -426,7 +421,6 @@ const CardPost = ({ post, media, isDetailedView = false, tab, query = "" }) => {
             <LikeButton
               postId={post.id}
               initialCount={post.like_count}
-              query={query}
             />
 
             <button

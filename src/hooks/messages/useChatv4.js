@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { supabaseClient } from "@/supabase/supabaseClient";
 import { notify } from "@/utils/toast/notifyv3";
 
@@ -100,7 +100,7 @@ export const useChat = (userId, activeFriendId) => {
         (payload) => {
           const { eventType, new: newRow, old: oldRow } = payload;
 
-          queryClient.setQueryData(queryKey, (oldData) => {
+          queryClient.setQueryData(["messages", activeFriendId], (oldData) => {
             const currentMessages = oldData || [];
 
             if (eventType === "INSERT") {
@@ -129,11 +129,14 @@ export const useChat = (userId, activeFriendId) => {
   }, [activeFriendId, queryClient]);
 
   // --- 5. TYPING LOGIC ---
-  const typingChannel = supabaseClient.channel(`typing:${activeFriendId}`);
+  const typingChannel = useMemo(
+    () => supabaseClient.channel(`typing:${activeFriendId}`),
+    [activeFriendId],
+  );
   
   const sendTypingSignal = useCallback(() => {
     typingChannel.send({ type: "broadcast", event: "typing", payload: { userId } });
-  }, [activeFriendId]);
+  }, [typingChannel, userId]);
 
   useEffect(() => {
     const sub = typingChannel
@@ -145,7 +148,7 @@ export const useChat = (userId, activeFriendId) => {
       })
       .subscribe();
     return () => { supabaseClient.removeChannel(sub); };
-  }, [activeFriendId]);
+  }, [activeFriendId, typingChannel]);
 
   return {
     messages,

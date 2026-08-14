@@ -1,9 +1,3 @@
-const statusLabels = {
-  pending: "Pending",
-  in_review: "In Review",
-  resolved: "Resolved",
-};
-
 export const REPORT_BUGS = {
   queryKey: "admin_bug_reports",
   table: "bug_reports",

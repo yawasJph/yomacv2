@@ -28,7 +28,7 @@ const ResultsView = ({
 }) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { createPost, isPending } = usePostCreation();
+  const { createPost } = usePostCreation();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 

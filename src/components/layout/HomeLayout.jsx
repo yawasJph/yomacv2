@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "./Header";
 import LeftSidebar from "./LeftSidebar";
-import RigthSidebar from "./RigthSidebar";
+import RightSidebar from "./RightSidebar";
 import HeaderM from "./HeaderM";
 import { useIsMobile } from "../../hooks/useIsMobile";
 import { notify } from "@/utils/toast/notifyv3";
@@ -68,7 +68,7 @@ const HomeLayout = () => {
         </main>
 
         {/* Sidebar Derecho - Desktop */}
-        {!hideRightSidebar && <RigthSidebar />}
+        {!hideRightSidebar && <RightSidebar />}
       </div>
 
       {/* Navegación Móvil Inferior - Estilo Threads */}

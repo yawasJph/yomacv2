@@ -1,5 +1,5 @@
 import { Bell } from "lucide-react";
-import { useNotifications } from "../../hooks/useNotifications";
+import { useNotifications } from "../../hooks/notification/useNotifications";
 import { useNavigate } from "react-router-dom";
 import { useAuthAction } from "../../hooks/useAuthAction";
 

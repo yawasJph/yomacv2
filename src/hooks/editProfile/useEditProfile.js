@@ -52,6 +52,8 @@ export const useEditProfile = (user, navigate) => {
   // }, [profile]);
   useEffect(() => {
     if (profile) {
+      // Ajuste de estado cuando profile carga async (reset-on-prop)
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         ...profile,
         alias: profile.alias || "",

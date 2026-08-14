@@ -108,8 +108,8 @@ const YoMACStore = () => {
 
   // React Query: Datos de la tienda
   const { data, isLoading } = useStoreData(currentUser?.id);
-  const items = data?.items || [];
-  const myItems = data?.myItems || [];
+  const items = useMemo(() => data?.items || [], [data?.items]);
+  const myItems = useMemo(() => data?.myItems || [], [data?.myItems]);
 
   // Mutación para compra
   const buyMutation = useMutation({

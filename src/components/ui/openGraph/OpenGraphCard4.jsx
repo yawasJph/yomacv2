@@ -5,15 +5,6 @@ const OpenGraphCard = ({ og_data }) => {
   const [visible, setVisible] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
 
-  if (!og_data?.url) return null;
-
-  let hostname = "";
-  try {
-    hostname = new URL(og_data.url).hostname.replace("www.", "");
-  } catch {
-    hostname = og_data.url;
-  }
-
   // 🔥 Lazy render when visible
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -25,6 +16,15 @@ const OpenGraphCard = ({ og_data }) => {
 
     return () => observer.disconnect();
   }, []);
+
+  if (!og_data?.url) return null;
+
+  let hostname = "";
+  try {
+    hostname = new URL(og_data.url).hostname.replace("www.", "");
+  } catch {
+    hostname = og_data.url;
+  }
 
   // 🔥 favicon fallback automático
   const favicon = `https://www.google.com/s2/favicons?domain=${hostname}&sz=32`;

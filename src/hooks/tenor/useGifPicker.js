@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { fetchTenorGifs } from "@/utils/tenor/fetchTenorGifs";
+import { fetchGiphyGifs } from "@/utils/giphy/fetchGiphyGifs";
 
-const API_KEY = import.meta.env.VITE_TENOR_API_KEY;
+
+
+const API_KEY = import.meta.env.VITE_GIPHY_API_KEY;
 
 export function useGifPicker(onSelect, onClose) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -10,7 +12,7 @@ export function useGifPicker(onSelect, onClose) {
   const loadMoreRef = useRef(null);
   const inputRef = useRef(null);
 
-  // 1. React Query (Capa de Datos)
+  // 1. React Query (Capa de Datos adaptada a Giphy)
   const {
     data,
     fetchNextPage,
@@ -18,18 +20,23 @@ export function useGifPicker(onSelect, onClose) {
     isFetchingNextPage,
     status
   } = useInfiniteQuery({
-    queryKey: ["tenorGifs", activeCategory],
-    queryFn: ({ pageParam }) => fetchTenorGifs({ 
+    queryKey: ["giphyGifs", activeCategory],
+    queryFn: ({ pageParam = 0 }) => fetchGiphyGifs({ 
       pageParam, 
       query: activeCategory, 
       apiKey: API_KEY 
     }),
-    getNextPageParam: (lastPage) => lastPage.next || undefined,
+    getNextPageParam: (lastPage) => {
+      // Giphy usa total_count, count y offset para la paginación
+      const { total_count, count, offset } = lastPage.pagination;
+      const nextOffset = offset + count;
+      return nextOffset < total_count ? nextOffset : undefined;
+    },
     staleTime: 1000 * 60 * 10,
   });
 
-  // Aplanamos los resultados
-  const allGifs = data?.pages.flatMap((page) => page.results) || [];
+  // Aplanamos los resultados (Giphy guarda los items en la propiedad 'data')
+  const allGifs = data?.pages.flatMap((page) => page.data) || [];
 
   // 2. Manejadores de eventos (Memorizados)
   const handleSelect = useCallback((urls) => {

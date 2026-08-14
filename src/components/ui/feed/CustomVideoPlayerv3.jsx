@@ -1,4 +1,4 @@
-import { optimizeMedia } from "@/cloudinary/optimizeMedia";
+
 import {
   Play,
   Pause,
@@ -7,7 +7,7 @@ import {
   Maximize,
   Minimize,
 } from "lucide-react";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 
 // Componente VideoPlayer personalizado
 const CustomVideoPlayer = ({ src, autoPlay = true }) => {
@@ -158,7 +158,8 @@ const CustomVideoPlayer = ({ src, autoPlay = true }) => {
   };
 
   // Auto-ocultar controles
-  const resetControlsTimeout = () => {
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
+  const resetControlsTimeout = useCallback(() => {
     setShowControls(true);
     if (controlsTimeoutRef.current) {
       clearTimeout(controlsTimeoutRef.current);
@@ -168,7 +169,7 @@ const CustomVideoPlayer = ({ src, autoPlay = true }) => {
         setShowControls(false);
       }
     }, 3000);
-  };
+  }, [isPlaying]);
 
   // Manejar movimiento del mouse (Desktop)
   const handleMouseMove = () => {
@@ -197,6 +198,8 @@ const CustomVideoPlayer = ({ src, autoPlay = true }) => {
         // Si falla el autoplay, asegurar que el estado sea correcto
         setIsPlaying(false);
       });
+      // Sync del play del elemento DOM con el estado de React (sistema externo: video)
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsPlaying(true);
     }
   }, [src, autoPlay]);
@@ -206,12 +209,14 @@ const CustomVideoPlayer = ({ src, autoPlay = true }) => {
     if (isPlaying) {
       resetControlsTimeout();
     } else {
+      // Sync de visibilidad de controles con estado externo del reproductor
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowControls(true);
       if (controlsTimeoutRef.current) {
         clearTimeout(controlsTimeoutRef.current);
       }
     }
-  }, [isPlaying]);
+  }, [isPlaying, resetControlsTimeout]);
 
   // Limpiar timeout al desmontar
   useEffect(() => {

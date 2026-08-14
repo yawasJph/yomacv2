@@ -185,7 +185,7 @@ export default function ReportModal({
 
       notify.success("Reporte enviado correctamente");
       onClose();
-    } catch (error) {
+    } catch (_error) {
       notify.error("Error al enviar el reporte");
     } finally {
       setLoading(false);

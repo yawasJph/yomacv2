@@ -82,12 +82,10 @@ const CommentThreadPage = () => {
 
     setNewComment("");
     setSelectedGif(null);
-    setShowEmoji(false);
   };
 
   const onEmojiClick = (emojiData) => {
     setNewComment((prev) => prev + emojiData.emoji);
-    setShowEmoji(false);
   };
 
   if (isLoading) return <div>Cargando hilo...</div>;

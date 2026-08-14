@@ -16,7 +16,7 @@ const Login = () => {
 
       navigate(destination, { replace: true });
     }
-  }, [user, loading, navigate, location]);
+  }, [user, loading, navigate]);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300 relative">

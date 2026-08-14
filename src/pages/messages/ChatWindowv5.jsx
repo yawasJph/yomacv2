@@ -134,7 +134,6 @@ const MessageBubble = React.memo(({
   onClick,
   onDoubleClick,
   onReact,
-  onCloseReaction,
 }) => (
   <div
     className={`flex flex-col ${isMine ? "items-end" : "items-start"} group relative ${
@@ -485,7 +484,6 @@ const ChatWindow = ({ activeChat, user, onBack, onlineUsers, isMobile }) => {
                       : undefined
                   }
                   onReact={handleReact}
-                  onCloseReaction={() => setReactionMessageId(null)}
                 />
 
                 {reactionMessageId && (

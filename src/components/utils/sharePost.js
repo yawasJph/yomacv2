@@ -1,4 +1,4 @@
-// import { toast } from "sonner";
+import { toast } from "sonner";
 
 // export  const handleShare = async (post) => { 
   
@@ -59,29 +59,8 @@
 // };
 
 export const handleShare = async (post) => {
-  let cleanText = post.content || "";
-
-  // 1. Definimos el Regex para encontrar URLs (http, https, www)
-  const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
-
-  // 2. Si tenemos og_data.url, quitamos ESE link específico primero (por precisión)
-  if (post.og_data?.url) {
-    cleanText = cleanText.replace(post.og_data.url, "");
-  }
-
-  // 3. LIMPIEZA TOTAL: Quitamos cualquier otra URL que haya quedado en el texto
-  // Esto evita que WhatsApp detecte links "sueltos" y cambie tu preview
-  cleanText = cleanText.replace(urlRegex, "").trim();
-
-  // 4. Acortamos el texto para el mensaje
-  const finalText = cleanText.length > 100 
-    ? cleanText.substring(0, 100) + "..." 
-    : cleanText;
-
-  // 5. Configuración de datos para compartir
   const shareData = {
     title: `Post de ${post.profiles?.full_name || 'YoMAC'}`,
-    //text: finalText || "Mira este post en YoMAC",
     url: `https://yomacv2.vercel.app/share/${post.id}` 
   };
 

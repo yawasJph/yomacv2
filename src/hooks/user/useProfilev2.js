@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export const useProfile = (usernameParam) => {
   return useQuery({
-    queryKey: ["profile", usernameParam],
+    queryKey: ["profile-by-username", usernameParam],
     queryFn: async () => {
       // Si el username de la URL trae un "@" al inicio, se lo quitamos
       const cleanUsername = usernameParam.startsWith('@') 

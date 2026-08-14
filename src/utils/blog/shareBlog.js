@@ -20,7 +20,7 @@ export const handleShareBlog = async ({post}) => {
       try {
         await navigator.clipboard.writeText(shareUrl);
         notify.success("¡Enlace copiado al portapapeles!");
-      } catch (err) {
+      } catch (_err) {
         notify.error("No se pudo copiar el enlace");
       }
     }

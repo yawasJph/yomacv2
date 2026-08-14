@@ -5,10 +5,6 @@ export const useUserData = (userId) => {
   
   const [userProfile, setUserProfile] = useState(null);
 
-  useEffect(()=>{
-    fetchUserProfile()
-  },[userId])
-
   const fetchUserProfile = useCallback(async () => {
     if (!userId) return null;
 
@@ -22,6 +18,12 @@ export const useUserData = (userId) => {
     if (data) setUserProfile(data);
     return data;
   }, [userId]);
+
+  useEffect(() => {
+    // load-on-mount: fetch asíncrono que setea estado tras el fetch (no es cascada síncrona)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchUserProfile();
+  }, [userId, fetchUserProfile]);
 
   const getDynamicInstruction = () => {
     if (!userProfile) return;

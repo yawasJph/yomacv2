@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -21,6 +21,21 @@ import ResultsSheet from "@/components/games/trivia/ResultsSheet";
 import { useWeeklyBestScore } from "@/hooks/games/useWeeklyBestScore";
 //import ResultsView from "../../components/games/trivia/ResultViewv2";
 
+const DIFFICULTY_SETTINGS = {
+  Fácil: { time: 15, basePoints: 100, multiplier: 1 },
+  Medio: { time: 10, basePoints: 150, multiplier: 1.5 },
+  Difícil: { time: 5, basePoints: 200, multiplier: 2 },
+};
+
+// Función para mezclar un array (Algoritmo Fisher-Yates)
+const shuffleArray = (array) => {
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
+};
 
 const TriviaGame = () => {
   const { user } = useAuth();
@@ -60,20 +75,9 @@ const TriviaGame = () => {
   const [playBeep] = useSound("/sounds/beep.mp3", { volume: 0.5 });
   const [playStart] = useSound("/sounds/start.mp3", { volume: 0.5 });
 
-  // CONFIGURACIÓN DE DIFICULTAD
-  const DIFFICULTY_SETTINGS = {
-    Fácil: { time: 15, basePoints: 100, multiplier: 1 },
-    Medio: { time: 10, basePoints: 150, multiplier: 1.5 },
-    Difícil: { time: 5, basePoints: 200, multiplier: 2 },
-  };
-
-  useEffect(() => {
-    initGame();
-  }, []);
-
   // 1. Cargar Categoría Aleatoria y sus Preguntas
 
-  const initGame = async () => {
+  const initGame = useCallback(async () => {
     try {
       // Obtener todas las categorías disponibles
       const { data: categories } = await supabaseClient
@@ -121,10 +125,14 @@ const TriviaGame = () => {
         //setGameState("playing");
         setGameState("starting");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("No se pudieron cargar las preguntas");
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    initGame();
+  }, [initGame]);
 
   // 1. Al cargar preguntas, el primer timer debe ajustarse a la primera pregunta
   useEffect(() => {
@@ -132,7 +140,7 @@ const TriviaGame = () => {
       const diff = questions[0].difficulty || "Fácil";
       setTimeLeft(DIFFICULTY_SETTINGS[diff].time);
     }
-  }, [questions]);
+  }, [questions, currentIndex]);
 
   // Efecto para la cuenta regresiva
   useEffect(() => {
@@ -146,36 +154,32 @@ const TriviaGame = () => {
         playWithCheck(playStart);
       }
     }
-  }, [gameState, countdown]);
+  }, [gameState, countdown, playBeep, playStart, playWithCheck]);
 
-  // 2. Lógica del Temporizador
-  useEffect(() => {
-    if (gameState === "playing" && selectedOption === null) {
-      if (timeLeft > 0) {
-        if (timeLeft <= 4) playWithCheck(playTickv3);
-        timerRef.current = setTimeout(
-          () => setTimeLeft((prev) => prev - 1),
-          1000,
-        );
+  const saveResults = useCallback(async (finalPoints, finalScore, finalTime) => {
+    try {
+      const { error } = await supabaseClient.rpc("submit_trivia_score", {
+        p_points: finalPoints, // El estado 'points' con el Time-Bonus
+        p_accuracy: finalScore, // El estado 'score' con los aciertos (0-10)
+        p_time_seconds: finalTime, // Opcional: tiempo total
+      });
+
+      if (!error) {
+        queryClient.invalidateQueries({
+          queryKey: ["leaderboard", "trivia"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["weekly-best-score", user?.id, "trivia"]
+        });
       } else {
-        // Se acabó el tiempo
-        handleAnswer(-1); // -1 indica que no respondió a tiempo
+        console.error("Error en RPC:", error);
       }
+    } catch (error) {
+      console.error("Error guardando resultados:", error);
     }
-    return () => clearTimeout(timerRef.current);
-  }, [timeLeft, gameState, selectedOption]);
+  }, [queryClient, user?.id]);
 
-  // Función para mezclar un array (Algoritmo Fisher-Yates)
-  const shuffleArray = (array) => {
-    const newArray = [...array];
-    for (let i = newArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-    }
-    return newArray;
-  };
-
-  const handleAnswer = (index) => {
+  const handleAnswer = useCallback((index) => {
     if (selectedOption !== null) return;
     clearTimeout(timerRef.current);
 
@@ -267,7 +271,24 @@ const TriviaGame = () => {
         );
       }
     }, 1500);
-  };
+  }, [selectedOption, questions, currentIndex, timeLeft, streak, profile, points, score, bestWeeklyScore, totalTimeUsed, playWithCheck, playCorrect, playWrong, playWin, playLose4, saveResults]);
+
+  // 2. Lógica del Temporizador
+  useEffect(() => {
+    if (gameState === "playing" && selectedOption === null) {
+      if (timeLeft > 0) {
+        if (timeLeft <= 4) playWithCheck(playTickv3);
+        timerRef.current = setTimeout(
+          () => setTimeLeft((prev) => prev - 1),
+          1000,
+        );
+      } else {
+        // Se acabó el tiempo
+        handleAnswer(-1); // -1 indica que no respondió a tiempo
+      }
+    }
+    return () => clearTimeout(timerRef.current);
+  }, [timeLeft, gameState, selectedOption, handleAnswer, playTickv3, playWithCheck]);
 
   const handleReset = () => {
     // Resetear estados de juego
@@ -287,29 +308,6 @@ const TriviaGame = () => {
 
     // Si moviste la lógica de initGame a una función externa, llámala aquí.
     // Si no, el useEffect [gameState] detectará el cambio y reiniciará.
-  };
-
-  const saveResults = async (finalPoints, finalScore, finalTime) => {
-    try {
-      const { error } = await supabaseClient.rpc("submit_trivia_score", {
-        p_points: finalPoints, // El estado 'points' con el Time-Bonus
-        p_accuracy: finalScore, // El estado 'score' con los aciertos (0-10)
-        p_time_seconds: finalTime, // Opcional: tiempo total
-      });
-
-      if (!error) {
-        queryClient.invalidateQueries({
-          queryKey: ["leaderboard", "trivia"],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["weekly-best-score", user?.id, "trivia"]
-        });
-      } else {
-        console.error("Error en RPC:", error);
-      }
-    } catch (error) {
-      console.error("Error guardando resultados:", error);
-    }
   };
 
   // 1. Pantalla de Carga Inicial (Fetching de datos)
@@ -384,7 +382,7 @@ const TriviaGame = () => {
   if (gameState === "finished") {
     return (
       <ResultsSheet
-        onClose={() => setShowResults(false)}
+        onClose={handleReset}
         points={points}
         accuracy={score}
         totalQuestions={questions.length}

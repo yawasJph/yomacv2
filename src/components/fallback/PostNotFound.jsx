@@ -1,4 +1,4 @@
-import { messages } from "@/consts/notFound/noFoundPost";
+import { messages } from "@/consts/notFound/notFoundPost";
 import { X } from "lucide-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";

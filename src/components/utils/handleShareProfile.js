@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 export const handleShareProfile = async (profile) => {
   const shareData = {
     title: `${profile.full_name} (@${profile.username}) en YoMAC`,

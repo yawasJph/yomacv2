@@ -112,7 +112,7 @@ const CodigoMatricula = () => {
   const [timer, setTimer] = useState(0);
   const { isMuted, setIsMuted, playWithCheck } = useAudio();
   const queryClient = useQueryClient();
-  const { createPost, isPending } = usePostCreation();
+  const { createPost } = usePostCreation();
   const [isNewRecord, setIsNewRecord] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -165,9 +165,6 @@ const CodigoMatricula = () => {
   );
   const effectiveness =
     totalSlots > 0 ? Math.round((totalClues / totalSlots) * 100) : 0;
-
-  // 2. Velocidad Media: Segundos promedio que el jugador tardó por intento
-  const avgSpeed = attempts > 0 ? (timer / attempts).toFixed(1) : 0;
 
   const avgCorrect = attempts > 0 ? totalCorrect / attempts : 0;
 
@@ -277,7 +274,7 @@ const CodigoMatricula = () => {
       }
     });
 
-    guessCopy.forEach((color, i) => {
+    guessCopy.forEach((color) => {
       if (color !== "checked") {
         const secretIndex = secretCopy.indexOf(color);
         if (secretIndex !== -1) {

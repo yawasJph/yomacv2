@@ -12,6 +12,8 @@ export const FollowProvider = ({ children }) => {
   // Cargar seguidos al iniciar o cambiar de usuario
   useEffect(() => {
     if (!user) {
+      // Reset del estado al desloguearse (ajuste de estado cuando cambia user - patrón documentado)
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFollowingIds(new Set());
       setLoading(false);
       return;

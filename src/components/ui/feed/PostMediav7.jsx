@@ -16,7 +16,10 @@ const PostMedia = ({ media = [], onOpen }) => {
   });
 
   useEffect(() => {
-    if (inView) setHasEntered(true);
+    if (inView) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setHasEntered(true);
+    }
   }, [inView]);
 
   // Identificamos índices de medios animados (Videos y GIFs) para autoreproducción secuencial

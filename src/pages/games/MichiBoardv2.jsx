@@ -40,6 +40,42 @@ const MichiBoard = ({ onBack }) => {
   const [playDraw] = useSound("/sounds/draw.mp3", { volume: 0.4 });
   const [playReset] = useSound("/sounds/reset.mp3", { volume: 0.4 });
 
+  // Lógica de guardado simplificada (Separada del flujo principal)
+  const saveScore = useCallback(async (result) => {
+    let points = result === "X" ? 1000 : result === "draw" ? 100 : 0;
+    if (points === 0) return;
+    
+    await supabaseClient.rpc("submit_game_score", {
+      p_game_id: "michi",
+      p_moves: 0,
+      p_score: points,
+      p_time_seconds: 0,
+    });
+  }, []);
+
+  const checkWinner = useCallback(
+    (currentBoard) => {
+      const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+      for (let line of lines) {
+        const [a, b, c] = line;
+        if (currentBoard[a] && currentBoard[a] === currentBoard[b] && currentBoard[a] === currentBoard[c]) {
+          const win = currentBoard[a];
+          setWinner(win);
+          setWinningLine(line);
+          win === "X" ? playWithCheck(playWin) : playWithCheck(playLose);
+          saveScore(win);
+          return;
+        }
+      }
+      if (!currentBoard.includes(null)) {
+        setWinner("draw");
+        playWithCheck(playDraw);
+        saveScore("draw");
+      }
+    },
+    [playWithCheck, playWin, playLose, playDraw, saveScore],
+  );
+
   // 2. USECALLBACK: La función de movimiento IA es estable
   const makeAIMove = useCallback(() => {
     const bestMove = getBestMove([...board]);
@@ -51,7 +87,7 @@ const MichiBoard = ({ onBack }) => {
       playWithCheck(playClick);
       checkWinner(newBoard);
     }
-  }, [board, playClick, playWithCheck]);
+  }, [board, playClick, playWithCheck, checkWinner]);
 
   useEffect(() => {
     if (!isPlayerNext && !winner) {
@@ -59,39 +95,6 @@ const MichiBoard = ({ onBack }) => {
       return () => clearTimeout(timer);
     }
   }, [isPlayerNext, winner, makeAIMove]);
-
-  // Lógica de guardado simplificada (Separada del flujo principal)
-  const saveScore = async (result) => {
-    let points = result === "X" ? 1000 : result === "draw" ? 100 : 0;
-    if (points === 0) return;
-    
-    await supabaseClient.rpc("submit_game_score", {
-      p_game_id: "michi",
-      p_moves: 0,
-      p_score: points,
-      p_time_seconds: 0,
-    });
-  };
-
-  const checkWinner = (currentBoard) => {
-    const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for (let line of lines) {
-      const [a, b, c] = line;
-      if (currentBoard[a] && currentBoard[a] === currentBoard[b] && currentBoard[a] === currentBoard[c]) {
-        const win = currentBoard[a];
-        setWinner(win);
-        setWinningLine(line);
-        win === "X" ? playWithCheck(playWin) : playWithCheck(playLose);
-        saveScore(win);
-        return;
-      }
-    }
-    if (!currentBoard.includes(null)) {
-      setWinner("draw");
-      playWithCheck(playDraw);
-      saveScore("draw");
-    }
-  };
 
   const handleSquareClick = useCallback((i) => {
     if (board[i] || winner || !isPlayerNext) return;
@@ -101,7 +104,7 @@ const MichiBoard = ({ onBack }) => {
     setIsPlayerNext(false);
     playWithCheck(playClick);
     checkWinner(newBoard);
-  }, [board, winner, isPlayerNext, playClick, playWithCheck]);
+  }, [board, winner, isPlayerNext, playClick, playWithCheck, checkWinner]);
 
   return (
     <div className="flex flex-col items-center justify-center p-4 md:pt-10">

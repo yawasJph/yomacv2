@@ -79,7 +79,6 @@ const PostPage = () => {
   // 2. Lógica de comentarios
   const {
     data: commentsData,
-    isLoading: commentsLoading,
     addComment,
     hasNextPage,
     fetchNextPage,
@@ -106,12 +105,10 @@ const PostPage = () => {
     //queryClient.invalidateQueries({ queryKey: ["post", postId] });
     setNewComment("");
     setSelectedGif(null);
-    setShowEmoji(false);
   };
 
   const onEmojiClick = (emojiData) => {
     setNewComment((prev) => prev + emojiData.emoji);
-    setShowEmoji(false);
   };
 
   const hanldeNextComments = () => {

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, } from "react";
 import { ArrowLeft, Bookmark } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -34,7 +34,7 @@ const SavedPage = () => {
     );
     if (loaderRef.current) observer.observe(loaderRef.current);
     return () => observer.disconnect();
-  }, [hasNextPage, isFetchingNextPage]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const allSavedPosts = data?.pages.flat() || [];
 

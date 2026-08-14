@@ -6,6 +6,8 @@ const ImageUpload = ({ onChange, resetKey }) => {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // Reset del state interno cuando el padre cambia resetKey (reset-on-prop keyed pattern)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPreview(null);
     setError("");
   }, [resetKey]);

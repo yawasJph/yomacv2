@@ -5,9 +5,7 @@ import { Link } from "react-router-dom";
 export const MyBlogCard = React.memo(({ blog, onActionDelete }) => {
   return (
     <div
-      className={`group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between hover:border-emerald-500/50 transition-all gap-4 ${
-        false ? "opacity-50 pointer-events-none" : ""
-      }`}
+      className={`group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between hover:border-emerald-500/50 transition-all gap-4`}
     >
       {/* LEFT */}
       <div className="flex flex-col gap-1 min-w-0 flex-1">

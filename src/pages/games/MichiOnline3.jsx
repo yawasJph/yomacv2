@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, memo } from "react";
+import React, { useState, useEffect, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabaseClient } from "../../supabase/supabaseClient";
 import { Zap, Flame, AlertCircle } from "lucide-react";
@@ -82,6 +82,7 @@ const MichiOnline = ({ user, onBack, stop, onPlayVSIA }) => {
   );
 
   // --- 2. GESTIÓN DE SALIDA OPTIMIZADA ---
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const handleExit = useCallback(async () => {
     if (roomData?.id) {
       // Borramos la sala para no dejar basura en la DB
@@ -90,13 +91,14 @@ const MichiOnline = ({ user, onBack, stop, onPlayVSIA }) => {
     onBack();
   }, [roomData?.id, onBack]);
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const handlePLayIA = useCallback(async () => {
     if (roomData?.id) {
       // Borramos la sala para no dejar basura en la DB
       await supabaseClient.from("michi_rooms").delete().eq("id", roomData.id);
     }
     onPlayVSIA();
-  }, [roomData?.id, onBack]);
+  }, [roomData?.id, onPlayVSIA]);
 
   // --- 3. EFECTO DE RESULTADOS (CORREGIDO) ---
   useEffect(() => {
@@ -139,7 +141,7 @@ const MichiOnline = ({ user, onBack, stop, onPlayVSIA }) => {
       }
     };
     saveResult();
-  }, [winner, user.id, playWin, playDraw, playLose, playWithCheck]);
+  }, [winner, user.id, playWin, playDraw, playLose, playWithCheck, queryClient]);
 
   // --- 4. REALTIME ENGINE (OPTIMIZADO) ---
   useEffect(() => {
@@ -193,7 +195,7 @@ const MichiOnline = ({ user, onBack, stop, onPlayVSIA }) => {
     return () => {
       supabaseClient.removeChannel(channel);
     };
-  }, [roomData?.id, user.id, gameState]); // Dependencias mínimas necesarias
+  }, [roomData?.id, user.id, gameState, roomData.board, stop, winner, playClick, playReady, playWin, playWithCheck]); // Dependencias mínimas necesarias
 
   // Matchmaking inicial
   useEffect(() => {

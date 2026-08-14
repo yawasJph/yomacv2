@@ -3,7 +3,7 @@ import { supabaseClient } from "../supabase/supabaseClient";
 import { useAuth } from "../context/AuthContext";
 import { useSearch } from "../context/SearchContext";
 ///hago cambios
-export const useLike = (postId, query) => {
+export const useLike = (postId) => {
   
   const { user } = useAuth();
   const queryClient = useQueryClient();

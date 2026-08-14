@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { supabaseClient } from "../../supabase/supabaseClient";
-import {useUserData} from "./useUserData"
+
 import { getDynamicInstruction } from "./useYawasChat2";
 
 export const useYawasApi = (userId, setIsTyping)=>{
@@ -129,7 +129,7 @@ export const useYawasApi = (userId, setIsTyping)=>{
     } finally {
       setIsTyping(false);
     }
-  }, [userId]);
+  }, [setIsTyping]);
   return{
     callYawasAPI,
     getDynamicInstruction,

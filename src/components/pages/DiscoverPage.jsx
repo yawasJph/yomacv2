@@ -3,7 +3,7 @@ import { Search, Filter, GraduationCap } from "lucide-react";
 import { useDiscoverProfiles } from "../../hooks/useDiscoverProfiles";
 //import UserSearchCard from "../ui/UserSearchCard2";
 import UserSearchCard from "@/components/ui/users/UserSearchCardv2";
-import { UserItemSkeleton } from "../skeletons/UserSearchCardSkleton";
+import { UserItemSkeleton } from "../skeletons/UserSearchCardSkeleton";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 const tabs = [

@@ -7,10 +7,12 @@ import { useBlogsInfinite } from "@/hooks/blog/useBlogsInfinite";
 import { BlogFeedButton } from "@/components/blog/BlogFeedButton";
 import { BlogCardSkeleton } from "@/components/skeletons/BlogCardSkeleton";
 import { getInitSkeletons } from "@/utils/blog/initSkeletonsRender";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 const BlogFeed = () => {
   const navigate = useNavigate();
-  const arraySkeleton = getInitSkeletons();
+  const isMobile = useIsMobile();
+  const arraySkeleton = getInitSkeletons(isMobile);
 
   // Hook para detectar cuándo el usuario scrollea hasta el final
   const { ref, inView } = useInView({

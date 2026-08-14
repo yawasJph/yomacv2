@@ -4,10 +4,10 @@ import { XCircle, Trash2, Ban, X } from "lucide-react";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
 const ReportManagementModal = ({ report, onClose }) => {
-  if (!report) return null;
-
   const { mutate: resolve, isLoading } = useResolveReport();
   const { mutate: ban, isLoading: isBanning } = useBanUser();
+
+  if (!report) return null;
 
   //   const targetId = report.post ? report.post.id : report.comment.id;
   //   const targetContectType = report.post ? "post" : "comment";

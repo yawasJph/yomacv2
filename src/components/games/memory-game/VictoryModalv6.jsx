@@ -64,7 +64,7 @@ const VictoryModal = memo(
 
     useEffect(() => {
       springScore.set(score);
-    }, [score]);
+    }, [score, springScore]);
 
     /* 🏆 Ranking simple */
     const getRank = () => {

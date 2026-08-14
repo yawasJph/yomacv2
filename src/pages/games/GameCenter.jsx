@@ -22,7 +22,7 @@ const GameCenter = () => {
   const trackPath = `/sounds/bgv1.mp3`;
 
   // 2. Configuramos useSound para música de fondo
-  const [play, { stop, sound }] = useSound(trackPath, {
+  const [play, { stop }] = useSound(trackPath, {
     volume: isMuted ? 0 : isDimmed ? 0.1 : 0.5, // Volumen bajo para que no aturda
     interrupt: true, // Interrumpe otros sonidos si fuera necesario
     loop: true, // ¡Importante! Para que la música no se corte

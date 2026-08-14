@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import CustomVideoPlayer from "./CustomVideoPlayerv3";
 import { optimizeMedia } from "@/cloudinary/optimizeMedia";
 
@@ -15,21 +15,21 @@ const MediaModal = ({ media, closeModal, initialIndex }) => {
   // Distancia mínima para considerar un swipe (en px)
   const minSwipeDistance = 50;
 
-  const goToNext = (e) => {
+  const goToNext = useCallback((e) => {
     e?.stopPropagation();
     if (isTransitioning) return;
     setIsTransitioning(true);
     setCurrentIndex((prev) => (prev === media.length - 1 ? 0 : prev + 1));
     setTimeout(() => setIsTransitioning(false), 300);
-  };
+  }, [isTransitioning, media.length]);
 
-  const goToPrevious = (e) => {
+  const goToPrevious = useCallback((e) => {
     e?.stopPropagation();
     if (isTransitioning) return;
     setIsTransitioning(true);
     setCurrentIndex((prev) => (prev === 0 ? media.length - 1 : prev - 1));
     setTimeout(() => setIsTransitioning(false), 300);
-  };
+  }, [isTransitioning, media.length]);
 
   // Manejar inicio del toque
   const onTouchStart = (e) => {
@@ -92,7 +92,7 @@ const MediaModal = ({ media, closeModal, initialIndex }) => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentIndex, isTransitioning]);
+  }, [currentIndex, isTransitioning, closeModal, goToNext, goToPrevious]);
 
   // Prevenir scroll del body cuando el modal está abierto
   useEffect(() => {

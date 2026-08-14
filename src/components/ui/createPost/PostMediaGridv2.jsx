@@ -77,7 +77,7 @@ const PostMediaGrid = ({ previews, removeFileOrGif, removeAllImages }) => {
 };
 
 /* --- SUB-COMPONENTE: Renderizador de Media --- */
-const MediaRender = ({ mediaItem, index, isMobile = false }) => {
+const MediaRender = ({ mediaItem, index }) => {
   const src = mediaItem.url || mediaItem;
   const type = mediaItem.type || 'image';
   const isVideo = type === 'video';

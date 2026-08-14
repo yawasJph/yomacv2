@@ -7,6 +7,11 @@ export const ThemeProvider = ({ children }) => {
     return localStorage.getItem("theme") || "system";
   });
 
+  const isDark =
+    theme === "dark" ||
+    (theme === "system" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
+
   useEffect(() => {
     const root = document.documentElement;
 
@@ -33,7 +38,7 @@ export const ThemeProvider = ({ children }) => {
   }, [theme]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, isDark }}>
       {children}
     </ThemeContext.Provider>
   );

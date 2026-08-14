@@ -24,8 +24,7 @@ export const validateSocials = (formData) => {
   if (!formData?.socials) return true;
 
   const patterns = {
-    web: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,})([\/\w .-]*)*\/?$/i,
-
+    web: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,})([/\w .-]*)*\/?$/i,
     instagram:
       /^(https?:\/\/)?(www\.)?instagram\.com\/[a-zA-Z0-9._]{1,30}\/?$/,
 

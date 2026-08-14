@@ -25,3 +25,8 @@ dist-ssr
 
 .env
 
+.agents/
+
+# Herramientas de IA y configuraciones locales
+opencode.json
+skills-lock.json

@@ -1,5 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
-import { useChat } from "@/hooks/messages/useChat";
+
 import { useMutuals } from "@/hooks/messages/useMutuals";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useEffect, useState } from "react";
@@ -12,7 +12,6 @@ const MessagesPage = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [activeChat, setActiveChat] = useState(null);
-  const [newMessage, setNewMessage] = useState("");
 
   // Usamos nuestros Custom Hooks
   const { mutuals, onlineUsers, loadingMutuals } = useMutuals(user?.id);

@@ -1,8 +1,6 @@
 import { ArrowLeft, Swords, Timer, Lightbulb } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState, memo } from 'react';
-import useSound from 'use-sound';
-import { useAudio } from '../../../context/AudioContext';
 
 const GAME_TIPS = [
   "El centro es la posición más fuerte en el Michi.",
@@ -33,15 +31,9 @@ const SearchTimer = memo(() => {
 });
 
 const SearchingScreen = ({ onBack , onPlayVSIA}) => {
-  const { playWithCheck } = useAudio();
-  const [seconds, setSeconds] = useState(0);
+  const [, setSeconds] = useState(0);
   const [tipIndex, setTipIndex] = useState(0);
   const [showSuggestion, setShowSuggestion] = useState(false);
-  
-  const [playPulse] = useSound("/sounds/countdown.mp3", { 
-    volume: 0.2, 
-    playbackRate: 1.5 
-  });
 
   // 2. INTERVALO EXCLUSIVO PARA TIPS: Más limpio y eficiente
  useEffect(() => {

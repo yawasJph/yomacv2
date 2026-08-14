@@ -4,17 +4,16 @@ import React, {
   useCallback,
   useMemo,
   Suspense,
-  use,
 } from "react";
 import { Smile, X, Loader2 } from "lucide-react";
-import useDarkMode from "@/hooks/useDarkMode";
+import { useTheme } from "@/context/ThemeContext";
 
 // 1. Carga perezosa del componente pesado
 const EmojiPickerLazy = React.lazy(() => import("emoji-picker-react"));
 
 export default function EmojiSelector({ addEmoji }) {
   const [showPicker, setShowPicker] = useState(false);
-  const {darkMode} = useDarkMode();
+  const { isDark } = useTheme();
 
   // Bloquear scroll en móvil cuando el picker está abierto
   useEffect(() => {
@@ -36,7 +35,7 @@ export default function EmojiSelector({ addEmoji }) {
   // 3. Memorizar el estilo/configuración para evitar re-calculos
   const pickerConfig = useMemo(
     () => ({
-      theme: darkMode ? "dark" : "light",
+      theme: isDark ? "dark" : "light",
       searchPlaceholder: "Buscar emoji...",
       previewConfig: { showPreview: false },
       skinTonesDisabled: true,
@@ -45,7 +44,7 @@ export default function EmojiSelector({ addEmoji }) {
       height: "390px",
       autoFocusSearch: false,
     }),
-    [darkMode],
+    [isDark],
   );
 
   return (

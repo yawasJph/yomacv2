@@ -1,16 +1,6 @@
 import { supabaseClient } from "@/supabase/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
 
-const simpleData = {
-  id: "",
-  full_name: "",
-  avatar: "",
-  carrera: "",
-  ciclo: "",
-  isAdmin: false,
-  username: "",
-};
-
 export const useSimpleProfile = (userId) => {
   return useQuery({
     queryKey: ["profile-simple", userId],

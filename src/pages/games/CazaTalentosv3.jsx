@@ -18,6 +18,7 @@ const Particles = memo(({ x, y, color }) => {
     <div className="absolute inset-0 pointer-events-none z-50">
       {particles.map((_, i) => {
         const angle = i * 36 * (Math.PI / 180);
+        // eslint-disable-next-line react-hooks/purity
         const velocity = 20 + Math.random() * 20;
         const targetX = Math.cos(angle) * velocity;
         const targetY = Math.sin(angle) * velocity;
@@ -87,56 +88,6 @@ const GameTarget = memo(({ t, onHit }) => (
 ));
 
 const GAME_DURATION = 30;
-
-const getRank = (points) => {
-  if (points >= 2500)
-    return {
-      label: "ZAFIRO",
-      color: "text-indigo-400",
-      gradient: "from-indigo-500 to-cyan-400",
-      bg: "bg-indigo-500/10",
-      icon: "💎",
-    };
-  if (points >= 2000)
-    return {
-      label: "RUBÍ",
-      color: "text-red-400",
-      gradient: "from-red-500 to-pink-400",
-      bg: "bg-red-500/10",
-      icon: "🌹",
-    };
-  if (points >= 1500)
-    return {
-      label: "DIAMANTE",
-      color: "text-cyan-400",
-      gradient: "from-cyan-500 to-sky-400",
-      bg: "bg-cyan-500/10",
-      icon: "✨",
-    };
-  if (points >= 1000)
-    return {
-      label: "ORO",
-      color: "text-amber-400",
-      gradient: "from-amber-500 to-yellow-400",
-      bg: "bg-amber-500/10",
-      icon: "👑",
-    };
-  if (points >= 500)
-    return {
-      label: "PLATA",
-      color: "text-slate-400",
-      gradient: "from-slate-400 to-gray-300",
-      bg: "bg-slate-500/10",
-      icon: "🥈",
-    };
-  return {
-    label: "BRONCE",
-    color: "text-orange-600",
-    gradient: "from-orange-500 to-red-400",
-    bg: "bg-orange-500/10",
-    icon: "🥉",
-  };
-};
 
 const CazaTalentos = () => {
   const [score, setScore] = useState(0);
@@ -231,6 +182,31 @@ const CazaTalentos = () => {
     [currentDeck, score],
   ); // Ahora depende del score
 
+  const endGame = useCallback(async () => {
+    setGameState("ended");
+    setTargets([]);
+    playWithCheck(playWin);
+
+    try {
+      // 1. Enviamos el puntaje
+      const { error } = await supabaseClient.rpc("submit_game_score", {
+        p_game_id: "hunter-talents",
+        p_score: score,
+        p_moves: 0,
+        p_time_seconds: 0,
+      });
+
+      // 2. Si no hay error, invalidamos específicamente este juego
+      if (!error) {
+        queryClient.invalidateQueries({
+          queryKey: ["leaderboard", "hunter-talents"],
+        });
+      }
+    } catch (err) {
+      console.error("Error al guardar puntaje:", err);
+    }
+  }, [score, playWithCheck, playWin, queryClient]);
+
   useEffect(() => {
     if (gameState !== "playing") return;
 
@@ -255,7 +231,7 @@ const CazaTalentos = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameState, spawnTarget, score]);
+  }, [gameState, spawnTarget, score, endGame]);
 
   const handleHit = useCallback(
     (target) => {
@@ -308,31 +284,6 @@ const CazaTalentos = () => {
     },
     [playWithCheck, playBomb, playTime, playClick],
   );
-
-  const endGame = async () => {
-    setGameState("ended");
-    setTargets([]);
-    playWithCheck(playWin);
-
-    try {
-      // 1. Enviamos el puntaje
-      const { error } = await supabaseClient.rpc("submit_game_score", {
-        p_game_id: "hunter-talents",
-        p_score: score,
-        p_moves: 0,
-        p_time_seconds: 0,
-      });
-
-      // 2. Si no hay error, invalidamos específicamente este juego
-      if (!error) {
-        queryClient.invalidateQueries({
-          queryKey: ["leaderboard", "hunter-talents"],
-        });
-      }
-    } catch (err) {
-      console.error("Error al guardar puntaje:", err);
-    }
-  };
 
   const handleReset = () => {
     setScore(0);

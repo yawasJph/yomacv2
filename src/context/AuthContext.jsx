@@ -77,7 +77,7 @@ export const AuthContextProvider = ({ children }) => {
 
       // 2. Validar Baneo
       try {
-        const { data: profile, error: profileError } = await supabaseClient
+        const { data: profile } = await supabaseClient
           .from("profiles")
           .select("is_banned, ban_reason")
           .eq("id", session.user.id)
@@ -141,7 +141,7 @@ export const AuthContextProvider = ({ children }) => {
         localStorage.setItem("should_play_bgm", "true");
       }
 
-      const { data, error } = await supabaseClient.auth.signInWithOAuth({
+      const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: "google",
         options: {
           // Esto asegura que si el trigger falla, el error regrese aquí

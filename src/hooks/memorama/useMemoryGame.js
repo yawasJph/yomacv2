@@ -49,9 +49,10 @@ export const useMemoryGame = () => {
     setIsNewRecord(false);
     setShowVictory(false);
     
-  }, [prepararTablero]);
+  }, []);
 
-  const saveGameResult = async (score, steps, time) => {
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
+  const saveGameResult = useCallback(async (score, steps, time) => {
     try {
       const { error } = await supabaseClient.rpc("submit_game_score", {
         p_game_id: "memory",
@@ -71,7 +72,7 @@ export const useMemoryGame = () => {
     } catch (error) {
       console.error("Error al guardar:", error);
     }
-  };
+  }, [queryClient, user?.id]);
 
   // Cronómetro
   useEffect(() => {
@@ -130,6 +131,8 @@ export const useMemoryGame = () => {
   // Efecto de Victoria
   useEffect(() => {
     if (cards.length > 0 && matched.length === cards.length) {
+      // Derivar el estado de victoria cuando se completan las cartas
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsActive(false);
       playWithCheck(playWin);
       confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
@@ -146,7 +149,7 @@ export const useMemoryGame = () => {
       saveGameResult(score, moves, seconds);
       setTimeout(() => setShowVictory(true), 1000);
     }
-  }, [matched.length, cards.length, playWithCheck, playWin, moves, seconds, bestWeeklyScore]);
+  }, [matched.length, cards.length, playWithCheck, playWin, moves, seconds, bestWeeklyScore, saveGameResult]);
 
   return {
     cards,

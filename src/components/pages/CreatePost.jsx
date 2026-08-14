@@ -8,7 +8,7 @@ import {
   Video,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import GifPicker from "../utils/GifPickerv8";
+import GifPicker from "../utils/GifPickerv9";
 import { usePostState } from "../../hooks/usePostState"; // 👈 Nuevo Hook de Estado
 import { useLinkPreview } from "../../hooks/useLinkPreview2"; // 👈 Nuevo Hook de Preview
 import LinkPreviewCard from "../ui/createPost/LinkPreviewCard"; // 👈 Nuevo Componente
@@ -33,14 +33,11 @@ const CreatePost = () => {
     gifUrls,
     previews,
     loading,
-    showEmojiPicker,
     showGifPicker,
     linkPreview,
     linkPreviewClosed,
     debouncedContent,
-    setContent,
     setLoading,
-    setShowEmojiPicker,
     setShowGifPicker,
     setLinkPreview,
     setLinkPreviewClosed,

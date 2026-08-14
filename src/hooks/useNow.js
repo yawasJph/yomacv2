@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export function useNow(interval = 60000) {
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     const id = setInterval(() => {
